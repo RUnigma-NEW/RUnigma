@@ -1,0 +1,34 @@
+#!/bin/sh
+# example rcS script
+echo "Welcome to STLinux!"
+#/sbin/ifconfig eth0 192.168.1.1
+
+mount -a
+
+/sbin/ifconfig eth0 192.168.1.210
+
+#Hostname
+echo "Hostname..."
+/bin/hostname -F /etc/hostname
+
+#Time
+echo "Adjusting time..."
+ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+#Klogd
+echo "Starting klogd..."
+/sbin/klogd
+
+#Syslogd
+echo "Starting syslogd (shared mem buffer)..."
+/sbin/syslogd -C16
+
+#Date
+#Test: rdate -p  ntp1.ptb.de
+echo "Running rdate -s ntp1.ptb.de..."
+rdate -s ntp1.ptb.de
+
+#Telnetd
+#echo "Starting telnetd..."
+#/usr/sbin/telnetd -l /bin/sh
+#/usr/sbin/telnetd -l /bin/login

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ ! -z $1 ] ; then
+	make $1 2>&1 | tee make.log
+ else
+	echo "Usage: makelog some_commands"
+fi

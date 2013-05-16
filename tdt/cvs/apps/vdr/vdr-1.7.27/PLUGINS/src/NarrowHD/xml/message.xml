@@ -1,0 +1,23 @@
+<!--
+#------------------------------------------------------------------------------
+# global message start
+#------------------------------------------------------------------------------ -->
+
+<display id="message" >
+
+	<window x1="1" x2="-1" y1="-80" y2="-1" bpp="4" />
+	
+	<rectangle x1="-1390" x2="-1"    y1="-70" y2="-20" refresh="all" color="MainLight" />
+	<rectangle x1="-1440" x2="-1390" y1="-70" y2="-20" refresh="all" color="MainLight" />
+	
+	<rectangle x1="-1440" x2="-1" y1="-20" y2="-1" refresh="all" condition="{MessageInfo}"    color="MainSolid" />
+	<rectangle x1="-1440" x2="-1" y1="-20" y2="-1" refresh="all" condition="{MessageStatus}"  color="Status" />
+	<rectangle x1="-1440" x2="-1" y1="-20" y2="-1" refresh="all" condition="{MessageWarning}" color="Warning" />
+	<rectangle x1="-1440" x2="-1" y1="-20" y2="-1" refresh="all" condition="{MessageError}"   color="Error" />
+   
+	<text x1="-1390" x2="-30" y1="-55" y2="-20" refresh="all" color="FontColor" align="right" font="VDRSymbols Sans:Book@27">{MessageInfo}</text>
+	<text x1="-1390" x2="-30" y1="-55" y2="-20" refresh="all" color="FontColor" align="right" font="VDRSymbols Sans:Book@27">{MessageStatus}</text>
+	<text x1="-1390" x2="-30" y1="-55" y2="-20" refresh="all" color="FontColor" align="right" font="VDRSymbols Sans:Book@27">{MessageWarning}</text>
+	<text x1="-1390" x2="-30" y1="-55" y2="-20" refresh="all" color="FontColor" align="right" font="VDRSymbols Sans:Book@27">{MessageError}</text>
+
+</display>

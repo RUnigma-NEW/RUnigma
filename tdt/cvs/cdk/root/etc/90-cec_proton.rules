@@ -1,0 +1,4 @@
+ACTION=="add", DEVPATH=="/module/proton", SUBSYSTEM=="module", RUN+="/bin/mknod -m 644 /dev/vfd c 147 0"
+ACTION=="remove", DEVPATH=="/module/proton", SUBSYSTEM=="module", RUN+="/bin/rm /dev/vfd"
+ACTION=="add", DEVPATH=="/module/cec", SUBSYSTEM=="module", RUN+="/bin/mknod -m 644 /dev/hdmi_cec c 149 0"
+ACTION=="remove", DEVPATH=="/module/cec", SUBSYSTEM=="module", RUN+="/bin/rm /dev/hdmi_cec"

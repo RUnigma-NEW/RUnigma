@@ -1,0 +1,11 @@
+CICAM heißt ausgesprochen "Common Interface Conditional Access Module". 
+
+Mit CICAM oder auch CI-Modul wird ein kleiner Decoder bezeichnet, der ein 
+verschlüsseltes Programm mittels einer SmartCard decodiert (entschlüsselt).
+ Will man verschlüsselte Sender sehen, muss man sich passend zur 
+DVB-Karte ein solches CI -Modul in den Rechner einbauen, ein oder zwei
+CAM-Module dort einstecken und ent sprechende SmartCards für die
+CAM-Module kaufen. Bekannteste CAM-Module in Deutschland sind das 
+Irdeto-Modul und das Alphacrypt-Modul. Mit beiden kann mittels 
+entsprechender SmartCard das PayTV-Angebot von PremiereWorld empfangen werden.
+

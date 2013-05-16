@@ -1,0 +1,12 @@
+SLOF = 11700
+
+     Die Schaltfrequenz (in MHz) zwischen unterem und oberen LOF
+
+Untere LNB Frequenz = 9750
+Obere LNB Frequenz = 10600
+
+     Die untere und obere lokale Oszillationsfrequenz des LNB (in MHz, haben für DVB-C Empfänger keine Bedeutung)
+
+DiSEqC benutzen = nein
+
+     Schaltet den DiSEqC Betrieb generell an oder aus.

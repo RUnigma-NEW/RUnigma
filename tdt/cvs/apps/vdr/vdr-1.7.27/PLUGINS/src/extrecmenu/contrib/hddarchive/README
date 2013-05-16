@@ -1,0 +1,28 @@
+The hddarchive feature of the extrecmenu plugin is similar to
+the dvdarchive feature. Except that the recordings are moved to a
+HDD and not burned to a DVD.
+In my case, I have an external USB docking station for SATA HDDs in which
+I plug in the HDD with the recording to play.
+
+
+Installation
+============
+
+1. Copy the 'hddarchive.sh' to the same directory like 'dvdarchive.sh'
+   (in Gentoo Linux it is /usr/bin/hddarchive.sh)
+2. Copy the 'hddarchive.conf' to the same directory like 'dvdarchive.conf'
+   (in Gentoo Linux it is located in /etc/vdr/)
+3. Edit the 'hddarchive.conf'. MOUNTPOINT should be an existing path, in 
+   which the HDD will be mounted.
+4. Copy the script 'vdr_move_to_hdd.sh' to /usr/local/bin/
+5. Edit /usr/local/bin/vdr_move_to_hdd.sh: check that ARCHIVEHDD is the same
+   as MOUNTPOINT in 3.
+   VDRSETTINGSFILE is the path to the gentoo vdr config file (/etc/conf.d/vdr).
+   This is only used to get the envvar ${VIDEO}. Alternative, You can set
+   VIDEO=... manually.
+6. Add the content of ./reccmds/reccmds.custom.conf to Your reccmds.conf.  
+7. Create a file hdd.vdr in the root direcory on each archive HDD (/hdd.vdr)
+   The content is used to identify the HDD and should be unique.
+   I have used 2 digits 01, 02... "99 harddisks ought to be enough for anybody" ;-)
+8. If you use the "live" plugin you may want to patch it with
+   ./patches/live-ArchiveHDD.patch to support the archive HDDs.

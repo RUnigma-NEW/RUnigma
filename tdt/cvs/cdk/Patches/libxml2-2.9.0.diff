@@ -1,0 +1,33 @@
+--- libxml2-2.7.8.org/configure.in
++++ libxml2-2.7.8/configure.in
+@@ -812,7 +812,7 @@ if test "$with_python" != "no" ; then
+ 		    PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print sysconfig.get_python_lib()"`
+ 	    fi
+ 	fi
+-	PYTHON_LIBS=`python$PYTHON_VERSION-config --ldflags`
++	PYTHON_LIBS=''
+     fi
+     if test "$with_python" != ""
+     then
+#--- libxml2-2.7.8.org/xpath.c
+#+++ libxml2-2.7.8/xpath.c
+#@@ -11763,11 +11763,16 @@
+# 
+# 	    if ((ctxt->error != XPATH_EXPRESSION_OK) || (res == -1)) {
+# 	        xmlXPathObjectPtr tmp;
+#-		/* pop the result */
+#+		/* pop the result if any */
+# 		tmp = valuePop(ctxt);
+#-		xmlXPathReleaseObject(xpctxt, tmp);
+#-		/* then pop off contextObj, which will be freed later */
+#-		valuePop(ctxt);
+#+                if (tmp != contextObj) {
+#+                    /*
+#+                     * Free up the result
+#+                     * then pop off contextObj, which will be freed later
+#+                     */
+#+                    xmlXPathReleaseObject(xpctxt, tmp);
+#+                    valuePop(ctxt);
+#+                }
+# 		goto evaluation_error;
+# 	    }

@@ -1,0 +1,119 @@
+<!--
+-    VDR Menu-Configuration File
+-
+-
+-   Example:
+-
+ <menus>
+    <system name="Schedule" />
+    <system name="Channels" />
+    <system name="Timers" />
+    <system name="Recordings" />
+    <menu name="System">
+        <system name="Setup" />
+        <system name="Commands" />
+        <plugin name="setup" />
+        <command name="myCommand1" execute="/usr/bin/mycommand1" />
+        <command name="myCommand2" execute="/usr/bin/mycommand2" confirm="yes" />
+        <plugin name="epgsearch" />
+        <menu name="mySubSubMenu">
+            ...
+        </menu>
+    </menu>
+     <menu name="Suche">
+        <plugin name="epgsearch" />
+        ...
+    </menu>
+ </menus>
+-->
+<menus suffix="">
+    <system name="Schedule" />
+    <system name="Channels" />
+    <system name="Timers" />
+    <system name="Recordings" />
+    <plugin name="arghdirector" />
+    <plugin name="music" />
+    <menu name="Multimedia">
+        <plugin name="cdda" />
+        <plugin name="ripit" />
+        <command name="Eject CD" execute="eject /dev/cdrw" />
+        <plugin name="image" />
+        <plugin name="audiorecorder" />
+        <plugin name="dvd" />
+        <menu name="DVD-Recorder">
+            <plugin name="burn" />
+            <menu name="Create DVD-Cover">
+                <thread name="Blend  Only" execute='burn-bc -f draw-storke -w default' />
+                <thread name="Simple Cropping" execute='burn-bc -f &apos;crop resize draw-storke unsharp&apos; -w default' />
+                <thread name="Zoom Center" execute='burn-bc -f &apos;crop zoom-center resize draw-storke unsharp&apos; -w default' />
+                <thread name="Zoom Left" execute='burn-bc -f &apos;crop zoom-left resize draw-storke unsharp&apos; -w default' />
+                <thread name="Zoom Right" execute='burn-bc -f &apos;crop zoom-right resize draw-storke unsharp&apos; -w default' />
+                <thread name="Serial Foto" execute='burn-bc -f &apos;crop zoom-center resize draw-storke serial-foto unsharp&apos; -w default' />
+                <thread name="Serial Movie" execute='burn-bc -f &apos;crop zoom-center resize draw-storke serial-movie unsharp&apos; -w default' />
+                <thread name="Big Serial Movie" execute='burn-bc -f &apos;crop zoom-center resize draw-bigsize serial-movie unsharp&apos; -w default' />
+            </menu>
+            <command name="Clean" execute="rm -rf /media/hda7/video/vdr-burn.*" confirm="yes" />
+        </menu>
+        <command name="Eject DVD" execute="eject /dev/dvdrw" />
+        <plugin name="dvdswitch" />
+        <plugin name="mplayer" />
+        <plugin name="vodcatcher" />
+    </menu>
+    <menu name="Information">
+        <plugin name="recstatus" />
+        <plugin name="newsticker" />
+        <plugin name="osdteletext" />
+        <plugin name="sport" />
+        <plugin name="weatherng" />
+        <plugin name="femon" />
+    </menu>
+    <menu name="Fun">
+        <plugin name="games" />
+        <plugin name="solitaire" />
+        <plugin name="sudoku" />
+        <plugin name="freecell" />
+        <plugin name="spider" />
+    </menu>
+    <menu name="Misc">
+        <plugin name="pilotskin" />
+        <plugin name="osdpip" />
+        <plugin name="screenshot" />
+        <plugin name="sleeptimer" />
+    </menu>
+    <menu name="Projector">
+        <command name="Start Tvtime" execute='echo &quot;/usr/bin/vdrplayer --player tvtime&quot;|at now' confirm="yes" />
+        <command name="Close Tvtime and X-Server" execute='echo &quot;/usr/bin/vdrplayer --player killall&quot;|at now' confirm="yes" />
+    </menu>
+    <menu name="System">
+        <system name="Setup" />
+        <menu name="Channel Menu">
+            <system name="Channels" />
+            <plugin name="channellists" />
+            <plugin name="reelchannelscan" />
+            <plugin name="chanorg" />
+            <plugin name="chanman" />
+            <plugin name="femon" />
+        </menu>
+        <plugin name="setup" />
+        <thread name="VDR Setup" execute='sudo /usr/lib/vdr/scripts/vdrsetup' />
+        <menu name="Server">
+            <command name="Wakeup" execute="sudo /usr/lib/vdr/scripts/vdr2root wakeonlan" confirm="yes" />
+            <command name="Mount" execute="sudo /usr/lib/vdr/scripts/vdr2root mount" confirm="yes" />
+            <command name="Umount" execute="sudo /usr/lib/vdr/scripts/vdr2root umount" confirm="yes" />
+        </menu>
+        <menu name="Data and Logs">
+            <command name="Show Log" execute="sudo /usr/lib/vdr/scripts/vdr2root show-log" />
+            <command name="Clean Log" execute="sudo /usr/lib/vdr/scripts/vdr2root clean-log" confirm="yes" />
+            <thread name="Clean EPG Data" execute='svdrpsend.pl CLRE' confirm="yes" />
+            <thread name="Update Recordings List" execute='sudo /usr/lib/vdr/scripts/vdr2root video-update; sleep 1; svdrpsend.pl HITK Recordings' />
+            <plugin name="filebrowser" />
+            <command name="HDD Info" execute='df -h|awk &apos;/%/ { printf(&quot;%4.4s : %5.5s : %s\n&quot;,$5,$4,$6) }&apos;' />
+        </menu>
+        <menu name="Commands">
+            <command name="VDR restart" execute="sudo /usr/lib/vdr/scripts/vdr2root vdr-restart" confirm="yes" />
+            <command name="VDR stop" execute="sudo /usr/lib/vdr/scripts/vdr2root vdr-stop" confirm="yes" />
+            <command name="Reboot" execute="sudo /usr/lib/vdr/scripts/vdr2root reboot" confirm="yes" />
+            <thread name="Poweroff" execute='svdrpsend.pl HITK Power' confirm="yes" />
+        </menu>
+    </menu>
+</menus>

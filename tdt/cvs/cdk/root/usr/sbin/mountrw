@@ -1,0 +1,4 @@
+#!/bin/sh
+
+[ -z "$1" ] && DIR="/" || DIR="$1"
+mount ${DIR} -o remount,rw,noatime,nodiratime

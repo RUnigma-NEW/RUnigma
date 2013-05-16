@@ -1,0 +1,189 @@
+                                           ..,,,uuuuuuux- 
+                                      .XJ$$$$$$$$$$$$$R"
+                                     :<???????$$$P???"     ... uuuux ,ucdL
+                                     '''''` :<$$$: .dWWW>:;$$::$$F":J$$"''
+      ,uuuouuu,                 .uu xcd:x$u.:J$$$ :J$P9$>;$$F.<$$h=`?$h
+     :$$$$$$$$$$b,   .uz  ucd xJ$$$:J$6d$$F':$$$F:J$P;3$>J$P.:3$,,,;J$$E
+    :d$$$$$$$$$$$$c::$$F;$$FJ$$P":<$$$$P` :J$$$:J$P???$>$$??:????`???"
+   ::?"'<Xio::??$$$>J$$ :t$P;$P`  :3$$P$$u::$$$P:??' `?F'
+  ''   :d$$P  `:9$$>$$F;J$><$C,,u;$$P:?$$h:3$$>
+      :<$$$'   <8$$>$$X<J$$:<$$$$F:??' `"":J$$$
+      :3$$P   :d$$$:$$$$$P `:???'       :<P???"
+     ::$$$' .d$$$$'`????"              '::::
+    .:d$$6ud$$$$F
+.;cJJ$$$$$$$PF'
+::9$$$$$$$PF"
+`'?????""''
+               ,,, ::::::::::::..
+           ,z$$$$$ :::::::::::::::::.
+         e$$$$$$$$ ::::::::::::::::::::
+       d$$$$$$$$$$;`::::::::::::::::::::
+      ::."$$$$$$$$$ :::::::::::::::::::::
+     :::::."$$$$$$$ ::::::::::::::::::::
+    ::::::::."$$$$$b ::''''''''':::::::'
+    `:::::::::`$$P" . :''''<<<<<<;.  `'
+      `:::::::: "".,.----=--..`'<<<<<<;
+        `:::'',-'` .::::::::::`'- `<<<<;      .::.
+          `,-`.::::::::::'  .. `::.      .:::::::::
+        ,-'.:::::::::::' dMMMMMMx :::::` .`::::::::
+      ,'.::::::::::::: dMMMMMMMMMM ``` JMMM `:::::
+    ,'.:::::::::::' . MMP',ccc "MMM Mb MMMMM `:::
+; :::::::::::' nM MM',$$$$$$b "Mb4M,M c,`? :'
+; ::::::::::: xMMMMM'J$$$$$$$$b )MMMMM.`$$.
+' :::`::::::: dMMMMM'J$$$$$$$$$$F MMMMMM $$$.
+   :: <`::::: JMMMMM',$$$$$$$$$$$P MMMMMM $$$$
+  `:::`bc,.. ,edMMMM $$$$$$$$$$$$F MMMMMM $$$$  .
+   ` ,nMMMMMMMMTMMMM P""?$$$$$$$$".MTT4MM ?$$F;P""?x_
+   ,d)MMMMMMP'dMMMMM      $$$$$$P  .cCc.    $   cCc L~
+    ,MMMMMMM ,c, 4MMr      $$$$$  .CCCC>   4   CCC> L"
+    P)MMMMM> $$?$ "MM      $$$$"  CCCCC'   ,,  CC> % `
+   ' MMMTMMM `b $$c.?b     $$$"   `CCC'-""___,,,,,__
+     M"       `?, ??$c,,,,,,cc$7= _,cc$$$$PP"""""??$$$$
+     "          `"b,_ "?$$$$$$$$$$P"" .. ,d"
+                   `?$b `,,,,,,.`;;;;;;'j"
+                    n ?$c`;;;;;;;`',;;; F
+               ,;-;MM "$b;;;;;,,;;;'j"
+           ,!!!!!  MMMM,`?$c,_`` _,,'
+          !!!!!!!; MMMMMMn, `"""""''
+       .  !!!!!!!!!, `"TT';!!!!>
+   ,;!!!> !!!!!!!!!!!!!   `<!!!! !;,
+!!!!!!!!! '!!!!!!!!!!!  !!!  !!> !!!!!!;;
+
+
+
+TDT Open Source Package
+------------------------
+
+This package contains most of the sources to build complete TDT images
+for the following settopboxes:
+
+- Kathrein UFS-910
+- Kathrein UFS-922
+- Topfield 7700 HDPVR
+- Fortis 9200/9000 based - HD-box, Octagon 1018... (still very buggy)
+
+Host Installation & Building:
+------------------------------
+
+
+1. Clone your git repository from the server or local repository...
+    git clone Servername/teamducktales.git
+
+
+2. Enter the build directory: "cd ./dt/cvs/cdk"
+
+
+3. Setup host:
+    - To build an image you need to install some packages on your host system.
+
+          * git
+          * ccache
+          * rpm
+          * make
+          * automake1.8
+          * autoconf
+          * patch
+          * gcc
+          * cpp (or gcc or c++)
+          * tar
+          * bzip2
+          * gzip
+          * ncurses-devel (debian: libncurses5-dev)
+          * flex
+          * bison
+          * gawk
+          * e2fsprogs-devel
+          * texinfo
+          * gettext
+          * gettext-devel (debian?)
+          * cfv
+          * fakeroot
+          * xfsprogs-devel debian: (xfslibs-dev)
+          * zlib1g-dev (zlib-devel)
+          * libtool
+          * g++
+          * swig
+          * pkg-config
+          
+
+    - For Ubuntu-hosts you have to link the sh to bash:
+      ln -s /bin/bash /bin/sh
+      (delete an existing /bin/sh before)
+  
+    - Alternatively a script for Ubuntu 9.10 is available which takes care of everything.
+      sudo ./ubuntu910.sh
+  
+    - For debian-based systems only: "export PATH=$PATH:/sbin:/usr/sbin"
+
+
+4. Configure the build environment:
+    To configure the build environment type: "./make.sh"
+    The Setup dialog allows you to customize the build environment for your target device.
+
+5. Building
+    if there are no errors (missing packages) type:
+
+    - make yaud-enigma2
+        This will build an enigma2 image based on e2 source from May 2009.
+        This is considered to be a stable release.
+
+    or
+
+    - make yaud-enigma2-nightly
+        This will build an enigma2 image based on e2 source from $Today.
+        This is considered to be a unstable (untested) release.
+
+
+    The first build will probably take very long (min 2h max 6h)
+
+6. Finishing up
+    - After finishing the build you can find the nfs-root in the following directory:
+      tufsbox/release
+
+    - the kernel is located in the boot subfolder of the release directory
+      tufsbox/release/boot/uImage
+
+Known problems:
+---------
+
+- openSuSE 11.0: If you have trouble compiling lirc, remove all occurance of lirc/lircd in
+cvs/cdk/make/contrib-libs.mk cvs/cdk/make/release.mk cvs/cdk/make/yaud.mk
+
+- if you have problems like this
+
+In Datei, eingefügt von ../../lib/base/smartptr.h:4,
+                 von ../../lib/base/eptrlist.h:7,
+                 von ../../lib/base/ebase.h:12,
+                 von enigma_python_wrap.cxx:2807:
+../../lib/base/object.h:166:4: Warnung: #warning use non optimized implementation of refcounting.
+enigma_python_wrap.cxx: In function »int SWIG_AsPtr_std_string(PyObject*, std::string**)«:
+enigma_python_wrap.cxx:3131: Warnung: Dereferenzierung eines Type-Pun-Zeigers verletzt strict-aliasing-Regeln
+enigma_python_wrap.cxx: In function »RESULT SwigFromPython(ePtr<gPixmap>&, PyObject*)«:
+enigma_python_wrap.cxx:3455: Warnung: Dereferenzierung eines Type-Pun-Zeigers verletzt strict-aliasing-Regeln
+enigma_python_wrap.cxx:3455: Fehler: »SWIGTYPE_p_ePtrTgPixmap_t« wurde in diesem Gültigkeitsbereich nicht definiert
+enigma_python_wrap.cxx: In function »PyObject* New_iRecordableServicePtr(const ePtr<iRecordableService>&)«:
+
+you have to use an older swig version (e.g. 1.3.33)
+
+IMPORTANT DIRECTORIES:
+-----------------------
+
+tdt/cvs/cdk               - the build directory
+tdt/cvs/cdk/linux         - a link to the kernel directory (will be installed from build)
+
+tdt/cvs/apps/enigma2      - e2 source code
+tdt/cvs/apps/misc/tools   - tools like evremote2, fp_control, libeplayer2, etc
+
+tdt/cvs/driver/frontends  - frontend and tuner driver
+tdt/cvs/driver/cic        - ci controller driver
+tdt/cvs/driver/player2    - STM's great player patched by TDT
+tdt/cvs/driver/multicom   - the copo/fw communication driver
+tdt/cvs/driver/avs        - av switch driver
+tdt/cvs/driver/stgfb      - patch stmfb version
+tdt/cvs/driver/e2_proc    - the e2 proc main part
+tdt/cvs/driver/vfd        - ufs910 vfd driver
+tdt/cvs/driver/nuvoton    - fp driver for hdbox
+tdt/cvs/driver/micom      - fp driver for ufs922
+tdt/cvs/driver/tffp       - fp driver for tf7700
+tdt/cvs/driver/ufs922_fan - ufs922 fan control driver
+

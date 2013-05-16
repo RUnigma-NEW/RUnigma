@@ -1,0 +1,33 @@
+# VDR language source file.
+# Copyright (C) 2008 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Arthur Konovalov <kasjas@hot.ee>, 2004, 2005, 2006, 2007
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.6.0\n"
+"Report-Msgid-Bugs-To: <vdr-bugs@cadsoft.de>\n"
+"POT-Creation-Date: 2010-06-12 09:59+0200\n"
+"PO-Revision-Date: 2007-08-12 14:17+0200\n"
+"Last-Translator: Arthur Konovalov <kasjas@hot.ee>\n"
+"Language-Team: Estonian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-13\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Recording info"
+msgstr "Salvestuse info"
+
+msgid "Commands"
+msgstr "Käsud"
+
+msgid "Channels"
+msgstr "Kanalid"
+
+#, fuzzy
+msgid "TimerConflicts"
+msgstr "Taimer"
+
+msgid "Channel"
+msgstr "Kanal"

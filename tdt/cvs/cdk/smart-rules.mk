@@ -1,0 +1,1628 @@
+# These rules are smarter ;)
+# semicolon equals line break, rules are separated by one of them
+# all trailing white-spaces are ignored, use them for prettier indentation
+# so this:
+#   megaproject; v2.0; file://hello_world.c;
+# and this:
+#   megaproject
+#     v2.0
+#     file://hello_world.c;
+# are the same
+# 
+# double semicolon or semicolon + linebreak or double linebreak or even linebreak + semicolon
+# can be used for separating packages
+#
+# first three rules are not exactly "rules" they are corresponding to package name, package version
+# and build subdirectory.
+#
+# each next rule is in "command:argument" format
+# for example
+#   extract:http://someserver.com/pacakge-2.1.tar.gz
+# by the way, extract is the default command, so you can type just
+#   http://someserver.com/pacakge-2.1.tar.gz
+# if you want only to copy a file to the build directory use
+#   nothing:http://someserver/logo.png
+# other available commands are
+#   dirextract - first cd to build directory, than extract
+#   patch - apply as patch
+#   rpmbuild - building from rpm package
+#
+# install commands
+#  install -.* - install file and pass (.*) arguments to install
+#  install_file - install with -m644
+#  install_bin - install with -m755
+# destination file is the last argument
+# for example
+#  install_bin:ftp://megaupload.com/superscript.sh:/bin/script.sh
+#
+# these are most common tasks, see smart-rules.pl for details and feel free to add more..
+# However, some special rules is better to write directly to .mk file
+#
+# To make rules quite you can use two special words, {PN} and {PV} which refers to package name and version.
+# Note: in {PN} all "_" symbols replaced with "-"
+#
+# Now consider sources that are supported:
+#  http:// - http wget download
+#  ftp:// - ftp wget download
+#  file:// - look for file in Patches directory
+#  git://www.gitserver.com/gitrepo:r=revision:b=branch:sub=subdir_in_git_tree:protocol=http
+#   revision, branch and subdirectory to use (arguments are optional).
+#   and protocol which git should use. (replaces 'git://' while fetch)
+#  svn://www.gitserver.com/gitrepo:r=revision
+#   only revision option
+#
+# if rule command doesn't match ones listed above, this is treated as install/uninstall rule.
+# 
+# below you can see mew lirc rule, which replaces corresponding entries in rules-make, rules-install and rules-archive
+# It is much less complicated !
+# lirc
+#   0.9.0
+#   {PN}-{PV}
+#   extract:http://prdownloads.sourceforge.net/lirc/{PN}-{PV}.tar.gz
+#   patch:file://{PN}-{PV}-try_first_last_remote.diff
+#   make:install:DESTDIR=TARGETS
+#   rewrite-libtool:TARGETS/usr/lib/liblirc_client.la
+# ;
+#
+# Using smart-rules is optional, but smart-rules.pl generates macroses to make downloading, patching etc. tasks a bit easier.
+# You can find the output of smart-rules.pl script in cdk/ruledir directory.
+# These files are imported to Makefile after running ./configure (runs automaticaly).
+#
+# So for example for udpxy you'll have:
+#   @DIR_ntpclient@ directory where sources are extracted (buid dir)
+#   @DEPENDS_ntpclient@ is list of all files to built package from.
+#     Place into target depends, so changing one of them invokes rebuild.
+#   @PREPARE_ntpclient@ rules for download, extract and patch files above.
+#   SOURCES_udpxy list of files above. Used later in package Control file.
+#   VERSION_udpxy Used later in package Control file too.
+#   AUTOPKGV_udpxy If there is svn or git repo in rules, this command will be generated and you can run it
+#     to eval PKGV_udpxy based on git date or svn revision.
+#   @INSTALL_udpxy@ command could be 'make install' and commands to copy other files to PKDIR.
+BEGIN[[
+
+ntpclient
+  #second param is version
+  2007_365
+  #third is buid dir
+  {PN}-2007
+  #sources goes below
+  http://doolittle.icarus.com/ntpclient/{PN}_{PV}.tar.gz
+  nothing:file://{PN}-init.file
+;
+
+udpxy
+  1.0.23-0
+  {PN}-{PV}
+  http://sourceforge.net/projects/udpxy/files/udpxy/Chipmunk-1.0/udpxy.{PV}-prod.tar.gz
+  #for patch -p0 use the following
+  patch-0:file://udpxy-makefile.patch
+;
+
+#opkg-host
+opkg_host
+  0.1.8
+  {PN}
+  dirextract:http://opkg.googlecode.com/files/opkg-{PV}.tar.gz
+;
+if ENABLE_P0207
+linux
+  2.6.32.28_stm24_0207
+  linux-sh4-2.6.32.28_stm24_0207
+  nothing:ftp://ftp.stlinux.com/pub/stlinux/2.4/updates/SRPMS/stlinux24-host-kernel-source-sh4-2.6.32.28_stm24_0207-207.src.rpm
+;
+endif
+if ENABLE_P0210
+linux
+  2.6.32.57_stm24_0210
+  linux-sh4-2.6.32.57_stm24_0210
+  nothing:ftp://ftp.stlinux.com/pub/stlinux/2.4/updates/SRPMS/stlinux24-host-kernel-source-sh4-2.6.32.57_stm24_0210-210.src.rpm
+;
+endif
+if ENABLE_P0211
+linux
+  2.6.32.59_stm24_0211
+  linux-sh4-2.6.32.59_stm24_0211
+  nothing:ftp://ftp.stlinux.com/pub/stlinux/2.4/updates/SRPMS/stlinux24-host-kernel-source-sh4-2.6.32.59_stm24_0211-211.src.rpm
+;
+endif
+squashfs
+  3.0
+  mk{PN}
+  pdircreate:mk{PN}
+  extract:http://heanet.dl.sourceforge.net/sourceforge/sevenzip/lzma442.tar.bz2
+  patch:file://lzma_zlib-stream.diff
+  extract:http://heanet.dl.sourceforge.net/sourceforge/{PN}/{PN}{PV}.tar.gz
+  patch:file://mk{PN}_lzma.diff
+;
+squashfs
+  4.2
+  mk{PN}
+  pdircreate:mk{PN}
+  extract:http://heanet.dl.sourceforge.net/sourceforge/sevenzip/lzma922.tar.bz2
+  extract:http://heanet.dl.sourceforge.net/sourceforge/{PN}/{PN}{PV}.tar.gz
+  patch:file://{PN}-tools-{PV}-lzma.patch
+;
+ccache
+  3.1.9
+  {PN}-{PV}
+  extract:http://samba.org/ftp/{PN}/{PN}-{PV}.tar.xz
+  make:install:DESTDIR=HOST
+;
+cramfs
+  1.1
+  {PN}-{PV}
+  extract:http://netcologne.dl.sourceforge.net/project/{PN}/{PN}/{PV}/{PN}-{PV}.tar.gz
+  install:mk{PN}:HOST/bin
+;
+ipkg_utils
+  050831
+  ipkg-utils-{PV}
+  extract:ftp://ftp.gwdg.de/linux/handhelds/packages/ipkg-utils/ipkg-utils-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install
+;
+ipkg_host
+  0.99.163
+  {PN}
+  dirextract:ftp://ftp.gwdg.de/linux/handhelds/packages/ipkg/ipkg-{PV}.tar.gz
+  patch:file://{PN}.diff
+;
+host_python
+  2.7.3
+  {PN}-{PV}
+  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://python_{PV}.diff
+  patch:file://python_{PV}-ctypes-libffi-fix-configure.diff
+  patch:file://python_{PV}-pgettext.diff
+;
+host_libtool
+  2.4.2
+  libtool-{PV}
+  extract:http://ftp.gnu.org/gnu/libtool/libtool-{PV}.tar.xz
+  patch:file://libtool-{PV}-duckbox-branding.patch
+  make:install
+;
+host_autoconf
+  2.64
+  autoconf-{PV}
+  extract:http://ftp.gnu.org/gnu/autoconf/autoconf-{PV}.tar.xz
+  patch:file://autoconf-remove-usr-local-lib-from-m4.patch
+  make:install
+;
+host_automake
+  1.11.6
+  automake-{PV}
+  extract:http://ftp.gnu.org/gnu/automake/automake-{PV}.tar.xz
+  patch:file://automake-py-compile-compile-only-optimized-byte-code.patch
+  make:install
+;
+host_pkgconfig
+  0.28
+  pkg-config-{PV}
+  extract:http://pkgconfig.freedesktop.org/releases/pkg-config-{PV}.tar.gz
+  make:install
+;
+busybox
+  1.21.0
+  {PN}-{PV}
+  extract:http://www.{PN}.net/downloads/{PN}-{PV}.tar.bz2
+  patch:file://{PN}-{PV}-mdev.patch
+  make:install:CONFIG_PREFIX=PKDIR
+;
+lsb
+  3.2-28
+  {PN}-3.2
+  extract:http://www.emdebian.org/locale/pool/main/l/lsb/{PN}_{PV}.tar.gz
+  install:-d:PKDIR/lib/{PN}
+  install:-m644:init-functions:PKDIR/lib/{PN}
+;
+ipkg
+  0.99.163
+  {PN}-{PV}
+  extract:ftp.gwdg.de/linux/handhelds/packages/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+module_init_tools
+  3.16
+  {PN}-{PV}
+  extract:http://ftp.be.debian.org/pub/linux/utils/kernel/module-init-tools/module-init-tools-{PV}.tar.bz2
+  patch:file://module-init-tools-no-man.patch
+  make:INSTALL=install:install:sbin_PROGRAMS="depmod modinfo":bin_PROGRAMS=:mandir=/usr/share/man:DESTDIR=TARGETS
+;
+sysvinit
+  2.88
+  {PN}-{PV}
+  extract:ftp://ftp.cistron.nl/pub/people/miquels/{PN}/{PN}-{PV}.tar.gz
+  nothing:http://ftp.de.debian.org/debian/pool/main/s/{PN}/{PN}_{PV}dsf-13.1+squeeze1.diff.gz
+;
+bzip2
+  1.0.6
+  {PN}-{PV}
+  extract:http://www.bzip.org/{PV}/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:PREFIX=PKDIR/usr
+;
+grep
+  2.14
+  {PN}-{PV}
+  extract:ftp://mirrors.kernel.org/gnu/{PN}/{PN}-{PV}.tar.xz
+  nothing:http://64studio.hivelocity.net/apt/pool/main/g/{PN}/{PN}_2.5.1.ds2-6.diff.gz
+  make:install:DESTDIR=PKDIR
+;
+openrdate
+  1.2
+  {PN}-{PV}
+  extract:http://prdownloads.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+e2fsprogs
+  1.42.7
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/v{PV}/{PN}-{PV}.tar.gz
+  patch:file://{PN}-1.42.7.patch
+  make:install:DESTDIR=PKDIR
+;
+xfsprogs
+  3.1.8
+  {PN}-{PV}
+  extract:ftp://oss.sgi.com/projects/xfs/cmd_tars/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+mc
+  4.8.4
+  {PN}-{PV}
+  extract:http://www.midnight-commander.org/downloads/{PN}-{PV}.tar.bz2
+  #nothing:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+sdparm
+  1.07
+  {PN}-{PV}
+  extract:http://sg.danny.cz/sg/p/{PN}-{PV}.tgz
+  make:install:DESTDIR=PKDIR
+;
+sg3_utils
+  1.33
+  sg3_utils-{PV}
+  extract:http://sg.torque.net/sg/p/sg3_utils-{PV}.tgz
+  patch:file://sg3_utils.diff
+  make:install:DESTDIR=TARGETS
+;
+console_data
+  1.12
+  {PN}-{PV}
+  extract:ftp://ftp.debian.org/debian/pool/main/c/{PN}/{PN}_{PV}.orig.tar.gz
+  make:install
+;
+nano
+  2.0.9
+  {PN}-{PV}
+  extract:http://www.{PN}-editor.org/dist/v2.0/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+rsync
+  3.0.9
+  {PN}-{PV}
+  extract:http://samba.anu.edu.au/ftp/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+ntfs_3g
+  2012.1.15
+  ntfs-3g_ntfsprogs-{PV}
+  extract:http://tuxera.com/opensource/ntfs-3g_ntfsprogs-{PV}.tgz
+  make:install:DESTDIR=PKDIR
+;
+lm_sensors
+  3.3.2
+  lm_sensors-{PV}
+  extract:http://dl.{PN}.org/{PN}/releases/lm_sensors-{PV}.tar.gz
+  make:user_install:MACHINE=sh:PREFIX=/usr:MANDIR=/usr/share/man:DESTDIR=PKDIR
+;
+fuse
+  2.9.2
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/{PN}/files/{PN}-2.X/{PV}/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+curlftpfs
+  0.9.2
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/{PN}/files/latest/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+fbset
+  2.1
+  {PN}-{PV}
+  extract:http://ftp.de.debian.org/debian/pool/main/f/{PN}/{PN}_{PV}.orig.tar.gz
+  patch:http://archive.debian.org/debian/dists/potato/main/source/admin/{PN}_{PV}-6.diff.gz
+  patch:file://{PN}_{PV}-fb.modes-ST.patch
+  install:-d:-m755:TARGETS/{usr/sbin,etc}
+  install:-m755:{PN}:TARGETS/usr/sbin
+  install:-m755:con2fbmap:TARGETS/usr/sbin
+  install:-m644:etc/fb.modes.ATI:TARGETS/etc/fb.modes
+;
+util_linux
+  2.20.1
+  util-linux-{PV}
+  extract:http://mirror.onat.edu.ua/debian/pool/main/u/util-linux/util-linux_{PV}.orig.tar.gz
+  patch:http://mirror.onat.edu.ua/debian/pool/main/u/util-linux/util-linux_{PV}-5.1.diff.gz
+  nothing:file://util-linux-stm.diff
+;
+pngquant
+  1.1
+  {PN}-{PV}
+  extract:ftp://ftp.simplesystems.org/pub/libpng/png/applications/{PN}/{PN}-{PV}-src.tgz
+  install:-m755:{PN}:TARGETS/usr/bin
+;
+mplayer
+  1.1
+  {PN}-export-*
+  extract:ftp://ftp.{PN}hq.hu/MPlayer/releases/{PN}-export-snapshot.tar.bz2
+  make:install INSTALLSTRIP="":DESTDIR=TARGETS
+;
+mencoder
+  1.0
+  mplayer-export-*
+  extract:ftp://ftp.mplayerhq.hu/MPlayer/releases/mplayer-export-snapshot.tar.bz2
+  make:install INSTALLSTRIP="":DESTDIR=TARGETS
+;
+jfsutils
+  1.1.15
+  {PN}-{PV}
+  extract:http://jfs.sourceforge.net/project/pub/{PN}-{PV}.tar.gz
+  make:install:mandir=/usr/share/man:DESTDIR=PKDIR
+;
+opkg
+  0.1.8
+  {PN}-{PV}
+  extract:http://{PN}.googlecode.com/files/{PN}-{PV}.tar.gz
+  patch:file://opkg-0.1.8-dont-segfault.diff
+  make:install:DESTDIR=PKDIR
+  link:/usr/bin/{PN}-cl:PKDIR/usr/bin/{PN}
+;
+pppd
+  2.4.5
+  ppp-{PV}
+  extract:ftp://ftp.samba.org/pub/ppp/ppp-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+usb_modeswitch
+  1.2.5
+  {PN}-{PV}
+  extract:http://www.draisberghof.de/usb_modeswitch/{PN}-{PV}.tar.bz2
+  patch:file://{PN}.patch
+  make:install:DESTDIR=PKDIR
+;
+usb_modeswitch_data
+  20121109
+  {PN}-{PV}
+  extract:http://www.draisberghof.de/usb_modeswitch/{PN}-{PV}.tar.bz2
+   patch:file://{PN}.patch
+  make:install:DESTDIR=PKDIR
+;
+sysstat
+  10.1.1
+  {PN}-{PV}
+  extract:http://pagesperso-orange.fr/sebastien.godard/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+hotplug_e2
+  git
+  {PN}-helper
+  git://openpli.git.sourceforge.net/gitroot/openpli/hotplug-e2-helper
+  patch:file://hotplug-e2-helper-support_fw_upload.patch
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+autofs
+  4.1.4
+  {PN}-{PV}
+  extract:http://kernel.org/pub/linux/daemons/{PN}/v4/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}-misc-fixes.patch
+  patch:file://{PN}-{PV}-multi-parse-fix.patch
+  patch:file://{PN}-{PV}-non-replicated-ping.patch
+  patch:file://{PN}-{PV}-locking-fix-1.patch
+  patch:file://{PN}-{PV}-cross.patch
+  patch:file://{PN}-{PV}-Makefile.rules-cross.patch
+  patch:file://{PN}-{PV}-install.patch
+  patch:file://{PN}-{PV}-auto.net-sort-option-fix.patch
+  patch:file://{PN}-{PV}-{PN}-additional-distros.patch
+  patch:file://{PN}-{PV}-no-bash.patch
+  patch:file://{PN}-{PV}-{PN}-add-hotplug.patch
+  patch:file://{PN}-{PV}-no_man.patch
+  make:install:INSTALLROOT=PKDIR
+;
+imagemagick
+  6.8.4-7
+  ImageMagick-{PV}
+  extract:ftp://ftp.fifi.org/pub/ImageMagick/ImageMagick-{PV}.tar.xz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libboost
+  boost-1.53.0
+  boost_1_53_0
+  extract:http://sourceforge.net/projects/boost/files/boost/1.53.0/boost_1_53_0.tar.bz2
+  patch:file://{PN}.diff
+  remove:TARGETS/include/boost
+  move:boost:TARGETS/usr/include/boost
+;
+ncurses
+  5.9
+  {PN}-{PV}
+  extract:http://ftp.gnu.org/pub/gnu/{PN}/{PN}-{PV}.tar.gz
+  
+;
+#libz
+#  1.2.5
+#  zlib-{PV}
+#  extract:http://sourceforge.net/projects/libpng/files/zlib/{PV}/zlib-{PV}.tar.bz2
+#  patch:file://zlib-minizip.patch
+#  patch:file://zlib-1.2.5-sh4.patch
+#  patch:file://zlib-1.2.5-arch_buildsys.patch
+#  patch:file://zlib-1.2.5-sh4-fix21243.patch
+#  patch:file://zlib-1.2.5-sh4-fix23865.patch
+#  patch:file://zlib-1.2.5-sh4-fix-clamav.patch
+#  make:install:prefix=PKDIR/usr
+#  install:-m644:{PN}.a:TARGETS/usr/lib
+#;
+libreadline
+  6.2
+  readline-{PV}
+  extract:ftp://ftp.cwru.edu/pub/bash/readline-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+freetype_old
+  2.1.4
+  freetype-{PV}
+  extract:file://freetype-{PV}.tar.bz2
+  patch:file://libfreetype.diff
+  make:install:DESTDIR=BUILD/freetype-{PV}/install_dir
+;
+libfreetype
+  2.4.11
+  freetype-{PV}
+  extract:http://download.savannah.gnu.org/releases/freetype/freetype-{PV}.tar.bz2
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+lirc
+  0.9.0
+  {PN}-{PV}
+  extract:http://prdownloads.sourceforge.net/{PN}/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}-try_first_last_remote.diff
+  make:install:DESTDIR=PKDIR
+;
+libjpeg
+  8d
+  jpeg-{PV}
+  extract:http://www.ijg.org/files/jpegsrc.v{PV}.tar.gz
+  patch:file://jpeg.diff
+  make:install:DESTDIR=PKDIR
+;
+libjpeg6b
+  6b1
+  jpeg-{PV}
+  extract:http://ftp.de.debian.org/debian/pool/main/libj/libjpeg6b/{PN}_{PV}.orig.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libpng
+  1.5.12
+  {PN}-{PV}
+  extract:http://prdownloads.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.gz
+  nothing:file://{PN}.diff
+  patch:file://{PN}-{PV}-workaround_for_stmfb_alpha_error.patch
+  make:install:prefix=PKDIR/usr
+;
+libpng12
+  1.2.49
+  libpng-{PV}
+  extract:http://ftp.de.debian.org/debian/pool/main/libp/libpng/libpng_{PV}.orig.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libungif
+  4.1.4
+  {PN}-{PV}
+  extract:http://heanet.dl.sourceforge.net/sourceforge/giflib/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libgif
+  4.2.0
+  giflib-{PV}
+  extract:http://heanet.dl.sourceforge.net/sourceforge/giflib/giflib-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+curl
+  7.30.0
+  {PN}-{PV}
+  extract:http://{PN}.haxx.se/download/{PN}-{PV}.tar.bz2
+  patch:file://lib{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+libfribidi
+  0.19.5
+  fribidi-{PV}
+  extract:http://fribidi.org/download/fribidi-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libsigc
+  1.2.7
+  {PN}++-{PV}
+  extract:http://ftp.gnome.org/pub/GNOME/sources/{PN}++/1.2/{PN}++-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libmad
+  0.15.1b
+  {PN}-{PV}
+  extract:ftp://ftp.mars.org/pub/mpeg/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+libid3tag
+  0.15.1b
+  {PN}-{PV}
+  extract:ftp://ftp.nara.wide.ad.jp/pub/Linux/slackware/slackware-14.0/source/l/{PN}/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+libvorbisidec
+  1.0.2+svn16259
+  {PN}-{PV}
+  extract:http://ftp.debian.org/debian/pool/main/libv/{PN}/{PN}_{PV}.orig.tar.gz
+  patch:file://tremor.diff
+  make:install:DESTDIR=PKDIR
+;
+
+libffi
+  3.0.13
+  {PN}-{PV}
+  extract:ftp://sourceware.org/pub/{PN}/{PN}-{PV}.tar.gz
+  patch:file://libffi-3.0.11.patch
+  make:install:DESTDIR=PKDIR
+;
+
+pkg
+  0.28
+  {PN}-{PV}
+  extract:http://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz
+  make:install:DESTDIR=TARGETS
+;
+
+glib2
+  2.36.1
+  glib-{PV}
+  extract:http://ftp.acc.umu.se/pub/GNOME/sources/glib/2.36/glib-2.36.1.tar.xz
+  patch:file://glib-{PV}.patch
+  make:install:DESTDIR=PKDIR
+;
+libiconv
+  1.14
+  {PN}-{PV}
+  extract:http://ftp.gnu.org/gnu/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libmng
+  1.0.10
+  {PN}-{PV}
+  extract:http://dfn.dl.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+lcms
+  1.17
+  {PN}-{PV}
+  extract:http://dfn.dl.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+openssl
+  1.0.1e
+  {PN}-{PV}
+  extract:ftp://ftp.{PN}.org/source/{PN}-{PV}.tar.gz
+;
+directfb
+  1.4.11
+  DirectFB-{PV}
+  extract:http://{PN}.org/downloads/Core/DirectFB-1.4/DirectFB-{PV}.tar.gz
+  patch:file://{PN}-{PV}+STM2010.12.15-4.diff
+  patch:file://{PN}-{PV}+STM2010.12.15-4.no-vt.diff
+  patch:file://{PN}-libpng.diff
+  patch:file://{PN}-{PV}+STM2010.12.15-4.enigma2remote.diff
+  make:install:DESTDIR=PKDIR:LD=sh4-linux-ld
+;
+dfbpp
+  1.2.0
+  DFB++-{PV}
+  extract:http://www.directfb.org/downloads/Extras/DFB++-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libstgles
+  1.0
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+webkitdfb
+  2010-11-18
+  {PN}_{PV}
+  extract:http://www.duckbox.info/files/packages/{PN}_{PV}.tar.gz
+  patch:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+icu4c
+  4_4_1
+  icu/source
+  extract:http://download.icu-project.org/files/{PN}/4.4.1/{PN}-4_4_1-src.tgz
+  nothing:file://{PN}-4_4_1_locales.patch
+  make:install:DESTDIR=PKDIR
+;
+enchant
+  1.5.0
+  {PN}-{PV}
+  extract:http://www.abisource.com/downloads/{PN}/{PV}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+lite
+  0.9.0
+  {PN}-{PV}+git0.7982ccc
+  extract:http://www.duckbox.info/files/packages/{PN}-{PV}+git0.7982ccc.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+sqlite
+  3.7.14
+  {PN}-autoconf-3071401
+  extract:http://www.{PN}.org/{PN}-autoconf-3071401.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libsoup
+  2.33.90
+  {PN}-{PV}
+  extract:http://download.gnome.org/sources/{PN}/2.33/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+pixman
+  0.26.2
+  {PN}-{PV}
+  extract:http://cairographics.org/releases/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+cairo
+  1.12.0
+  {PN}-{PV}
+  extract:http://{PN}graphics.org/releases/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}.diff
+  make:install:DESTDIR=PKDIR
+;
+libexpat
+  2.1.0
+  expat-{PV}
+  extract:http://prdownloads.sourceforge.net/sourceforge/expat/expat-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+fontconfig
+  2.10.1
+  {PN}-{PV}
+  extract:http://{PN}.org/release/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libxmlccwrap
+  0.0.12
+  {PN}-{PV}
+  extract:http://www.ant.uni-bremen.de/whomes/rinas/{PN}/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+a52dec
+  0.7.4
+  {PN}-{PV}
+  extract:http://liba52.sourceforge.net/files/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libdvdcss
+  1.2.12
+  {PN}-{PV}
+  extract:http://download.videolan.org/pub/{PN}/{PV}/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libdvdnav
+  4.1.3
+  {PN}-{PV}
+  extract:http://www.mplayerhq.hu/MPlayer/releases/dvdnav-old/{PN}-{PV}.tar.bz2
+  patch:file://{PN}_{PV}-3.diff
+  make:install:DESTDIR=PKDIR
+;
+libdvdread
+  4.1.3
+  {PN}-{PV}
+  extract:http://www.mplayerhq.hu/MPlayer/releases/dvdnav-old/{PN}-{PV}.tar.bz2
+  patch:file://{PN}_{PV}-5.diff
+  make:install:DESTDIR=PKDIR
+;
+ffmpeg
+  1.2
+  {PN}-{PV}
+  extract:http://{PN}.org/releases/{PN}-{PV}.tar.bz2
+  patch:file://{PN}-1.1.3.patch
+  make:install:DESTDIR=PKDIR
+;
+libx264
+  x264
+  {PV}-snapshot-20130427-2245
+  extract:ftp://ftp.videolan.org/pub/x264/snapshots/last_{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libass
+  0.10.1
+  {PN}-{PV}
+  extract:http://{PN}.googlecode.com/files/{PN}-{PV}.tar.xz
+  make:install:DESTDIR=PKDIR
+;
+libaacplus
+  2.0.2
+  {PN}-{PV}
+  extract:http://ffmpeg.gusari.org/uploads/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libfaac
+  1.28
+  faac-{PV}
+  extract:http://downloads.sourceforge.net/faac/faac-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libcap
+  2.22
+  {PN}-{PV}
+  extract:http://mirror.linux.org.au/linux/libs/security/linux-privs/{PN}2/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libaacplus
+  2.0.2
+  {PN}-{PV}
+  extract:http://217.20.164.161/~tipok/aacplus/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libogg
+  1.3.0
+  {PN}-{PV}
+  extract:http://downloads.xiph.org/releases/ogg/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libflac
+  1.2.1
+  flac-{PV}
+  extract:http://ignum.dl.sourceforge.net/project/flac/flac-src/flac-{PV}-src/flac-{PV}.tar.gz
+  patch:file://flac-{PV}.patch
+  make:install:DESTDIR=PKDIR
+;
+evebrowser
+  svn
+  {PN}-{PV}
+  svn://eve-browser.googlecode.com/svn/trunk/
+  make:install:DESTDIR=PKDIR
+;
+dvbdata
+  0.6
+  {PN}-{PV}
+  extract:file://{PN}-{PV}.tar.gz
+;
+brofs
+  1.2
+  BroFS{PV}
+  extract:http://www.avalpa.com/assets/freesoft/other/BroFS{PV}.tgz
+  make:install:prefix=/usr/bin:DESTDIR=PKDIR
+;
+libalsa
+  1.0.26
+  alsa-lib-{PV}
+  extract:http://alsa.cybermirror.org/lib/alsa-lib-{PV}.tar.bz2
+  #patch:file://alsa-lib-{PV}-soft_float.patch
+  make:install:DESTDIR=PKDIR
+;
+rtmpdump
+  2.4
+  {PN}-{PV}
+  extract:http://{PN}.mplayerhq.hu/download/{PN}-{PV}.tar.gz
+  pmove:{PN}:{PN}-{PV}
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libdvbsipp
+  0.3.6
+  libdvbsi++-{PV}
+  extract:http://www.saftware.de/libdvbsi++/libdvbsi++-{PV}.tar.bz2
+  patch:file://libdvbsi++-{PV}.patch
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libdreamdvd
+  1.0
+  {PN}
+  plink:../apps/misc/tools/{PN}:{PN}
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libdreamdvd2
+  git
+  libdreamdvd
+  nothing:git://github.com/mirakels/libdreamdvd.git:r=1bdc2c33f912b9e87cb7e204485a57c6a08a0e8c
+  patch:file://libdreamdvd-1.0-support_sh4.patch
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libmpeg2
+  0.5.1
+  {PN}-{PV}
+  extract:http://{PN}.sourceforge.net/files/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libsamplerate
+  0.1.8
+  {PN}-{PV}
+  extract:http://www.mega-nerd.com/SRC/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libvorbis
+  1.3.2
+  {PN}-{PV}
+  extract:http://downloads.xiph.org/releases/vorbis/{PN}-{PV}.tar.bz2
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libmodplug
+  0.8.8.4
+  {PN}-{PV}
+  extract:http://downloads.sourceforge.net/project/modplug-xmms/{PN}/{PV}/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+tiff
+  4.0.1
+  {PN}-{PV}
+  extract:ftp://ftp.remotesensing.org/pub/lib{PN}/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+lzo
+  2.06
+  {PN}-{PV}
+  extract:http://www.oberhumer.com/opensource/{PN}/download/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+yajl
+  2.0.1
+  {PN}-{PV}
+  nothing:git://github.com/lloyd/{PN}:r=f4b2b1af87483caac60e50e5352fc783d9b2de2d
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libpcre
+  8.31
+  pcre-{PV}
+  extract:ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-{PV}.tar.bz2
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libcdio
+  0.83
+  {PN}-{PV}
+  extract:ftp://ftp.gnu.org/gnu/{PN}/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+jasper
+  1.900.1
+  {PN}-{PV}
+  extract:http://www.ece.uvic.ca/~frodo/{PN}/software/{PN}-{PV}.zip
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+mysql
+  5.1.40
+  {PN}-{PV}
+  extract:http://downloads.{PN}.com/archives/{PN}-5.1/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+xupnpd
+  svn
+  {PN}-{PV}
+  svn://tsdemuxer.googlecode.com/svn/trunk/xupnpd/src/
+  patch-0:file://{PN}.diff
+  make:install:DESTDIR=PKDIR
+;
+libmicrohttpd
+  0.9.19
+  {PN}-{PV}
+  extract:http://ftp.halifax.rwth-aachen.de/gnu/{PN}/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+libexif
+  0.6.20
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/{PN}/files/{PN}/{PV}/{PN}-{PV}.tar.gz
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+minidlna
+  1.0.25
+  {PN}-{PV}
+  extract:http://netcologne.dl.sourceforge.net/project/{PN}/{PN}/{PV}/{PN}_{PV}_src.tar.gz
+  patch:file://{PN}-{PV}.patch
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+vlc
+  2.0.3
+  {PN}-{PV}
+  extract:http://download.videolan.org/pub/videolan/{PN}/{PV}/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+djmount
+  0.71
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/{PN}/files/{PN}/{PV}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+rfkill
+  git
+  {PN}-{PV}
+  nothing:git://git.sipsolutions.net/rfkill.git
+  make:install:DESTDIR=PKDIR
+;
+libupnp
+  1.6.17
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/upnp/files/latest/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+rarfs
+  0.1.0
+  {PN}-{PV}
+  extract:http://sourceforge.net/projects/{PN}/files/latest/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+sshfs
+  2.4
+  {PN}-fuse-{PV}
+  extract:http://fossies.org/linux/misc/{PN}-fuse-{PV}.tar.bz2
+  make:install:DESTDIR=TARGETS
+;
+gmediarender
+  0.0.6
+  {PN}-{PV}
+  extract:http://savannah.nongnu.org/download/gmrender/{PN}-{PV}.tar.bz2
+  patch:file://{PN}.patch
+  make:install:DESTDIR=TARGETS
+;
+mediatomb
+  0.12.1
+  {PN}-{PV}
+  extract:http://downloads.sourceforge.net/{PN}/{PN}-{PV}.tar.gz
+  patch:file://{PN}_metadata.patch
+#  patch:file://{PN}_libav_support.patch
+  make:install:DESTDIR=PKDIR
+;
+elementtree
+  1.2.6-20050316
+  {PN}-{PV}
+  extract:http://effbot.org/media/downloads/{PN}-{PV}.tar.gz
+;
+libxml2
+  2.9.0
+  {PN}-{PV}
+  extract:http://xmlsoft.org/sources/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}.diff
+  make:install:DESTDIR=PKDIR
+;
+libxslt
+  1.1.27
+  {PN}-{PV}
+  extract:http://xmlsoft.org/sources/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+lxml
+  2.2.8
+  {PN}-{PV}
+  extract:http://launchpad.net/{PN}/2.2/{PV}/+download/{PN}-{PV}.tgz
+;
+setuptools
+  0.6c11
+  {PN}-{PV}
+  extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
+;
+gdata
+  2.0.17
+  gdata-{PV}
+  extract:http://gdata-python-client.googlecode.com/files/gdata-{PV}.tar.gz
+;
+twisted
+  13.0.0
+  Twisted-{PV}
+  extract:http://twistedmatrix.com/Releases/Twisted/13.0/Twisted-{PV}.tar.bz2
+;
+twistedmail
+  13.0.0
+  TwistedMail-{PV}
+  extract:http://twistedmatrix.com/Releases/Mail/13.0/TwistedMail-{PV}.tar.bz2
+;
+twistedweb2
+  8.1.0
+  TwistedWeb2-{PV}
+  extract:http://twistedmatrix.com/Releases/Web2/8.1/TwistedWeb2-{PV}.tar.bz2
+;
+pilimaging
+  1.1.7
+  Imaging-{PV}
+  extract:http://effbot.org/downloads/Imaging-{PV}.tar.gz
+;
+pycrypto
+  2.5
+  {PN}-{PV}
+  extract:http://ftp.dlitz.net/pub/dlitz/crypto/{PN}/{PN}-{PV}.tar.gz
+  patch:file://python-{PN}-no-usr-include.patch
+;
+pyusb
+  1.0.0a3
+  {PN}-{PV}
+  extract:http://pypi.python.org/packages/source/p/{PN}/{PN}-{PV}.tar.gz
+;
+pyopenssl
+  0.13
+  pyOpenSSL-{PV}
+  extract:http://pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-{PV}.tar.gz
+;
+python
+  2.7.3
+  {PN}-{PV}
+  extract:http://www.{PN}.org/ftp/{PN}/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://{PN}_{PV}.diff
+  patch:file://{PN}_{PV}-ctypes-libffi-fix-configure.diff
+  patch:file://{PN}_{PV}-pgettext.diff
+;
+pythonwifi
+  0.5.0
+  python-wifi-{PV}
+  extract:http://freefr.dl.sourceforge.net/project/{PN}.berlios/python-wifi-{PV}.tar.bz2
+;
+pythoncheetah
+  2.4.4
+  Cheetah-{PV}
+  extract:http://pypi.python.org/packages/source/C/Cheetah/Cheetah-{PV}.tar.gz
+;
+zope_interface
+  4.0.3
+  zope.interface-{PV}
+  extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.tar.gz
+;
+tuxtxtlib
+  1.0
+  libtuxtxt
+  nothing:git://openpli.git.sourceforge.net/gitroot/openpli/tuxtxt:r=4ff8fffd72115130ff6594841e7bad2f85e85f12:b=HEAD:sub=libtuxtxt
+  patch:file://libtuxtxt-{PV}-fix_dbox_headers.diff
+  make:install:prefix=/usr:DESTDIR=PKDIR
+;
+tuxtxt32bpp
+  1.0
+  tuxtxt
+  nothing:git://openpli.git.sourceforge.net/gitroot/openpli/tuxtxt:r=4ff8fffd72115130ff6594841e7bad2f85e85f12:b=HEAD:sub=tuxtxt
+  patch:file://{PN}-{PV}-fix_dbox_headers.diff
+  make:install:prefix=/usr:DESTDIR=PKDIR
+# overwrite after make install
+  install -m644 -D:file://../root/usr/tuxtxt/tuxtxt2.conf:PKDIR/etc/tuxtxt/tuxtxt2.conf
+;
+enigma2_networkbrowser
+  git
+  {PN}-{PV}
+  nothing:git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2:sub=networkbrowser
+  patch:file://{PN}-support_autofs.patch
+  make:install:DESTDIR=PKDIR
+;
+enigma2_openwebif
+  git
+  e2openplugin-OpenWebif
+  nothing:git://github.com/schpuntik/e2openplugin-OpenWebif.git
+  make:install:DESTDIR=PKDIR
+;
+gstreamer
+  0.10.36
+  {PN}-{PV}
+  extract:http://{PN}.freedesktop.org/src/{PN}/{PN}-{PV}.tar.xz
+  patch:file://gstreamer-0.10.36-track-selection.patch
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_base
+  0.10.36
+  {PN}-{PV}
+  extract:http://gstreamer.freedesktop.org/src/{PN}/{PN}-{PV}.tar.xz
+  patch:file://gst-plugins-base-{PV}-yuv420_to_rgb.patch
+  patch:file://gst-plugins-base-pkg-config-sysroot.patch
+  patch:file://gst-plugins-base-subtitle-overlay.patch
+  patch:file://gst-plugins-base-subparse-missing-race-condition-protect-with-seek.patch
+  patch:file://gst-plugins-base.patch
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_good
+  0.10.31
+  {PN}-{PV}
+  extract:http://gstreamer.freedesktop.org/src/{PN}/{PN}-{PV}.tar.xz
+  patch:file://{PN}-0.10.29_avidemux_only_send_pts_on_keyframe.patch
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_bad
+  0.10.23
+  {PN}-{PV}
+  extract:http://gstreamer.freedesktop.org/src/{PN}/{PN}-{PV}.tar.xz
+  patch:file://{PN}-0.10.22-mpegtsdemux_remove_bluray_pgs_detection.diff
+  patch:file://{PN}-0.10.22-mpegtsdemux_speedup.diff
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_ugly
+  0.10.19
+  {PN}-{PV}
+  extract:http://gstreamer.freedesktop.org/src/{PN}/{PN}-{PV}.tar.xz
+  make:install:DESTDIR=PKDIR
+;
+gst_ffmpeg
+  0.10.13
+  {PN}-{PV}
+  extract:http://gstreamer.freedesktop.org/src/{PN}/{PN}-{PV}.tar.bz2
+  patch:file://{PN}-0.10.12_lower_rank.patch
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_fluendo_mpegdemux
+  0.10.71
+  gst-fluendo-mpegdemux-{PV}
+  extract:http://core.fluendo.com/gstreamer/src/gst-fluendo-mpegdemux/gst-fluendo-mpegdemux-{PV}.tar.gz
+  patch:file://{PN}-0.10.69-add_dts_hd_detection.diff
+  make:install:DESTDIR=PKDIR
+;
+gst_plugins_dvbmediasink
+  0.10.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+gst_plugin_subsink
+  git
+  {PN}
+  nothing:git://openpli.git.sourceforge.net/gitroot/openpli/gstsubsink:r=8182abe751364f6eb1ed45377b0625102aeb68d5
+  make:install:DESTDIR=PKDIR
+;
+libdca
+  0.0.5
+  {PN}-{PV}
+  extract:http://download.videolan.org/pub/videolan/{PN}/0.0.5/{PN}-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+liborc
+  0.4.17
+  orc-{PV}
+  extract:http://code.entropywave.com/download/orc/orc-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libao
+  1.1.0
+  {PN}-{PV}
+  extract:http://downloads.xiph.org/releases/ao/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+graphlcd
+  git
+  {PN}-{PV}
+  nothing:git://projects.vdr-developer.org/{PN}-base.git:r=a39f265732d0bc28cb66b58b5ecf1964a130d02b:b=touchcol
+  patch:file://{PN}.patch
+  make:install:DESTDIR=PKDIR
+;
+libusb
+  0.1.12
+  {PN}-{PV}
+  extract:http://downloads.sourceforge.net/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libusb2
+  1.0.8
+  libusb-{PV}
+  extract:http://downloads.sourceforge.net/project/libusb/libusb-1.0/libusb-{PV}/libusb-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+devinit
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+evremote2
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+fp_control
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/fp_control:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+gitVCInfo
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+hotplug
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+libeplayer3
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+;
+eplayer4
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+libmme_host
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/libmme_host:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+libmmeimage
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+showiframe
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+stfbcontrol
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+streamproxy
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+ustslave
+  0.1
+  {PN}-{PV}
+  plink:../apps/misc/tools/{PN}:{PN}-{PV}
+  make:install:DESTDIR=PKDIR
+;
+libusbcompat
+  0.1.3
+  libusb-compat-{PV}
+  extract:http://downloads.sourceforge.net/project/libusb/libusb-compat-0.1/libusb-compat-{PV}/libusb-compat-{PV}.tar.bz2
+  make:install:DESTDIR=PKDIR
+;
+libgd2
+  2.0.35
+  gd-{PV}
+  extract:http://www.chipsnbytes.net/downloads/gd-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+portmap
+  6.0
+  {PN}_{PV}
+  extract:http://fossies.org/linux/misc/{PN}-{PV}.tgz
+  patch:file://{PN}_{PV}.diff
+  nothing:http://debian.osuosl.org/debian/pool/main/p/{PN}/{PN}_{PV}.0-2.diff.gz
+  make:install:BASEDIR=PKDIR
+  install:-m755:debian/init.d:PKDIR/etc/init.d/{PN}
+;
+nfs_utils
+  1.1.1
+  {PN}-{PV}
+  extract:ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.kernel.org/linux/utils/nfs/{PN}-{PV}.tar.bz2
+  patch:file://{PN}_{PV}-12.diff.gz
+  make:install:DESTDIR=PKDIR
+  install:-m644:debian/nfs-common.default:PKDIR/etc/default/nfs-common
+  install:-m755:debian/nfs-common.init:PKDIR/etc/init.d/nfs-common
+  install:-m644:debian/nfs-kernel-server.default:PKDIR/etc/default/nfs-kernel-server
+  install:-m755:debian/nfs-kernel-server.init:PKDIR/etc/init.d/nfs-kernel-server
+  install:-m644:debian/etc.exports:PKDIR/etc/exports
+  remove:PKDIR/sbin/mount.nfs4:PKDIR/sbin/umount.nfs4
+;
+vsftpd
+  3.0.2
+  {PN}-{PV}
+  extract:http://security.appspot.com/downloads/{PN}-{PV}.tar.gz
+  patch:file://{PN}_{PV}.diff
+  nothing:file://../root/release/vsftpd
+  nothing:file://../root/etc/vsftpd.conf
+  pmove:{PN}-{PV}/vsftpd:{PN}-{PV}/vsftpd.initscript
+  make:install:PREFIX=PKDIR
+  install:-m644:vsftpd.conf:PKDIR/etc
+  install:-m755 -D:vsftpd.initscript:PKDIR/etc/init.d/vsftpd
+;
+netkit_ftp
+  0.17
+  {PN}-{PV}
+  extract:http://ibiblio.org/pub/linux/system/network/netkit//{PN}-{PV}.tar.gz
+#patch:file://{PN}.diff
+  make:install:MANDIR=/usr/share/man:INSTALLROOT=TARGETS
+;
+samba
+  3.6.10
+  {PN}-{PV}
+  extract:http://www.{PN}.org/{PN}/ftp/stable/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}.diff
+  make:install bin/smbd bin/nmbd:DESTDIR=PKDIR:prefix=./.
+;
+netio
+  1.26
+  {PN}126
+  extract:http://bnsmb.de/files/public/windows/{PN}126.zip
+  install:-m755:{PN}:PKDIR/usr/bin
+  install:-m755:bin/linux-i386:HOST/bin/{PN}
+;
+lighttpd
+  1.4.15
+  {PN}-{PV}
+  extract:http://www.{PN}.net/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+zd1211
+  2_15_0_0
+  ZD1211LnxDrv_2_15_0_0
+  extract:http://www.lutec.eu/treiber/{PN}lnxdrv_2_15_0_0.tar.gz
+  patch:file://{PN}.diff
+;
+wireless_tools
+  29
+  wireless_tools.{PV}
+  extract:http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.{PV}.tar.gz
+  make:install:INSTALL_MAN=PKDIR/usr/share/man:PREFIX=PKDIR/usr
+;
+wpa_supplicant
+  1.0
+  wpa_supplicant-{PV}
+  extract:http://hostap.epitest.fi/releases/wpa_supplicant-{PV}.tar.gz
+  nothing:file://wpa_supplicant.config
+  make:install:DESTDIR=PKDIR:LIBDIR=/usr/lib:BINDIR=/usr/sbin
+;
+ethtool
+  6
+  {PN}-{PV}
+  extract:http://downloads.openwrt.org/sources/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+init_scripts
+  0.6
+  {PN}-{PV}
+  pdircreate:{PN}-{PV}
+  nothing:file://../root/etc/inittab
+  nothing:file://../root/release/hostname
+  nothing:file://../root/release/inetd
+# for 'nothing:' only 'cp' is executed so '*' is ok.
+  nothing:file://../root/release/initmodules_*
+  nothing:file://../root/release/halt_*
+  nothing:file://../root/release/mountall
+  nothing:file://../root/release/mountsysfs
+  nothing:file://../root/release/networking
+  nothing:file://../root/release/rc
+  nothing:file://../root/release/reboot
+  nothing:file://../root/release/sendsigs
+  nothing:file://../root/release/telnetd
+  nothing:file://../root/release/syslogd
+  nothing:file://../root/release/crond
+  nothing:file://../root/release/umountfs
+  nothing:file://../root/release/lircd
+;
+  init_scripts_xbmc
+  0.1
+  {PN}-{PV}
+  pdircreate:{PN}-{PV}
+  nothing:file://../root/etc/inittab_xbmc
+  nothing:file://../root/release/hostname
+  nothing:file://../root/release/inetd
+# for 'nothing:' only 'cp' is executed so '*' is ok.
+  nothing:file://../root/release/initmodules_*
+  nothing:file://../root/release/halt_*
+  nothing:file://../root/release/mountall
+  nothing:file://../root/release/mountsysfs
+  nothing:file://../root/release/networking
+  nothing:file://../root/release/rc
+  nothing:file://../root/release/reboot
+  nothing:file://../root/release/sendsigs
+  nothing:file://../root/release/telnetd
+  nothing:file://../root/release/syslogd
+  nothing:file://../root/release/umountfs
+  nothing:file://../root/release/lircd
+;
+e2plugin
+  git
+  {PN}
+  git://github.com/schpuntik/enigma2-plugins-sh4.git
+;
+e2skin
+  git
+  {PN}
+  git://github.com/schpuntik/enigma2-skins-sh4.git:b=master
+;
+modem_scripts
+  0.3
+  {PN}-{PV}
+  pdircreate:{PN}-{PV}
+  nothing:file://../root/etc/ppp/ip-*
+  nothing:file://../root/usr/bin/modem.sh
+  nothing:file://../root/usr/bin/modemctrl.sh
+  nothing:file://../root/etc/modem.conf
+  nothing:file://../root/etc/modem.list
+  nothing:file://../root/etc/55-modem.rules
+  nothing:file://../root/etc/30-modemswitcher.rules
+;
+grab
+  git
+  {PN}-{PV}
+  git://github.com/technic/aio-grab.git
+  make:install:DESTDIR=PKDIR
+;
+tinyxml
+  2.6.2
+  {PN}-{PV}
+  extract:http://ignum.dl.sourceforge.net/project/tinyxml/tinyxml/{PV}/tinyxml_2_6_2.tar.gz
+  pmove:{PN}:{PN}-{PV}
+  patch:file://{PN}{PV}.patch
+  make:install:PREFIX=PKDIR/usr:LD=sh4-linux-ld
+;
+oscam
+  svn
+  {PN}-{PV}
+  svn://www.streamboard.tv/svn/oscam/trunk/
+  # patch-0:file://{PN}.diff
+  make:install:DESTDIR=PKDIR:OSCAM_BIN = OSCAM_BIN
+;
+parted
+  3.1
+  {PN}-{PV}
+  extract:http://ftp.gnu.org/gnu/{PN}/{PN}-{PV}.tar.xz
+  patch:file://{PN}_{PV}.patch
+  make:install:DESTDIR=PKDIR
+;
+gettext
+  0.18
+  {PN}-{PV}
+  extract:ftp://ftp.gnu.org/gnu/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+libnfs
+  git
+  {PN}
+  git://github.com/sahlberg/libnfs.git:r=c0ebf57b212ffefe83e2a50358499f68e7289e93
+  make:install:DESTDIR=PKDIR
+;
+e2_rtmpgw
+  git
+  {PN}
+  git://github.com/zakalibit/e2-rtmpgw.git:b=gw-e2
+  make:install:DESTDIR=PKDIR
+;
+taglib
+  1.8
+  {PN}-{PV}
+  extract:https://github.com/downloads/{PN}/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+udev_rules
+  0.2
+  {PN}-{PV}
+  pdircreate:{PN}-{PV}
+  nothing:file://../root/etc/90-cec_proton.rules
+;
+enigma2_pli
+  git
+  $(appsdir)/{PN}-nightly
+if ENABLE_E2PD0
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=945aeb939308b3652b56bc6c577853369d54a537
+  patch:file://enigma2-pli-nightly.0.diff
+endif
+if ENABLE_E2PD1
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=945aeb939308b3652b56bc6c577853369d54a537
+  patch:file://enigma2-pli-nightly.1.diff
+  patch:file://enigma2-pli-nightly.1.gstreamer.diff
+  patch:file://enigma2-pli-nightly.1.graphlcd.diff
+endif
+if ENABLE_E2PD2
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=4f3396b610f5524d85e06f51cbd3186b75f4b6d3
+  patch:file://enigma2-pli-nightly.2.diff
+endif
+if ENABLE_E2PD3
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=51a7b9349070830b5c75feddc52e97a1109e381e
+  patch:file://enigma2-pli-nightly.3.diff
+endif
+if ENABLE_E2PD4
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=002b85aa8350e9d8e88f75af48c3eb8a6cdfb880
+  patch:file://enigma2-pli-nightly.4.diff
+endif
+if ENABLE_E2PD5
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=a869076762f6e24305d6a58f95c3918e02a1442a
+  patch:file://enigma2-pli-nightly.5.diff
+endif
+if ENABLE_E2PD6
+  git://github.com/technic/amiko-e2-pli.git:b=testing
+  patch:file://enigma2-pli-nightly-testing.diff
+endif
+if ENABLE_E2PD7
+  git://github.com/technic/amiko-e2-pli.git:b=last
+  patch:file://enigma2-pli-nightly-last.diff
+endif
+if ENABLE_E2PD8
+  git://github.com/technic/amiko-e2-pli.git:b=master
+endif
+if ENABLE_E2PD9
+  git://github.com/openaaf/enigma2.git:r=0f7fa25f26091617213e85b0ed440beb67612ce3
+  patch:file://enigma2-pli-nightly.9.diff
+endif
+;
+xbmc_nightly
+  git
+  $(appsdir)/{PN}
+if ENABLE_XBD0
+  git://github.com/xbmc/xbmc.git
+  patch:file://xbmc-nightly.0.diff
+endif
+if ENABLE_XBD1
+  git://github.com/xbmc/xbmc.git:r=460e79416c5cb13010456794f36f89d49d25da75
+  patch:file://xbmc-nightly.1.diff
+endif
+if ENABLE_XBD2
+  git://github.com/xbmc/xbmc.git:r=327710767d2257dad27e3885effba1d49d4557f0
+  patch:file://xbmc-nightly.2.diff
+endif
+if ENABLE_XBD3
+  git://github.com/xbmc/xbmc.git:r=12840c28d8fbfd71c26be798ff6b13828b05b168
+  patch:file://xbmc-nightly.3.diff
+endif
+;
+if ENABLE_XBD4
+  git://github.com/xbmc/xbmc.git:r=e292b1147bd89a7e53742e3e5039b9a906a3b1d0
+  patch:file://xbmc-nightly.4.diff
+endif
+;
+enigma2
+  git
+  $(appsdir)/{PN}-nightly
+if ENABLE_E2D0
+  git://gitorious.org/open-duckbox-project-sh4/guigit.git:r=945aeb939308b3652b56bc6c577853369d54a537
+  patch:file://enigma2-nightly.0.diff
+  patch:file://enigma2-nightly.0.eplayer3.diff
+  patch:file://enigma2-nightly.0.gstreamer.diff
+  patch:file://enigma2-nightly.0.graphlcd.diff
+endif
+if ENABLE_E2D1
+  git://gitorious.org/open-duckbox-project-sh4/guigit.git:r=945aeb939308b3652b56bc6c577853369d54a537
+  patch:file://enigma2-nightly.1.diff
+endif
+if ENABLE_E2D2
+  git://gitorious.org/open-duckbox-project-sh4/guigit.git:r=839e96b79600aba73f743fd39628f32bc1628f4c
+  patch:file://enigma2-nightly.2.diff
+  patch:file://enigma2-nightly.2.gstreamer.diff
+  patch:file://enigma2-nightly.2.graphlcd.diff
+endif
+if ENABLE_E2D3
+  git://gitorious.org/open-duckbox-project-sh4/guigit.git:r=51a7b9349070830b5c75feddc52e97a1109e381e
+  patch:file://enigma2-nightly.3.diff
+  patch:file://enigma2-nightly.3.gstreamer.diff
+  patch:file://enigma2-nightly.3.graphlcd.diff
+endif
+if ENABLE_E2D4
+  git://gitorious.org/open-duckbox-project-sh4/guigit.git:r=002b85aa8350e9d8e88f75af48c3eb8a6cdfb880
+  patch:file://enigma2-pli-nightly.4.diff
+endif
+if ENABLE_E2D5
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=a869076762f6e24305d6a58f95c3918e02a1442a
+  patch:file://enigma2-pli-nightly.5.diff
+endif
+if ENABLE_E2D6
+  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=388dcd814d4e99720cb9a6c769611be4951e4ad4
+  patch:file://enigma2-pli-nightly.6.diff
+endif
+if ENABLE_E2D7
+  git://code.google.com/p/enigma2-dmm:protocol=https
+endif
+if ENABLE_E2D8
+  git://gitorious.org/~schpuntik/open-duckbox-project-sh4/amiko-guigit.git:b=arp-no_gst
+endif
+;
+]]END

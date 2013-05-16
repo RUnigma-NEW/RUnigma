@@ -1,0 +1,189 @@
+diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/driver/vfd.cpp enigma2-nightly.patched/lib/driver/vfd.cpp
+--- enigma2-nightly.org/lib/driver/vfd.cpp	2012-03-20 01:26:26.547115310 -0700
++++ enigma2-nightly.patched/lib/driver/vfd.cpp	2012-03-20 01:26:30.307115296 -0700
+@@ -16,6 +16,7 @@
+ #define VFDICONDISPLAYONOFF   0xc0425a0a
+ #define VFDDISPLAYCHARS       0xc0425a00
+ #define VFDBRIGHTNESS         0xc0425a03
++#define VFDSETLED             0xc0425afe
+ //light on off
+ #define VFDDISPLAYWRITEONOFF  0xc0425a05
+ #define VFDDISPLAYCLR		0xc0425b00
+@@ -41,12 +41,10 @@
+ 	unsigned char length;
+ };
+ 
+-#if defined(PLATFORM_SPARK) || defined(PLATFORM_SPARK7162)
+ struct set_icon_s {
+ 	int icon_nr;
+ 	int on;
+ };
+-#endif
+ 
+ evfd* evfd::instance = NULL;
+ 
+@@ -87,45 +87,8 @@
+ 	evfd vfd;
+ 	blocked = true;
+ 	//vfd.vfd_clear_icons();
+-	vfd.vfd_write_string("Open AR-P ENIGMA2", true);
+-	//run 2 times through all icons 
+-	if (vfd.getVfdType() != 4)
+-	{
+-	    memset(&icon_onoff,0, sizeof(icon_onoff));
+-	    for (int vloop = 0; vloop < 128; vloop++)
+-	    {
+-		    if (vloop%14 == 0 )
+-			    vfd.vfd_set_brightness(1);
+-		    else if (vloop%14 == 1 )
+-			    vfd.vfd_set_brightness(2);
+-		    else if (vloop%14 == 2 )
+-			    vfd.vfd_set_brightness(3);
+-		    else if (vloop%14 == 3 )
+-			    vfd.vfd_set_brightness(4);
+-		    else if (vloop%14 == 4 )
+-			    vfd.vfd_set_brightness(5);
+-		    else if (vloop%14 == 5 )
+-			    vfd.vfd_set_brightness(6);
+-		    else if (vloop%14 == 6 )
+-			    vfd.vfd_set_brightness(7);
+-		    else if (vloop%14 == 7 )
+-			    vfd.vfd_set_brightness(6);
+-		    else if (vloop%14 == 8 )
+-			    vfd.vfd_set_brightness(5);
+-		    else if (vloop%14 == 9 )
+-			    vfd.vfd_set_brightness(4);
+-		    else if (vloop%14 == 10 )
+-			    vfd.vfd_set_brightness(3);
+-		    else if (vloop%14 == 11 )
+-			    vfd.vfd_set_brightness(2);
+-		    else if (vloop%14 == 12 )
+-			    vfd.vfd_set_brightness(1);
+-		    else if (vloop%14 == 13 )
+-			    vfd.vfd_set_brightness(0);
+-		    usleep(75000);
+-	    }
+-	    vfd.vfd_set_brightness(7);
+-	}
++	vfd.vfd_set_brightness(7);
++	vfd.vfd_on_all(1);
+ 	blocked = false;
+ 	return NULL;
+ }
+@@ -193,7 +157,7 @@
+ 
+ void evfd::vfd_set_icon(tvfd_icon id, bool onoff)
+ {
+-	if (getVfdType() != 4) vfd_set_icon(id, onoff, false);
++	vfd_set_icon(id, onoff, false);
+ 	return;
+ }
+ 
+@@ -199,34 +197,19 @@
+ 
+ void evfd::vfd_set_icon(tvfd_icon id, bool onoff, bool force)
+ {
+-    if (getVfdType() != 4)
+-    {
+ 	icon_onoff[id] = onoff;
+ 	if (!blocked || force)
+ 	{
+-#if defined(PLATFORM_SPARK) || defined(PLATFORM_SPARK7162)
+-	    	struct set_icon_s data;
+-#else
+-		struct vfd_ioctl_data data;
+-#endif
++		struct set_icon_s data;
+ 		if (!startloop_running)
+ 		{
+-#if defined(PLATFORM_SPARK) || defined(PLATFORM_SPARK7162)
+-		    	memset(&data, 0, sizeof(struct set_icon_s));			
++			memset(&data, 0, sizeof(struct set_icon_s));
+ 			data.icon_nr=id;
+ 			data.on = onoff;
+-#else
+-			memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-			data.start = 0x00;
+-			data.data[0] = id;
+-			data.data[4] = onoff;
+-			data.length = 5;
+-#endif
+ 			file_vfd = open (VFD_DEVICE, O_WRONLY);
+ 			ioctl(file_vfd, VFDICONDISPLAYONOFF, &data);
+ 			close (file_vfd);
+ 		}
+-	}
+     }
+     return;
+ }
+@@ -233,13 +182,10 @@
+ 
+ void evfd::vfd_clear_icons()
+ {
+-    if (getVfdType() != 4)
+-    {
+ 	for (int id = 1; id <= 45; id++)
+ 	{
+ 		vfd_set_icon((tvfd_icon)id, false);
+ 	}
+-    }
+     return;
+ }
+ 
+@@ -235,19 +189,16 @@
+ 
+ void evfd::vfd_set_brightness(unsigned char setting)
+ {
+-    if (getVfdType() != 4)
+-    {
+ 	struct vfd_ioctl_data data;
+ 
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 
+ 	data.start = setting & 0x07;
+ 	data.length = 0;
+ 
+ 	file_vfd = open (VFD_DEVICE, O_WRONLY);
+ 	ioctl ( file_vfd, VFDBRIGHTNESS, &data );
+ 	close (file_vfd);
+-    }
+     return;
+ }
+ 
+@@ -240,6 +221,25 @@
+ 	return;
+ }
+ 
++void evfd::vfd_on_all(bool onoff)
++{
++	struct vfd_ioctl_data data;
++
++	memset(&data, 0, sizeof(struct vfd_ioctl_data));
++
++	if (onoff)
++		data.start = 0x01;
++	else
++		data.start = 0x00;
++		data.length = 0;
++
++	file_vfd = open (VFD_DEVICE, O_WRONLY);
++	ioctl(file_vfd, VFDSETLED, &data);
++
++	close (file_vfd);
++	return;
++}
++ 
+ void evfd::vfd_set_fan(bool onoff)
+ {
+ 	return;
+diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/driver/vfd.h enigma2-nightly.patched/lib/driver/vfd.h
+--- enigma2-nightly.org/lib/driver/vfd.h	2012-03-20 01:26:26.547115310 -0700
++++ enigma2-nightly.patched/lib/driver/vfd.h	2012-03-20 01:26:30.307115296 -0700
+@@ -42,6 +42,7 @@
+ 	void vfd_set_brightness(unsigned char setting);
+ 	void vfd_set_light(bool onoff);
+ 	void vfd_set_fan(bool onoff);
++	void vfd_on_all(bool onoff);
+ };
+ 
+ #endif

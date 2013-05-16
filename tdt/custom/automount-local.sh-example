@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -x
+
+#Usage:
+#/home/user/ufs910/mt_build/custom/automount-local.sh /home/user/ufs910/mt_build/tufsbox/cdkflash /home/user/ufs910/mt_build/cvs/cdk
+
+flashprefix=$1
+prefix=$flashprefix
+buildprefix=$2
+
+NEWROOT=$prefix/root
+MYFILES=$prefix/../../myfiles
+
+
+# Create symlinks for convenient access of automounted directories
+( cd $NEWROOT && \
+  ln -sf /var/tmp/autofs/video media/video && \
+	ln -sf /var/tmp/autofs/bilder media/bilder \
+)

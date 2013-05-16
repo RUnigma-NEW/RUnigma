@@ -1,0 +1,15 @@
+Liste der Aufnahmen {
+ generiere Liste der Aufnahmen :       /usr/share/vdr/bin/vdr-bg.sh /usr/local/bin/vdr_get_recordings.sh
+ Aufnahmen sortiert nach Titel :       vdr_generate_recording_list.sh title all
+ Aufnahmen sortiert nach Genre :       vdr_generate_recording_list.sh genre all
+ Aufnahmen sortiert nach Land :        vdr_generate_recording_list.sh country all
+ Aufnahmen sortiert nach Jahr :        vdr_generate_recording_list.sh year all
+ Aufnahmen sortiert nach Länge :       vdr_generate_recording_list.sh length all
+ Aufnahmen sortiert nach Medium :      vdr_generate_recording_list.sh media all
+ Aufnahmen sortiert nach Verzeichnis : vdr_generate_recording_list.sh path all
+ Aufnahmen sortiert nach Größe :       vdr_generate_recording_list.sh size tail
+   ''   (ohne Tatort+Kochen) :         vdr_generate_recording_list.sh size all | grep -v "Kochen/" | grep -v "Tatort/" | vdr_crop_output.sh tail
+   ''   (ohne Tatort,Kochen+Musik) :   vdr_generate_recording_list.sh size all | grep -v "Kochen/" | grep -v "Tatort/" | grep -v "Musik/" | vdr_crop_output.sh tail
+   ''   (nur Spielfilme) :             vdr_generate_recording_list.sh size all | grep "Spielfilme/" | vdr_crop_output.sh tail
+ neueste Aufnahmen anzeigen :          vdr_generate_recording_list.sh date tail
+}

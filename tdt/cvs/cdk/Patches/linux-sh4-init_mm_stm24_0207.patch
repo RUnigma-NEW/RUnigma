@@ -1,0 +1,13 @@
+*** linux-sh4-2.6.32.10_stm24_0201_orig/arch/sh/mm/init.c	Mon May  3 15:59:09 2010
+--- linux-sh4/arch/sh/mm/init.c	Tue May  4 00:08:16 2010
+***************
+*** 133,138 ****
+--- 133,140 ----
+  		j = 0;
+  	}
+  }
++ 
++ EXPORT_SYMBOL(init_mm);
+  #endif	/* CONFIG_MMU */
+  
+  /*

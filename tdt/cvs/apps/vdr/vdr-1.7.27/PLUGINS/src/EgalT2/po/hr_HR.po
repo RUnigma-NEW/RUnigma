@@ -1,0 +1,35 @@
+# VDR language source file.
+# Copyright (C) 2008 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Drazen Dupor <drazen.dupor@dupor.com>, 2004, 2005
+# Dino Ravnic <dino.ravnic@fer.hr>, 2004
+# Adrian Caval <anrxc@sysphere.org>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.6.0\n"
+"Report-Msgid-Bugs-To: <vdr-bugs@cadsoft.de>\n"
+"POT-Creation-Date: 2010-06-12 09:59+0200\n"
+"PO-Revision-Date: 2008-03-17 19:00+0100\n"
+"Last-Translator: Adrian Caval <anrxc@sysphere.org>\n"
+"Language-Team: Croatian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Recording info"
+msgstr "Detalji snimanja"
+
+msgid "Commands"
+msgstr "Naredbe"
+
+msgid "Channels"
+msgstr "Programi"
+
+#, fuzzy
+msgid "TimerConflicts"
+msgstr "Tajmeri"
+
+msgid "Channel"
+msgstr "Program"

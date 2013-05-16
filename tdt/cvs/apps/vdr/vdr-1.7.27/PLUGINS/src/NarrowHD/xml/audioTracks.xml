@@ -1,0 +1,73 @@
+<!--
+#------------------------------------------------------------------------------
+# audioTracks start
+#------------------------------------------------------------------------------ -->
+
+<display id="audioTracks" >
+
+	<window x1="0" x2="-1" y1="0" y2="-1" bpp="4" />
+
+	<rectangle x1="480" x2="530" y1="345" y2="395" color="MainSolid" />
+	<rectangle x1="531" x2="-480" y1="345" y2="395" color="MainSolid" />
+	<rectangle x1="480" x2="-480" y1="396" y2="444" color="MainSolid" />
+	<rectangle x1="480" x2="-480" y1="444" y2="446" color="Divider" />
+	<rectangle x1="480" x2="-480" y1="446" y2="-406" color="MainLight" />
+	<rectangle x1="480" x2="-530" y1="-405" y2="-355" color="MainLight" />
+	<rectangle x1="-530" x2="-480" y1="-405" y2="-355" color="MainLight" />
+
+	<text x1="730" x2="-500" y1="380" y2="-630" color="FontColor" align="right" font="VDRSymbols Sans:Book@37" >{MenuTitle}</text>
+
+	<block x1="555" x2="595" y1="390" y2="430"  >
+		<block condition="equal({AudioChannel},'stereo')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="FontColor" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="FontColor" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="FontColor" />
+		</block>
+
+		<block condition="equal({AudioChannel},'left')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="FontColor" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="FontColor" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="MainLight" />
+ 		</block>
+
+		<block condition="equal({AudioChannel},'right')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="FontColor" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="MainLight" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="FontColor" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="FontColor" />
+		</block>
+	</block>
+   
+	<list 
+		refresh="all,list,update,timeout" 
+		changed="{AudioChannel}" 
+		x1="480" x2="-480" y1="460" y2="-390">
+
+		<item height="50" />
+		
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="74" x2="-1" y1="0" y2="-6" condition="{IsMenuItem}" color="Lolight" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="0" y2="15" condition="{IsMenuItem}" color="Lolight" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="14" y2="-21" condition="{IsMenuItem}" color="Lolight" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="-21" y2="-6" condition="{IsMenuItem}" color="Lolight" /> 
+
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="74" x2="-1" y1="0" y2="-6" condition="{MenuCurrent}" color="MainSolid" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="0" y2="15" condition="{MenuCurrent}" color="MainSolid" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="14" y2="-21" condition="{MenuCurrent}" color="MainSolid" /> 
+		<rectangle refresh="all,list,timeout,update" changed="{AudioChannel}" x1="60" x2="74" y1="-21" y2="-6" condition="{MenuCurrent}" color="MainSolid" /> 
+
+		<text  refresh="all,list,timeout,update" changed="{AudioChannel}" x1="80" x2="-21" y1="5" y2="50" color="FontColorInactive" font="VDRSymbols Sans:Book@27" align="right" >{MenuItem}</text>
+		<text  refresh="all,list,timeout,update" changed="{AudioChannel}" x1="80" x2="-21" y1="5" y2="50" color="FontColor" font="VDRSymbols Sans:Book@27" align="right" >{MenuCurrent}</text>
+	</list>
+
+</display>

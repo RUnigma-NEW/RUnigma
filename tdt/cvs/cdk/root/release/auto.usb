@@ -1,0 +1,22 @@
+# This is an automounter map and it has the following format
+# key [ -mount-options-separated-by-comma ] location
+# Details may be found in the autofs(5) manpage
+
+# do not use wildcard because it creates additional mounts for /dev/sda* (might lead to fs corruption)
+sda    -fstype=auto,noatime,nodiratime          :/dev/sda
+sda1   -fstype=auto,noatime,nodiratime          :/dev/sda1
+sda2   -fstype=auto,noatime,nodiratime          :/dev/sda2
+sda3   -fstype=auto,noatime,nodiratime          :/dev/sda3
+sdb    -fstype=auto,noatime,nodiratime          :/dev/sdb
+sdb1   -fstype=auto,noatime,nodiratime          :/dev/sdb1
+sdb2   -fstype=auto,noatime,nodiratime          :/dev/sdb2
+sdb3   -fstype=auto,noatime,nodiratime          :/dev/sdb3
+sdc    -fstype=auto,noatime,nodiratime          :/dev/sdc
+sdc1   -fstype=auto,noatime,nodiratime          :/dev/sdc1
+sdc2   -fstype=auto,noatime,nodiratime          :/dev/sdc2
+sdc3   -fstype=auto,noatime,nodiratime          :/dev/sdc3
+sda1-vfat   -fstype=vfat,noatime,nodiratime          :/dev/sda1
+sdb1-vfat   -fstype=vfat,noatime,nodiratime          :/dev/sdb1
+sdc1-vfat   -fstype=vfat,noatime,nodiratime          :/dev/sdc1
+
+

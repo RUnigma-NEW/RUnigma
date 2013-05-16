@@ -1,0 +1,314 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Arnold Niessen <niessen@iae.nl> <arnold.niessen@philips.com>, 2001
+# Hans Dingemans <hans.dingemans@tacticalops.nl>, 2003
+# Maarten Wisse <Maarten.Wisse@urz.uni-hd.de>, 2005
+# Team Rellbox4all.com <info@reelbox4all.info>, 2009
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-skinreel3\n"
+"Report-Msgid-Bugs-To: <reelbox-devel@mailings.reelbox.org>\n"
+"POT-Creation-Date: 2009-09-29 15:42+0200\n"
+"PO-Revision-Date: 2009-07-31 19:57+0100\n"
+"Last-Translator: A Krook <a@kroky.nl>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+
+msgid "Channel lists"
+msgstr "Kanalenlijsten"
+
+msgid "Backup"
+msgstr "Backup"
+
+msgid "Backup channel list to..."
+msgstr "Backup de kanalenlijst naar..."
+
+msgid "Restore channel list from..."
+msgstr "Haal kanalenlijst terug van...."
+
+msgid "Restore failed!"
+msgstr "Terughalen mislukt!"
+
+msgid "Channel List successfully loaded"
+msgstr "Laden van kanalenlijst gelukt"
+
+msgid "Invalid file"
+msgstr "Ongeldig bestand"
+
+msgid "Backup failed!"
+msgstr "Backup mislukt"
+
+msgid "Channel List successfully stored"
+msgstr "Kanalenlijst opgeslagen"
+
+msgid "TV only"
+msgstr "Alleen TV"
+
+msgid "Radio only"
+msgstr "Alleen Radio"
+
+msgid "HDTV only"
+msgstr "Alleen HDTV"
+
+msgid "Radio + TV"
+msgstr "Radio + TV"
+
+msgid "Servicetype"
+msgstr "Servicetype"
+
+msgid "Enable Logfile"
+msgstr "Aktiveer logfile"
+
+msgid "Channelscan"
+msgstr "Kanalen scan"
+
+msgid "Detailed search"
+msgstr "Gedetailleerd zoeken"
+
+msgid "Manual"
+msgstr "Handmatig"
+
+msgid "SearchMode$Auto"
+msgstr "Automatisch"
+
+msgid "End of channellist"
+msgstr "Einde kanalenlijst"
+
+msgid "New channellist"
+msgstr "Nieuwe kanalenlijst"
+
+msgid "Bouquets"
+msgstr "Boeketten"
+
+msgid "Intelligent 6900/6875/6111"
+msgstr "Intelligent 6900/6875/6111"
+
+msgid "Try all 6900/6875/6111"
+msgstr "Probeer allemaal 6900/6875/6111"
+
+msgid "DVB-T - Terrestrial"
+msgstr "DVB-T - Terrestrial"
+
+msgid "Tuner"
+msgstr "Tuner"
+
+msgid "DVB-C - Cable"
+msgstr "DVB-C - Kabel"
+
+msgid "DVB-S2 - Rotor"
+msgstr "DVB-S2 - Rotor"
+
+msgid "DVB-S2 - Satellite"
+msgstr "DVB-S2 - satelliet"
+
+msgid "DVB-S - Rotor"
+msgstr "DVB-S - Rotot"
+
+msgid "DVB-S - Satellite"
+msgstr "DVB-S - Satelliet"
+
+msgid "Satellite-S2"
+msgstr "Satelliet-S2"
+
+msgid "Satellite-S"
+msgstr "Satelliet-S"
+
+msgid "Terrestrial"
+msgstr "Terrestrial"
+
+msgid "Cable"
+msgstr "Kabel"
+
+msgid "Search Mode"
+msgstr "Zoek Modus"
+
+msgid "Add new channels to"
+msgstr "Nieuwe kanalen naar"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "No Tuners available"
+msgstr "Geen tuners beschikbaar"
+
+msgid "Position"
+msgstr "Positie"
+
+msgid "no"
+msgstr "nee"
+
+msgid "yes"
+msgstr "ja"
+
+msgid "Bandwidth"
+msgstr "Bandbreedte"
+
+msgid "Symbol Rates"
+msgstr "Symbol rates"
+
+msgid "Frequency (MHz)"
+msgstr "Frequentie (Mhz)"
+
+msgid "Polarization"
+msgstr "Polarisatie"
+
+msgid "Symbolrate"
+msgstr "Symbolrate"
+
+msgid "Modulation"
+msgstr "Modualtie"
+
+msgid "Frequency (kHz)"
+msgstr "Frequentie (Khz)"
+
+msgid "Recording is running !"
+msgstr "Opname is bezig !"
+
+msgid "Button$Start"
+msgstr "Start"
+
+msgid "Channel sel."
+msgstr "Zender Sel."
+
+msgid "DiSEqC"
+msgstr "DiSEqC"
+
+msgid "Scanning aborted"
+msgstr "Scannen afgebroken"
+
+msgid "Scanning succed"
+msgstr "Scannen gereed"
+
+msgid "Retrieving transponders failed!"
+msgstr "ontvangen van transponderlijst mislukt!"
+
+msgid "Please check satellites.conf."
+msgstr "Controleer de satellites.conf aub."
+
+msgid "Tuner obtained no lock!"
+msgstr "Tuner kon niet locken!"
+
+msgid "Please check your connections and satellites.conf."
+msgstr "Controleer de verbindingen en satellites.conf aub."
+
+msgid "Unpredictable error occured!"
+msgstr "Onvoorspelbare fout!"
+
+msgid "Please try again later"
+msgstr "Probeer het later aub. opnieuw"
+
+msgid "Information:"
+msgstr ""
+
+#, fuzzy
+msgid "Entries in current channellist"
+msgstr "Exporteer de huidige kanalenlijst"
+
+msgid "Recording is running"
+msgstr "Opname is aktief"
+
+msgid "Scan active"
+msgstr "Scannen aktief"
+
+msgid "TV Channels\tRadio Channels"
+msgstr "TV Kanalen\tRadio Zenders"
+
+#, c-format
+msgid "Retrieving transponder list from %s"
+msgstr "Ontvang transponderlijst van %s"
+
+#, c-format
+msgid "Scanning %s (%iMHz)\t%s"
+msgstr "Scanning %s (%iMHz)\t%s"
+
+#, c-format
+msgid "Scanning %s (%.3fMHz)\t%s"
+msgstr "Scanning %s (%.3fMHz)\t%s"
+
+msgid "No new channels found"
+msgstr "Geen nieuwe kanalen gevonden"
+
+msgid "Added new channels"
+msgstr "Nieuwe kanalen toegevoegd"
+
+msgid "Press OK to go back to rotor settings"
+msgstr "Druk op 'OK' om terug naar de rotor instellingen te gaan"
+
+msgid "Press OK to finish or Exit for new scan"
+msgstr "Druk op OK voor beeindigen of Exit om opnieuw te scannen"
+
+msgid "Scanning on transponder"
+msgstr "Scannen op transponder"
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "enabled"
+msgstr "ingeschakeld"
+
+msgid "disabled"
+msgstr "uitgeschakeld"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Skip"
+msgstr "Overslaan"
+
+msgid "Please select a channellist:"
+msgstr "Selecteer een kanalenlijst aub:"
+
+msgid "Functions"
+msgstr "Funkties"
+
+#, fuzzy
+msgid "Loading channel list ..."
+msgstr "Backup de kanalenlijst naar..."
+
+msgid "Changes Done"
+msgstr "Veranderingen Uitgevoerd"
+
+msgid "Please check your Timers!"
+msgstr "Controleer de Timers aub."
+
+msgid "Changes failed"
+msgstr "Veranderingen niet uitgevoerd"
+
+msgid "Delete channel list?"
+msgstr "Kanalenijst wissen?"
+
+msgid "Channel lists functions"
+msgstr "Kanalenlijst funkties"
+
+msgid "Import current channellist"
+msgstr "Importeer huidige kanalenlijst"
+
+msgid "Export current channellist"
+msgstr "Exporteer de huidige kanalenlijst"
+
+msgid "Import channels from ReelBox Avantgarde"
+msgstr ""
+
+msgid "Scanning channels on DVB-T/C/S and S2 Tuners"
+msgstr "Scan kanalen op DVB-T/C/S en S2 tuners"
+
+msgid "Channel Scan"
+msgstr "Kanalen scan"
+
+#~ msgid " - "
+#~ msgstr " - "
+
+#~ msgid "Service type"
+#~ msgstr "Service type"
+
+#~ msgid "Channels in current list"
+#~ msgstr "Kanalen in huidige lijst"
+
+#~ msgid "  TV CHANNELS                      RADIO"
+#~ msgstr "  TV KANALEN                      RADIO"

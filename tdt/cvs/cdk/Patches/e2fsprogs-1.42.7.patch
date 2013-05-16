@@ -1,0 +1,20 @@
+--- a/lib/Makefile.elf-lib
++++ b/lib/Makefile.elf-lib
+@@ -50,8 +50,6 @@ install-shlibs install:: $(ELF_LIB) installdirs-elf-lib $(DEP_INSTALL_SYMLINK)
+ 	$(E) "	SYMLINK $(libdir)/$(ELF_IMAGE).so"
+ 	$(Q) $(INSTALL_SYMLINK) $(ELF_INSTALL_DIR)/$(ELF_SONAME) \
+ 		$(libdir)/$(ELF_IMAGE).so $(DESTDIR)
+-	$(E) "	LDCONFIG"
+-	$(Q) -$(LDCONFIG)
+ 
+ install-strip: install
+ 	$(E) "	STRIP-LIB $(ELF_INSTALL_DIR)/$(ELF_LIB)"
+@@ -67,7 +65,6 @@ uninstall-shlibs uninstall::
+ 	$(RM) -f $(DESTDIR)$(ELF_INSTALL_DIR)/$(ELF_LIB) \
+ 		$(DESTDIR)$(ELF_INSTALL_DIR)/$(ELF_SONAME) \
+ 		$(DESTDIR)$(libdir)/$(ELF_IMAGE).so
+-	-$(LDCONFIG)
+ 
+ clean::
+ 	$(RM) -rf elfshared
+

@@ -1,0 +1,19 @@
+#!/bin/sh
+# mount kernel virtual filesystems
+#
+# chkconfig: S 2 0
+#
+
+if [ -e /proc ] && ! [ -e /proc/mounts ]; then
+  mount -t proc proc /proc
+fi
+
+if [ -e /sys ] && grep -q sysfs /proc/filesystems; then
+  mount sysfs /sys -t sysfs
+fi
+
+if [ -e /proc/bus/usb ] && grep -q sysfs /proc/filesystems; then
+  mount usbfs /proc/bus/usb -t usbfs
+fi
+
+exit 0

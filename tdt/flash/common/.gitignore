@@ -1,0 +1,8 @@
+#git status excludes the following files (except those line who start with !)
+lzma465.tar.bz2
+mksquashfs3.3
+mksquashfs4.0
+pad
+squashfs4.0.tar.gz
+unsquashfs3.3
+unsquashfs4.0

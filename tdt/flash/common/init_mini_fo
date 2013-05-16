@@ -1,0 +1,11 @@
+#! /bin/sh
+insmod /lib/modules/mini_fo.ko
+mount -n -t jffs2 /dev/mtdblock3 /storage
+mount -n -t mini_fo -o base=/,sto=/storage / /root_rw
+cd /root_rw
+
+pivot_root . root_ro
+exec /usr/sbin/chroot . /sbin/init
+
+echo "Oops, exec chroot didnt work!"
+exit 1

@@ -1,0 +1,25 @@
+--- automake-1.11.6.org/lib/py-compile	2012-07-09 17:39:57.000000000 +0200
++++ automake-1.11.6/lib/py-compile	2013-04-09 21:33:37.557697652 +0200
+@@ -116,22 +116,7 @@
+     filetrans="filepath = os.path.normpath('$destdir' + os.sep + path)"
+ fi
+ 
+-$PYTHON -c "
+-import sys, os, py_compile
+ 
+-files = '''$files'''
+-
+-sys.stdout.write('Byte-compiling python modules...\n')
+-for file in files.split():
+-    $pathtrans
+-    $filetrans
+-    if not os.path.exists(filepath) or not (len(filepath) >= 3
+-                                            and filepath[-3:] == '.py'):
+-	    continue
+-    sys.stdout.write(file)
+-    sys.stdout.flush()
+-    py_compile.compile(filepath, filepath + 'c', path)
+-sys.stdout.write('\n')" || exit $?
+ 
+ # this will fail for python < 1.5, but that doesn't matter ...
+ $PYTHON -O -c "

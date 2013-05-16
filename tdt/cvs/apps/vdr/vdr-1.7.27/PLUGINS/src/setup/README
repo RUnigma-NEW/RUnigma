@@ -1,0 +1,66 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Ralf Dotzert <ranga@vdrtools.de>
+
+Project's homepage:          www.vdrtools.de
+
+Latest original version available at: www.vdrtools.de
+
+Latest hacked version available at:
+www.zulu-entertainment.de/files/vdr-setup/vdr-setup-0.3.1-zulu-edition.tgz
+
+See the file COPYING for license information.
+
+Overview
+--------
+The "Setup Plugin" can be used to to setup all or most configuration parameters 
+of VDR distributions via the OSD.
+
+The Plugin can be easily configured by editing XML the following XML-Files:
+
+  [VDR-CONFIG-DIR]/plugins/vdr-setup.xml
+  [VDR-CONFIG-DIR]/plugins/vdr-menu.xml
+
+minivdr-setup.xml
+=============
+Holds the Setup configuration, See Examples/*/vdr-setup.xml:
+
+vdr-menu.xml
+============
+Holds the VDR Menu-Submenu configuration. See Examples/vdr-menu.xml.
+
+The configuration files must be copied into the directory PluginsConfigdirectory/setup
+
+Help Viles should be placed in PluginsConfigdirectory/setup/help
+
+Requirements
+============
+It is required to apply the patch to VDR included with the plugin.
+
+For vdr-setup-0.3.1-zulu-edition the VDR-Extensions-Patch => 63 or
+VDR-Extensions-Patch 62 + vdr-ext62_setup-custom-plugin-title.diff or
+vdr-1.6.0-2_setup-zulu-edition.diff is required
+
+Also please make sure, that the file specified with the parameter "sysconfigFile"
+ (see vdr-setup.xml) exists.
+The Plugin will save the configured parameters in this file in the form of:
+
+VARIABLE="value"
+...
+
+The sysconfig file can be just included by any Shell-Scripts which may interpret 
+the stored Variables.
+
+
+All Variable names can be specified within the minivdr-setup.xml configuration file
+itself. The predefined Variable PLUGINLIST will hold all activated Plugins including
+their optional parameters, and can be used in the VDR startup script to dynamically
+specifiy the Plugins.
+
+
+Detailed Information currently only available in german language.
+see MANUAL.DE and http://www.vdrtools.de
+
+
+
+

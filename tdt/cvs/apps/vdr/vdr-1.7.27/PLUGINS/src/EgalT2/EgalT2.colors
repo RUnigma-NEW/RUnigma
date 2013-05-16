@@ -1,0 +1,16 @@
+# Default
+Item=Color,name=GraphDark,default=#9F000000;
+Item=Color,name=TextPassiv,default=#FFABABAB;
+Item=Color,name=TextActiv,default=#FFFFFFFF;
+Item=Color,name=SymbolPassiv,default=#FF000000;
+Item=Color,name=SymbolActiv,default=#9F00FF00;
+# Menu Button
+Item=Color,name=MenuBRed,default=#FFFF0000;
+Item=Color,name=MenuBGreen,default=#FF00FF00;
+Item=Color,name=MenuBYellow,default=#FFFFFF00;
+Item=Color,name=MenuBBlue,default=#FF7590FF;
+# Message Text
+Item=Color,name=MsgInfo,default=#FFFFFFFF;
+Item=Color,name=MsgStat,default=#FF00FF00;
+Item=Color,name=MsgWarn,default=#FFFFFF00;
+Item=Color,name=MsgErr,default=#FFFF0000;

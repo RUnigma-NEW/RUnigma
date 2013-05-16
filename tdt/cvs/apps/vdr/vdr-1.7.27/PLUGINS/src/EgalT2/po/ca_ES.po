@@ -1,0 +1,36 @@
+# VDR language source file.
+# Copyright (C) 2008 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Marc Rovira Vall <tm05462@salleURL.edu>, 2003
+# Ramon Roca <ramon.roca@xcombo.com>, 2003
+# Jordi Vilà <jvila@tinet.org>, 2003
+# Luca Olivetti <luca@ventoso.org>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.6.0\n"
+"Report-Msgid-Bugs-To: <vdr-bugs@cadsoft.de>\n"
+"POT-Creation-Date: 2010-06-12 09:59+0200\n"
+"PO-Revision-Date: 2008-03-02 19:02+0100\n"
+"Last-Translator: Luca Olivetti <luca@ventoso.org>\n"
+"Language-Team: Catalanian\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Recording info"
+msgstr "Informació de la gravació"
+
+msgid "Commands"
+msgstr "Ordres"
+
+msgid "Channels"
+msgstr "Canals"
+
+#, fuzzy
+msgid "TimerConflicts"
+msgstr "Temporitzadors"
+
+msgid "Channel"
+msgstr "Canal"

@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# Load all necessary st modules
+# 
+# chkconfig: S 9 0
+#
+
+   modprobe cpu_frequ
+   echo 31241 > /proc/cpu_frequ/pll0_ndiv_mdiv
+   echo "init frontpanel"
+   modprobe proton
+   modprobe simu_button
+   echo "init e2_proc"
+   modprobe e2_proc
+
+   echo "Filesystem drivers ext3 ext4 ..."
+   modprobe fat
+   modprobe fscache
+   modprobe isofs
+   modprobe msdos
+   modprobe ntfs
+   modprobe udf
+   modprobe vfat
+   modprobe cachefiles
+
+   echo "init stmfb"
+   modprobe stmcore-display-stx7109c3
+   modprobe stmfb display0=1920x1080-32@50:12m:pal:yuv:yuv
+
+   echo "LOADING MODULES"   
+   echo "ЗАГРУЗКА" >/dev/vfd
+
+   /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+   /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
+   
+   echo "load v firmware"
+   /bin/stslave -t st231.0 -R /boot/video.elf
+   echo "load a firmware"
+   /bin/stslave -t st231.1 -R /boot/audio.elf
+
+   echo "init embx"
+   modprobe embxshell
+   modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
+   modprobe embxshm mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
+   modprobe mme_host transport0=shm
+
+   echo "init AVS"
+   modprobe avs type=stv6418
+
+   modprobe mmelog
+   modprobe mpeg2hw mmeName=MPEG2_TRANSFORMER1;
+   modprobe ksound
+   modprobe kreplay
+   modprobe silencegen
+   modprobe p2div64
+   modprobe stm_v4l2
+   modprobe pseudocard
+
+   echo "init fe-core"
+   modprobe fe-core demod=stb0899 tuner=stb6100
+   modprobe cimax
+   modprobe pti
+   #waitMS=20 videoMem=4096
+   modprobe stmdvb
+   modprobe stm_monitor
+
+   echo "init player2"
+   modprobe player2 discardlateframe=0 noaudiosync=0 useoldaudiofw=1
+   modprobe sth264pp
+   modprobe stmalloc
+   modprobe platform
+
+   modprobe smartcard debug=100
+   modprobe cec
+
+   #modprobe bpamem
+   echo "init oc"
+   #modprobe cpu_frequ
+   #300mhz
+   echo 15110 > /proc/cpu_frequ/pll0_ndiv_mdiv
+   #echo 1 > /proc/cpu_frequ/pll1_fdma_bypass
+   #15110 = 266mhz
+   #25609 = 300mhz
+   #9475 = 333mhz
+   #31241 = 366mhz
+   #22790 = 400mhz
+   #3841 = 405mhz
+   #35593 = 417mhz
+   #36361 = 426mhz
+   #4097 = 432mhz
+   rmmod cpu_frequ
+
+   showiframe -p /boot/bootlogo.mvi &
+   echo " e2 "
+   /etc/init.d/auto_rb_st.sh &

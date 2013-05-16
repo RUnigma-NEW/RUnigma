@@ -1,0 +1,75 @@
+Thanks to:
+
+Major
+======
+
+* FIXME: add all contributors ..
+
+Marco Schluessler
+	- cvs team
+
+Miko Wohlgemuth
+	- cvs team
+
+Sven Goethel
+	- cvs team
+	- successor dev.
+
+Andreas Schultz 		
+	- Original Author
+
+Minor
+======
+
+Martin Hammerschmid 
+	- lcdproc hint
+
+Sascha Volkenandt
+	- for the HideMainMenu patch
+
+André Weidemann
+        - for the vaspect patch
+
+Angelo Lambiasi
+        - buffer overflow in A52Decoder
+
+Rolf Ahrenberg
+	- for the finnish translation
+
+Stefan Lucke
+	- for fix segfault
+
+Vyacheslav Dikonov
+        - for the russian translation
+
+Jaroslaw Swierczynski
+        - for the polish translation
+
+Mogens Elneff
+        - for the Danish translation
+
+Jesus Bravo Alvarez
+        - for updating the Spanish OSD texts
+
+Maarten Wisse
+        - for updating the Dutch OSD texts
+
+Arthur Konovalov
+        - for the Estonian translation
+
+Vladimír Bárta
+        - for the Czech translation
+
+Dimitrios Dimitrakos
+        - for the Greek translation
+
+Matjaz Thaler
+        - for the Slovenian translation
+
+Oktay Yolgeçen
+        - for the Turkish translation
+
+Ioannis Petroglou
+        - for fix possible segfault's
+
+... and all the many testers and test case contributors ..

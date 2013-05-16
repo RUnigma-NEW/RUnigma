@@ -1,0 +1,287 @@
+--- libtool-2.4.2.org/libltdl/config/general.m4sh	2011-10-17 12:17:05.000000000 +0200
++++ libtool-2.4.2/libltdl/config/general.m4sh	2012-05-19 19:08:33.793042621 +0200
+@@ -352,7 +352,7 @@
+ # name if it has been set yet.
+ func_echo ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }$*"
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }$*"
+ }
+ 
+ # func_verbose arg...
+@@ -378,14 +378,14 @@
+ # Echo program name prefixed message to standard error.
+ func_error ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
+ }
+ 
+ # func_warning arg...
+ # Echo program name prefixed warning message to standard error.
+ func_warning ()
+ {
+-    $opt_warning && $ECHO "$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
++    $opt_warning && $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
+ 
+     # bash bug again:
+     :
+--- libtool-2.4.2.org/libltdl/config/ltmain.sh	2011-10-17 12:19:35.000000000 +0200
++++ libtool-2.4.2/libltdl/config/ltmain.sh	2012-05-19 19:07:06.885039015 +0200
+@@ -439,7 +439,7 @@
+ # name if it has been set yet.
+ func_echo ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }$*"
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }$*"
+ }
+ 
+ # func_verbose arg...
+@@ -465,14 +465,14 @@
+ # Echo program name prefixed message to standard error.
+ func_error ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
+ }
+ 
+ # func_warning arg...
+ # Echo program name prefixed warning message to standard error.
+ func_warning ()
+ {
+-    $opt_warning && $ECHO "$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
++    $opt_warning && $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
+ 
+     # bash bug again:
+     :
+--- libtool-2.4.2.org/libtoolize.in	2011-10-17 12:19:37.000000000 +0200
++++ libtool-2.4.2/libtoolize.in	2012-05-19 18:37:07.208964403 +0200
+@@ -641,7 +641,7 @@
+ # name if it has been set yet.
+ func_echo ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }$*"
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }$*"
+ }
+ 
+ # func_verbose arg...
+@@ -667,14 +667,14 @@
+ # Echo program name prefixed message to standard error.
+ func_error ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
+ }
+ 
+ # func_warning arg...
+ # Echo program name prefixed warning message to standard error.
+ func_warning ()
+ {
+-    $opt_warning && $ECHO "$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
++    $opt_warning && $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
+ 
+     # bash bug again:
+     :
+--- libtool-2.4.2.org/tests/defs.in	2011-10-17 12:19:53.000000000 +0200
++++ libtool-2.4.2/tests/defs.in	2012-05-19 18:45:34.764985442 +0200
+@@ -596,7 +596,7 @@
+ # name if it has been set yet.
+ func_echo ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }$*"
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }$*"
+ }
+ 
+ # func_verbose arg...
+@@ -622,14 +622,14 @@
+ # Echo program name prefixed message to standard error.
+ func_error ()
+ {
+-    $ECHO "$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
++    $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
+ }
+ 
+ # func_warning arg...
+ # Echo program name prefixed warning message to standard error.
+ func_warning ()
+ {
+-    $opt_warning && $ECHO "$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
++    $opt_warning && $ECHO "Duckbox-$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
+ 
+     # bash bug again:
+     :
+--- libtool-2.4.2.orig/libltdl/config/ltmain.m4sh	2011-10-17 12:17:05.000000000 +0200
++++ libtool-2.4.2/libltdl/config/ltmain.m4sh	2012-11-16 08:43:52.865087989 +0100
+@@ -2166,9 +2166,16 @@
+ 	dir="$func_dirname_result"
+ 	func_append dir "$objdir"
+ 
+-	if test -n "$relink_command"; then
++	if test "$fast_install" = no && test -n "$relink_command"; then
++	  # Strip any trailing slash from the destination.
++	  func_stripname '' '/' "$libdir"
++	  destlibdir=$func_stripname_result
++
++	  func_stripname '' '/' "$destdir"
++	  s_destdir=$func_stripname_result
++
+ 	  # Determine the prefix the user has applied to our future dir.
+-	  inst_prefix_dir=`$ECHO "$destdir" | $SED -e "s%$libdir\$%%"`
++	  inst_prefix_dir=`$ECHO "X$s_destdir" | $Xsed -e "s%$destlibdir\$%%"`
+ 
+ 	  # Don't allow the user to place us outside of our expected
+ 	  # location b/c this prevents finding dependent libraries that
+@@ -2198,7 +2205,7 @@
+ 	  shift
+ 
+ 	  srcname="$realname"
+-	  test -n "$relink_command" && srcname="$realname"T
++	  test "$fast_install" = no && test -n "$relink_command" && srcname="$realname"T
+ 
+ 	  # Install the shared library and build the symlinks.
+ 	  func_show_eval "$install_shared_prog $dir/$srcname $destdir/$realname" \
+@@ -5865,15 +5872,15 @@
+ 	    # Hardcode the library path.
+ 	    # Skip directories that are in the system default run-time
+ 	    # search path.
+-	    case " $sys_lib_dlsearch_path " in
+-	    *" $absdir "*) ;;
+-	    *)
+-	      case "$compile_rpath " in
+-	      *" $absdir "*) ;;
+-	      *) func_append compile_rpath " $absdir" ;;
+-	      esac
+-	      ;;
+-	    esac
++	    #case " $sys_lib_dlsearch_path " in
++	    #*" $absdir "*) ;;
++	    #*)
++	    #  case "$compile_rpath " in
++	    #  *" $absdir "*) ;;
++	    #  *) func_append compile_rpath " $absdir" ;;
++	    #  esac
++	    #  ;;
++	    #esac
+ 	    case " $sys_lib_dlsearch_path " in
+ 	    *" $libdir "*) ;;
+ 	    *)
+@@ -5939,15 +5946,15 @@
+ 	    # Hardcode the library path.
+ 	    # Skip directories that are in the system default run-time
+ 	    # search path.
+-	    case " $sys_lib_dlsearch_path " in
+-	    *" $absdir "*) ;;
+-	    *)
+-	      case "$compile_rpath " in
+-	      *" $absdir "*) ;;
+-	      *) func_append compile_rpath " $absdir" ;;
+-	      esac
+-	      ;;
+-	    esac
++	    #case " $sys_lib_dlsearch_path " in
++	    #*" $absdir "*) ;;
++	    #*)
++	    #  case "$compile_rpath " in
++	    #  *" $absdir "*) ;;
++	    #  *) func_append compile_rpath " $absdir" ;;
++	    #  esac
++	    #  ;;
++	    #esac
+ 	    case " $sys_lib_dlsearch_path " in
+ 	    *" $libdir "*) ;;
+ 	    *)
+@@ -6131,7 +6138,7 @@
+ 	      fi
+ 	    else
+ 	      # We cannot seem to hardcode it, guess we'll fake it.
+-	      add_dir="-L$libdir"
++	      add_dir="-L$lt_sysroot$libdir"
+ 	      # Try looking first in the location we're being installed to.
+ 	      if test -n "$inst_prefix_dir"; then
+ 		case $libdir in
+@@ -6293,8 +6300,8 @@
+ 		  eval libdir=`${SED} -n -e 's/^libdir=\(.*\)$/\1/p' $deplib`
+ 		  test -z "$libdir" && \
+ 		    func_fatal_error "\`$deplib' is not a valid libtool archive"
+-		  test "$absdir" != "$libdir" && \
+-		    func_warning "\`$deplib' seems to be moved"
++		  #test "$absdir" != "$libdir" && \
++		  #  func_warning "\`$deplib' seems to be moved"
+ 
+ 		  path="-L$absdir"
+ 		fi
+@@ -7261,9 +7268,11 @@
+ 	  test "$opt_mode" != relink && rpath="$compile_rpath$rpath"
+ 	  for libdir in $rpath; do
+ 	    if test -n "$hardcode_libdir_flag_spec"; then
+-	      if test -n "$hardcode_libdir_separator"; then
+ 		func_replace_sysroot "$libdir"
+ 		libdir=$func_replace_sysroot_result
++		func_stripname '=' '' "$libdir"
++		libdir=$func_stripname_result
++	      if test -n "$hardcode_libdir_separator"; then
+ 		if test -z "$hardcode_libdirs"; then
+ 		  hardcode_libdirs="$libdir"
+ 		else
+@@ -7277,8 +7286,14 @@
+ 		  esac
+ 		fi
+ 	      else
+-		eval flag=\"$hardcode_libdir_flag_spec\"
+-		func_append dep_rpath " $flag"
++		# We only want to hardcode in an rpath if it isn't in the
++		# default dlsearch path.
++		case " $sys_lib_dlsearch_path " in
++		*" $libdir "*) ;;
++		*) eval flag=\"$hardcode_libdir_flag_spec\"
++		   func_append dep_rpath " $flag"
++		   ;;
++		esac
+ 	      fi
+ 	    elif test -n "$runpath_var"; then
+ 	      case "$perm_rpath " in
+@@ -7992,6 +8007,10 @@
+       hardcode_libdirs=
+       for libdir in $compile_rpath $finalize_rpath; do
+ 	if test -n "$hardcode_libdir_flag_spec"; then
++	  func_replace_sysroot "$libdir"
++	  libdir=$func_replace_sysroot_result
++	  func_stripname '=' '' "$libdir"
++	  libdir=$func_stripname_result
+ 	  if test -n "$hardcode_libdir_separator"; then
+ 	    if test -z "$hardcode_libdirs"; then
+ 	      hardcode_libdirs="$libdir"
+@@ -8006,8 +8025,14 @@
+ 	      esac
+ 	    fi
+ 	  else
+-	    eval flag=\"$hardcode_libdir_flag_spec\"
+-	    func_append rpath " $flag"
++	    # We only want to hardcode in an rpath if it isn't in the
++	    # default dlsearch path.
++	    case " $sys_lib_dlsearch_path " in
++	    *" $libdir "*) ;;
++	    *) eval flag=\"$hardcode_libdir_flag_spec\"
++	       rpath+=" $flag"
++	       ;;
++	    esac
+ 	  fi
+ 	elif test -n "$runpath_var"; then
+ 	  case "$perm_rpath " in
+@@ -8057,8 +8082,14 @@
+ 	      esac
+ 	    fi
+ 	  else
+-	    eval flag=\"$hardcode_libdir_flag_spec\"
+-	    func_append rpath " $flag"
++	    # We only want to hardcode in an rpath if it isn't in the
++	    # default dlsearch path.
++	    case " $sys_lib_dlsearch_path " in
++	    *" $libdir "*) ;;
++	    *) eval flag=\"$hardcode_libdir_flag_spec\"
++	       func_append rpath " $flag"
++	       ;;
++	    esac
+ 	  fi
+ 	elif test -n "$runpath_var"; then
+ 	  case "$finalize_perm_rpath " in

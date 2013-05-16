@@ -1,0 +1,346 @@
+VDR Plugin 'text2skin' Revision History
+---------------------------------------
+
+201x-xx-xx: Version x.x.x
+
+- New tokens: UsedDiskSpace, TotalDiskSpace, VideoSizeWidth, VideoSizeHeight
+  (closes #465, thanks to NemoN).
+- Documentation fixes.
+
+2011-11-06: Version 1.3.2
+
+- Fix build with ImageMagick >= 6.6.2 (thanks to Anssi Hannula / closes #409)
+- Documentation spelling fixes.
+- Added experimental RELAX NG schema for skin XML files.
+- Set minimum value of bitmap cache size in menu to 1.
+- Fix bitmap cache size initialization when built with gcc 4.6.
+- Update epgsearch recording search timer name parsing for epgsearch >= 0.9.21.
+- Warning and code cleanups.
+
+2010-06-21: Version 1.3.1
+
+- Fixed some compiler warnings.
+- Makefile adjustments for VDR 1.7.13.
+- Fixed segmentation fault with 16bit images (closes #258 - thanks to
+  domml@vdrportal)
+- Fixed crash with GraphicsMagick >= 1.3.8 and non-XPM images.
+- Fixed crash when deleting ongoing timers or their recordings (closes #306)
+
+2009-10-06: Version 1.3
+
+- Added Italian language texts (thanks to Diego Pierotto / closes #134)
+- Added brougs78-extensions (thanks to Andreas Brugger / references #39)
+  - added tokens for the next 3 timers:
+    CurrentEventsTitle[123], CurrentEventsStartDateTime[123],
+    CurrentEventsStopDateTime[123], CurrentEventsChannelNumber[123],
+    CurrentEventsChannelName[123], CurrentEventsIsRecording[123]
+  - added audio- and video-tokens:
+    PresentLanguageCode, PresentLanguageDescription, PresentVideoAR and
+    implemented the missing code for the Language-token
+  - added tokens for replay:
+    ReplayName, ReplayDateTime, ReplayShortText, ReplayDescription,
+    ReplayLanguageCode, ReplayLanguageDescription, ReplayVideoAR
+  - additional recording-tokens:
+    RecordingVideoAR, RecordingSize
+  - added a reset for scrolling text (configurable)
+  - added recording-tokens:
+    RecordingLength, RecordingCuttedLength
+  - added tokens:
+    OsdWidth, OsdHeight
+  - added the possibility to have a scrollbar in every menu - not fully
+    implemented yet (to position in menu-lists is not necessarily correct,
+    if there are more items with the same osd-text)
+  - added a configuration option for showing the scrollbar in the menus
+  - added token TimerConflicts using the service interface of the epgsearch
+    plugin "Epgsearch-lastconflictinfo-v1.0"
+  - added a test-feature to search for reruns of a program and add the
+    information to the extended epg-info (trigger DEVELOPMENT_FEATURES).
+    This uses a service interface of the epgsearch plugin
+    "Epgsearch-searchresults-v1.0"
+  - the extended epg-info and the recording-info are extended by AUX-Infos
+    (configurable)
+    there is also an option to strip known tags
+  - the tab-widths are scaled for taking into account that different TT-Fonts
+    have a different width than the default font from VDR
+  - added tokens for signal-info:
+    FrontendSTR, FrontendSNR, FrontendHasLock, FrontendHasSignal
+  - added token PresentEventID for EPG-images
+  - added tokens for recordings:
+    RecordingFilename, RecordingPriority, RecordingLifetime
+  - set EditableWidth. This is important for plugins like 'rotor' or
+    'extrecmenu'
+- Added chr13-optimizations (thanks to Christian Tusche / closes #39)
+  - increased efficiency in drawing list items in the main menu
+  - introduce relative Pos and Size of objects to given BasePos, BaseSize
+    (used to draw list items)
+  - increase skin file version to 1.1
+  - the position of list items is interpreted relative to the "list" container
+    when file version >= 1.1
+  - when a position is specified for "block" elements, the position of all
+    contained elements is interpreted relative to the container position
+  - selective update of changed objects
+    refresh can be controlled for individual objects by the attributes
+    "refresh" and "changed"
+    default behaviour is to redraw everything (compatible with old skins)
+  - moved state tracking of marquee, blink, scroll from cText2SkinRender
+    to cxObject
+  - fixed use of Update.Lock() in render.h
+  - new: dynamic width/height of objects
+  - new: Option "bgColor" used for items "Text", "Marquee", and "Blink".
+  - remember period to next timeout when doing a non-timeout refresh
+    prevent occasional start/stop of marquee-text
+- Corrected text in setup menu (timer-conflicts are now checked with epgsearch)
+- Removed unnecessary yes/no texts from cMenuEditBoolItem calls
+- Added translators info
+- Corrected implementation of ReplayLanguageCode
+- Updated FSF address in the license information
+- Updated gettext language files
+- Removed backward compatibility to VDR < 1.6.0 (closes #137)
+- Fixed compile error if ImageMagick has double as Quantum type (closes #140)
+- Use pkg-config to find compilation flags, libs etc for Imlib2.
+- Fixed crash with FrontendHasLock and FrontendHasSignal (closes #147 -
+  thanks to a.g.prosat at tochka.ru for reporting this)
+- Replaced asprintf with cString::sprintf in GetFrontend*(), font loading.
+- Removed useless code in loader.c
+- Replace internal freetype font handling with VDR's font facilities.  Skins
+  that use fonts other than VDR's standard "Osd", "Fix", and "Sml" need to be
+  adapted to use font names as understood by VDR's CreateFont()
+  (Family:Style as of writing this) instead of filenames in their font
+  attributes' names, to use '@' instead of ':' as the separator before sizes,
+  and have fonts shipped with the skin installed and configured in fontconfig.
+  Typically, install font files (if necessary) to a dir somewhere, run
+  fc-cache(1) on the dir, replace for example font="SomeFont.ttf:22,85" with
+  font="Some Font@22,85" or font="SomeFontBold.ttf:22,85" with
+  font="Some Font:Bold@22,85" in the *.skin file.  Also, in case the shipped
+  fonts are derivatives of some existing ones, they may need to be properly
+  renamed to something so they will be used instead of the original if it
+  happens to be installed. (closes #36)
+- Compile internal image quantizing code only in Imlib2 builds.
+- Add support for building with GraphicsMagick.
+- Draw replay progress bar symmetrically
+- Adapted to new recording format and variable frame rate (VDR >= 1.7.3 -
+  closes #150)
+- Updated Italian language texts (thanks to Diego Pierotto / closes #153)
+- Fixed resetting of replay information (closes #156)
+- Added ReplayMode "audiocd" (thanks to Björn Sturzrehm - closes #138)
+- Fixed: Text scroller is not UTF-8 aware (closes #146)
+- Fixed width and height of the selected parts of the replay progress bar,
+  so that its fully compatible with the replay progress bar of the standard
+  skins (closes #158)
+- Fixed segmentation fault with token ChannelSource (closes #159 - thanks to
+  a.g.prosat at tochka.ru for reporting this)
+- Fixed spelling of refresh attribute: "allways" -> "always"
+- Updated documentation to the state of plugin version 1.2 (synchronized with
+  http://www.linuxtv.org/vdrwiki/index.php/Text2skin-skin_reference -
+  references #142)
+- Added documentation of new tokens introduced by brougs78-extensions
+  (references #142)
+- Added documentation of new attributes introduced by chr13-optimizations
+  (references #142)
+- Updated README.de
+- Completed documentation of new tokens (closes #142)
+- Added HD patch with new absolute modes: abs1280x720, abs1920x1080 (thanks to
+  gda@vdrportal)
+
+2009-06-01: Version 1.2
+
+- Moved to http://projects.vdr-developer.org/projects/show/plg-text2skin
+  as community maintained project using a GIT archive
+- adopted to newer VDR >= 1.3.38
+- fixed possible buffer overflow in xml reading
+- Fix build with gcc 4.3's cleaned up C++ headers
+- Make compatible with VDR >= 1.5.4
+- Added gettext support (VDR >= 1.5.7)
+  The skins have to be patched, too. The patches for DeepBlue, Enigma and
+  enElchi are ready for download from http://toms-cafe.de/vdr/download/.
+  To patch other skins the Makefile from these patches could be used
+  without any changes, missing translation entries should be added to the
+  *.skin file (e.g. as comments <!-- trans('Volume') -->)
+- Fix font problems with libfreetype6 >= 2.2.1
+- Replaced 'uint64' with 'uint64_t' to avoid problems on 64-bit machines
+- Quick fix for VDR >= 1.7.3
+- Use pkg-config
+- Convert docs to UTF-8
+- Updated project homepage url in README
+
+2005-06-xx: Version 1.1
+
+- fixed crash due to uninitialized pointer (thanks to Frank Enderle)
+- patch for PresentRemaining by Björn (VDR-Portal)
+- fixed a race condition (thanks to Reinhard Nissl for pointing this out)
+- updated finnish translations (thanks to Rolf Ahrenberg)
+- fixed displaying of partial channel numbers while changing channels (thanks to
+  Chris Warren)
+- added tokens for Recording Info Display
+  (RecordingName, RecordingDateTime, RecordingTitle, RecordingShortText,
+  RecordingDescription, RecordingLanguageCode, RecordingLanguageDescription)
+
+2005-02-06: Version 1.0
+
+- major rewrite
+- xml-based format
+- true type font support
+
+2004-07-14: Version 0.0.8
+
+- fixed display of scrollbar if there is no text present
+- fixed animation delay if update takes longer than the delay
+- using backgrounds also in 8-bit fullscreen mode to improve performance
+- implemented screen layer to improve performance
+- corrected offsets and tab widths in main menu
+- implemented parameters "current", "mark" and "selected" to choose mark colors
+  in replay display (defaults to the old values)
+- implemented color value "None" to be able to unset a color
+
+2004-06-25: Version 0.0.7
+
+- on devices capable of full-color OSD, bpp's have no meaning anymore
+  (but will still work like usual). On such devices, a full-screen 8-bit
+  OSD will be used
+- new display-item "PresentTextDescription" displays combined 
+  ShortText/Description
+- displaying replay symbols only if information is actually available
+- exchanged x, y, width, height with x1, y1, x2, y2 coordinates
+  (skin version is now 0.0.3)
+- coordinates may be negative to respect dynamic OSD settings
+  (negative coordinates give pixels from the right or bottom edge)
+- added base parameter to Skin item to be able to use full screen in absolute
+  mode
+- added a script to convert 0.0.2 skins to 0.0.3
+- added parsing quoted texts (path="Bla.jpg" etc. will work correctly now)
+- fixed translator to escape the dollar sign
+- fixed display of scrollbar (REALLY!)
+- fixed linkage of libMagick++
+
+2004-06-18: Version 0.0.6
+
+- reimplemented image cache (fixes segfaults and speeds up image loading)
+- fixed a recursion wenn de-initializing ImageMagick (crashes on exit)
+- reverted the changes in ImageMagick-loader that concerned palettes
+  (obviously some versions of ImageMagick are BROKEN!!! I am using 5.5.7 which
+  works fine. Version 5.4.7 shows random errors)
+- reimplemented "Flush image cache" into the setup menu
+- included -lMagick into Makefile as a workaround for Debian (and others 
+  possibly)
+- fixed display of scrollbar
+
+2004-06-16: Version 0.0.5
+
+- fixed disappearing Scrolltext when Message was displayed
+- fixed display-items "MenuScrollUp" and "MenuScrollDown" which didn't display
+  any other items than "Symbol"
+- fixed the above for all replay- and channel-symbols
+  (for all display-items that can be symbols there must be path, altpath or
+  both to tell the plugin if that item is to be drawn if the symbol is on,
+  off or in both cases)
+- fixed various memory leaks and missing destructions (valgrind rox)
+- fixed the image loaders to respect the alpha value and palette properly 
+  (this hopefully also fixes the phenomenon that images "get lost" after some 
+  time)
+- added display-item "Scrollbar"
+- SKINS and SKINS.de are now generated during the make
+
+2004-06-13: Version 0.0.4
+
+- added parameter alpha for images
+- added ReplayMode as Logo to display a replaylogo (normal, vcd, mp3, dvd, ...)
+- added some german and finnish (thx to Rolf Ahrenberg) translations
+- fixed VPSTime which was displayed although is was equal to the StartTime
+- fixed MenuItems which displayed non-Text items periodically
+- fixed calculation of the editable width in the main menu
+- fixed animation delay (specified in 1/100th, used 1/1000th)
+- flushing cache when entering a new display (now the cache basically holds 
+  all items necessary in one display)
+- removed "flush image cache" from setup menu
+- added "max. cache size" to setup menu
+
+2004-06-11: Version 0.0.3
+
+- fixed VPSTime which was displayed on channels that didn't even have VPS
+- fixed Symbols in channel display when viewing a group
+- fixed text translation if no translation is present
+- fixed compile error with gcc 3.4 (thanks to Gregoire Favre for reporting this)
+- restructured Skin (now the official Skin version is 0.0.2)
+  it is now possible to control visibility of all items
+- added a script to convert 0.0.1 themes to 0.0.2
+- added support for animated logos (mng or gif files) ONLY IMAGEMAGICK!!!
+- added finnish language translations (thanks to Rolf Ahrenberg)
+
+2004-06-07: Version 0.0.2
+
+- fixed Timebar which sometimes displayed something beyond 100%
+- fixed scrolling in EPG detail display
+- added "MenuEventEndTime", "MenuEventVPSTime" and "MenuEventDate"
+- added "DateTimeF" and "MenuEventDateTimeF" for free formattable dates
+- added parameter format that holds the format string for the above items
+- implemented setup menu to flush image cache
+
+2004-06-05: Version 0.0.1
+
+- added scrollable texts and "SymbolScrollUp" and "SymbolScrollDown"
+- added "MenuText", "MenuEventTitle", "MenuEventShortText", 
+  "MenuEventDescription", "MenuEventTime", "MenuRecording", 
+  "SymbolEventRunning", "SymbolEventTimer" and "SymbolEventVPS"
+- implemented image caching
+- added english and german README
+- removed some workarounds, and added a patch to vdr to the tree (will be 
+  included in 1.3.10)
+- fixed two bugs when displaying replay symbols
+- implemented tabbed texts in menu
+
+2004-06-02: Version 0.0.1-rc4
+
+- implemented image loading through ImageMagick (fixes crashes when running 
+  together with GraphTFT)
+- implemented Theme support (see file demo.colors in the demo skin)
+- implemented translations for texts used in skins (see file demo.trans in the
+  demo skin)
+
+2004-06-01: Version 0.0.1-rc3
+
+- fixed possible segfault when showing language logo (happened when channel 
+  was not available)
+- fixed some memory leaks
+- fixed "too many colors used in palette" warning for non-imlib-users
+
+2004-06-01: Version 0.0.1-rc2
+
+- fixed some possible segfaults in Display Update
+- fixed segfault in Timebar when EPG doesn't contain time and duration
+- fixed "too many colors used in palette" warning (only with HAVE_IMLIB2=1)
+  in channel display
+- fixed above message in full menu
+- removed some debug printf's
+
+2004-05-31: Version 0.0.1-rc1
+
+- "Background" may be initialized with a color now
+- fixed channel name/number display
+- added parameter type (to store logo's filetype)
+- "Timebar", "Progressbar" and "Volumebar": Background is only drawn if bg is 
+  specified
+- fixed timebar (was running backwards)
+- renamed "Progressbar" to "Replaybar" for more consistency
+- renamed "Logo" to "ChannelLogo"
+- introduced items "Language" (for audio language texts or symbols) and "Image"
+  (foreground images)
+- adopted SKINS document (SKINS.de is not up-to-date yet)
+- introduced item "MenuTitle"
+- introduced items "MenuRed", "MenuGreen", "MenuYellow" and "MenuBlue"
+- activated message items for display in menu
+- introcuded parameter "arc" and item "Slope"
+- fixed possible segfault in Item=Message
+- implemented items "SymbolReplaying" and "SymbolRadio"
+- added "text" parameter for all text like Items (explanation follows)
+- added "SymbolPlay", "SymbolPause", "SymbolFastFwd", "SymbolFastRew", 
+  "SymbolSlowFwd", "SymbolSlowRew" items.
+
+2004-05-23: Version 0.0.1-pre2
+
+- added "ChannelSmall" section (apparently VDR doesn't use it)
+- added replay and message items
+- added a german translation of the SKINS document (incomplete)
+
+2004-05-23: Version 0.0.1-pre1
+
+- Initial revision.

@@ -1,0 +1,28 @@
+#!/bin/bash
+# SRG-DRS 2-Playlist
+# $1 = outfile
+
+### Variabel
+Name="SRG-DRS 2 [www.drs2.ch]"
+### 
+
+# get...
+wget -q --tries=2 --timeout=5 -O /tmp/playlist "http://www.drs2.ch/www/de/drs2.html"
+
+# Artist/Title
+all=`grep -A1 '<div id="jetztaufsendung">' /tmp/playlist | grep 'active_with_icon'`
+if [ "$all" ]; then
+	all=${all/*$'class="active_with_icon">'/}; artist=${all/$'<br/>'*/}; artist=${artist/$':'/}
+	title=${all/*$artist$':<br/>'/}; title=${title/$'</span>'*/}
+fi
+# temp. no Info
+artist=${artist:='---'}; title=${title:='---'}
+
+# write...
+if [ $1 ]; then
+	echo $Name    > $1
+	echo $artist >> $1
+	echo $title  >> $1
+else
+	echo "$Name: Interpret/Titel =  $artist / $title"
+fi

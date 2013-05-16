@@ -1,0 +1,631 @@
+diff -ruN Python-3.2.2-old//configure Python-3.2.2/configure
+--- Python-3.2.2-old//configure	2011-09-04 02:16:50.000000000 +1000
++++ Python-3.2.2/configure	2011-10-30 19:19:13.852835272 +1000
+@@ -607,6 +607,8 @@
+ SRCDIRS
+ THREADHEADERS
+ SOABI
++LIBPL
++PY_ENABLE_SHARED
+ LIBC
+ LIBM
+ HAVE_GETHOSTBYNAME
+@@ -4941,6 +4943,7 @@ fi
+ 
+ # Other platforms follow
+ if test $enable_shared = "yes"; then
++  PY_ENABLE_SHARED=1
+ 
+ $as_echo "#define Py_ENABLE_SHARED 1" >>confdefs.h
+ 
+@@ -5003,6 +5006,7 @@
+ 
+   esac
+ else # shared is disabled
++  PY_ENABLE_SHARED=0
+   case $ac_sys_system in
+     CYGWIN*)
+           BLDLIBRARY='$(LIBRARY)'
+@@ -12160,7 +12160,7 @@
+ if ${ac_cv_broken_sem_getvalue+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+-  if test "$cross_compiling" = yes; then :
++  if test "$cross_compiling" = no; then :
+   ac_cv_broken_sem_getvalue=yes
+ else
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+@@ -12679,6 +12679,10 @@ esac
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LDVERSION" >&5
+ $as_echo "$LDVERSION" >&6; }
+ 
++
++LIBPL="${prefix}/lib/python${VERSION}/config-${VERSION}"
++
++
+ # SO is the extension of shared libraries `(including the dot!)
+ # -- usually .so, .sl on HP-UX, .dll on Cygwin
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking SO" >&5
+@@ -13625,7 +13625,7 @@
+   $as_echo_n "(cached) " >&6
+ else
+   if test "$cross_compiling" = yes; then :
+-  ac_cv_have_long_long_format=no
++  ac_cv_have_long_long_format="yes"
+ else
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+@@ -13926,7 +13926,7 @@ done
+ $as_echo "done" >&6; }
+ 
+ # generate output files
+-ac_config_files="$ac_config_files Makefile.pre Modules/Setup.config Misc/python.pc"
++ac_config_files="$ac_config_files Makefile.pre Modules/Setup.config Misc/python.pc Misc/python-config.sh"
+ 
+ ac_config_files="$ac_config_files Modules/ld_so_aix"
+ 
+@@ -14641,6 +14641,7 @@ do
+     "Makefile.pre") CONFIG_FILES="$CONFIG_FILES Makefile.pre" ;;
+     "Modules/Setup.config") CONFIG_FILES="$CONFIG_FILES Modules/Setup.config" ;;
+     "Misc/python.pc") CONFIG_FILES="$CONFIG_FILES Misc/python.pc" ;;
++    "Misc/python-config.sh") CONFIG_FILES="$CONFIG_FILES Misc/python-config.sh" ;;
+     "Modules/ld_so_aix") CONFIG_FILES="$CONFIG_FILES Modules/ld_so_aix" ;;
+ 
+   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
+diff -ruN Python-3.2.2-old//configure.in Python-3.2.2/configure.in
+--- Python-3.2.2-old//configure.in	2011-09-04 02:16:50.000000000 +1000
++++ Python-3.2.2/configure.in	2011-10-30 19:19:13.852835272 +1000
+@@ -740,6 +740,7 @@ fi  
+ 
+ # Other platforms follow
+ if test $enable_shared = "yes"; then
++  PY_ENABLE_SHARED=1
+   AC_DEFINE(Py_ENABLE_SHARED, 1, [Defined if Python is built as a shared library.])
+   case $ac_sys_system in
+     CYGWIN*)
+@@ -800,6 +801,7 @@ if test $enable_shared = "yes"; then
+ 
+   esac
+ else # shared is disabled
++  PY_ENABLE_SHARED=0
+   case $ac_sys_system in
+     CYGWIN*)
+           BLDLIBRARY='$(LIBRARY)'
+@@ -807,6 +807,9 @@
+           ;;
+   esac
+ fi
++AC_SUBST(PY_ENABLE_SHARED)
++LIBPL="${prefix}"/lib/python"${VERSION}"/config-"${LDVERSION}"
++AC_SUBST(LIBPL)
+ 
+ AC_MSG_RESULT($LDLIBRARY)
+ 
+@@ -2988,7 +2988,7 @@
+ 
+ AC_MSG_RESULT($ac_cv_buggy_getaddrinfo)
+ 
+-if test $have_getaddrinfo = no -o "$ac_cv_buggy_getaddrinfo" = yes
++if test $have_getaddrinfo = no -o "$ac_cv_buggy_getaddrinfo" = yes -a x"$cross_compiling" != "xyes"
+ then
+ 	if test $ipv6 = yes
+ 	then
+@@ -4140,7 +41400,7 @@
+   ]]])],
+   [ac_cv_have_long_long_format=yes],
+   [ac_cv_have_long_long_format=no],
+-  [ac_cv_have_long_long_format=no])
++  [ac_cv_have_long_long_format=yes])
+   )
+   AC_MSG_RESULT($ac_cv_have_long_long_format)
+ fi
+@@ -4204,7 +4204,7 @@
+ 
+ AC_CHECK_TYPE(socklen_t,,
+   AC_DEFINE(socklen_t,int,
+-            [Define to `int' if <sys/socket.h> does not define.]),[
++            [Define to 'int' if <sys/socket.h> does not define.]),[
+ #ifdef HAVE_SYS_TYPES_H
+ #include <sys/types.h>
+ #endif
+@@ -4310,7 +4310,7 @@ done
+ AC_MSG_RESULT(done)
+ 
+ # generate output files
+-AC_CONFIG_FILES(Makefile.pre Modules/Setup.config Misc/python.pc)
++AC_CONFIG_FILES(Makefile.pre Modules/Setup.config Misc/python.pc Misc/python-config.sh)
+ AC_CONFIG_FILES([Modules/ld_so_aix], [chmod +x Modules/ld_so_aix])
+ AC_OUTPUT
+ 
+diff -Nur '--exclude-from=diff-ignore' python-3.2.2.org/Include/pyport.h python-3.2.2/Include/pyport.h
+--- python-3.2.2.org/Include/pyport.h	2012-04-10 01:07:29.000000000 +0200
++++ python-3.2.2/Include/pyport.h	2012-11-18 13:32:01.396962900 +0100
+@@ -777,7 +777,7 @@
+  * rather than waiting for integer multiplication to trigger bogus
+  * overflows.
+  */
+-#error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
++/* #error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)." */
+ #endif
+ 
+ #ifdef __cplusplus
+diff -Nur '--exclude-from=diff-ignore' python-3.2.2.org/Lib/distutils/command/build_ext.py python-3.2.2/Lib/distutils/command/build_ext.py
+--- python-3.2.2.org/Lib/distutils/command/build_ext.py	2012-04-10 01:07:29.000000000 +0200
++++ python-3.2.2/Lib/distutils/command/build_ext.py	2012-11-18 13:32:01.396962900 +0100
+@@ -442,7 +442,8 @@
+         # "build" tree.
+         outputs = []
+         for ext in self.extensions:
+-            outputs.append(self.get_ext_fullpath(ext.name))
++            fullname = self.get_ext_fullname(ext.name)
++            outputs.append(os.path.join(self.build_lib, self.get_ext_filename(fullname)))
+         return outputs
+ 
+     def build_extensions(self):
+@@ -467,9 +468,22 @@
+                   "a list of source filenames" % ext.name)
+         sources = list(sources)
+ 
+-        ext_path = self.get_ext_fullpath(ext.name)
++        fullname = self.get_ext_fullname(ext.name)
++        if self.inplace:
++            # ignore build-lib -- put the compiled extension into
++            # the source tree along with pure Python modules
++
++            modpath = string.split(fullname, '.')
++            package = string.join(modpath[0:-1], '.')
++            base = modpath[-1]
++
++            build_py = self.get_finalized_command('build_py')
++            package_dir = build_py.get_package_dir(package)
++            ext_filename = os.path.join(package_dir, self.get_ext_filename(base))
++        else:
++            ext_filename = os.path.join(self.build_lib, self.get_ext_filename(fullname))
+         depends = sources + ext.depends
+-        if not (self.force or newer_group(depends, ext_path, 'newer')):
++        if not (self.force or newer_group(depends, ext_filename, 'newer')):
+             log.debug("skipping '%s' extension (up-to-date)", ext.name)
+             return
+         else:
+@@ -530,7 +544,7 @@
+         language = ext.language or self.compiler.detect_language(sources)
+ 
+         self.compiler.link_shared_object(
+-            objects, ext_path,
++            objects, ext_filename,
+             libraries=self.get_libraries(ext),
+             library_dirs=ext.library_dirs,
+             runtime_library_dirs=ext.runtime_library_dirs,
+@@ -540,7 +554,7 @@
+             build_temp=self.build_temp,
+             target_lang=language)
+ 
+-    def swig_sources(self, sources, extension):
++    def swig_sources(self, sources, extension=None):
+         """Walk the list of source files in 'sources', looking for SWIG
+         interface (.i) files.  Run SWIG on all that are found, and
+         return a modified 'sources' list with SWIG source files replaced
+diff -Nur '--exclude-from=diff-ignore' python-3.2.2.org/Lib/sitecustomize.py python-3.2.2/Lib/sitecustomize.py
+--- python-3.2.2.org/Lib/sitecustomize.py	1970-01-01 01:00:00.000000000 +0100
++++ python-3.2.2/Lib/sitecustomize.py	2012-11-18 13:32:01.396962900 +0100
+@@ -0,0 +1,45 @@
++# OpenEmbedded sitecustomize.py (C) 2002-2008 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
++# GPLv2 or later
++# Version: 20081123
++# Features:
++# * set proper default encoding
++# * enable readline completion in the interactive interpreter
++# * load command line history on startup
++# * save command line history on exit
++
++import os
++
++def __exithandler():
++    try:
++        readline.write_history_file( "%s/.python-history" % os.getenv( "HOME", "/tmp" ) )
++    except IOError:
++        pass
++
++def __registerExitHandler():
++    import atexit
++    atexit.register( __exithandler )
++
++def __enableReadlineSupport():
++    readline.set_history_length( 1000 )
++    readline.parse_and_bind( "tab: complete" )
++    try:
++        readline.read_history_file( "%s/.python-history" % os.getenv( "HOME", "/tmp" ) )
++    except IOError:
++        pass
++
++def __enableDefaultEncoding():
++    import sys
++    try:
++        sys.setdefaultencoding( "utf8" )
++    except LookupError:
++        pass
++
++import sys
++try:
++    import rlcompleter, readline
++except ImportError:
++    pass
++else:
++    __enableDefaultEncoding()
++    __registerExitHandler()
++    __enableReadlineSupport()
+diff -ruN Python-3.2.2-old//Makefile.pre.in Python-3.2.2/Makefile.pre.in
+--- Python-3.2.2-old//Makefile.pre.in	2011-09-04 02:16:45.000000000 +1000
++++ Python-3.2.2/Makefile.pre.in	2011-10-30 19:25:23.480851641 +1000
+@@ -191,6 +191,7 @@
+ 
+ PYTHON=		python$(EXE)
+ BUILDPYTHON=	python$(BUILDEXE)
++HOSTPYTHON=	./$(BUILDPYTHON)
+ 
+ # The task to run while instrument when building the profile-opt target
+ PROFILE_TASK=	$(srcdir)/Tools/pybench/pybench.py -n 2 --with-gc --with-syscheck
+@@ -234,6 +235,8 @@
+ # Parser
+ PGEN=		Parser/pgen$(EXE)
+ 
++HOSTPGEN=	$(PGEN)
++
+ POBJS=		\
+ 		Parser/acceler.o \
+ 		Parser/grammar1.o \
+@@ -395,7 +395,7 @@
+ 
+ # Default target
+ all:		build_all
+-build_all:	$(BUILDPYTHON) oldsharedmods sharedmods gdbhooks Modules/_testembed
++build_all:	$(BUILDPYTHON) oldsharedmods sharedmods gdbhooks python-config Modules/_testembed
+ 
+ # Compile a binary with gcc profile guided optimization.
+ profile-opt:
+@@ -435,8 +438,8 @@
+ # Build the shared modules
+ sharedmods: $(BUILDPYTHON)
+ 	@case $$MAKEFLAGS in \
+-	*s*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' ./$(BUILDPYTHON) -E $(srcdir)/setup.py -q build;; \
+-	*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' ./$(BUILDPYTHON) -E $(srcdir)/setup.py build;; \
++	*s*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' PYTHONXCPREFIX='$(DESTDIR)$(prefix)' $(HOSTPYTHON) -E $(srcdir)/setup.py -q build;; \
++	*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' PYTHONXCPREFIX='$(DESTDIR)$(prefix)' $(HOSTPYTHON) -E $(srcdir)/setup.py build;; \
+ 	esac
+ 
+ # Build static library
+@@ -587,7 +590,7 @@
+ $(GRAMMAR_H) $(GRAMMAR_C): Parser/pgen.stamp
+ Parser/pgen.stamp: $(PGEN) $(GRAMMAR_INPUT)
+ 		-@$(INSTALL) -d Include
+-		$(PGEN) $(GRAMMAR_INPUT) $(GRAMMAR_H) $(GRAMMAR_C)
++		-$(HOSTPGEN) $(GRAMMAR_INPUT) $(GRAMMAR_H) $(GRAMMAR_C)
+ 		-touch Parser/pgen.stamp
+ 
+ $(PGEN):	$(PGENOBJS)
+@@ -851,6 +854,7 @@
+ 		then rm -f $(DESTDIR)$(BINDIR)/python$(VERSION)$(EXE); \
+ 		fi; \
+ 		(cd $(DESTDIR)$(BINDIR); $(LN) python$(LDVERSION)$(EXE) python$(VERSION)$(EXE)); \
++		(cd $(DESTDIR)$(BINDIR); $(LN) python$(LDVERSION)$(EXE) python); \
+ 	fi
+ 	if test -f $(LDLIBRARY); then \
+ 		if test -n "$(DLLLIBRARY)" ; then \
+@@ -990,25 +894,25 @@
+ 			$(DESTDIR)$(LIBDEST)/distutils/tests ; \
+ 	fi
+ 	-PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
+-		./$(BUILDPYTHON) -Wi $(DESTDIR)$(LIBDEST)/compileall.py \
++		$(HOSTPYTHON) -Wi $(DESTDIR)$(LIBDEST)/compileall.py \
+ 		-d $(LIBDEST) -f \
+ 		-x 'bad_coding|badsyntax|site-packages|lib2to3/tests/data' \
+ 		$(DESTDIR)$(LIBDEST)
+ 	-PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
+-		./$(BUILDPYTHON) -Wi -O $(DESTDIR)$(LIBDEST)/compileall.py \
++		$(HOSTPYTHON) -Wi -O $(DESTDIR)$(LIBDEST)/compileall.py \
+ 		-d $(LIBDEST) -f \
+ 		-x 'bad_coding|badsyntax|site-packages|lib2to3/tests/data' \
+ 		$(DESTDIR)$(LIBDEST)
+ 	-PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
+-		./$(BUILDPYTHON) -Wi $(DESTDIR)$(LIBDEST)/compileall.py \
++		$(HOSTPYTHON) -Wi $(DESTDIR)$(LIBDEST)/compileall.py \
+ 		-d $(LIBDEST)/site-packages -f \
+ 		-x badsyntax $(DESTDIR)$(LIBDEST)/site-packages
+ 	-PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
+-		./$(BUILDPYTHON) -Wi -O $(DESTDIR)$(LIBDEST)/compileall.py \
++		$(HOSTPYTHON) -Wi -O $(DESTDIR)$(LIBDEST)/compileall.py \
+ 		-d $(LIBDEST)/site-packages -f \
+ 		-x badsyntax $(DESTDIR)$(LIBDEST)/site-packages
+ 	-PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
+-		./$(BUILDPYTHON) -Wi -c "import lib2to3.pygram, lib2to3.patcomp;lib2to3.patcomp.PatternCompiler()"
++		$(HOSTPYTHON) -Wi -c "import lib2to3.pygram, lib2to3.patcomp;lib2to3.patcomp.PatternCompiler()"
+ 
+ # Create the PLATDIR source directory, if one wasn't distributed..
+ $(srcdir)/Lib/$(PLATDIR):
+@@ -1024,6 +1024,8 @@
+ 	# Substitution happens here, as the completely-expanded BINDIR
+ 	# is not available in configure
+ 	sed -e "s,@EXENAME@,$(BINDIR)/python$(LDVERSION)$(EXE)," < $(srcdir)/Misc/python-config.in >python-config
++	# Replace makefile compat. variable references with shell script compat. ones; $(VAR) -> ${VAR}
++	sed -e "s,\$$(\([A-Za-z0-9_]*\)),\$$\{\1\},g" < Misc/python-config.sh >python-config.sh
+ 
+ # Install the include files
+ INCLDIRSTOMAKE=$(INCLUDEDIR) $(CONFINCLUDEDIR) $(INCLUDEPY) $(CONFINCLUDEPY)
+@@ -1082,6 +1088,7 @@
+ 	$(INSTALL_SCRIPT) $(srcdir)/Modules/makesetup $(DESTDIR)$(LIBPL)/makesetup
+ 	$(INSTALL_SCRIPT) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
+ 	$(INSTALL_SCRIPT) python-config $(DESTDIR)$(BINDIR)/python$(LDVERSION)-config
++	$(INSTALL_SCRIPT) python-config.sh $(DESTDIR)$(BINDIR)/python-config.sh
+ 	rm python-config
+ 	@if [ -s Modules/python.exp -a \
+ 		"`echo $(MACHDEP) | sed 's/^\(...\).*/\1/'`" = "aix" ]; then \
+@@ -1102,7 +1109,9 @@
+ # Install the dynamically loadable modules
+ # This goes into $(exec_prefix)
+ sharedinstall: sharedmods
+-	$(RUNSHARED) ./$(BUILDPYTHON) -E $(srcdir)/setup.py install \
++	CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' \
++	$(RUNSHARED) $(HOSTPYTHON) -E $(srcdir)/setup.py install \
++		--skip-build \
+ 	   	--prefix=$(prefix) \
+ 		--install-scripts=$(BINDIR) \
+ 		--install-platlib=$(DESTSHARED) \
+diff -Nur '--exclude-from=diff-ignore' python-3.2.2.org/Python/compile.c python-3.2.2/Python/compile.c
+--- python-3.2.2.org/Python/compile.c	2012-04-10 01:07:35.000000000 +0200
++++ python-3.2.2/Python/compile.c	2012-11-16 23:07:56.635237310 +0100
+@@ -30,7 +30,7 @@
+ #include "symtable.h"
+ #include "opcode.h"
+ 
+-int Py_OptimizeFlag = 0;
++int Py_OptimizeFlag = 1;
+ 
+ #define DEFAULT_BLOCK_SIZE 16
+ #define DEFAULT_BLOCKS 8
+diff -ruN Python-3.1.3Orig/setup.py Python-3.1.3/setup.py
+--- Python-3.2.2Orig/setup.py   2010-11-26 21:56:26.000000000 +1000
++++ Python-3.2.2/setup.py       2011-01-03 23:08:51.489831251 +1000
+@@ -157,6 +157,7 @@
+     def __init__(self, dist):
+         build_ext.__init__(self, dist)
+         self.failed = []
++        self.cross_compile = os.environ.get('CROSS_COMPILE_TARGET') == 'yes'
+ 
+     def build_extensions(self):
+ 
+@@ -323,6 +324,8 @@
+             self.announce('WARNING: skipping import check for Cygwin-based "%s"'
+                 % ext.name)
+             return
++        if os.environ.get('CROSS_COMPILE_TARGET') == 'yes':
++            return
+         ext_filename = os.path.join(
+             self.build_lib,
+             self.get_ext_filename(self.get_ext_fullname(ext.name)))
+@@ -335,27 +338,31 @@
+         try:
+             imp.load_dynamic(ext.name, ext_filename)
+         except ImportError as why:
+-            self.failed.append(ext.name)
+-            self.announce('*** WARNING: renaming "%s" since importing it'
+-                          ' failed: %s' % (ext.name, why), level=3)
+-            assert not self.inplace
+-            basename, tail = os.path.splitext(ext_filename)
+-            newname = basename + "_failed" + tail
+-            if os.path.exists(newname):
+-                os.remove(newname)
+-            os.rename(ext_filename, newname)
+-
+-            # XXX -- This relies on a Vile HACK in
+-            # distutils.command.build_ext.build_extension().  The
+-            # _built_objects attribute is stored there strictly for
+-            # use here.
+-            # If there is a failure, _built_objects may not be there,
+-            # so catch the AttributeError and move on.
+-            try:
+-                for filename in self._built_objects:
+-                    os.remove(filename)
+-            except AttributeError:
+-                self.announce('unable to remove files (ignored)')
++            if os.environ.get('CROSS_COMPILE_TARGET') != "yes":
++                self.announce('*** WARNING: renaming "%s" since importing it'
++                              ' failed: %s' % (ext.name, why), level=3)
++                assert not self.inplace
++                basename, tail = os.path.splitext(ext_filename)
++                newname = basename + "_failed" + tail
++                if os.path.exists(newname):
++                    os.remove(newname)
++                os.rename(ext_filename, newname)
++
++                # XXX -- This relies on a Vile HACK in
++                # distutils.command.build_ext.build_extension().  The
++                # _built_objects attribute is stored there strictly for
++                # use here.
++                # If there is a failure, _built_objects may not be there,
++                # so catch the AttributeError and move on.
++                try:
++                    for filename in self._built_objects:
++                        os.remove(filename)
++                except AttributeError:
++                    self.announce('unable to remove files (ignored)')
++            else:
++                self.announce('WARNING: "%s" failed importing, but we leave it '
++                              'because we are cross-compiling' %
++                              ext.name)
+         except:
+             exc_type, why, tb = sys.exc_info()
+             self.announce('*** WARNING: importing extension "%s" '
+@@ -435,7 +435,8 @@
+                         add_dir_to_list(dir_list, directory)
+ 
+         if os.path.normpath(sys.prefix) != '/usr' \
+-                and not sysconfig.get_config_var('PYTHONFRAMEWORK'):
++                and not sysconfig.get_config_var('PYTHONFRAMEWORK') \
++                and not self.cross_compile:
+             # OSX note: Don't add LIBDIR and INCLUDEDIR to building a framework
+             # (PYTHONFRAMEWORK is set) to avoid # linking problems when
+             # building a framework with different architectures than
+@@ -448,11 +448,13 @@
+         # lib_dirs and inc_dirs are used to search for files;
+         # if a file is found in one of those directories, it can
+         # be assumed that no additional -I,-L directives are needed.
++        lib_dirs = self.compiler.library_dirs
++        inc_dirs = self.compiler.include_dirs
+-        lib_dirs = self.compiler.library_dirs + [
+-            '/lib64', '/usr/lib64',
+-            '/lib', '/usr/lib',
+-            ]
+-        inc_dirs = self.compiler.include_dirs + ['/usr/include']
++        lib_dirs += [
++            '/lib64', '/usr/lib64',
++            '/lib', '/usr/lib',
++            ]
++        inc_dirs += ['/usr/include']
+         exts = []
+         missing = []
+ 
+@@ -463,6 +463,18 @@
+         platform = self.get_platform()
+         srcdir = sysconfig.get_config_var('srcdir')
+
++        # add paths from CFLAGS and LDFLAGS
++        cflags, ldflags = sysconfig.get_config_vars(
++                    'CFLAGS', 'LDFLAGS')
++        for item in cflags.split():
++            if item.startswith('-I'):
++                inc_dirs.append(item[2:])
++
++        for item in ldflags.split():
++            if item.startswith('-L'):
++                lib_dirs.append(item[2:])
++        print (inc_dirs)
++
+         # OSF/1 and Unixware have some stuff in /usr/ccs/lib (like -ldb)
+         if platform in ['osf1', 'unixware7', 'openunix8']:
+             lib_dirs += ['/usr/ccs/lib']
+@@ -1663,12 +1669,18 @@
+                                          ffi_configfile):
+                 from distutils.dir_util import mkpath
+                 mkpath(ffi_builddir)
+-                config_args = []
++                config_args =  sysconfig.get_config_var("CONFIG_ARGS").split(" ")
+ 
+                 # Pass empty CFLAGS because we'll just append the resulting
+                 # CFLAGS to Python's; -g or -O2 is to be avoided.
+-                cmd = "cd %s && env CFLAGS='' '%s/configure' %s" \
+-                      % (ffi_builddir, ffi_srcdir, " ".join(config_args))
++                if self.cross_compile:
++                    cmd = "cd %s && env CFLAGS='' %s/configure --host=%s %s" \
++                          % (ffi_builddir, ffi_srcdir,
++                             os.environ.get('HOSTARCH'),
++                             " ".join(config_args))
++                else:
++                    cmd = "cd %s && env CFLAGS='' '%s/configure' %s" \
++                          % (ffi_builddir, ffi_srcdir, " ".join(config_args))
+ 
+                 res = os.system(cmd)
+                 if res or not os.path.exists(ffi_configfile):
+--- Python-3.2.2Orig/Misc/python-config.sh.in	1970-01-01 01:00:00.000000000 +0100
++++ Python-3.2.2/Misc/python-config.sh.in	2012-06-28 19:24:03.365771156 +0100
+@@ -0,0 +1,101 @@
++#!/bin/sh
++
++exit_with_usage ()
++{
++    echo "Usage: $0 --prefix|--exec-prefix|--includes|--libs|--cflags|--ldflags|--extension-suffix|--help|--abiflags|--configdir"
++    exit $1
++}
++
++if [ "$1" = "" ] ; then
++    exit_with_usage 1
++fi
++
++# Returns the actual prefix where this script was installed to.
++installed_prefix ()
++{
++    RESULT=$(dirname $(cd $(dirname "$1") && pwd -P))
++    if which readlink >/dev/null 2>&1 ; then
++        RESULT=$(readlink -f "$RESULT")
++    fi
++    echo $RESULT
++}
++
++prefix_build="@prefix@"
++prefix_real=$(installed_prefix "$0")
++
++# Use sed to fix paths from their built to locations to their installed to locations.
++prefix=$(echo "$prefix_build" | sed "s#$prefix_build#$prefix_real#")
++exec_prefix_build="@exec_prefix@"
++exec_prefix=$(echo "$exec_prefix_build" | sed "s#$exec_prefix_build#$prefix_real#")
++includedir=$(echo "@includedir@" | sed "s#$prefix_build#$prefix_real#")
++libdir=$(echo "@libdir@" | sed "s#$prefix_build#$prefix_real#")
++CFLAGS=$(echo "@CFLAGS@" | sed "s#$prefix_build#$prefix_real#")
++VERSION="@VERSION@"
++LIBM="@LIBM@"
++LIBC="@LIBC@"
++SYSLIBS="$LIBM $LIBC"
++LIBS="@LIBS@ $SYSLIBS -lpython${VERSION}"
++BASECFLAGS="@BASECFLAGS@"
++LDLIBRARY="@LDLIBRARY@"
++LINKFORSHARED="@LINKFORSHARED@"
++OPT="@OPT@"
++PY_ENABLE_SHARED="@PY_ENABLE_SHARED@"
++LIBDEST=${prefix}/lib/python${VERSION}
++LIBPL=$(echo "@LIBPL@" | sed "s#$prefix_build#$prefix_real#")
++SO="@SO@"
++PYTHONFRAMEWORK="@PYTHONFRAMEWORK@"
++INCDIR="-I$includedir/python${VERSION}"
++PLATINCDIR="-I$includedir/python${VERSION}"
++
++# Scan for --help or unknown argument.
++for ARG in $*
++do
++    case $ARG in
++        --help)
++            exit_with_usage 0
++        ;;
++        --prefix|--exec-prefix|--includes|--libs|--cflags|--ldflags|--extension-suffix|--abiflags|--configdir)
++        ;;
++        *)
++            exit_with_usage 1
++        ;;
++    esac
++done
++
++for ARG in "$@"
++do
++    case "$ARG" in
++        --prefix)
++            echo "$prefix"
++        ;;
++        --exec-prefix)
++            echo "$exec_prefix"
++        ;;
++        --includes)
++            echo "$INCDIR $PLATINCDIR"
++        ;;
++        --cflags)
++            echo "$INCDIR $PLATINCDIR $BASECFLAGS $CFLAGS $OPT"
++        ;;
++        --libs)
++            echo "$LIBS"
++        ;;
++        --ldflags)
++            LINKFORSHAREDUSED=
++            if [ -z "$PYTHONFRAMEWORK" ] ; then
++                LINKFORSHAREDUSED=$LINKFORSHARED
++            fi
++            LIBPLUSED=
++            if [ "$PY_ENABLE_SHARED" = "0" ] ; then
++                LIBPLUSED="-L$LIBPL"
++            fi
++            echo "$LIBPLUSED -L$libdir $LIBS $LINKFORSHAREDUSED"
++        ;;
++        --extension-suffix)
++            echo "$SO"
++        ;;
++        --configdir)
++            echo "$LIBPL"
++        ;;
++esac
++done

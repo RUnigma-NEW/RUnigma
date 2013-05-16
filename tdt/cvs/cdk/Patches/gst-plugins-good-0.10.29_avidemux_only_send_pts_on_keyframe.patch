@@ -1,0 +1,22 @@
+--- gst-plugins-good-0.10.29/gst/avi/gstavidemux.c.org	2011-04-16 17:28:08.000000000 -0700
++++ gst-plugins-good-0.10.29/gst/avi/gstavidemux.c	2011-12-17 06:31:58.000000000 -0800
+@@ -4747,12 +4747,16 @@
+     buf = gst_avi_demux_invert (stream, buf);
+ 
+     /* mark non-keyframes */
+-    if (keyframe)
++    if (keyframe) {
+       GST_BUFFER_FLAG_UNSET (buf, GST_BUFFER_FLAG_DELTA_UNIT);
+-    else
++      GST_BUFFER_TIMESTAMP (buf) = timestamp;
++    }
++    else {
+       GST_BUFFER_FLAG_SET (buf, GST_BUFFER_FLAG_DELTA_UNIT);
++      GST_BUFFER_TIMESTAMP (buf) = GST_CLOCK_TIME_NONE;
++    }
+ 
+-    GST_BUFFER_TIMESTAMP (buf) = timestamp;
++    
+     GST_BUFFER_DURATION (buf) = duration;
+     GST_BUFFER_OFFSET (buf) = out_offset;
+     GST_BUFFER_OFFSET_END (buf) = out_offset_end;

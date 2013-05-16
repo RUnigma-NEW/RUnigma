@@ -1,0 +1,30 @@
+#!/bin/sh
+case "$1" in
+	start)
+	DHCP=`grep -c 'auto wlan0' /etc/network/interfaces`
+	 if [ "$DHCP" = "1" ]; then 
+	    echo "Starting dhcp..."
+            /sbin/udhcpc -i wlan0 -p /var/run/udhcpc.wlan0.pid -b
+	 else
+	    /etc/init.d/udhcpc start 
+	 fi  
+	 ;;
+	stop)
+	DHCP=`grep -c dhcp /etc/network/interfaces`
+	if [ "$DHCP" = "1" ]; then 
+	   echo "Stoping dhcp..."
+           kill -9 `cat  /var/run/udhcpc.wlan0.pid`
+	else
+	   /etc/init.d/udhcpc stop 
+	fi  
+	;;
+	restart)
+	$0 stop
+	$0 start
+	;;
+	*)
+		echo "<start|stop|restart>"
+		exit 1
+	 ;;	
+esac 
+exit 0

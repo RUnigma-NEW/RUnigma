@@ -1,0 +1,12 @@
+AC_INIT(libstgles,1-0,,libstgles-1.0)
+AM_INIT_AUTOMAKE(libstgles,1.0)
+
+TUXBOX_APPS
+
+AC_PROG_CC
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+
+AC_OUTPUT([
+Makefile
+])

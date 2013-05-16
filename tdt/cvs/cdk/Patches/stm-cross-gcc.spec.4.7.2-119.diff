@@ -1,0 +1,101 @@
+--- stm-cross-gcc.spec.orig	2013-04-25 12:48:08.879328460 +0200
++++ stm-cross-gcc.spec	2013-04-25 12:48:08.839328458 +0200
+@@ -61,6 +61,9 @@
+ 
+ %define _gccdir %{_stm_cross_lib_dir}/gcc/%{_stm_target_config}/%{version}
+ 
++# Quick and dirty workaround. RPM complains about unpackaged files.
++%define _unpackaged_files_terminate_build 0
++
+ %description
+ This is the GNU C compiler, a fairly portable optimizing compiler which
+ supports multiple languages.  This package includes support for C, and
+@@ -229,7 +232,7 @@
+         --with-gmp=%{_stm_cross_dir} \
+         --with-mpfr=%{_stm_cross_dir} \
+         --without-ppl \
+-        --with-gxx-include-dir="\\\${prefix}/target%{_stm_target_include_dir}/c++/%{version}" \
++        --with-gxx-include-dir="\\\${prefix}/../../cdkroot%{_stm_target_include_dir}/c++/%{version}" \
+         --enable-__cxa_atexit \
+ %if "%{_stm_target_fpu}" == "no"
+ %if %target_arch sh4_uclibc
+@@ -270,15 +273,6 @@
+ %cross_setup
+ %cross_makeinstall
+ 
+-%if %target_cpu sh arm
+-%make pdf html
+-
+-install -d %{buildroot}/%{_stm_cross_doc_dir}/html
+-install -d %{buildroot}/%{_stm_cross_doc_dir}/pdf
+-# cp gcc/doc/*.pdf %{buildroot}/%{_stm_cross_doc_dir}
+-# cp -r gcc/HTML/gcc-%{version} %{buildroot}/%{_stm_cross_doc_dir}/html
+-%endif
+-
+ cd ..
+ 
+ %compress_man %{buildroot}%{_stm_cross_info_dir}
+@@ -345,14 +339,16 @@
+ 	\( -name "libmudflap*" -o -name "libssp*" \) -print | \
+ 	xargs --no-run-if-empty --verbose rm
+ # Remove some installed files we don't ship, to keep rpm happy
+-rm %{buildroot}%{_stm_cross_info_dir}/cppinternals.info.gz
+-rm %{buildroot}%{_stm_cross_info_dir}/gccinstall.info.gz
+-rm %{buildroot}%{_stm_cross_info_dir}/gccint.info.gz
+-rm -f %{buildroot}%{_stm_cross_info_dir}/dir.*
++rm %{buildroot}%{_stm_cross_info_dir}/cppinternals.info.gz || true
++rm %{buildroot}%{_stm_cross_info_dir}/gccinstall.info.gz || true
++rm %{buildroot}%{_stm_cross_info_dir}/gccint.info.gz || true
++rm -f %{buildroot}%{_stm_cross_info_dir}/dir.* || true
+ rm -r %{buildroot}%{_stm_cross_lib_dir}/gcc/%{_stm_target_config}/%{version}/install-tools
+ rm -f %{buildroot}%{_stm_cross_lib_dir}/libiberty.a
+-rm -f  %{buildroot}%{_stm_cross_dir}/lib64/libiberty.a
++rm -f  %{buildroot}%{_stm_cross_dir}/lib{32,64}/libiberty.a || true
+ rm -r %{buildroot}%{_stm_cross_libexec_dir}/gcc/%{_stm_target_config}/%{version}/install-tools
++rm %{buildroot}%{_stm_cross_info_dir}/cpp.info* || true
++rm %{buildroot}%{_stm_cross_info_dir}/gcc.info* || true
+ 
+ rm -rf %{buildroot}%{_stm_cross_targetconf_dir}/share/gcc-%{version}/python
+ 
+@@ -450,10 +446,6 @@
+ %{_stm_cross_targetconf_dir}/bin/cpp
+ %{_stm_cross_sharedstate_dir}/locale/*/LC_MESSAGES/cpplib.mo
+ 
+-%files -n %{_cpp_pkgname}-doc
+-%defattr(-,root,root)
+-%{_stm_cross_info_dir}/cpp.info.gz
+-
+ %files -n %{_gpp_pkgname}
+ %defattr(-,root,root)
+ %{_stm_cross_bin_dir}/%{_stm_target_toolprefix}g++
+@@ -468,7 +460,6 @@
+ 
+ %files -n %{_gcc_pkgname}-doc
+ %defattr(-,root,root)
+-%{_stm_cross_info_dir}/gcc.info.gz
+ %{_stm_cross_man_dir}/man7/*
+ 
+ %if %target_cpu sh
+@@ -485,22 +476,6 @@
+ %{_stm_cross_target_dir}/lib/m4-nofpu/libgcc_s-%{version}.so.1
+ %endif
+ 
+-%post -n %{_cpp_pkgname}-doc
+-install-info --quiet --dir-file=%{_stm_cross_info_dir}/dir \
+-	%{_stm_cross_info_dir}/cpp.info
+-
+-%preun -n %{_cpp_pkgname}-doc
+-install-info --quiet --dir-file=%{_stm_cross_info_dir}/dir --remove \
+-	%{_stm_cross_info_dir}/cpp.info
+-
+-%post -n %{_gcc_pkgname}-doc
+-install-info --quiet --dir-file=%{_stm_cross_info_dir}/dir \
+-	%{_stm_cross_info_dir}/gcc.info
+-
+-%preun -n %{_gcc_pkgname}-doc
+-install-info --quiet --dir-file=%{_stm_cross_info_dir}/dir --remove \
+-	%{_stm_cross_info_dir}/gcc.info
+-
+ %changelog
+ * Wed Mar 27 2013 Christophe Lyon <christophe.lyon@st.com> 119
+ - [Spec] Restore --disable-gomp on armv5/armv6.

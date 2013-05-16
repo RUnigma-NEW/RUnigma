@@ -1,0 +1,362 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Stefan Huelswitt <s.huelswitt@gmx.de>, 2006
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-11 23:14+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select"
+msgstr "Auswählen"
+
+msgid "Parent"
+msgstr "Zurück"
+
+msgid "ID3 info"
+msgstr "ID3 Info"
+
+msgid "Scanning directory..."
+msgstr "Durchsuche Verzeichnis..."
+
+msgid "Error scanning directory!"
+msgstr "Fehler beim Lesen des Verzeichnisses!"
+
+msgid "Mount"
+msgstr "Einbinden"
+
+msgid "Unmount"
+msgstr "Aushängen"
+
+msgid "Eject"
+msgstr "Auswerfen"
+
+msgid "Selected source is not mounted!"
+msgstr "Ausgewählte Datenträger ist nicht eingebunden!"
+
+msgid "Mount failed!"
+msgstr "Einbinden fehlgeschlagen!"
+
+msgid "Mount succeeded"
+msgstr "Einbinden erfolgreich"
+
+msgid "Unmount succeeded"
+msgstr "Aushängen erfolgreich"
+
+msgid "Unmount failed!"
+msgstr "Aushängen fehlgeschlagen!"
+
+msgid "Eject failed!"
+msgstr "Auswerfen fehlgeschlagen!"
+
+msgid "MPlayer"
+msgstr "MPlayer"
+
+msgid "Setup.MPlayer$Control mode"
+msgstr "Kontroll Modus"
+
+msgid "Traditional"
+msgstr "Traditionell"
+
+msgid "Slave"
+msgstr "Slave"
+
+msgid "disabled"
+msgstr "aus"
+
+msgid "global only"
+msgstr "nur global"
+
+msgid "local first"
+msgstr "zuerst local"
+
+msgid "Setup.MPlayer$Resume mode"
+msgstr "Modus für Wiederaufnahme"
+
+msgid "Hide mainmenu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+msgid "Setup.MPlayer$Slave command key"
+msgstr "Slave Kommando Taste"
+
+msgid "Jump: "
+msgstr ""
+
+msgid "MPlayer Audio ID"
+msgstr "MPlayer Audio ID"
+
+msgid "Audiostream ID"
+msgstr "Tonspur ID"
+
+msgid "MPlayer browser"
+msgstr "MPlayer Verzeichnisanzeige"
+
+msgid "Source"
+msgstr "Datenträger"
+
+msgid "MPlayer source"
+msgstr "MPlayer Datenträger"
+
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+msgid "Media replay via MPlayer"
+msgstr "Medien Wiedergabe über MPlayer"
+
+#~ msgid "OSS"
+#~ msgstr "OSS"
+
+#~ msgid "MP3"
+#~ msgstr "MP3"
+
+#~ msgid "Setup.MP3$Audio output mode"
+#~ msgstr "Audio Ausgabe Modus"
+
+#~ msgid "Setup.MP3$Audio mode"
+#~ msgstr "Audio Modus"
+
+#~ msgid "Round"
+#~ msgstr "Runden"
+
+#~ msgid "Dither"
+#~ msgstr "Streuen"
+
+#~ msgid "Setup.MP3$Use 48kHz mode only"
+#~ msgstr "Nur 48kHz Modus benutzen"
+
+#~ msgid "classic"
+#~ msgstr "klassisch"
+
+#~ msgid "via skin"
+#~ msgstr "über Skin"
+
+#~ msgid "Setup.MP3$Replay display"
+#~ msgstr "Wiedergabe Anzeige"
+
+#~ msgid "Setup.MP3$Display mode"
+#~ msgstr "Anzeige Modus"
+
+#~ msgid "Black"
+#~ msgstr "Schwarz"
+
+#~ msgid "Live"
+#~ msgstr "Live"
+
+#~ msgid "Images"
+#~ msgstr "Bilder"
+
+#~ msgid "Setup.MP3$Background mode"
+#~ msgstr "Hintergrund Modus"
+
+#~ msgid "Setup.MP3$Initial loop mode"
+#~ msgstr "Default Loop Modus"
+
+#~ msgid "Setup.MP3$Initial shuffle mode"
+#~ msgstr "Default Shuffle Modus"
+
+#~ msgid "Setup.MP3$Abort player at end of list"
+#~ msgstr "Abspieler am Listenende beenden"
+
+#~ msgid "Setup.MP3$Enqueue to running playlist"
+#~ msgstr "Zur laufenden Wiedergabe hinzufügen"
+
+#~ msgid "ID3 only"
+#~ msgstr "nur ID3"
+
+#~ msgid "ID3 & Level"
+#~ msgstr "ID3 & Pegel"
+
+#~ msgid "Setup.MP3$Background scan"
+#~ msgstr "Hintergrund Scan"
+
+#~ msgid "Setup.MP3$Editor display mode"
+#~ msgstr "Editor Anzeige Modus"
+
+#~ msgid "Filenames"
+#~ msgstr "Dateinamen"
+
+#~ msgid "ID3 names"
+#~ msgstr "ID3 Namen"
+
+#~ msgid "Setup.MP3$Mainmenu mode"
+#~ msgstr "Hauptmenu Modus"
+
+#~ msgid "Playlists"
+#~ msgstr "Abspiellisten"
+
+#~ msgid "Browser"
+#~ msgstr "Verz.anzeige"
+
+#~ msgid "Setup.MP3$Keep selection menu"
+#~ msgstr "Auswahlmenu geöffnet lassen"
+
+#~ msgid "Setup.MP3$Title/Artist order"
+#~ msgstr "Title/Artist Reihenfolge"
+
+#~ msgid "Normal"
+#~ msgstr "Normal"
+
+#~ msgid "Reversed"
+#~ msgstr "Umgedreht"
+
+#~ msgid "Setup.MP3$Normalizer level"
+#~ msgstr "Normalisierer Pegel"
+
+#~ msgid "Setup.MP3$Limiter level"
+#~ msgstr "Begrenzer Pegel"
+
+#~ msgid "Setup.MP3$Use HTTP proxy"
+#~ msgstr "HTTP Proxy benutzen"
+
+#~ msgid "Setup.MP3$HTTP proxy host"
+#~ msgstr "HTTP Proxy Name"
+
+#~ msgid "Setup.MP3$HTTP proxy port"
+#~ msgstr "HTTP Proxy Port"
+
+#~ msgid "local only"
+#~ msgstr "nur lokal"
+
+#~ msgid "local&remote"
+#~ msgstr "lokal und entfernt"
+
+#~ msgid "Setup.MP3$CDDB for CD-Audio"
+#~ msgstr "CDDB für CD-Audio"
+
+#~ msgid "Setup.MP3$CDDB server"
+#~ msgstr "CDDB Server"
+
+#~ msgid "Setup.MP3$CDDB port"
+#~ msgstr "CDDB Port"
+
+#~ msgid "ID3 information"
+#~ msgstr "ID3 Information"
+
+#~ msgid "Filename"
+#~ msgstr "Dateiname"
+
+#~ msgid "Length"
+#~ msgstr "Länge"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Year"
+#~ msgstr "Jahr"
+
+#~ msgid "Samplerate"
+#~ msgstr "Sample Rate"
+
+#~ msgid "Bitrate"
+#~ msgstr "Bit Rate"
+
+#~ msgid "Directory browser"
+#~ msgstr "Verzeichnisanzeige"
+
+#~ msgid "Playlist editor"
+#~ msgstr "Abspielliste bearbeiten"
+
+#~ msgid "Add"
+#~ msgstr "Hinzufügen"
+
+#~ msgid "Remove"
+#~ msgstr "Entfernen"
+
+#~ msgid "Add recursivly?"
+#~ msgstr "Recursiv hinzufügen?"
+
+#~ msgid "Empty directory!"
+#~ msgstr "Leeres Verzeichnis!"
+
+#~ msgid "Remove entry?"
+#~ msgstr "Eintrag entfernen?"
+
+#~ msgid "Add all"
+#~ msgstr "Alle hinzufügen"
+
+#~ msgid "Rename playlist"
+#~ msgstr "Abspielliste umbenennen"
+
+#~ msgid "Old name:"
+#~ msgstr "Alter Name:"
+
+#~ msgid "New name"
+#~ msgstr "Neuer Name"
+
+#~ msgid "Browse"
+#~ msgstr "Blättern"
+
+#~ msgid "Rename"
+#~ msgstr "Umbenennen"
+
+#~ msgid "Scanning playlists..."
+#~ msgstr "Durchsuche Abspiellisten..."
+
+#~ msgid "Error scanning playlists!"
+#~ msgstr "Fehler beim Einlesen der Abspiellisten!"
+
+#~ msgid "Delete playlist?"
+#~ msgstr "Abspielliste löschen?"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Wirklich löschen?"
+
+#~ msgid "Error deleting playlist!"
+#~ msgstr "Fehler beim Löschen der Abspielliste!"
+
+#~ msgid "unnamed"
+#~ msgstr "unbenannt"
+
+#~ msgid "Error creating playlist!"
+#~ msgstr "Fehler beim Erstellen der Abspielliste!"
+
+#~ msgid "Error renaming playlist!"
+#~ msgstr "Fehler beim Umbenennen der Abspielliste!"
+
+#~ msgid "Error loading playlist!"
+#~ msgstr "Fehler beim Lesen der Abspielliste!"
+
+#~ msgid "Can't edit a WinAmp playlist!"
+#~ msgstr "Editieren von WinAmp Abspiellisten nicht möglich!"
+
+#~ msgid "Loading playlist..."
+#~ msgstr "Lade Abspielliste..."
+
+#~ msgid "MP3 source"
+#~ msgstr "MP3 Datenträger"
+
+#~ msgid "Play all"
+#~ msgstr "Alle abspielen"
+
+#~ msgid "Building playlist..."
+#~ msgstr "Baue Abspielliste auf..."
+
+#~ msgid "Error building playlist!"
+#~ msgstr "Fehler beim Aufbau der Abspielliste!"
+
+#~ msgid "A versatile audio player"
+#~ msgstr "Ein vielseitiger Audio-Player"
+
+#~ msgid "unknown"
+#~ msgstr "unbekannt"
+
+#~ msgid "Remote CDDB lookup..."
+#~ msgstr "Remote CDDB Abfrage..."
+
+#~ msgid "Connecting to stream server ..."
+#~ msgstr "Verbinde mit Stream Server..."

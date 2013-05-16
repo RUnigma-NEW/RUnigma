@@ -1,0 +1,124 @@
+<!--
+-    VDR Menu-Configuration File
+-
+-
+-   Example:
+-
+ <menus>
+    <system name="Schedule" />
+    <system name="Channels" />
+    <system name="Timers" />
+    <system name="Recordings" />
+    <menu name="System">
+        <system name="Setup" />
+        <system name="Commands" />
+        <plugin name="setup" title="My Setup" />
+        <command name="myCommand1" execute="/usr/bin/mycommand1" />
+        <command name="myCommand2" execute="/usr/bin/mycommand2" confirm="yes" />
+        <thread name="myCommand3" execute="/usr/bin/mycommand3" confirm="yes" />
+        <plugin name="epgsearch" title="myProgram" />
+        <menu name="mySubSubMenu">
+            ...
+        </menu>
+    </menu>
+     <menu name="Suche">
+        <plugin name="epgsearch" />
+        ...
+    </menu>
+ </menus>
+-->
+<menus suffix="">
+    <system name="Schedule" />
+    <system name="Channels" />
+    <system name="Timers" />
+    <plugin name="epgsearchonly" />
+    <system name="Recordings" />
+    <plugin name="music" title="Mp3 JukeBox" />
+    <menu name="Multimedia">
+        <plugin name="cdda" title="CD Spieler" />
+        <plugin name="ripit" title="CD als Mp3 speichern" />
+        <command name="CD auswerfen" execute="eject /dev/cdrw" />
+        <plugin name="image" />
+        <plugin name="dvd" title="DVD Spieler" />
+        <menu name="DVD Recorder">
+            <plugin name="burn" />
+            <menu name="DVD-Cover erstellen">
+                <thread name="Blend  Only" execute="burn-bc -f draw-storke -w default" />
+                <thread name="Simple Cropping" execute='echo &quot;burn-bc -f &apos;crop resize draw-storke unsharp&apos; -w default' />
+                <thread name="Zoom Center" execute="burn-bc -f &apos;crop zoom-center resize draw-storke unsharp&apos; -w default" />
+                <thread name="Zoom Left" execute="burn-bc -f &apos;crop zoom-left resize draw-storke unsharp&apos; -w default" />
+                <thread name="Zoom Right" execute="burn-bc -f &apos;crop zoom-right resize draw-storke unsharp&apos; -w default" />
+                <thread name="Serial Foto" execute="burn-bc -f &apos;crop zoom-center resize draw-storke serial-foto unsharp&apos; -w default" />
+                <thread name="Serial Movie" execute="burn-bc -f &apos;crop zoom-center resize draw-storke serial-movie unsharp&apos; -w default" />
+                <thread name="Big Serial Movie" execute="burn-bc -f &apos;crop zoom-center resize draw-bigsize serial-movie unsharp&apos; -w default" />
+            </menu>
+            <command name="Aufräumen" execute="rm -rf /media/disk1part5/video/vdr-burn.*" confirm="yes" />
+        </menu>
+        <menu name="DVD Drehzahlkontrolle">
+            <command name="Zweifach" execute="sudo speedcontrol -x 2 /dev/dvdrw" />
+            <command name="Vierfach" execute="sudo speedcontrol -x 4 /dev/dvdrw" />
+            <command name="Achtfach" execute="sudo speedcontrol -x 8 /dev/dvdrw" />
+            <command name="Zurücksetzen" execute="sudo speedcontrol -x 0 /dev/dvdrw" />
+        </menu>
+        <command name="DVD auswerfen" execute="eject /dev/dvdrw" />
+        <plugin name="dvdswitch" title="DVD von Festplatte" />
+        <plugin name="music" title="Mp3 JukeBox" />
+        <plugin name="mplayer" title="Medien" />
+        <menu name="Externe Medien">
+            <command name="USB-Stick einbinden" execute="sudo /usr/lib/vdr/scripts/vdr2root usb mount" />
+            <command name="USB-Stick entfernen" execute="sudo /usr/lib/vdr/scripts/vdr2root usb umount" confirm="yes" />
+        </menu>
+    </menu>
+    <menu name="Information">
+        <plugin name="recstatus" />
+        <plugin name="osdteletext" title="Videotext" />
+        <plugin name="newsticker" title="Nachrichten" />
+        <plugin name="weatherng" title="Wetter (geht noch nicht)" />
+        <plugin name="femon" />
+    </menu>
+    <menu name="Sonstiges">
+        <plugin name="fritzbox" />
+        <plugin name="clock" title="Uhr" />
+        <plugin name="pilotskin" title="Navigator" />
+        <plugin name="osdpip" title="Bild in Bild" />
+        <plugin name="screenshot" title="Schnapschuß" />
+        <plugin name="sleeptimer" title="Automatisch abschalten" />
+        <plugin name="extrecmenu" title="Aufzeichnungen (erweitert)" />
+    </menu>
+    <menu name="Spiele">
+        <plugin name="games" title="Tetris ..." />
+        <plugin name="solitaire" />
+        <plugin name="sudoku" />
+    </menu>
+    <menu name="Projektor">
+        <command name="Tvtime starten" execute='echo &quot;/usr/bin/vdrplayer --player tvtime&quot;|at now' confirm="yes" />
+        <command name="Tvtime und X-Server beenden" execute='echo &quot;/usr/bin/vdrplayer --player killall&quot;|at now' confirm="yes" />
+    </menu>
+    <menu name="System">
+        <system name="Setup" />
+        <menu name="Kanal Menü">
+            <system name="Channels" />
+            <plugin name="channellists" />
+            <plugin name="reelchannelscan" />
+            <thread name="Neue Kanäle entfernen" execute='/usr/lib/vdr/scripts/channellists-reset.sh &quot;:@1000 Neue Kanäle&quot;' confirm="yes" />
+            <plugin name="chanman" />
+            <plugin name="femon" />
+        </menu>
+        <plugin name="setup" />
+        <plugin name="osdadjust" />
+        <thread name="VDR Setup" execute="sudo /usr/lib/vdr/scripts/vdrsetup" />
+        <menu name="Daten und Logs">
+            <command name="System-Log anzeigen" execute="sudo /usr/lib/vdr/scripts/vdr2root show-log" />
+            <command name="System-Log säubern" execute="sudo /usr/lib/vdr/scripts/vdr2root clean-log" confirm="yes" />
+            <thread name="EPG Daten löschen" execute="svdrpsend.pl CLRE" confirm="yes" />
+            <thread name="Aufnahmen aktualisieren" execute="sudo /usr/lib/vdr/scripts/vdr2root video-update; sleep 1; svdrpsend.pl HITK Recordings" />
+            <command name="Belegung der Laufwerke" execute='df -h|awk &apos;/%/ { printf(&quot;%4.4s : %5.5s : %s\n&quot;,$5,$4,$6) }&apos;' />
+        </menu>
+        <menu name="Befehle">
+            <command name="VDR neustarten" execute="sudo /usr/lib/vdr/scripts/vdr2root vdr-restart" confirm="yes" />
+            <command name="VDR beenden" execute="sudo /usr/lib/vdr/scripts/vdr2root vdr-stop" confirm="yes" />
+            <command name="System neustarten" execute="sudo /usr/lib/vdr/scripts/vdr2root reboot" confirm="yes" />
+            <thread name="System beenden" execute="svdrpsend.pl HITK Power" confirm="yes" />
+        </menu>
+    </menu>
+</menus>

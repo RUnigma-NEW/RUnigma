@@ -1,0 +1,10 @@
+--- stm-cross-mpc.spec.org	2011-02-21 18:14:18.000000000 +0100
++++ stm-cross-mpc.spec	2011-10-01 14:20:16.000000000 +0200
+@@ -30,6 +30,7 @@
+ 
+ %build
+ %cross_setup
++export CC="gcc -m32"
+ 
+ mkdir objdir
+ cd objdir

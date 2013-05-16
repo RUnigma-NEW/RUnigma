@@ -1,0 +1,4 @@
+Makefile
+depcomp
+install-sh
+libdvbsi++.pc

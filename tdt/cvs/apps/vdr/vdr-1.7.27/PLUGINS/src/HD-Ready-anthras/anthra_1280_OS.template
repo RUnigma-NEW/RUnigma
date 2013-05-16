@@ -1,0 +1,531 @@
+<!--
+ 
+anthra-skins are dark HD and HD-Ready skins for vdr-text2skin
+        
+Copyright (C) 2010   Tomas Saxer <tsaxer@gmx.de>
+    
+This program is free software; you can redistribute it and/or modify it under the terms of 
+the GNU General Public License as published by the Free Software Foundation; either 
+version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; 
+if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, 
+MA 02110, USA
+
+-->
+<?xml version="1.0"?>
+<skin version="1.1" name="anthra_1280_OS" screenBase="absolute" >
+
+<display id="channelInfo"  >
+	<window x1="0" x2="1280" y1="439" y2="544" bpp="8" />
+	<window x1="0" x2="1280" y1="545" y2="650" bpp="8"/>
+	<window x1="0" x2="1280" y1="651" y2="678" bpp="8"/>
+		
+		<image x1="64" x2="1216" y1="499"  y2="544" colors="128"  path="images/progressChannel.png"/>
+		<rectangle x1="64" x2="1216" y1="544" y2="651"  color="Background" />
+<!--NOLOGOS-->		<text x1="95" x2="155" y1="503" y2="527" align="center" color="TextButton" font="VDRSymbols Sans:Book@24">{ChannelNumber}</text>
+<!--NOLOGOS-->		<text x1="175" x2="750" y1="503" y2="527" color="TextButton" font="VDRSymbols Sans:Book@24">{ChannelName}</text>
+<!--NOLOGOS-->		<text x1="95" x2="155" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</text>
+<!--NOLOGOS-->		<blink x1="95" x2="155" y1="545" y2="571" delay="500" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</blink>
+<!--NOLOGOS-->		<text x1="175" x2="1100" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentTitle}</text>
+<!--NOLOGOS-->		<text x1="1105" x2="1170" y1="545" y2="571" condition="{PresentRemaining}" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{PresentRemaining:%m}/{PresentDuration:%m}</text>
+<!--NOLOGOS-->		<text x1="1173" x2="1200" y1="547" y2="571" condition="{PresentRemaining}" color="TextDescr" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--NOLOGOS-->		<text x1="200" x2="1100" y1="570" y2="593" color="TextDescr" align ="left" font="VDRSymbols Sans:Book@20">{PresentShortText}</text>
+<!--NOLOGOS-->		<text x1="95" x2="155" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingStartDateTime:%H\:%M}</text>
+<!--NOLOGOS-->		<text x1="175" x2="1100" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingTitle}</text>
+<!--NOLOGOS-->		<text x1="1133" x2="1170" y1="600" y2="623" condition="{FollowingDuration}" color="TextButton" align="right" font="VDRSymbols Sans:Book@20">{FollowingDuration:%m}</text>
+<!--NOLOGOS-->		<text x1="1173" x2="1200" y1="603" y2="623" condition="{FollowingDuration}" color="TextButton" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--NOLOGOS-->		<text x1="200" x2="1100" y1="625" y2="645" color="TextButton" align ="left" font="VDRSymbols Sans:Book@20">{FollowingShortText}</text>
+<!--NOLOGOS-->		<text x1="870" x2="1085" y1="507" y2="525"  color="TextButton" align="right" font="VDRSymbols Sans:Book@18">{DateTime:%A %d.%m.%y}</text>
+<!--NOLOGOS-->		<text x1="1126" x2="1200" y1="505" y2="525"  color="TextButton"  align="right" font="VDRSymbols Sans:Book@20">{DateTime:%H\:%M}</text>		
+<!--LOGOSLEFT-->		<text x1="92" x2="252" y1="503" y2="527" align="center" color="TextButton" font="VDRSymbols Sans:Book@24">{ChannelNumber}</text>
+<!--LOGOSLEFT-->		<text x1="290" x2="800" y1="503" y2="527" color="TextButton" font="VDRSymbols Sans:Book@24">{ChannelName}</text>
+<!--LOGOSLEFT-->		<image x1="92" x2="252" y1="547"  y2="637" condition="file('../liquid-logos4anthra_HD/{ChannelName}.png')" path="../liquid-logos4anthra_HD/{ChannelName}.png"/>
+<!--LOGOSLEFT-->		<image x1="92" x2="252" y1="547"  y2="637" colors="16" condition="not(file('../liquid-logos4anthra_HD/{ChannelName}.png'))" path="../liquid-logos4anthra_HD/logobg.png"/>
+<!--LOGOSLEFT-->		<ellipse x1="92" x2="95" y1="547" y2="550"   arc="-2" color="Background"/>
+<!--LOGOSLEFT-->		<ellipse x1="92" x2="95" y1="634" y2="637"   arc="-3" color="Background"/>
+<!--LOGOSLEFT-->		<ellipse x1="249" x2="252" y1="547" y2="550"   arc="-1" color="Background"/>
+<!--LOGOSLEFT-->		<ellipse x1="249" x2="252" y1="634" y2="637"   arc="-4" color="Background"/>
+<!--LOGOSLEFT-->		<text x1="290" x2="370" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</text>
+<!--LOGOSLEFT-->		<blink x1="290" x2="370" y1="545" y2="571" delay="600" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</blink>
+<!--LOGOSLEFT-->		<text x1="371" x2="960" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentTitle}</text>
+<!--LOGOSLEFT-->		<text x1="1090" x2="1170" y1="545" y2="571" condition="{PresentRemaining}" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{PresentRemaining:%m}/{PresentDuration:%m}</text>
+<!--LOGOSLEFT-->		<text x1="1173" x2="1200" y1="547" y2="571" condition="{PresentRemaining}" color="TextDescr" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSLEFT-->		<text x1="410" x2="1200" y1="570" y2="593" color="TextDescr" align ="left" font="VDRSymbols Sans:Book@20">{PresentShortText}</text>
+<!--LOGOSLEFT-->		<text x1="290" x2="370" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingStartDateTime:%H\:%M}</text>
+<!--LOGOSLEFT-->		<text x1="371" x2="960" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingTitle}</text>
+<!--LOGOSLEFT-->		<text x1="1133" x2="1170" y1="600" y2="623" condition="{FollowingDuration}" color="TextButton" align="right" font="VDRSymbols Sans:Book@20">{FollowingDuration:%m}</text>
+<!--LOGOSLEFT-->		<text x1="1173" x2="1200" y1="603" y2="623" condition="{FollowingDuration}" color="TextButton" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSLEFT-->		<text x1="410" x2="1200" y1="625" y2="645" color="TextButton" align ="left" font="VDRSymbols Sans:Book@20">{FollowingShortText}</text>
+<!--LOGOSLEFT-->		<text x1="890" x2="1090" y1="507" y2="525"  color="TextButton" align="right" font="VDRSymbols Sans:Book@18">{DateTime:%A %d.%m.%y}</text>
+<!--LOGOSLEFT-->		<text x1="1126" x2="1200" y1="505" y2="525"  color="TextButton"  align="right" font="VDRSymbols Sans:Book@20">{DateTime:%H\:%M}</text>
+<!--LOGOSRIGHT-->	<text x1="95" x2="155" y1="503" y2="527" color="TextButton" align="center" font="VDRSymbols Sans:Book@24">{ChannelNumber}</text>
+<!--LOGOSRIGHT-->	<text x1="175" x2="750" y1="503" y2="527" color="TextButton" font="VDRSymbols Sans:Book@24">{ChannelName}</text>
+<!--LOGOSRIGHT-->	<block condition="file('../liquid-logos4anthra_HD/{ChannelName}.png')">
+<!--LOGOSRIGHT-->		<image x1="979" x2="1085" y1="556"  y2="616" condition="file('../liquid-logos4anthra_HD/{ChannelName}.png')" path="../liquid-logos4anthra_HD/{ChannelName}.png"/>
+<!--LOGOSRIGHT-->			<ellipse x1="979" x2="982" y1="556" y2="559"   arc="-2" color="Background"/>
+<!--LOGOSRIGHT-->			<ellipse x1="979" x2="982" y1="613" y2="616"   arc="-3" color="Background"/>
+<!--LOGOSRIGHT-->			<ellipse x1="1082" x2="1085" y1="556" y2="559"   arc="-1" color="Background"/>
+<!--LOGOSRIGHT-->			<ellipse x1="1082" x2="1085" y1="613" y2="616"   arc="-4" color="Background"/>
+<!--LOGOSRIGHT-->		<text x1="95" x2="155" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</text>
+<!--LOGOSRIGHT-->		<blink x1="95" x2="155" y1="545" y2="571" delay="500" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</blink>
+<!--LOGOSRIGHT-->		<text x1="175" x2="965" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentTitle}</text>
+<!--LOGOSRIGHT-->		<text x1="1090" x2="1170" y1="545" y2="571" condition="{PresentRemaining}" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{PresentRemaining:%m}/{PresentDuration:%m}</text>
+<!--LOGOSRIGHT-->		<text x1="1173" x2="1200" y1="547" y2="571" condition="{PresentRemaining}" color="TextDescr" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSRIGHT-->		<text x1="200" x2="965" y1="570" y2="593" color="TextDescr" align ="left" font="VDRSymbols Sans:Book@20">{PresentShortText}</text>
+<!--LOGOSRIGHT-->		<text x1="95" x2="155" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingStartDateTime:%H\:%M}</text>
+<!--LOGOSRIGHT-->		<text x1="175" x2="965" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingTitle}</text>
+<!--LOGOSRIGHT-->		<text x1="1133" x2="1170" y1="600" y2="623" condition="{FollowingDuration}" color="TextButton" align="right" font="VDRSymbols Sans:Book@20">{FollowingDuration:%m}</text>
+<!--LOGOSRIGHT-->		<text x1="1173" x2="1200" y1="603" y2="623" condition="{FollowingDuration}" color="TextButton" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSRIGHT-->		<text x1="200" x2="965" y1="625" y2="645" color="TextButton" align ="left" font="VDRSymbols Sans:Book@20">{FollowingShortText}</text>	
+<!--LOGOSRIGHT-->	</block>
+<!--LOGOSRIGHT-->	<block condition="not(file('../liquid-logos4anthra_HD/{ChannelName}.png'))">
+<!--LOGOSRIGHT-->		<text x1="95" x2="155" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</text>
+<!--LOGOSRIGHT-->		<blink x1="95" x2="155" y1="545" y2="571" delay="500" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentStartDateTime:%H\:%M}</blink>
+<!--LOGOSRIGHT-->		<text x1="175" x2="1100" y1="545" y2="571" color="TextDescr" font="VDRSymbols Sans:Book@22">{PresentTitle}</text>
+<!--LOGOSRIGHT-->		<text x1="1105" x2="1170" y1="545" y2="571" condition="{PresentRemaining}" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{PresentRemaining:%m}/{PresentDuration:%m}</text>
+<!--LOGOSRIGHT-->		<text x1="1173" x2="1200" y1="547" y2="571" condition="{PresentRemaining}" color="TextDescr" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSRIGHT-->		<text x1="200" x2="1100" y1="570" y2="593" color="TextDescr" align ="left" font="VDRSymbols Sans:Book@20">{PresentShortText}</text>
+<!--LOGOSRIGHT-->		<text x1="95" x2="155" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingStartDateTime:%H\:%M}</text>
+<!--LOGOSRIGHT-->		<text x1="175" x2="1100" y1="600" y2="623" color="TextButton" font="VDRSymbols Sans:Book@22">{FollowingTitle}</text>
+<!--LOGOSRIGHT-->		<text x1="1133" x2="1170" y1="600" y2="623" condition="{FollowingDuration}" color="TextButton" align="right" font="VDRSymbols Sans:Book@20">{FollowingDuration:%m}</text>
+<!--LOGOSRIGHT-->		<text x1="1173" x2="1200" y1="603" y2="623" condition="{FollowingDuration}" color="TextButton" align="left" font="VDRSymbols Sans:Book@16">min</text>
+<!--LOGOSRIGHT-->		<text x1="200" x2="1100" y1="625" y2="645" color="TextButton" align ="left" font="VDRSymbols Sans:Book@20">{FollowingShortText}</text>
+<!--LOGOSRIGHT-->	</block>
+<!--LOGOSRIGHT-->		<text x1="870" x2="1085" y1="507" y2="525"  color="TextButton" align="right" font="VDRSymbols Sans:Book@18">{DateTime:%A %d.%m.%y}</text>
+<!--LOGOSRIGHT-->		<text x1="1126" x2="1200" y1="505" y2="525"  color="TextButton"  align="right" font="VDRSymbols Sans:Book@20">{DateTime:%H\:%M}</text>
+
+
+		<progress  x1="89" x2="1191" y1="536" y2="540" color="BarFill" current="{PresentProgress}"  total="{PresentDuration}"/>
+		
+		<image   x1="64" x2="1216" y1="651"  y2="678" colors="128"  path="images/buttonsChannel.png"/>
+		<text x1="96" x2="170" y1="656" y2="668" color="TextHigh" align="center" font="VDRSymbols Sans:Bold@12">STR: {FrontendSTR}%</text>
+		<text x1="172" x2="264" y1="656" y2="668" color="TextHigh" align="center" font="VDRSymbols Sans:Bold@12">SNR: {FrontendSNR}%</text>
+		<text x1="814" x2="886" y1="656" y2="668" align="center" condition="{HasTeletext}" color="TextSmallButton" font="VDRSymbols Sans:Bold@12">VTX</text>
+		<text x1="888" x2="962" y1="656" y2="668" align="center" condition="{HasDolby}" color="TextSmallButton" font="VDRSymbols Sans:Bold@12">DOLBY</text>
+		<text x1="964" x2="1038" y1="656" y2="668" align="center" condition="equal({AudioChannel},'stereo')" color="TextSmallButton" font="VDRSymbols Sans:Bold@12">STEREO</text>
+		<text x1="1040" x2="1114" y1="656" y2="668" align="center"  condition="{IsEncrypted}" color="TextSmallButton" font="VDRSymbols Sans:Bold@12">CRYPT</text>
+		<blink x1="1118" x2="1184" y1="656" y2="668" align="center" delay="600" condition="{IsRecording}" color="TextSmallButton" font="VDRSymbols Sans:Bold@12">REC</blink>
+
+		<text x1="814" x2="886" y1="656" y2="668" condition="not({HasTeletext})" align="center" color="TextButton" font="VDRSymbols Sans:Bold@12">VTX</text>
+		<text x1="888" x2="962" y1="656" y2="668" condition="not({HasDolby})" align="center"  color="TextButton" font="VDRSymbols Sans:Bold@12">DOLBY</text>
+		<text x1="964" x2="1038" y1="656" y2="668" condition="not(equal({AudioChannel},'stereo'))" align="center"  color="TextLow" font="VDRSymbols Sans:Bold@12">STEREO</text>
+		<text x1="1040" x2="1114" y1="656" y2="668" condition="not({IsEncrypted})" align="center"   color="TextSmallButton" font="VDRSymbols Sans:Bold@12">FTA</text>
+		<text x1="1118" x2="1184" y1="656" y2="668" condition="not({IsRecording})" align="center"  color="TextButton" font="VDRSymbols Sans:Bold@12">REC</text>
+		<ellipse x1="64" x2="70" y1="499" y2="505"   arc="-2" color="#0000000"/>
+		<ellipse x1="64" x2="70" y1="672" y2="678"   arc="-3" color="#0000000"/>
+		<ellipse x1="1210" x2="1216" y1="499" y2="505"   arc="-1" color="#0000000"/>
+		<ellipse x1="1210" x2="1216" y1="672" y2="678"   arc="-4" color="#0000000"/>
+
+									
+		<block condition="{Message}">
+			<image x1="64" x2="1216" y1="439" y2="480" colors="64" path="images/message.png" />
+		
+			<rectangle x1="93" x2="1184" y1="448" y2="449" condition="{MessageError}" color="RedLow" />
+			<rectangle x1="93" x2="1184" y1="450" y2="451" condition="{MessageError}" color="RedHigh" />		
+			<rectangle x1="93" x2="1184" y1="448" y2="449" condition="{MessageInfo}" color="GreenLow" />
+			<rectangle x1="93" x2="1184" y1="450" y2="451" condition="{MessageInfo}" color="GreenHigh" />				
+			<rectangle x1="93" x2="1184" y1="448" y2="449" condition="{MessageWarning}" color="YellowLow" />
+			<rectangle x1="93" x2="1184" y1="450" y2="451" condition="{MessageWarning}" color="YellowHigh" />				
+			<rectangle x1="93" x2="1184" y1="448" y2="449" condition="{MessageStatus}" color="BlueLow" />
+			<rectangle x1="93" x2="1184" y1="450" y2="451" condition="{MessageStatus}" color="BlueHigh" />	
+	
+			<text x1="0" x2="1280" y1="451" y2="471" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageInfo}</text>
+			<text x1="0" x2="1280" y1="451" y2="471" align="center" color="TextButton" font="VDRSymbols Sans:Book@18">{MessageStatus}</text>
+			<text x1="0" x2="1280" y1="451" y2="471" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageWarning}</text>
+			<text x1="0" x2="1280" y1="451" y2="471" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageError}</text> 
+		</block>
+</display>
+
+<display id="volume">
+	<window x1="0" x2="1280" y1="0" y2="720" bpp="8"/>
+		<image x1="64" x2="1216" y1="580" y2="673" colors="64" path="images/volume.png" />
+		<ellipse x1="64" x2="70" y1="580" y2="587"   arc="-2" color="#0000000"/>
+		<ellipse x1="64" x2="70" y1="666" y2="673"   arc="-3" color="#0000000"/>
+		<ellipse x1="1210" x2="1216" y1="580" y2="587"   arc="-1" color="#0000000"/>
+		<ellipse x1="1210" x2="1216" y1="666" y2="673"   arc="-4" color="#0000000"/>
+		<text x1="64" x2="1216" y1="592" y2="612" align="center" color="TextHigh" condition="not({IsMute})" font="VDRSymbols Sans:Book@20">Volume: {VolumeCurrent}</text>
+		<text x1="64" x2="1216" y1="592" y2="612" align="center" color="TextHigh" condition="{IsMute}" font="VDRSymbols Sans:Book@20">Mute</text>
+		<progress x1="66" x2="1214" y1="625" y2="628" color="BarFill" current="{VolumeCurrent}" total="{VolumeTotal}"/>
+		<rectangle x1="66" x2="1214" y1="625" y2="628" condition="{IsMute}" color="BarBlock" />
+</display>
+
+<display id="message">
+	<window x1="0" x2="1280" y1="0" y2="720" bpp="8"/>
+
+		<block condition="or({MessageInfo},{MessageStatus},{MessageWarning},{MessageError})">
+			<image x1="64" x2="1216" y1="594" y2="635" colors="64" path="images/message.png" />
+		
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageError}" color="RedLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageError}" color="RedHigh" />		
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageInfo}" color="GreenLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageInfo}" color="GreenHigh" />				
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageWarning}" color="YellowLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageWarning}" color="YellowHigh" />				
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageStatus}" color="BlueLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageStatus}" color="BlueHigh" />	
+	
+			<text x1="0" x2="1280" y1="608" y2="926" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageInfo}</text>
+			<text x1="0" x2="1280" y1="608" y2="926" align="center" color="TextButton" font="VDRSymbols Sans:Book@18">{MessageStatus}</text>
+			<text x1="0" x2="1280" y1="608" y2="926" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageWarning}</text>
+			<text x1="0" x2="1280" y1="608" y2="926" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageError}</text> 
+		</block>
+</display>
+
+<display id="replayInfo">
+	<window x1="64" x2="1216" y1="450" y2="669" bpp="8"/>
+
+				
+<!--Progress-Bar-BEGIN-->    
+		<image   x1="64" x2="1216" y1="560"  y2="669"   path="images/recbar.png"/>
+		<text x1="80" x2="800" y1="572" y2="592" color="TextHigh" font="VDRSymbols Sans:Book@20">{ReplayTitle}</text>
+		<text x1="985" x2="1135" y1="572" y2="592"  color="TextButton" align="left" font="VDRSymbols Sans:Book@20">{DateTime:%a %d.%m.%y}</text>
+		<text x1="1140" x2="1200" y1="572" y2="592"  color="TextButton"  align="right" font="VDRSymbols Sans:Book@20">{DateTime:%H\:%M}</text>
+		<progress x1="65" x2="1213" y1="606" y2="622" color="BarFill" mark="Black" keep="Black"  current="{ReplayPositionIndex}"  total="{ReplayDurationIndex}"/>
+		<text x1="80" x2="200" y1="633" y2="653" color="TextButton" align="left" font="VDRSymbols Sans:Book@20">{ReplayPosition}</text>
+		<text x1="1013" x2="1200" y1="633" y2="653" color="TextButton" align="right" font="VDRSymbols Sans:Book@20">{ReplayDuration}</text>	
+<!--Progress-BAR-END-->	
+
+		<text condition="not({IsFastRewind})" x1="394" x2="476" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">F.REW   </text>
+		<text condition="{IsFastRewind:0}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW</text>
+		<text condition="{IsFastRewind:1}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 1x</text>
+		<text condition="{IsFastRewind:2}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 2x</text>
+		<text condition="{IsFastRewind:3}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 3x</text>
+		<text condition="not({IsSlowRewind})" x1="477" x2="558" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">S.REW   </text>
+		<text condition="{IsSlowRewind:0}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW</text>	
+		<text condition="{IsSlowRewind:1}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 1x</text>		
+		<text condition="{IsSlowRewind:2}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 2x</text>		
+		<text condition="{IsSlowRewind:3}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 3x</text>
+		<text condition="not({IsPausing})" x1="559" x2="639" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">PAUSE</text>		
+		<text condition="{IsPausing}" x1="559" x2="639" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">PAUSE</text>
+		<text condition="not({IsPlaying})" x1="640" x2="721" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">PLAY</text>		
+		<text condition="{IsPlaying}" x1="640" x2="721" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">PLAY</text>
+		<text condition="not({IsSlowForward})" x1="722" x2="802" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">S.FWD   </text>		
+		<text condition="{IsSlowForward:0}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD</text>		
+		<text condition="{IsSlowForward:1}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 1x</text>		
+		<text condition="{IsSlowForward:2}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 2x</text>		
+		<text condition="{IsSlowForward:3}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 3x</text>
+		<text condition="not({IsFastForward})" x1="803" x2="884" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">F.FWD   </text>		
+		<text condition="{IsFastForward:0}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD</text>
+		<text condition="{IsFastForward:1}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 1x</text>
+		<text condition="{IsFastForward:2}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 2x</text>
+		<text condition="{IsFastForward:3}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 3x</text>	
+
+		<rectangle x1="473" x2="806" y1="486"  y2="540" color="#0000000"/>
+		<image x1="473" x2="806"  y1="486"  y2="540" condition="{ReplayPrompt}" path="images/jump.png"/>	
+		<text x1="473" x2="806" y1="503" y2="523" align="center" color="TextButton" font="VDRSymbols Sans:Book@20">{ReplayPrompt}</text>
+
+		<block condition="{Message}">
+			<image x1="64" x2="1216" y1="594" y2="635" path="images/message.png" />
+			
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageError}" color="RedLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageError}" color="RedHigh" />		
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageInfo}" color="GreenLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageInfo}" color="GreenHigh" />				
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageWarning}" color="YellowLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageWarning}" color="YellowHigh" />				
+			<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageStatus}" color="BlueLow" />
+			<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageStatus}" color="BlueHigh" />	
+	
+			<text x1="0" x2="1280" y1="606" y2="924" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageInfo}</text>
+			<text x1="0" x2="1280" y1="606" y2="924" align="center" color="TextButton" font="VDRSymbols Sans:Book@18">{MessageStatus}</text>
+			<text x1="0" x2="1280" y1="606" y2="924" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageWarning}</text>
+			<text x1="0" x2="1280" y1="606" y2="924" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageError}</text> 
+		</block>
+</display>
+
+<display id="replaySmall">
+	<window x1="390" x2="888"  y1="627" y2="660" bpp="8"/>
+	
+		<image   x1="390" x2="888" y1="627"  y2="660"   path="images/recbarSmall.png"/>	
+		<text condition="not({IsFastRewind})" x1="394" x2="476" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">F.REW   </text>
+		<text condition="{IsFastRewind:0}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW</text>
+		<text condition="{IsFastRewind:1}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 1x</text>
+		<text condition="{IsFastRewind:2}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 2x</text>
+		<text condition="{IsFastRewind:3}" x1="394" x2="476" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.REW 3x</text>
+		<text condition="not({IsSlowRewind})" x1="477" x2="558" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">S.REW   </text>
+		<text condition="{IsSlowRewind:0}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW</text>	
+		<text condition="{IsSlowRewind:1}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 1x</text>		
+		<text condition="{IsSlowRewind:2}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 2x</text>		
+		<text condition="{IsSlowRewind:3}" x1="477" x2="558" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.REW 3x</text>
+		<text condition="not({IsPausing})" x1="559" x2="639" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">PAUSE</text>		
+		<text condition="{IsPausing}" x1="559" x2="639" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">PAUSE</text>
+		<text condition="not({IsPlaying})" x1="640" x2="721" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">PLAY</text>		
+		<text condition="{IsPlaying}" x1="640" x2="721" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">PLAY</text>
+		<text condition="not({IsSlowForward})" x1="722" x2="802" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">S.FWD   </text>		
+		<text condition="{IsSlowForward:0}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD</text>		
+		<text condition="{IsSlowForward:1}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 1x</text>		
+		<text condition="{IsSlowForward:2}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 2x</text>		
+		<text condition="{IsSlowForward:3}" x1="722" x2="802" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">S.FWD 3x</text>
+		<text condition="not({IsFastForward})" x1="803" x2="884" y1="637" y2="651" align="center" color="DarkGrey" font="VDRSymbols Sans:Book@14">F.FWD   </text>		
+		<text condition="{IsFastForward:0}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD</text>
+		<text condition="{IsFastForward:1}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 1x</text>
+		<text condition="{IsFastForward:2}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 2x</text>
+		<text condition="{IsFastForward:3}" x1="803" x2="884" y1="637" y2="651" align="center" color="TextSmallButton" font="VDRSymbols Sans:Book@14">F.FWD 3x</text>
+</display>
+
+<display id="menu" >
+	<window x1="0" x2="1280" y1="56" y2="104" bpp="8" />
+   	<window x1="0" x2="1280" y1="105" y2="627" bpp="8" />
+   	<window x1="0" x2="1280" y1="628" y2="716" bpp="8" />
+		
+		<image   x1="64" x2="1216" y1="56"  y2="104"  path="images/top.png"/>	
+		<text x1="933" x2="1120" y1="72" y2="90"  color="TextButton" align="left" font="VDRSymbols Sans:Book@18">{DateTime:%A %d.%m.%y}</text>
+		<text x1="1126" x2="1186" y1="70" y2="90"  color="TextButton"  align="right" font="VDRSymbols Sans:Book@20">{DateTime:%H\:%M}</text>
+		<image x1="64" x2="66" y1="104" y2="628" colors="64" path="images/divider.png"/>
+		<rectangle x1="66" x2="513" y1="104" y2="628"  color="Background" /> 
+		<rectangle x1="514" x2="1214" y1="104" y2="628"  color="BackgroundLight" />
+		<image x1="1215" x2="1217" y1="104" y2="628" colors="64" path="images/divider.png"/>	
+<!--MAINMENU-BEGIN-->				
+	<list  x1="100" x2="940" y1="125" y2="615"  condition="equal({MenuTitle:clean},'VDR')">
+		<item height="40"/>
+		<image x1="6" x2="384" y1="0" y2="42"  condition="{IsMenuCurrent}"  path="images/menuCurrent4LogoTopRight.png" />
+		<ellipse x1="6" x2="12" y1="0" y2="6"  condition="{IsMenuCurrent}" arc="-2" color="Background"/>
+		<ellipse x1="6" x2="12" y1="36" y2="42"  condition="{IsMenuCurrent}" arc="-3" color="Background"/>
+		<ellipse x1="378" x2="384" y1="0" y2="6"  condition="{IsMenuCurrent}" arc="-1" color="Background"/>
+		<ellipse x1="378" x2="384" y1="36" y2="42"  condition="{IsMenuCurrent}" arc="-4" color="Background"/>
+<!--DEFAULTMENUFONT-->		<text x1="10" x2="380" y1="4" y2="31" color="TextHigh" align="left" font="VDRSymbols Sans:Book@26">{MenuCurrent}</text>
+<!--DEFAULTMENUFONT-->		<text x1="16" x2="380" y1="8" y2="30" color="TextHigh" font="VDRSymbols Sans:Book@22">{MenuGroup}</text>
+<!--DEFAULTMENUFONT-->		<text x1="16" x2="380" y1="8" y2="30" color="TextButton" font="VDRSymbols Sans:Book@22">{MenuItem}</text>
+<!--SMALLMENUFONT-->		<text x1="10" x2="380" y1="7" y2="31" color="TextHigh" align="left" font="VDRSymbols Sans:Book@24">{MenuCurrent}</text>
+<!--SMALLMENUFONT-->		<text x1="16" x2="380" y1="9" y2="29" color="TextHigh" font="VDRSymbols Sans:Book@20">{MenuGroup}</text>
+<!--SMALLMENUFONT-->		<text x1="16" x2="380" y1="9" y2="29" color="TextButton" font="VDRSymbols Sans:Book@20">{MenuItem}</text>
+<!--LARGEMENUFONT-->		<text x1="10" x2="380" y1="4" y2="32" color="TextHigh" align="left" font="VDRSymbols Sans:Book@28">{MenuCurrent}</text>
+<!--LARGEMENUFONT-->		<text x1="16" x2="380" y1="5" y2="29" color="TextHigh" font="VDRSymbols Sans:Book@24">{MenuGroup}</text>
+<!--LARGEMENUFONT-->		<text x1="16" x2="380" y1="5" y2="29" color="TextButton" font="VDRSymbols Sans:Book@24">{MenuItem}</text>
+	</list>
+	
+	<block condition="equal({MenuTitle:clean},'VDR')">
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-setup-bg.png" condition="equal({MenuCurrent:clean},trans('Setup'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-timers-bg.png"  condition="equal({MenuCurrent:clean},trans('Timers'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-commands-bg.png" condition="equal({MenuCurrent:clean},trans('Commands'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-recordings-bg.png"  condition="equal({MenuCurrent:clean},trans('Recordings'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-schedule-bg.png"    condition="equal({MenuCurrent:clean},trans('Schedule'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-femon-bg.png"    condition="equal({MenuCurrent:clean},trans('Channels'))"/>
+	
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-epgsearch-bg.png"  condition="equal({MenuCurrent:clean},plugin('epgsearch'))"/>	
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-femon-bg.png"  condition="equal({MenuCurrent:clean},plugin('femon'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-music-bg.png"  condition="equal({MenuCurrent:clean},plugin('music'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-cdda-bg.png" condition="equal({MenuCurrent:clean},plugin('cdplayer'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-digicam-bg.png"  condition="equal({MenuCurrent:clean},plugin('image'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-dvd-bg.png"  condition="equal({MenuCurrent:clean},plugin('dvd'))"/>		
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-burn-bg.png"  condition="equal({MenuCurrent:clean},plugin('burn'))"/>
+<!--MENULOGOS-->		<image x1="1066" x2="1188" y1="122" y2="244" path="../anthra-menu-logos/A-fritzbox-bg.png"  condition="equal({MenuCurrent:clean},plugin('fritzbox'))"/>
+<!--MENULOGOS-->		<ellipse x1="1066" x2="1070" y1="122" y2="126" arc="-2" color="BackgroundLight"/>
+<!--MENULOGOS-->		<ellipse x1="1066" x2="1070" y1="240" y2="244" arc="-3" color="BackgroundLight"/>
+<!--MENULOGOS-->		<ellipse x1="1184" x2="1188" y1="122" y2="126" arc="-1" color="BackgroundLight"/>
+<!--MENULOGOS-->		<ellipse x1="1184" x2="1188" y1="240" y2="244" arc="-4" color="BackgroundLight"/>
+	
+		<image x1="64" x2="1216"  y1="628" y2="673"  colors="128"   path="images/buttons.png"  />  				
+		<rectangle x1="93" x2="290" y1="638" y2="639"  color="RedLow" />
+		<rectangle x1="93" x2="290" y1="640" y2="641"  color="RedHigh" />		
+		<rectangle x1="300" x2="507" y1="638" y2="639"  color="GreenLow" />
+		<rectangle x1="300" x2="507" y1="640" y2="641"  color="GreenHigh" />				
+		<rectangle x1="519" x2="725" y1="638" y2="639"  color="YellowLow" />
+		<rectangle x1="519" x2="725" y1="640" y2="641"  color="YellowHigh" />				
+		<rectangle x1="737" x2="930" y1="638" y2="639"  color="BlueLow" />
+		<rectangle x1="737" x2="930" y1="640" y2="641"  color="BlueHigh" />
+	
+		<text x1="93" x2="290" y1="642"  y2="660" color="TextButton" align="center" font="VDRSymbolsSans:Book@18">{ButtonRed}</text>
+		<text x1="300" x2="507" y1="642"  y2="660"  color="TextButton" align="center" font="VDRSymbolsSans:Book@18">{ButtonGreen}</text>
+		<text x1="520" x2="722" y1="642"  y2="660"  color="TextButton" align="center" font="VDRSymbolsSans:Book@18">{ButtonYellow}</text>
+		<text x1="737" x2="930" y1="642"  y2="660"  color="TextButton" align="center" font="VDRSymbolsSans:Book@18">{ButtonBlue}</text>
+		
+		<block condition="not({ButtonRed})">
+			<image x1="77" x2="296"  y1="628" y2="673" colors="128" path="images/buttonsHideRedShort.png"/>	
+		</block>		
+		<block condition="not({ButtonGreen})">
+			<image x1="295" x2="514"  y1="628" y2="673" colors="128" path="images/buttonsHideGreenShort.png"/>	
+		</block>		
+		<block condition="not({ButtonYellow})">
+			<image x1="513" x2="732"  y1="628" y2="673" colors="128" path="images/buttonsHideYellowShort.png"/>	
+		</block>
+		<block condition="not({ButtonBlue})">
+			<image x1="731" x2="1216"  y1="628" y2="673" colors="128" path="images/buttonsHideBlueShort.png"/>	
+		</block>		
+		
+		<text x1="966" x2="1200" y1="637" y2="655" align="left" color="TextButton" condition="equal({MenuTitle:clean},'VDR')" font="VDRSymbols Sans:Book@18">{MenuTitle:rest}</text>
+	
+<!--TIMER-INFO_MAIN-MENU-->		<block condition="and({CurrentEventsTitle1},not({CurrentEventsTitle2}))">
+<!--TIMER-INFO_MAIN-MENU-->			<image x="762"  y="512" colors="128" path="images/timer1Long.png"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="512" y2="520" arc="-2" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="589" y2="597" arc="-3" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="512" y2="520" arc="-1" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="589" y2="597" arc="-4" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="521" y2="541" color="TextButton" font="VDRSymbols Sans:Book@20">Timer:</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="551" y2="569" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="551" y2="569" delay="1000" condition="{CurrentEventsIsRecording1}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="574" y2="590" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime1:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName1}</text>			
+<!--TIMER-INFO_MAIN-MENU-->		</block>
+<!--TIMER-INFO_MAIN-MENU-->		<block condition="and({CurrentEventsTitle1},{CurrentEventsTitle2},not({CurrentEventsTitle3}))">
+<!--TIMER-INFO_MAIN-MENU-->			<image x="762"  y="467" colors="128" path="images/timer2Long.png"/>	
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="467" y2="475" arc="-2" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="589" y2="597" arc="-3" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="467" y2="475" arc="-1" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="589" y2="597" arc="-4" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="474" y2="494" color="TextButton" font="VDRSymbols Sans:Book@20">Timer:</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="504" y2="522" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="504" y2="522" delay="1000" condition="{CurrentEventsIsRecording1}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="528" y2="543" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime1:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName1}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="551" y2="569" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle2}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="551" y2="569" delay="1000" condition="{CurrentEventsIsRecording2}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle2}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="574" y2="590" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime2:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName2}</text>		
+<!--TIMER-INFO_MAIN-MENU-->		</block>			
+<!--TIMER-INFO_MAIN-MENU-->		<block condition="and({CurrentEventsTitle1},{CurrentEventsTitle2},{CurrentEventsTitle3})">
+<!--TIMER-INFO_MAIN-MENU-->			<image x="762"  y="422" colors="128" path="images/timer3Long.png"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="422" y2="430" arc="-2" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="762" x2="770" y1="589" y2="597" arc="-3" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="422" y2="430" arc="-1" color="BackgroundLight"/>
+<!--TIMER-INFO_MAIN-MENU-->			<ellipse x1="1180" x2="1188" y1="589" y2="597" arc="-4" color="BackgroundLight"/>	
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="427" y2="447" color="TextButton" font="VDRSymbols Sans:Book@20">Timer:</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="457" y2="475" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="457" y2="475" delay="1000" condition="{CurrentEventsIsRecording1}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle1}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="480" y2="496" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime1:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName1}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="504" y2="522" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle2}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="504" y2="522" delay="1000" condition="{CurrentEventsIsRecording2}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle2}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="528" y2="543" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime2:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName2}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="551" y2="569" color="TextButton" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle3}</text>
+<!--TIMER-INFO_MAIN-MENU-->			<blink x1="775" x2="1177" y1="551" y2="569" delay="1000" condition="{CurrentEventsIsRecording3}" color="RedLow" font="VDRSymbols Sans:Book@18">{CurrentEventsTitle3}</blink>
+<!--TIMER-INFO_MAIN-MENU-->			<text x1="775" x2="1177" y1="574" y2="590" color="TextButton" font="VDRSymbols Sans:Book@16">{CurrentEventsStartDateTime3:%a\ %d.%m\ \ %H\:%M}   {CurrentEventsChannelName3}</text>	
+<!--TIMER-INFO_MAIN-MENU-->		</block>
+	</block>	
+		
+<!--MAIN-MENU END-->
+	
+<!--SUBMENU-BEGIN-->	
+
+	<block  condition="not(equal({MenuTitle:clean},'VDR'))">
+     
+		<text x1="100" x2="800" y1="70" y2="90" align="left"  color="TextButton" font="VDRSymbols Sans:Book@20">{MenuTitle}</text>
+		<image x1="64" x2="66" y1="104" y2="628" path="images/divider.png"/>
+		<rectangle x1="66" x2="1215" y1="104" y2="628"  color="Background" />
+		<image x1="1215" x2="1217" y1="104" y2="628" path="images/divider.png"/>
+	
+		<list  x1="100" x2="1180" y1="125" y2="628"  >
+			<item height="40"/>  
+			<image x1="6" x2="1074" y1="0" y2="42"   condition="{IsMenuCurrent}"  path="images/menuCurrentLong.png" />
+			<ellipse x1="6" x2="12" y1="0" y2="6"  condition="{IsMenuCurrent}" arc="-2" color="Background"/>
+			<ellipse x1="6" x2="12" y1="36" y2="42"  condition="{IsMenuCurrent}" arc="-3" color="Background"/>
+			<ellipse x1="1068" x2="1074" y1="0" y2="6"  condition="{IsMenuCurrent}" arc="-1" color="Background"/>
+			<ellipse x1="1068" x2="1074" y1="36" y2="42"  condition="{IsMenuCurrent}" arc="-4" color="Background"/>			
+			
+<!--DEFAULTMENUFONT-->		<text x1="32" x2="1066" y1="4" y2="31" color="TextHigh" align="left" font="VDRSymbols Sans:Book@26">{MenuCurrent}</text>
+<!--DEFAULTMENUFONT-->		<text x1="36" x2="1066" y1="8" y2="30" color="TextHigh" font="VDRSymbols Sans:Book@22">{MenuGroup}</text>
+<!--DEFAULTMENUFONT-->		<text x1="36" x2="1066" y1="8" y2="30" color="TextButton" font="VDRSymbols Sans:Book@22">{MenuItem}</text>
+<!--SMALLMENUFONT-->		<text x1="32" x2="1066" y1="7" y2="31" color="TextHigh" align="left" font="VDRSymbols Sans:Book@24">{MenuCurrent}</text>
+<!--SMALLMENUFONT-->		<text x1="36" x2="1066" y1="9" y2="29" color="TextHigh" font="VDRSymbols Sans:Book@20">{MenuGroup}</text>
+<!--SMALLMENUFONT-->		<text x1="36" x2="1066" y1="9" y2="29" color="TextButton" font="VDRSymbols Sans:Book@20">{MenuItem}</text>
+<!--LARGEMENUFONT-->		<text x1="32" x2="1066" y1="4" y2="32" color="TextHigh" align="left" font="VDRSymbols Sans:Book@28">{MenuCurrent}</text>
+<!--LARGEMENUFONT-->		<text x1="36" x2="1066" y1="5" y2="29" color="TextHigh" font="VDRSymbols Sans:Book@24">{MenuGroup}</text>
+<!--LARGEMENUFONT-->		<text x1="36" x2="1066" y1="5" y2="29" color="TextButton" font="VDRSymbols Sans:Book@24">{MenuItem}</text>	
+		</list>
+		 
+		<image x1="64" x2="1216"  y1="628" y2="673"  colors="128" path="images/buttonsLong.png"  /> 
+		
+		<rectangle x1="93" x2="352" y1="638" y2="639"  color="RedLow" />
+		<rectangle x1="93" x2="352" y1="640" y2="641"  color="RedHigh" />		
+		<rectangle x1="364" x2="634" y1="638" y2="639"  color="GreenLow" />
+		<rectangle x1="364" x2="634" y1="640" y2="641"  color="GreenHigh" />				
+		<rectangle x1="647" x2="915" y1="638" y2="639"  color="YellowLow" />
+		<rectangle x1="647" x2="915" y1="640" y2="641"  color="YellowHigh" />				
+		<rectangle x1="928" x2="1184" y1="638" y2="639"  color="BlueLow" />
+		<rectangle x1="928" x2="1184" y1="640" y2="641"  color="BlueHigh" />
+				 
+		<text x1="93" x2="350" y1="642"  y2="660" color="TextButton" align="center" font="VDRSymbols Sans:Book@18">{ButtonRed}</text>
+		<text x1="364" x2="632" y1="642" y2="660"  color="TextButton" align="center" font="VDRSymbols Sans:Book@18">{ButtonGreen}</text>
+		<text x1="648" x2="913" y1="642" y2="660"  color="TextButton" align="center" font="VDRSymbols Sans:Book@18">{ButtonYellow}</text>
+		<text x1="928" x2="1184" y1="642" y2="660"  color="TextButton" align="center" font="VDRSymbols Sans:Book@18">{ButtonBlue}</text>	
+		 
+		<block condition="not({ButtonRed})">
+			<image x1="77" x2="359"  y1="628" y2="673" colors="128" path="images/buttonsHideRed.png"/>	
+		</block>		
+		<block condition="not({ButtonGreen})">
+			<image x1="359" x2="641"  y1="628" y2="673" colors="128" path="images/buttonsHideGreen.png"/>	
+		</block>		
+		<block condition="not({ButtonYellow})">
+			<image x1="641" x2="922"  y1="628" y2="673" colors="128" path="images/buttonsHideYellow.png"/>	
+		</block>
+		<block condition="not({ButtonBlue})">
+			<image x1="922" x2="1199"  y1="628" y2="673" colors="128" path="images/buttonsHideBlue.png"/>	
+		</block>		
+	</block> 
+<!--SUBMENU-END-->
+
+	<block condition="{MenuText}" >
+		<scrolltext  x1="116" x2="1133" y1="146" y2="593" font="Osd" color="TextDescr" >{MenuText}</scrolltext>
+		<scrollbar  x1="1157" x2="1160" y1="146" y2="593" condition="or({CanScrollUp},{CanScrollDown})" color="TextHigh" bgColor="TextButton" />
+	</block> 
+
+	<block condition="or({PresentDescription},{PresentTitle},{RecordingName})">
+		<block  condition="{RecordingName}">
+			<text x1="116" x2="900" y1="146" y2="173" color="TextDescr" font="VDRSymbols Sans:Book@24">{RecordingTitle}</text>
+			<text x1="900" x2="1003" y1="146" y2="173" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{RecordingDateTime:%a %d.%m.%Y}</text>
+			<text x1="1033" x2="1166" y1="146" y2="173" color="TextDescr" align="right" font="VDRSymbols Sans:Book@20">{RecordingDateTime:%H\:%M} Uhr</text>
+			
+			<block  condition="{RecordingShortText}">
+				<text x1="116" x2="1166" y1="206" y2="216" color="TextDescr" font="VDRSymbols Sans:Book@16" > Kanal: {ChannelName}  |  {RecordingLength} min  |  Dateigroesse: {RecordingSize} MB | Geschnitten: {RecordingCuttedLength} min</text>
+				<text x1="116" x2="866" y1="230" y2="256" color="TextDescr"  font="VDRSymbols Sans:Book@20">{RecordingShortText}</text>
+				<scrolltext x1="116" x2="1146" y1="280" y2="593" color="TextDescr" font="Osd">{RecordingDescription} </scrolltext>
+				<scrollbar x1="1178" x2="1181" y1="280" y2="593" color="TextDescr" bgColor="TextButton" condition="or({CanScrollUp},{CanScrollDown})"/>
+			</block>
+
+			<block  condition="not({RecordingShortText})">
+				<text x1="116" x2="1166" y1="240" y2="256" color="TextDescr" font="VDRSymbols Sans:Book@16" >{RecordingLength} min | geschnitten: {RecordingCuttedLength} min Kanal: {ChannelName} | Dateigroesse: {RecordingSize} MB | Geschnitten: {RecordingCuttedLength} MB</text>
+				<scrolltext x1="116" x2="1146" y1="280" y2="593" color="TextDescr" font="Osd">{RecordingDescription}</scrolltext>
+				<scrollbar x1="1178" x2="1181" y1="280" y2="593" color="TextDescr" bgColor="TextButton" condition="or({CanScrollUp},{CanScrollDown})"/>
+			</block>
+		</block>
+		
+		<block  condition="not({RecordingName})">
+			<text x1="116" x2="966" y1="146" y2="173" color="TextDescr" font="VDRSymbols Sans:Book@24" >{PresentTitle}</text>
+			<text x1="116" x2="966" y1="196" y2="216" color="TextDescr" font="VDRSymbols Sans:Book@20" align="left" condition="not({PresentVPSDateTime})">{PresentStartDateTime:%a %d.%m.%y  %H\:%M} - {PresentEndDateTime:%H\:%M} ({PresentDuration:%m} min)</text>
+			<text x1="116" x2="966" y1="196" y2="216" color="TextDescr" font="VDRSymbols Sans:Book@20" align="left"  condition="{PresentVPSDateTime}">{PresentStartDateTime:%a %d.%m.%y  %H\:%M} - {PresentEndDateTime:%H\:%M} ({PresentDuration:%m} min) VPS: {PresentVPSDateTime:%H\:%M}</text>
+			<text x1="116" x2="966" y1="240" y2="263" color="TextDescr" font="VDRSymbols Sans:Book@20">{PresentShortText}</text>			
+			<scrolltext x1="116" x2="1146" y1="280" y2="593" color="TextDescr" font="Osd">{PresentDescription}</scrolltext>
+			<scrollbar x1="1178" x2="1181" y1="280" y2="593" color="TextDescr" bgColor="TextButton" condition="or({CanScrollUp},{CanScrollDown})"/>
+			
+<!--EPGIMAGES--> <image x1="986" x2="1146" y1="146" y2="266" colors="64" condition="file('/etc/vdr/plugins/tvm2vdr/epgimages/{PresentEventID}.png')"  path="/etc/vdr/plugins/tvm2vdr/epgimages/{PresentEventID}.png"/>
+			
+		</block>
+	</block>
+	      
+	<block  condition="{Message}">
+		<image x1="64" x2="1216" y1="596" y2="633" path="images/messageMenu.png" />
+		
+		<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageError}" color="RedLow" />
+		<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageError}" color="RedHigh" />		
+		<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageInfo}" color="GreenLow" />
+		<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageInfo}" color="GreenHigh" />				
+		<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageWarning}" color="YellowLow" />
+		<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageWarning}" color="YellowHigh" />				
+		<rectangle x1="93" x2="1184" y1="603" y2="604" condition="{MessageStatus}" color="BlueLow" />
+		<rectangle x1="93" x2="1184" y1="605" y2="606" condition="{MessageStatus}" color="BlueHigh" />	
+	
+		<text x1="0" x2="1280" y1="608" y2="626" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageInfo}</text>
+		<text x1="0" x2="1280" y1="608" y2="626" align="center" color="TextButton" font="VDRSymbols Sans:Book@18">{MessageStatus}</text>
+		<text x1="0" x2="1280" y1="608" y2="626" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageWarning}</text>
+		<text x1="0" x2="1280" y1="608" y2="626" align="center" color="TextButton"  font="VDRSymbols Sans:Book@18">{MessageError}</text> 
+	</block>
+</display>
+
+
+<display id="audioTracks">
+	<window x1="0" x2="1280" y1="0" y2="720" bpp="8"/>
+		<list x1="833" x2="1280" y1="506" y2="646">
+			<item height="43"/>
+			<ellipse x1="0" x2="35" y1="4" y2="39"   arc="0" color="Background"/>
+			<rectangle x1="17" x2="446" y1="4" y2="39"  color="Background" />
+			<image x1="0" x2="446" y1="4" y2="39" condition="{IsMenuCurrent}"  path="images/audio.png" />
+			<ellipse x1="0" x2="17" y1="3" y2="21"  condition="{IsMenuCurrent}" arc="-2" color="#0000000"/>
+			<ellipse x1="0" x2="17" y1="22" y2="40"  condition="{IsMenuCurrent}" arc="-3" color="#0000000"/>
+			<text x1="26" x2="126" y1="10" y2="33" condition="{MenuCurrent}" color="TextHigh" font="VDRSymbols Sans:Book@22" align="left"> {MenuTitle}:</text>
+			<text x1="133" x2="340" y1="10" y2="33" color="TextButton" font="VDRSymbols Sans:Book@22" align="right">{MenuItem}</text>
+			<text x1="133" x2="340" y1="10" y2="33" color="TextHigh" font="VDRSymbols Sans:Book@22" align="left"> {MenuCurrent}</text>
+		</list>
+</display>
+      
+</skin>

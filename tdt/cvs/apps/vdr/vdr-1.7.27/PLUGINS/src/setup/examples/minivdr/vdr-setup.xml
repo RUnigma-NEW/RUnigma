@@ -1,0 +1,225 @@
+<!--
+    -   Mini-VDR Configuration File
+    -   (c) Ralf Dotzert
+    -
+    -
+    -   Example:
+    -
+    -  <setup sysconfigFile="/etc/sysconfig">
+    -         bootLinux="/sbin/reboot"
+    -         VDRlibDir="/usr/lib/vdr/plugins"
+    -    <plugins sysconfig="PLUGINLIST">
+    -         <plugin name="setup" info="Minivdr-Setup" active="yes" />
+    -         <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="VDR CD"/>
+    -         ...
+    -    </plugin>
+    - <menus>
+    -    <menu name="VDR-Einstellungen">
+    -      <menu name="Edit VDR-Menü" system="VDRMenu" help1="VDR Menü bearbeiten"   />
+    -      <menu name="OSD" system="OSD" help1="Einstellungen zum On Screen Display" />
+    -      <menu name="EPG" system="EPG" />
+    -      <menu name="DVB" system="DVB" />
+    -      <menu name="LNB" system="LNB" />
+    -      <menu name="CICAM" system="CICAM" />
+    -      <menu name="Aufnahme" system="Record" />
+    -      <menu name="Wiedergabe" system="Replay" />
+    -      <menu name="Sonstiges" system="Misc" />
+    -      <menu name="Plugins-Setup" system="Plugins" />
+    -      <menu name="Aktiviere Plugins" system="ActPlugins" />
+    -      <menu name="BigPatch-Setup" system="BigPatch" />     -- Wenn der Bigpatch angwendet wurde --
+    -      <menu name="LiveBuffer-Setup" system="LiveBuffer" /> -- Wenn der LiveBuffer-Patch angewendet wurde --
+    -    </menu>
+    -    <menu name="Netzwerk" help1="Netzwerkeinstellungen"  command="/etc/init.d/network restart">
+    -       <entry name="Benutze DHCP" sysconfig="USE_DHCP" type="bool" value="true" command="/etc/init.d/network restart/>
+    -       <entry name="IP-Adresse" sysconfig="IP" type="text" value="192.168.0.111" />
+    -        ...
+    -    </menu>
+    -    <menu name="Sonstiges">
+    -        <entry name="Ramddisk im MB" sysconfig="RAMDISK" type="number" value="16" />
+    -        <menu name="SubMenu">
+    -          <entry ... />
+    -        </menu>
+    -    </menu>
+    -  </menus>
+    -</setup>
+-->
+<setup sysconfigFile="/etc/vdr/sysconfig" bootLinux="/sbin/reboot" VDRlibDir="/usr/lib/vdr/plugins">
+    <plugins sysconfig="PLUGINLIST">
+        <plugin name="alcd" info="Activy300 LCD Display" active="no" />
+        <plugin name="lcdproc" info="Alphanummerische Displays" active="no" />
+        <plugin name="vbox" info="Anrufbeantworter Plugin" active="yes" />
+        <plugin name="rotor" info="Ansteuerung Rotor" active="yes" />
+        <plugin name="femon" info="Anzeige Signalstärke/Qualität" active="yes" />
+        <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="AutoPlay Funktion" active="yes" />
+        <plugin name="autotimeredit" param="-f /etc/vdradmin/vdradmind.at -p" info="Autotimer-Edit" active="yes" />
+        <plugin name="prefermenu" info="Bevorzugte Kanäle" active="yes" />
+        <plugin name="osdpip" info="Bild in Bild" active="yes" />
+        <plugin name="image" param="-C /usr/bin/imageplugin.sh -m /usr/bin/mount.sh" info="Bildbetrachter Plugin" active="yes" />
+        <plugin name="osdimage" param="--directory /video0/media/photos/vdr" info="Bildern über OSD" active="yes" />
+        <plugin name="burn" param="-D /dev/sr0 -d /video0 -i /video0/convert/dvd/" info="Brennt Filme auf DVD" active="yes" />
+        <plugin name="remote" info="DVB Karten Fernbedienung" active="no" protected="yes" />
+        <plugin name="dvdselect" info="DVD Laufwerke einhängen" active="yes" />
+        <plugin name="dvd" info="DVD Spieler Plugin" active="yes" />
+        <plugin name="freecell" info="Das Kartenspiel Freecell" active="yes" />
+        <plugin name="osddemo" info="Demo On-Screen-Display" active="no" />
+        <plugin name="tvonscreen" param="-v /etc/vdradmin/vdradmind.at" info="EPG Programmzeitschrift" active="yes" />
+        <plugin name="epgsearch" info="EPG zeigt Wiederholungen" active="yes" />
+        <plugin name="hello" info="Ein &apos;hello&apos; Plugin" active="no" />
+        <plugin name="screenshot" info="Erstellt Screenshots" active="yes" />
+        <plugin name="graphlcd" param="-d ks0108" info="GraphLCD" active="yes" />
+        <plugin name="graphtft" param="-d /dev/fb0" info="GraphTFT" active="no" />
+        <plugin name="radio" info="Hintergrundbild für Radiosender" active="yes" />
+        <plugin name="chanorg" info="Kanäle sortieren" active="yes" />
+        <plugin name="solitaire" info="Kartenspiel Solitaire" active="yes" />
+        <plugin name="vdrc" info="Linux Commander OSD" active="yes" />
+        <plugin name="setup" info="Minivdr-Setup" active="yes" protected="yes" />
+        <plugin name="sky" info="Mpeg2 Encoder Plugin" active="yes" />
+        <plugin name="newsticker" info="Newsticker" active="yes" />
+        <plugin name="status" info="Osd-Status" active="no" />
+        <plugin name="pim" info="PIM-Kalender Plugin" active="yes" />
+        <plugin name="channelscan" info="Sender Suchlauf" active="yes" />
+        <plugin name="taste" info="Sendungen-Keywords sperren" active="yes" />
+        <plugin name="sleeptimer" info="Shutdown" active="yes" />
+        <plugin name="mlcd" info="Siemens Multitainer LC-Display" active="no" />
+        <plugin name="text2skin" info="Skin-Plugin für VDR" active="yes" />
+        <plugin name="mp3" info="Spielt MP3-Dateien ab" active="yes" />
+        <plugin name="mplayer" info="Spielt diverse Videoformate" active="yes" />
+        <plugin name="streamdev-client" info="Streaming Client" active="no" />
+        <plugin name="streamdev-server" info="Streaming Server" active="yes" />
+        <plugin name="sysinfo" info="Systeminformationen" active="yes" />
+        <plugin name="osdteletext" info="Teletext Dekoder für das OSD" active="yes" />
+        <plugin name="console" info="Textkonsole auf dem Fernseher" active="yes" />
+        <plugin name="tvtv" info="TvTv im OSD" active="yes" />
+        <plugin name="clock" info="Uhr" active="yes" />
+        <plugin name="skincurses" info="VDR-Skin für Konsole" active="yes" />
+        <plugin name="games" info="Verschiedene Spiele" active="yes" />
+        <plugin name="playlist" info="Verw.von Playlisten" active="yes" />
+        <plugin name="vcd" param="--vcd=/dev/dvd" info="VideoCD Plugin" active="yes" />
+        <plugin name="yaepg" info="Weitere EPG-Ansicht" active="yes" />
+        <plugin name="undelete" info="Wiederh. gelöschter Aufnahmen" active="yes" />
+        <plugin name="pilot" info="Zapping Co-Pilot" active="yes" />
+        <plugin name="director" info="Zeigt Multifeed Kanäle" active="yes" />
+        <plugin name="timeline" info="Zeitleiste" active="yes" />
+        <plugin name="admin" info="admin" active="no" />
+        <plugin name="wapd" info="wapd" active="yes" />
+    </plugins>
+    <menus>
+      <menu name="VDR-Einstellungen">
+        <menu name="Edit VDR-Menü" system="VDRMenu" help1="VDR Menü bearbeiten"   help2="setup_editmenu.hlp"/>
+        <menu name="OSD" system="OSD" help1="Einstellungen zum On Screen Display" help2="setup_osd.hlp"/>
+        <menu name="EPG" system="EPG" help1="Einstellungen zum Electronic Prgramming Guide" help2="setup_epg.hlp"/>
+        <menu name="DVB" system="DVB" help1="Einstellungen zur DVB-Karte"         help2="setup_dvb.hlp"/>
+        <menu name="LNB" system="LNB" help2="setup_lnb.hlp"/>
+        <menu name="CICAM" system="CICAM" help2="setup_cicam.hlp"/>
+        <menu name="Aufnahme" system="Record" help2="setup_record.hlp"/>
+        <menu name="Wiedergabe" system="Replay" help2="setup_replay.hlp"/>
+        <menu name="Sonstiges" system="Misc" help2="setup_misc.hlp"/>
+        <menu name="Aktiviere Plugins" system="ActPlugins" help1="Aktiviere und Deaktiviere Plugins" help2="setup_actplugins.hlp"/>
+        <menu name="Plugins-Setup" system="Plugins" help1="Plugins konfigurieren"/>
+        <menu name="LiveBuffer" system="LiveBuffer" />
+        <menu name="BigPatch" system="BigPatch" />
+      </menu>
+      <menu name="Netzwerk">
+          <menu name="Netzwerk-Einstellungen">
+              <entry name="Netzwerk einschalten" sysconfig="NETWORKING" type="bool" value="yes" />
+              <entry name="Netzwerktreiber" sysconfig="NETWORK_DRIVER" type="selection" setup="networkdriver" value="via-rhine" />
+              <entry name="Benutze DHCP" sysconfig="USE_DHCP" type="bool" value="no" />
+              <entry name="IP-Adresse" sysconfig="IP" type="ip" value="192.168.1.200" />
+              <entry name="Gateway" sysconfig="GATEWAY" type="ip" value="192.168.1.1" />
+              <entry name="Nameserver" sysconfig="NAMESERVER" type="ip" value="192.168.1.1" />
+              <entry name="Nameserver 2" sysconfig="NAMESERVER2" type="ip" value="192.168.1.1" />
+              <entry name="Nameserver 3" sysconfig="NAMESERVER3" type="ip" value="192.168.1.1" />
+              <entry name="Domaine" sysconfig="DOMAIN" type="text" value="local" />
+              <entry name="Hostname" sysconfig="HOSTNAME" type="text" value="MiniVDR" />
+              <entry name="Starte FTP Dämon" sysconfig="START_FTPD" type="bool" value="yes" />
+          </menu>
+          <menu name="Wireless Lan">
+              <entry name="Starte WLAN" sysconfig="WLAN" type="bool" value="yes" />
+              <entry name="WLAN IP" sysconfig="WLAN_IP" type="ip" value="192.168.1.200" />
+              <entry name="WLAN DHCP" sysconfig="WLAN_DHCP" type="bool" value="no" />
+              <entry name="WLAN SSID" sysconfig="WLAN_SSID" type="text" value="ar0815" />
+              <entry name="WLAN ADHOC=ja | INFRA=nein" sysconfig="WLAN_ADHOC" type="bool" value="no" />
+              <entry name="WLAN WEP" sysconfig="WLAN_WEP" type="bool" value="yes" />
+              <entry name="WLAN OPEN=ja | Shared=nein" sysconfig="WLAN_OPENSYSTEM" type="bool" value="yes" />
+              <entry name="WLAN CHANNEL" sysconfig="WLAN_CHANNEL" type="selection" value="6">
+                  <value>1</value>
+                  <value>2</value>
+                  <value>3</value>
+                  <value>4</value>
+                  <value>5</value>
+                  <value>6</value>
+                  <value>7</value>
+                  <value>8</value>
+                  <value>9</value>
+                  <value>10</value>
+                  <value>11</value>
+                  <value>12</value>
+                  <value>13</value>
+                  <value>14</value>
+              </entry>
+              <entry name="WLAN WEP KEY" sysconfig="WLAN_WEP_KEY" type="selection" value="0">
+                  <value>0</value>
+                  <value>1</value>
+                  <value>2</value>
+                  <value>3</value>
+              </entry>
+              <entry name="WLAN WEP KEY 0" sysconfig="WLAN_WEP_KEY_0" type="hex" value="E8:B5:5E:65:B9" />
+              <entry name="WLAN WEP KEY 1" sysconfig="WLAN_WEP_KEY_1" type="hex" value="35:45:BC:D0:D9" />
+              <entry name="WLAN WEP KEY 2" sysconfig="WLAN_WEP_KEY_2" type="hex" value="E1:90:9A:E7:B0" />
+              <entry name="WLAN WEP KEY 3" sysconfig="WLAN_WEP_KEY_3" type="hex" value="7A:1E:E0:80:1E" />
+          </menu>
+          <menu name="Samba Einstellungen">
+              <entry name="Starte SAMBA" sysconfig="START_SAMBA" type="bool" value="yes" />
+              <entry name="Samba Freiagabename" sysconfig="SAMBA_SHARE" type="text" value="vdr_root" />
+              <entry name="Arbeitsgruppe" sysconfig="WORKGROUP" type="text" value="Digital" />
+              <entry name="Windowsnutzer" sysconfig="WINUSER" type="text" value="Andreas" />
+          </menu>
+      </menu>
+      <menu name="Fernbedienung">
+          <entry name="Lirc und Remote abschalten" sysconfig="LIRC_REMOTE_OFF" type="bool" value="no" />
+          <entry name="Lirc Comport" sysconfig="LIRC" type="selection" value="com2">
+              <value>com1</value>
+              <value>com2</value>
+              <value>com3</value>
+              <value>com4</value>
+          </entry>
+          <menu name="Remote">
+              <entry name="Interne IRFB / Remote nutzen" sysconfig="USE_INTERNAL_IR" type="bool" value="no" />
+              <entry name="Invertiere Signal" sysconfig="INVERT_SIGNAL" type="bool" value="yes" />
+          </menu>
+      </menu>
+      <menu name="Sonstiges">
+          <entry name="Kanalliste" sysconfig="CHANNELLIST" type="selection" setup="channellist" value="DVB-s_MiniVDR" />
+          <entry name="Ringbuffer nutzen" sysconfig="RINGBUFFER_SYSLOG" type="bool" value="yes" />
+          <entry name="Video-Modus" sysconfig="VIDMODE" type="selection" value="1">
+              <value>0</value>
+              <value>1</value>
+              <value>2</value>
+              <value>3</value>
+          </entry>
+          <entry name="ACPI Unsterstützung" sysconfig="ASROCK" type="bool" value="yes" />
+          <entry name="Ramdisk im MB" sysconfig="RAMDISK_SIZE" type="selection" value="16">
+              <value>16</value>
+              <value>24</value>
+              <value>32</value>
+              <value>40</value>
+              <value>48</value>
+              <value>56</value>
+              <value>64</value>
+          </entry>
+          <entry name="Starte Hotplug" sysconfig="HOTPLUG" type="bool" value="yes" />
+          <entry name="Festplatten abschalten" sysconfig="START_NOFLUSHD" type="bool" value="no" />
+          <entry name="FB-TV einschalten" sysconfig="START_FBTV" type="bool" value="no" />
+          <entry name="USB-Keybord nutzen" sysconfig="USB_KEYBOARD" type="bool" value="no" />
+          <entry name="Video0 Cache abschalten" sysconfig="CACHE_NO" type="bool" value="yes" />
+      </menu>
+      <menu name="Noad">
+          <entry name="Noad einschalten" sysconfig="NOAD" type="bool" value="yes" />
+          <entry name="Noad Online auschalten" sysconfig="NOADONL_OFF" type="bool" value="no" />
+          <entry name="Noad Online 1(ja) &lt;&gt; 2(nein)" sysconfig="NOAD_ONLINE" type="bool" value="no" />
+      </menu>
+      <menu name="Kindersicherung">
+          <entry name="Geheimcode (0000=AUS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+      </menu>
+    </menus>
+</setup>

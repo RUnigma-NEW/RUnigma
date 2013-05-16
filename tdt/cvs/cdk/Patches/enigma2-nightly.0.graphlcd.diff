@@ -1,0 +1,503 @@
+diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/gdi/lcd.h enigma2-nightly.patched/lib/gdi/lcd.h
+--- enigma2-nightly.org/lib/gdi/lcd.h	2011-12-08 23:44:23.822464745 +0100
++++ enigma2-nightly.patched/lib/gdi/lcd.h	2011-12-08 22:09:03.000000000 +0100
+@@ -5,6 +5,16 @@
+ #include <lib/gdi/esize.h>
+ #include <lib/gdi/erect.h>
+ 
++#ifdef __sh__
++#include <glcdgraphics/bitmap.h>
++#include <glcdgraphics/glcd.h>
++#include <glcdgraphics/image.h>
++#include <glcddrivers/config.h>
++#include <glcddrivers/driver.h>
++#include <glcddrivers/drivers.h>
++#include <glcdgraphics/extformats.h>
++#endif
++
+ #define LCD_CONTRAST_MIN 0
+ #define LCD_CONTRAST_MAX 63
+ #define LCD_BRIGHTNESS_MIN 0
+@@ -24,6 +34,7 @@
+ 	int _stride;
+ 	int locked;
+ #endif
++
+ public:
+ 	int lock();
+ 	void unlock();
+@@ -44,6 +55,15 @@
+ 	static eDBoxLCD *instance;
+ 	unsigned char inverted;
+ 	int is_oled;
++
++#ifdef __sh__
++	GLCD::cDriver * lcd;
++    GLCD::cBitmap * bitmap;
++    int displayNumber;
++    int depth;
++    int width, height;
++#endif
++
+ #ifdef SWIG
+ 	eDBoxLCD();
+ 	~eDBoxLCD();
+diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/main/Makefile.am enigma2-nightly.patched/main/Makefile.am
+--- enigma2-nightly.org/main/Makefile.am	2011-12-08 23:44:45.212475695 +0100
++++ enigma2-nightly.patched/main/Makefile.am	2011-12-08 19:23:24.000000000 +0100
+@@ -55,6 +55,8 @@
+ 
+ enigma2_LDFLAGS = -Wl,--export-dynamic
+ 
++enigma2_LDADD += -lglcddrivers -lglcdgraphics -lglcdskin
++ 
+ if HAVE_GIT_DIR
+ GIT_DIR = $(top_srcdir)/.git
+ GIT = git --git-dir=$(GIT_DIR)
+--- enigma2-nightly/main/enigma.cpp	2011-12-11 15:18:31.286513516 +0100
++++ enigma2-nightly.patched/main/enigma.cpp	2011-12-11 15:19:36.656544176 +0100
+@@ -182,7 +182,12 @@
+ 	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
+ 
+ 	dsk.setStyleID(0);
+-	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 96 ? 2 : 1);
++
++#ifndef __sh__
++  	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 96 ? 2 : 1);
++#else
++  	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 320 ? 1 : 2);
++#endif
+ 
+ /*	if (double_buffer)
+ 	{
+--- enigma2-nightly.org/lib/gdi/glcddc.h	2011-12-11 15:25:31.276723246 +0100
++++ enigma2-nightly.patched/lib/gdi/glcddc.h	2011-12-11 16:42:06.291558030 +0100
+@@ -11,6 +11,9 @@
+ 	int update;
+ 	void exec(const gOpcode *opcode);
+ 	gSurface surface;
++#ifdef __sh__    
++	struct timespec last_update;
++#endif
+ public:
+ 	gLCDDC();
+ 	~gLCDDC();
+--- enigma2-nightly.org/data/skin_default.xml	2011-12-11 16:45:02.911647641 +0100
++++ enigma2-nightly.patched/data/skin_default.xml	2011-12-11 17:33:54.618670101 +0100
+@@ -2,16 +2,16 @@
+ 	<!-- Main screen colors (id=1 LCD) -->
+ 	<windowstyle type="skinned" id="1">
+ 		<color name="Background" color="#000000" />
+-		<color name="LabelForeground" color="#ffffff" />
++		<color name="LabelForeground" color="#a0a0a0" />
+ 		<color name="ListboxBackground" color="#000000" />
+-		<color name="ListboxForeground" color="#ffffff" />
++		<color name="ListboxForeground" color="#a0a0a0" />
+ 		<color name="ListboxSelectedBackground" color="#000000" />
+-		<color name="ListboxSelectedForeground" color="#ffffff" />
++		<color name="ListboxSelectedForeground" color="#a0a0a0" />
+ 		<color name="ListboxMarkedBackground" color="#000000" />
+-		<color name="ListboxMarkedForeground" color="#ffffff" />
++		<color name="ListboxMarkedForeground" color="#a0a0a0" />
+ 		<color name="ListboxMarkedAndSelectedBackground" color="#000000" />
+-		<color name="ListboxMarkedAndSelectedForeground" color="#ffffff" />
+-		<color name="WindowTitleForeground" color="#ffffff" />
++		<color name="ListboxMarkedAndSelectedForeground" color="#a0a0a0" />
++		<color name="WindowTitleForeground" color="#a0a0a0" />
+ 		<color name="WindowTitleBackground" color="#000000" />
+ 	</windowstyle>
+ 	<!-- Main screen colors (id=2 Color OLED (dm800se)) -->
+@@ -1171,20 +1171,20 @@
+ 	<!-- LCD/OLED Screens -->
+ 
+ 	<!-- LCD screen (channelselection) -->
+-	<screen name="ChannelSelection_summary" position="0,0" size="132,64" id="1">
+-		<widget source="parent.ServiceEvent" render="Label" position="6,0" size="120,25" font="Display;14" halign="center" valign="center" >
++	<screen name="ChannelSelection_summary" position="0,0" size="320,240" id="1">
++		<widget source="parent.ServiceEvent" render="Label" position="2,96" size="316,85" font="Display;48" halign="center" valign="center" >
+ 			<convert type="ServiceName">Name</convert>
+ 		</widget>
+-		<widget source="parent.ServiceEvent" render="Progress" position="16,27" size="100,5" borderWidth="1">
++		<widget source="session.Event_Now" render="Progress" position="2,200" size="316,20" borderWidth="3" backgroundColor="dark">
+ 			<convert type="EventTime">Progress</convert>
+ 		</widget>
+-		<widget source="global.CurrentTime" render="Label" position="6,32" size="90,32" font="Display;32" halign="right" valign="top">
++		<widget source="global.CurrentTime" render="Label" position="2,25" size="120,50" font="Display;48" halign="center" valign="center" foregroundColor="#FFFFFF" backgroundColor="#000000" >
+ 			<convert type="ClockToText">Format:%H:%M</convert>
+ 		</widget>
+-		<widget source="global.CurrentTime" render="Label" position="100,34" zPosition="1" size="26,30" font="Display;16" valign="top">
++		<widget source="global.CurrentTime" render="Label" position="122,34" zPosition="1" size="34,34" font="Display;32" valign="top">
+ 			<convert type="ClockToText">Format:%S</convert>
+ 		</widget>
+-	</screen> 
++	</screen>
+ 	<!-- Color OLED screen (ChannelSelection) -->
+ 	<screen name="ChannelSelection_summary" position="0,0" size="96,64" id="2">
+ 		<widget source="parent.ServiceEvent" render="Label" position="0,0" size="96,28" font="Display;16" halign="center" valign="center" >
+@@ -1198,20 +1198,24 @@
+ 		</widget>
+ 	</screen>
+ 	<!-- LCD screen (main) -->
+-	<screen name="InfoBarSummary" position="0,0" size="132,64" id="1">
+-		<widget source="session.CurrentService" render="Label" position="6,0" size="120,25" font="Display;14" halign="center" valign="center" >
++	<screen name="InfoBarSummary" position="0,0" size="320,240" id="1">
++		<widget source="session.CurrentService" render="Label" position="2,96" size="316,85" font="Display;48" halign="center" valign="center" >
+ 			<convert type="ServiceName">Name</convert>
+ 		</widget>
+-		<widget source="session.Event_Now" render="Progress" position="16,27" size="100,5" borderWidth="1">
++		<!-- Channellogo (Picon) -->
++		<widget source="session.CurrentService" render="Picon" position="200,10" zPosition="1" size="100,60" alphatest="on">
++			<convert type="ServiceName">Reference</convert>
++		</widget>
++		<widget source="session.Event_Now" render="Progress" position="2,200" size="316,20" borderWidth="3">
+ 			<convert type="EventTime">Progress</convert>
+ 		</widget>
+-		<widget source="global.CurrentTime" render="Label" position="6,32" size="90,32" font="Display;32" halign="right" valign="top">
++		<widget source="global.CurrentTime" render="Label" position="2,25" size="120,50" font="Display;48" halign="right" valign="top">
+ 			<convert type="ClockToText">Format:%H:%M</convert>
+ 		</widget>
+-		<widget source="global.CurrentTime" render="Label" position="100,34" zPosition="1" size="26,30" font="Display;16" valign="top">
++		<widget source="global.CurrentTime" render="Label" position="122,34" zPosition="1" size="34,34" font="Display;32" valign="top">
+ 			<convert type="ClockToText">Format:%S</convert>
+ 		</widget>
+-		<widget source="session.RecordState" render="FixedLabel" text=" " position="6,32" zPosition="1" size="126,32">
++		<widget source="session.RecordState" render="FixedLabel" text=" " position="2,2" zPosition="1" size="126,20">
+ 			<convert type="ConfigEntryTest">config.usage.blinking_display_clock_during_recording,True,CheckSourceBoolean</convert>
+ 			<convert type="ConditionalShowHide">Blink</convert>
+ 		</widget>
+@@ -1233,7 +1237,7 @@
+ 		</widget>
+ 	</screen>
+ 	<!-- LCD screen (movieplayer) -->
+-	<screen name="InfoBarMoviePlayerSummary" position="0,0" size="132,64" id="1">
++	<screen name="InfoBarMoviePlayerSummary" position="0,0" size="320,240" id="1">
+ 		<widget source="session.CurrentService" render="Label" position="6,0" size="120,25" font="Display;14" halign="center" valign="center" >
+ 			<convert type="ServiceName">Name</convert>
+ 		</widget>
+@@ -1265,17 +1269,17 @@
+ 		</widget>
+ 	</screen>
+ 	<!-- LCD screen (ChoiceBox) -->
+-	<screen name="ChoiceBox_summary" position="0,0" size="132,64" id="1">
+-		<widget source="parent.summary_list" render="Label" position="6,0" size="126,64" font="Display;11" />
++	<screen name="ChoiceBox_summary" position="0,0" size="320,240" id="1">
++		<widget source="parent.summary_list" render="Label" position="2,0" size="316,200" font="Display;48" />
+ 	</screen>
+ 	<!-- Color OLED screen (ChoiceBox) -->
+ 	<screen name="ChoiceBox_summary" position="0,0" size="96,64" id="2">
+ 		<widget source="parent.summary_list" render="Label" position="0,0" size="96,64" font="Display;10" />
+ 	</screen>	
+ 	<!-- LCD screen (MessageBox) -->
+-	<screen name="MessageBox_summary" position="0,0" size="132,64" id="1">
+-		<widget source="parent.Text" render="Label" position="0,0" size="132,52" font="Display;11" halign="center" valign="center" />
+-		<widget source="parent.selectedChoice" render="Label" position="6,50" size="120,14" font="Display;14" halign="center" valign="center" />
++	<screen name="MessageBox_summary" position="0,0" size="320,240" id="1">
++		<widget source="parent.Text" render="Label" position="2,0" size="316,200" font="Display;48" halign="center" valign="center" />
++		<widget source="parent.selectedChoice" render="Label" position="6,205" size="120,30" font="Display;28" halign="center" valign="center" />
+ 	</screen>
+ 	<!-- Color OLED screen (MessageBox) -->
+ 	<screen name="MessageBox_summary" position="0,0" size="96,64" id="2">
+@@ -1283,7 +1287,7 @@
+ 		<widget source="parent.selectedChoice" render="Label" position="0,50" size="96,14" font="Display;12" halign="center" valign="center" />
+ 	</screen>
+ 	<!-- LCD screen (menus) -->
+-	<screen name="MenuSummary" position="0,0" size="132,64" id="1">
++	<screen name="MenuSummary" position="0,0" size="320,240" id="1">
+ 		<widget source="parent.title" render="Label" position="6,0" size="120,32" font="Display;14" halign="center" valign="center"/>
+ 		<widget source="parent.menu" render="Label" position="6,32" size="120,32" font="Display;16" halign="center" valign="center">
+ 			<convert type="StringListSelection" />
+@@ -1297,7 +1301,7 @@
+ 		</widget>
+ 	</screen>	
+ 	<!-- LCD screen (ServiceScan) -->
+-	<screen name="ServiceScanSummary" position="0,0" size="132,64" id="1">
++	<screen name="ServiceScanSummary" position="0,0" size="320,240" id="1">
+ 		<widget name="Title" position="6,4" size="120,42" font="Display;16" transparent="1" />
+ 		<widget name="Service" position="6,22" size="120,26" font="Display;12" transparent="1" />
+ 		<widget name="scan_progress" position="6,50" zPosition="1" borderWidth="1" size="56,12" backgroundColor="dark" />
+@@ -1309,7 +1313,7 @@
+ 		<widget name="scan_progress" position="0,50" zPosition="1" borderWidth="1" size="96,12" backgroundColor="dark" />
+ 	</screen>
+ 	<!-- LCD screen (setup) -->
+-	<screen name="SetupSummary" position="0,0" size="132,64" id="1">
++	<screen name="SetupSummary" position="0,0" size="320,240" id="1">
+ 		<widget source="SetupTitle" render="Label" position="6,0" size="120,24" halign="left" font="Display;12" />
+ 		<widget source="SetupEntry" render="Label" position="6,24" size="120,24" halign="center" font="Display;12" />
+ 		<widget source="SetupValue" render="Label" position="6,48" size="120,16" halign="right" font="Display;12" />
+@@ -1321,7 +1325,7 @@
+ 		<widget source="SetupValue" render="Label" position="0,48" size="96,16" halign="right" font="Display;10" />
+ 	</screen>
+ 	<!-- LCD screen (misc) -->
+-	<screen name="SimpleSummary" position="0,0" size="132,64" id="1">
++	<screen name="SimpleSummary" position="0,0" size="320,240" id="1">
+ 		<widget source="parent.Title" render="Label" position="6,0" size="120,64" font="Display;16" halign="center" valign="center" />
+ 	</screen>
+ 	<!-- Color OLED screen (misc) -->
+@@ -1329,7 +1333,7 @@
+ 		<widget source="parent.Title" render="Label" position="0,0" size="96,64" font="Display;14" halign="center" valign="center" />
+ 	</screen>
+ 	<!-- LCD screen (standby) -->
+-	<screen name="StandbySummary" position="0,0" size="132,64" id="1">
++	<screen name="StandbySummary" position="0,0" size="320,240" id="1">
+ 		<widget source="global.CurrentTime" render="Label" position="6,0" size="120,64" font="Display;40" halign="center" valign="center">
+ 			<convert type="ClockToText">Format:%H:%M</convert>
+ 		</widget>
+@@ -1349,7 +1353,7 @@
+ 		</widget>
+ 	</screen>
+ 	<!-- LCD screen (JobView) -->
+-	<screen name="JobView_summary" position="0,0" size="132,64" id="1">
++	<screen name="JobView_summary" position="0,0" size="320,240" id="1">
+ 		<widget source="parent.summary_job_name" render="Label" position="6,4" size="120,42" font="Display;16" />
+ 		<widget source="parent.summary_job_task" render="Label" position="6,22" size="120,26" font="Display;12" />
+ 		<widget source="parent.summary_job_progress" render="Progress" position="6,50" size="60,12" borderWidth="1" zPosition="1" />
+@@ -1367,7 +1371,7 @@
+ 		</widget>
+ 	</screen>
+ 	<!-- LCD screen (Wizard) -->
+-	<screen name="WizardSummary" position="0,0" size="132,64" id="1">
++	<screen name="WizardSummary" position="0,0" size="320,240" id="1">
+ 		<widget source="text" render="Label" position="6,0" size="120,16" font="Display;16" transparent="1" />
+ 		<widget source="parent.list" render="Label" position="6,18" size="120,46" font="Display;12">
+ 			<convert type="StringListSelection" />
+--- enigma2-nightly.org/lib/gdi/lcd.cpp	2012-01-11 22:37:39.806742760 +0100
++++ enigma2-nightly.patched/lib/gdi/lcd.cpp	2012-01-11 22:39:37.016800845 +0100
+@@ -16,6 +16,18 @@
+ #include <lib/base/init_num.h>
+ #include <lib/gdi/glcddc.h>
+ 
++#ifdef __sh__
++#include <glcdgraphics/bitmap.h>
++#include <glcdgraphics/glcd.h>
++#include <glcdgraphics/image.h>
++#include <glcddrivers/config.h>
++#include <glcddrivers/driver.h>
++#include <glcddrivers/drivers.h>
++#include <glcdgraphics/extformats.h>
++
++#include <byteswap.h>
++#endif
++
+ eDBoxLCD *eDBoxLCD::instance;
+ 
+ eLCD::eLCD()
+@@ -52,6 +64,8 @@
+ 	locked=0;
+ }
+ 
++#ifndef __sh__    
++
+ eDBoxLCD::eDBoxLCD()
+ {
+ 	int xres=132, yres=64, bpp=8;
+@@ -226,3 +240,142 @@
+ 	}
+ }
+ 
++#else
++
++/* **************************************************************** */
++/* Pearl LCD */
++
++eDBoxLCD::eDBoxLCD()
++{
++	eDebug("eDBoxLCD::eDBoxLCD >");
++
++	displayNumber = 0;
++	is_oled = 1;
++
++	instance=this;
++
++	if (GLCD::Config.Load("/etc/graphlcd.conf") == false)
++	{
++		eDebug("Error loading config file!\n");
++		return;
++	}
++	if (GLCD::Config.driverConfigs.size() <= 0)
++	{
++		eDebug("ERROR: No displays specified in config file!\n");
++	}
++
++	GLCD::Config.driverConfigs[displayNumber].upsideDown ^= 0;
++	GLCD::Config.driverConfigs[displayNumber].invert ^= 0;
++
++	lcd = GLCD::CreateDriver(GLCD::Config.driverConfigs[displayNumber].id, &GLCD::Config.driverConfigs[displayNumber]);
++	
++	if (!lcd)
++	{
++		eDebug("ERROR: Failed creating display object\n");
++		return;
++	}
++	if (lcd->Init() != 0)
++	{
++		eDebug("ERROR: Failed initializing display\n");
++		delete lcd;
++		return;
++	}
++	lcd->SetBrightness(GLCD::Config.driverConfigs[displayNumber].brightness);
++
++	lcd->GetFeature((std::string) "depth", depth);
++	width = GLCD::Config.driverConfigs[displayNumber].width;
++	height = GLCD::Config.driverConfigs[displayNumber].height;
++
++	eDebug("config -> (w %d, h %d)", width, height);
++
++	bitmap = new GLCD::cBitmap(width, height);
++	bitmap->Clear();
++
++	lcd->SetScreen(bitmap->Data(), bitmap->Width(), bitmap->Height());
++	lcd->Refresh(true);
++
++	lcdfd = 1; //needed for detected()
++	setSize(width, height, depth);
++
++	eDebug("eDBoxLCD::eDBoxLCD (w %d, h %d, depth %d)<", width, height, depth);
++}
++
++void eDBoxLCD::setInverted(unsigned char inv)
++{
++	eDebug("eDBoxLCD::setInverted");
++	inverted = inv;
++	update();
++}
++
++int eDBoxLCD::setLCDContrast(int contrast)
++{
++	eDebug("[LCD] setLCDContrast not supported");
++	return(0);
++}
++
++int eDBoxLCD::setLCDBrightness(int brightness)
++{
++	eDebug("eDBoxLCD::setLCDBrightness");
++/* fixme range check */
++	lcd->SetBrightness(brightness);
++	return(0);
++}
++
++eDBoxLCD::~eDBoxLCD()
++{
++	eDebug("eDBoxLCD::~eDBoxLCD");
++
++	if (lcd)
++	{
++		lcd->DeInit();
++		delete lcd;
++	}
++	if (bitmap)
++		delete bitmap;
++}
++
++eDBoxLCD *eDBoxLCD::getInstance()
++{
++	eDebug("eDBoxLCD::getInstance");
++	return instance;
++}
++
++void eDBoxLCD::update()
++{
++    if (lcdfd == 1)
++    {
++
++       bitmap->Clear();
++
++       for (int x = 0; x < width; x++)
++          for (int y = 0; y < height; y++)
++          { 
++             __u16 *buf16  = (__u16*) _buffer;
++
++#if BYTE_ORDER == LITTLE_ENDIAN
++             __u16 col16   = bswap_16(*((__u16*)(((__u16*)buf16) + y * width + x)));
++#else
++             __u16 col16   = *((__u16*)(((__u16*)buf16) + y  * width + x));
++#endif
++             __u8 red, green, blue, alpha; 
++             __u32 color32;
++
++             /* BBBBB GGGGGG RRRRR */
++ 		     blue  = ((col16 & 0xF800) >> 11) * ( 255 / 31);
++             green = ((col16 & 0x7E0) >> 5) * (255 / 63);
++             red   = (col16 & 0x1f) * (255 / 31);
++             alpha = 255;
++
++             color32 = alpha << 24 | red << 16 | green << 8 | blue;
++
++		     if (inverted)
++			     color32 = 0xFFFFFF - color32;
++
++		     bitmap->DrawPixel(x, y, color32);
++          }
++	   lcd->SetScreen(bitmap->Data(), bitmap->Width(), bitmap->Height());
++       lcd->Refresh(false); /* partial update */
++   }
++}
++
++#endif    
+--- enigma2-nightly.org/lib/gdi/glcddc.cpp	2012-01-28 11:01:06.311862289 +0100
++++ enigma2-nightly.patched/lib/gdi/glcddc.cpp	2012-01-28 15:26:17.036490125 +0100
+@@ -5,6 +5,23 @@
+ 
+ gLCDDC *gLCDDC::instance;
+ 
++#ifdef __sh__
++static inline int time_after(struct timespec oldtime, uint32_t delta_ms)
++{
++	// calculate the oldtime + add on the delta
++	uint64_t oldtime_ms = (oldtime.tv_sec * 1000) + (oldtime.tv_nsec / 1000000);
++	oldtime_ms += delta_ms;
++
++	// calculate the nowtime
++	struct timespec nowtime;
++	clock_gettime(CLOCK_MONOTONIC, &nowtime);
++	uint64_t nowtime_ms = (nowtime.tv_sec * 1000) + (nowtime.tv_nsec / 1000000);
++
++	// check
++	return nowtime_ms > oldtime_ms;
++}
++#endif
++
+ gLCDDC::gLCDDC()
+ {
+ 	lcd = new eDBoxLCD();
+@@ -22,21 +39,40 @@
+ 	surface.clut.data=0;
+ 
+ 	m_pixmap = new gPixmap(&surface);
++
++#ifdef __sh__    
++    clock_gettime(CLOCK_MONOTONIC, &last_update);
++#endif
+ }
+ 
+ gLCDDC::~gLCDDC()
+ {
++#ifndef __sh__
++//konfetti: not sure why, but calling the destructor if external lcd (pearl)
++//is selected e2 crashes. this is also true if the destructor does not contain
++//any code !!!
+ 	delete lcd;
++#endif
+ 	instance=0;
+ }
+ 
+ void gLCDDC::exec(const gOpcode *o)
+ {
++
+ 	switch (o->opcode)
+ 	{
+ 	case gOpcode::flush:
+-//		if (update)
++#ifdef __sh__    
++//        if (time_after(last_update, 1500) && update)
++        if (update)
++        {
++            lcd->update();
++            clock_gettime(CLOCK_MONOTONIC, &last_update);
++        }
++#else
++//	     if (update)
+ 			lcd->update();
++#endif
+ 	default:
+ 		gDC::exec(o);
+ 		break;

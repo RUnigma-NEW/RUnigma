@@ -1,0 +1,96 @@
+# German translations for vdr-text2skin-PearlHD skin.
+# Copyright (C) 2009 mapovi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-text2skin-PearlHD 0.0.4\n"
+"Report-Msgid-Bugs-To: <don_jan@web.de>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2010-03-05 12:56+0200\n"
+"Last-Translator: Brun0 <brun0@takas.lt>\n"
+"Language-Team: don_jan@web.de\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Volume"
+msgstr "Garsas"
+
+msgid "Mute"
+msgstr "Begarsis"
+
+msgid "Playing"
+msgstr "Groja"
+
+msgid "Pause"
+msgstr "Pauzė"
+
+msgid "Fast forward"
+msgstr "Greitai pirmyn"
+
+msgid "Fast rewind"
+msgstr "Greitai atgal"
+
+msgid "Slow forward"
+msgstr "Lėtai pirmyn"
+
+msgid "Slow rewind"
+msgstr "Lėtai atgal"
+
+msgid "of"
+msgstr "iš"
+
+msgid "Timers"
+msgstr "Laikmačiai"
+
+msgid "Recordings"
+msgstr "Įrašai"
+
+msgid "Edit timer"
+msgstr "Redaguoti laikmatį"
+
+msgid "Setup"
+msgstr "Nustatymai"
+
+msgid "Channels"
+msgstr "Kanalai"
+
+msgid "Schedule"
+msgstr "Tvarkaraštis"
+
+msgid "Commands"
+msgstr "Komandos"
+
+msgid "Learning Remote Control Keys"
+msgstr "Įsimenami nuotolinio valdymo pultelio klavišai"
+
+msgid "oClock"
+msgstr "h"
+
+msgid "length"
+msgstr "ilgis"
+
+msgid "cutted"
+msgstr "iškirpta"
+
+#~ msgid "RECTITLEINFOTOP"
+#~ msgstr "NO"
+
+#~ msgid "RECTITLEINFOBOTTOM"
+#~ msgstr "YES"
+
+#~ msgid "RECTITLEINFO"
+#~ msgstr "NO"
+
+#~ msgid "BUTTON_1"
+#~ msgstr "Button 1"
+
+#~ msgid "BUTTON_2"
+#~ msgstr "Button 2"
+
+#~ msgid "BUTTON_3"
+#~ msgstr "Button 3"
+
+#~ msgid "BUTTON_4"
+#~ msgstr "Button 4"

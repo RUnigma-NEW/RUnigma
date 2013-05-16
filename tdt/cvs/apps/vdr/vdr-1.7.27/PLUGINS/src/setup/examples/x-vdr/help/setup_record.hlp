@@ -1,0 +1,44 @@
+Zeitpuffer bei Beginn = 2
+Zeitpuffer bei Ende = 10
+
+     Bestimmt wieviele Minuten VDR vor der ofiziellen Startzeit einer Sendung mit der Aufnahme beginnen soll, und wie lange nach dem offiziellen Enden der Sendung es aufhören soll. Diese Puffer werden automatisch zu Timern hinzugefügt, die aus den EPG-Daten erstellt werden.
+
+Primär-Limit = 0
+
+     Die kleinste Priorität die ein Timer aufweisen muss um auf dem primären DVB Interface aufzeichnen zu dürfen oder einen anderen Timer mit höherer Priorität dazu zu zwingen, das primäre DVB Interface zu benutzen. Dies ist hauptsächlich nützlich für Aufnahmen, die nur dann stattfinden sollen wenn es sonst nichts zu tun gibt, aber den Nutzer dennoch nicht davon abhalten sollen, auf dem primären Interface etwas anzuschauen. Auf Systemen mit nur einer DVB Karte werden Timer mit einer Priorität geringer als PrimaryLimit niemals ausgeführt.
+
+Default Priorität = 50
+Default Lebenszeit = 50
+
+     Die voreingestellten Werte für Priorität und Lebensdauer die benutzt werden wenn ein neuer Timer erstellt wird. Eine Lebensdauer von 99 bedeutet, daß das diese Aufnahme niemals automatisch gelöscht wird.
+
+Episodennamen verwenden = ja
+
+     Wiederholende Timer können die EPG Information 'Episodenname' verwenden um Dateinamen in einer hirarchischen Struktur zu erzeugen (zum Beispiel um alle Episoden einer Serie in einem gemeinsamen Verzeichnis zu speichern). Mit diesem Parameter kann dies kontrolliert werden:
+
+       nein - 'Episodenname' nicht verwenden
+       ja - verwenden (und Unterverzeichnisse anlegen)
+
+Direktaufzeichnung markieren = ja
+
+     Bestimmt ob eine "Direkteaufnahme" (ausgelöst durch den Knopf "Rot" im "VDR" Menü) mit einem '@' Zeichen markiert wird, um sie von Timeraufnahmen im "Aufnahmen" Menü unterscheidbar zu machen.
+
+Direktaufzeichnung benennen = TITEL EPISODE
+
+     Bestimmt, wie eine Direktaufzeichnung benannt werden soll. Wenn die Schlüsselworte TITLE und/order EPISODE gegeben sind, werden diese durch den Titel und Epsiode aus den EPG Daten zum Zeitpunkt der Aufnahme erstetzt (sofern diese Informationen vorhanden sind). Wird dieser Parameter leer gelassen, wird der Kanalname genutzt.
+
+Dauer der Direktaufzeichnung = 180
+
+     Bestimmt die Dauer einer Direktaufzeichnung in Minuten. Voreinstellung ist 180 Minuten (3 Stunden). Die Stoppzeit einer Direktaufnahme kann jederzeit durch Bearbeiten des entsprechenden Timers im "Timer" Menü verändert werden.
+
+Dolby Digital Ton aufzeichnen = ja
+
+     Schaltet das Aufnehmen des Dolby Digital Kanals an oder aus. Dies kann nützlich sein, wenn Sie nicht die erforderliche Ausstattung haben um Dolby Digital wiederzugeben, Sie können so Plattenplatz sparen.
+
+Max. Video Datei Grösse = 2000
+
+     Die maximale Grösse einer Datei einer Aufnahme in MB. Die gültigen Werte sind 100...2000. Voreingestellt sind 2000, aber kleinere Werte können verwendet werden wenn, die Aufnahmen beispielsweise auf CD archiviert werden sollen.
+
+Editierte Dateien aufteilen = nein
+
+     Während des tatsächlichen Schneideprozesses schreibt VDR in Dateien die grösser werden können als MaxVideoFileSize. Setzen Sie diese Option auf 'ja' wenn Sie es vorziehen, daß jede geschnitte Sequenz in einer eigenen Datei gespeichert wird (mit Namen 001.vdr, 002.vdr, ...).

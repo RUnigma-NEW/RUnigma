@@ -1,0 +1,21 @@
+-- autoconf-2.64/build-aux/git-version-gen.orig	2010-04-28 13:53:55.000000000 +0200
++++ autoconf-2.64/build-aux/git-version-gen	2010-04-28 13:55:22.000000000 +0200
+@@ -128,18 +128,6 @@
+ 
+ v=`echo "$v" |sed 's/^v//'`
+ 
+-# Don't declare a version "dirty" merely because a time stamp has changed.
+-git status > /dev/null 2>&1
+-
+-dirty=`sh -c 'git diff-index --name-only HEAD' 2>/dev/null` || dirty=
+-case "$dirty" in
+-    '') ;;
+-    *) # Append the suffix only if there isn't one already.
+-	case $v in
+-	  *-dirty) ;;
+-	  *) v="$v-dirty" ;;
+-	esac ;;
+-esac
+ 
+ # Omit the trailing newline, so that m4_esyscmd can use the result directly.
+ echo "$v" | tr -d '\012'

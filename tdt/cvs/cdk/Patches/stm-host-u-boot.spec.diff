@@ -1,0 +1,18 @@
+--- stm-host-u-boot.spec.orig	2012-12-16 18:52:57.597841434 +0100
++++ stm-host-u-boot.spec	2012-12-16 18:52:57.573841432 +0100
+@@ -29,6 +29,7 @@
+ Patch18: u-boot-1.3.1_stm24_0055.patch
+ Patch19: u-boot-1.3.1_stm24_0056.patch
+ Patch20: u-boot-1.3.1_stm24_0057.patch
++Patch21: stm-host-u-boot-lzma_stm24.patch
+ %endif
+ 
+ BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+@@ -76,6 +77,7 @@
+ %patch18 -p1
+ %patch19 -p1
+ %patch20 -p1
++%patch21 -p1
+ %endif
+ 
+ #  Put build number into the version string that U-boot identifies itself with.

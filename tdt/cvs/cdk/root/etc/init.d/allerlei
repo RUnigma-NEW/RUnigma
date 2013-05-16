@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# allerlei
+#
+# chkconfig: S 36 0
+# description:
+#
+# pidfile:
+
+
+#Syslogd
+echo "Starting syslogd (shared mem buffer)..."
+/sbin/syslogd -C16
+
+#Telnetd
+echo "Starting telnetd..."
+#/usr/sbin/telnetd -l /bin/sh
+/usr/sbin/telnetd -l /bin/login
+
+#Ftpd
+#echo "Starting vsftpd..."
+#/usr/sbin/vsftpd &

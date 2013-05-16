@@ -1,0 +1,317 @@
+#!/bin/sh
+
+# Copyright (C) 2008 ufs910.de (Open UFS910 Project)
+# Copyright (C) 2006 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /COPYING for more information.
+#
+
+echo "--- devinit ---"
+
+mount none /proc -t proc
+mount none /sys  -t sysfs
+
+size=$(awk '/MemTotal:/ {l=5242880;mt=($2*1024);print((s=mt/2)<l)?mt-l:s}' /proc/meminfo)
+mount none /tmp -t tmpfs -o size=$size,nosuid,nodev,mode=1777
+mount -t tmpfs tmpfs /ram -o size=16k
+
+mount -o bind /dev /dev.static
+mount -t tmpfs tmpfs /dev -o size=512K
+mknod /dev/console c 5 1
+mknod /dev/null c 1 3 && chmod 0666 /dev/null
+mknod /dev/ttyAS0 c 204 40 && chmod 0660 /dev/ttyAS0
+mknod /dev/mtd7 c 90 14 && chmod 0660 /dev/mtd7
+mknod /dev/mtdblock6 b 31 6
+chmod 0660 /dev/mtdblock6
+
+# BOOT LOADER VARIABLES:
+
+# USB Flash/Disk as Root FS
+#
+# usbroot '<ext3|ext2>'		USB device as root filesystem and used filesystem
+# usbroot_device '/dev/sda2'	USB root device, default: '/dev/sda1'
+
+# NFS Mount as Root FS
+#
+# nfsroot 'nfs'			NFS device as root filesystem
+# nfsroot_device 'IP:/cdkroot'	NFS root device, default: '192.168.1.201:/ufs910/cdkroot'
+
+# Flash Root as Root FS w/ overlay device (DEFAULT)
+#
+# JFFS2 OVERLAY (default)
+#
+# NFS OVERLAY
+# overlay 'nfs'			NFS mount as overlay device
+# nfs_overlay_device 'IP:/dat'	NFS overlay device, default value see below: NFS_DEVICE_DEFAULT
+#
+# USB OVERLAY
+# overlay '<ext3|ext2>'		USB flash as overlay device and used filesystem
+# usb_overlay_device '/dev/sda2'	USB overlay device, default value see below: USB_DEVICE_DEFAULT
+#
+# RAM OVERLAY
+# overlay 'ram'			RAMDISK as overlay device
+#				RAMDISK overlay filesystem, '/tmp/root'
+
+# Default values for USB and NFS root device:
+USBROOT_DEVICE_DEFAULT="/dev/sda1"
+NFSROOT_DEVICE_DEFAULT="192.168.1.201:/ufs910/cdkroot"
+
+# Default values for overlay device:
+MTD_DEVICE_DEFAULT="OtherData"
+NFS_DEVICE_DEFAULT="192.168.1.201:/ufs910/flashdata"
+USB_DEVICE_DEFAULT="/dev/sda3"
+
+
+# Break boot sequence
+#
+
+SELECT=
+echo "Press ENTER to activate the console..."
+s=6
+while [ $s -ge 1 ]; do
+  echo -en "\r$s seconds"
+  read -t 1 -n 1 SELECT \
+    && ( echo; echo "Starting shell."; \
+         echo "Type exit to continue boot process."; \
+         /bin/busybox ash -s ) && s=0 \
+    || s=$(($s-1))
+done
+echo
+ 
+
+# Functions
+#
+
+#/etc/functions.sh
+find_mtd_part() {
+	local PART="$(grep $1 /proc/mtd | cut -d: -f1)"
+	local PREFIX=/dev/mtdblock
+
+	PART="${PART##mtd}"
+	[ -d /dev/mtdblock ] && PREFIX=/dev/mtdblock/
+	echo "${PART:+$PREFIX$PART}"
+}
+
+dupe() { # <new_root> <old_root>
+        cd $1
+        echo -n "creating directories... "
+        {
+                cd $2
+                find . -xdev -type d
+                echo "./dev ./jffs ./mnt ./proc ./tmp"
+                # xdev skips mounted directories
+                cd $1
+        } | xargs mkdir -p
+        echo "done"
+
+        echo -n "setting up symlinks... "
+        for file in $(cd $2; find . -xdev -type f;); do
+                case "$file" in
+                ./rom/note) ;; #nothing
+                ./etc/config*|\
+                ./usr/lib/ipkg/info/*) cp -af $2/$file $file;;
+                *) ln -sf /rom/${file#./*} $file;;
+                esac
+        done
+        for file in $(cd $2; find . -xdev -type l;); do
+                cp -af $2/${file#./*} $file
+        done
+        echo "done"
+}
+
+pivot() { # <new_root> <old_root>
+        mount -o move /proc $1/proc && \
+        pivot_root $1 $1$2 && {
+                mount -o move $2/dev /dev
+		mount -o move $2/tmp /tmp
+                mount -o move $2/sys /sys 2>&-
+                mount -o move $2/jffs /jffs 2>&-
+		#mount -t tmpfs tmpfs /ram -o size=16k
+		#[ ! -d /ram/dev.flash ] && mkdir /ram/dev.flash
+		mount -o move $2/dev.static /dev.static
+                return 0
+        }
+}
+
+fopivot() { # <rw_root> <ro_root> <dupe?>
+        root=$1
+        {
+                mount -t mini_fo -o base=/,sto=$1 $1 /mnt 2>&- && root=/mnt
+        } || {
+                [ "$3" = "1" ] && {
+                mount | grep "on $1 type" 2>&- 1>&- || mount -o bind $1 $1
+                dupe $1 $rom
+                }
+        }
+        pivot $root $2
+}
+
+ramoverlay() {
+        mkdir -p /tmp/root
+        fopivot /tmp/root /rom 1
+}
+
+
+# mount_root
+#
+
+#check if jffs is available
+jffs2_ready () {
+	mtdpart="$(find_mtd_part $1)"
+	magic=$(hexdump $mtdpart -n 4 -e '4/1 "%02x"')
+	[ "$magic" != "deadc0de" ]
+}
+
+#check if hdd/stick is mountable
+drive_ready() {
+	mknod /dev/sda b 8 0 
+	mknod /dev/sda1 b 8 1 
+	mknod /dev/sda2 b 8 2 
+	mknod /dev/sda3 b 8 3 
+	mknod /dev/sda4 b 8 4 
+	mknod /dev/sdb b 8 16 
+	mknod /dev/sdb1 b 8 17 
+	mknod /dev/sdb2 b 8 18 
+	mknod /dev/sdb3 b 8 19 
+	mknod /dev/sdb4 b 8 20 
+	mount $1 /jffs -t $2 -o noatime,nodiratime
+}
+
+#check if nfs is reachable
+nfs_ready() {
+	mount $1 /jffs -t nfs -o rw,nolock
+}
+
+if_ready() {
+	ipaddr=$(fw_printenv | grep "^ipaddr=" | cut -d"=" -f2)
+	netmask=$(fw_printenv | grep "^netmask=" | cut -d"=" -f2)
+	gatewayip=$(fw_printenv | grep "^gatewayip=" | cut -d"=" -f2)
+	[ -z $ipaddr ] && \
+		ipaddr=$(grep "address " /etc/network/interfaces | grep -v "^#" | cut -d" " -f2)
+	[ -z $netmask ] && \
+		netmask=$(grep "netmask " /etc/network/interfaces | grep -v "^#" | cut -d" " -f2)
+	[ -z $gatewayip ] && \
+		gatewayip=$(grep "gateway " /etc/network/interfaces | grep -v "^#" | cut -d" " -f2)
+	echo "IP: $ipaddr, Mask: $netmask, Gateway: $gatewayip"
+	ifconfig eth0 $ipaddr netmask $netmask && \
+	route add default gw $gatewayip
+}
+
+mount_jffs2_overlay() {
+	jffs2_ready $1 && {
+		echo "switching to flash: jffs2 $1"
+		mount "$(find_mtd_part $1)" /jffs -t jffs2 && \
+			fopivot /jffs /rom
+	} || {
+		echo "flash: jffs2 $1 not ready yet; using ramdisk"
+		ramoverlay
+	}
+}
+
+
+MOUNTED=1
+
+# USB Root
+#
+
+[ $MOUNTED = 1 ] && { 
+	USBROOT=$(fw_printenv | grep "^usbroot=" | cut -d"=" -f2)
+
+	test "x$USBROOT" = "xext2" -o "x$USBROOT" = "xext3" && {
+		USBROOT_DEVICE=$(fw_printenv | grep "^usbroot_device=" | cut -d"=" -f2)
+		[ -z $USBROOT_DEVICE ] && USBROOT_DEVICE=${USBROOT_DEVICE_DEFAULT}
+		part=${USBROOT_DEVICE##*/}
+
+		ls /sys/block/${part%[1-9]} 2>&- | grep -q $part && {
+			drive_ready $USBROOT_DEVICE $USBROOT && {
+				test -x /jffs/sbin/init && {
+					root=/jffs
+       			 		pivot $root /rom && \
+						MOUNTED=0
+					echo "Mounting root on USB."
+					mount / -o remount,ro
+				} || {
+					umount /jffs
+				}
+			}
+		}
+	}
+}
+
+# NFS Root
+#
+
+[ $MOUNTED = 1 ] && {
+	NFSROOT=$(fw_printenv | grep "^nfsroot=" | cut -d"=" -f2)
+
+	[ "x$NFSROOT" = "xnfs" ] && {
+		NFSROOT_DEVICE=$(fw_printenv | grep "^nfsroot_device=" | cut -d"=" -f2)
+		[ -z $NFSROOT_DEVICE ] && NFSROOT_DEVICE=${NFSROOT_DEVICE_DEFAULT}
+	
+		if_ready && nfs_ready $NFSROOT_DEVICE && {
+			test -x /jffs/sbin/init && {
+				root=/jffs
+				pivot $root /rom && \
+					MOUNTED=0
+				echo "Mounting root on NFS."
+			} || {
+				umount /jffs
+			}
+		}
+	}
+}
+
+# Root FS overlay with mini_fo
+#
+
+[ $MOUNTED = 1 ] && { 
+	OVERLAY=$(fw_printenv | grep "^overlay=" | cut -d"=" -f2)
+
+	! grep -q "/dev/root / nfs" /proc/mounts && egrep -q "(CramfsOverlay|SquashfsOverlay)" /proc/mtd && {
+		test "x$OVERLAY" = "xnfs" && {
+			OVERLAY_DEVICE=$(fw_printenv | grep "^nfs_overlay_device=" | cut -d"=" -f2)
+			[ -z $OVERLAY_DEVICE ] && OVERLAY_DEVICE=${NFS_DEVICE_DEFAULT}
+			
+			if_ready && nfs_ready $OVERLAY_DEVICE && {
+				echo "switching to NFS overlay: $OVERLAY $OVERLAY_DEVICE"
+				fopivot /jffs /rom
+			} || {
+				echo "NFS overlay: $OVERLAY $OVERLAY_DEVICE not ready yet; trying jffs2 flash"
+				mount_jffs2_overlay $MTD_DEVICE_DEFAULT
+			}
+		} || {
+			test "x$OVERLAY" = "xext2" -o "x$OVERLAY" = "xext3" && {
+				OVERLAY_DEVICE=$(fw_printenv | grep "^usb_overlay_device=" | cut -d"=" -f2)
+				[ -z $OVERLAY_DEVICE ] && OVERLAY_DEVICE=${USB_DEVICE_DEFAULT}
+
+				drive_ready $OVERLAY_DEVICE $OVERLAY && {
+					echo "switching to USB stick/drive overlay: $OVERLAY $OVERLAY_DEVICE"
+					fopivot /jffs /rom
+				} || {
+					echo "USB stick/drive overlay: $OVERLAY $OVERLAY_DEVICE not ready yet; trying jffs2 flash"
+					mount_jffs2_overlay $MTD_DEVICE_DEFAULT
+				}
+			} || {
+				test "x$OVERLAY" = "xram" && {
+					echo "switching to ramdisk overlay."
+					ramoverlay
+				} || {
+					mount_jffs2_overlay $MTD_DEVICE_DEFAULT
+				}
+			}
+		}
+	} || {
+		mount -o remount,rw /dev/root /
+	}
+}
+
+
+echo "--- init ---"
+exec /sbin/init 
+
+
+echo "--- fallback ---"
+cd /
+switch_root . /sbin/init
+#exec /sbin/init 

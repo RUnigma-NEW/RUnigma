@@ -1,0 +1,20 @@
+--- stm-cross-gmp.spec.org	2011-09-30 20:51:12.264012751 +0200
++++ stm-cross-gmp.spec	2011-09-30 20:51:12.276006754 +0200
+@@ -29,6 +29,7 @@
+ 
+ %build
+ %cross_setup
++export CC="gcc -m32"
+ 
+ mkdir objdir
+ cd objdir
+@@ -53,9 +54,6 @@
+         --with-float=softfp \
+ %endif
+ %endif
+-%if %target_cpu sh
+-    --enable-cxx \
+-%endif
+     --disable-shared 
+ 
+ %pmake

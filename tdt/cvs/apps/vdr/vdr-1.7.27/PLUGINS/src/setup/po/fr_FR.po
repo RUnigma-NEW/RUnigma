@@ -1,0 +1,139 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2008-01-27 18:38+0100\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "VDR-Setup Extension"
+msgstr "Extension de configuration"
+
+msgid "Setup"
+msgstr "Configuration"
+
+msgid "Menu Edit"
+msgstr "Edition du menu"
+
+msgid "Plugins activate / deactivate"
+msgstr "Activer/desactiver des plugins"
+
+msgid "protected"
+msgstr "protégé"
+
+msgid "PageUp"
+msgstr "Page ^"
+
+msgid "PageDown"
+msgstr "Page v"
+
+msgid "Before"
+msgstr "Avant"
+
+msgid "After"
+msgstr "Après"
+
+msgid "Move"
+msgstr "Déplacer"
+
+msgid "Title"
+msgstr ""
+
+#, fuzzy
+msgid "Edit Plugin"
+msgstr "Edition du menu"
+
+msgid "Command"
+msgstr ""
+
+msgid "Has to confirm"
+msgstr ""
+
+msgid "Execute as thread"
+msgstr ""
+
+msgid "Edit Command"
+msgstr ""
+
+#, fuzzy
+msgid "Edit Menu"
+msgstr "Edition du menu"
+
+#, fuzzy
+msgid "Create Menu"
+msgstr "Créer"
+
+#, fuzzy
+msgid "Create Command"
+msgstr "Créer"
+
+msgid "Delete Menu?"
+msgstr "Effacer le menu?"
+
+msgid "Up/Dn for new location - color key to move"
+msgstr "^/v pour nouvel emplacement - touches couleurs pour déplacer"
+
+#, fuzzy
+msgid "Menu"
+msgstr "Edition du menu"
+
+msgid "Into"
+msgstr "Dans"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "missing channels/xxx.conf"
+msgstr "channels/xxx.conf manquant"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Execute"
+msgstr "Effectuer"
+
+msgid "Error in configuration files"
+msgstr "Erreur dans fichiers de configurations"
+
+msgid "Reboot"
+msgstr "Redémarer le système"
+
+msgid "Enter Pin: "
+msgstr "Le code pin: "
+
+msgid "Really reboot?"
+msgstr "Vraiment redémarrer le système?"
+
+msgid "Invalid Pin!"
+msgstr "La clef est fausse!"
+
+msgid "setupSetup$Main menu entry"
+msgstr ""
+
+msgid "setupSetup$Menu suffix"
+msgstr "Suffixe Menu"
+
+msgid "setupSetup$Entry prefix"
+msgstr "Entry préfix"
+
+msgid "setupSetup$Return value"
+msgstr "Valeur de retour"

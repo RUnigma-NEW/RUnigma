@@ -1,0 +1,69 @@
+#
+# Makefile for a text2skin skin
+#
+# Copyright (C) 2008, Thomas Günther <tom@toms-cafe.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+SKIN = $(basename $(wildcard *.skin))
+MAIL = $(shell sed -ne "s/.*Report-Msgid-Bugs-To: *<\(..*\)>.*/\1/p" po/*.po | head -n1)
+
+### The directory environment:
+
+DESTDIR ?=
+PREFIX  ?= /usr/local
+CONFDIR  = $(if $(subst /usr,,$(PREFIX)), $(PREFIX))/etc/vdr
+SKINDIR  = $(CONFDIR)/plugins/text2skin/$(SKIN)
+LOCDIR   = $(PREFIX)/share/locale
+
+### The main target:
+
+all: i18n
+
+### Internationalization (I18N):
+
+PODIR     = po
+LOCALEDIR = locale
+I18Npo    = $(notdir $(wildcard $(PODIR)/*.po))
+I18Npot   = $(PODIR)/$(SKIN).pot
+
+$(I18Npot): $(SKIN).skin
+	cat $^ | sed -e "s/('/(\"/g;s/')/\")/g" | grep -o "trans([^)]*)" | \
+	xgettext -C --no-wrap --no-location -k -ktrans \
+	         --msgid-bugs-address='<$(MAIL)>' -o $@ -
+
+%.po: $(I18Npot)
+	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+	@touch $@
+
+$(LOCALEDIR)/%/LC_MESSAGES/vdr-text2skin-$(SKIN).mo: $(PODIR)/%.po
+	@mkdir -p $(dir $@)
+	msgfmt -c -o $@ $<
+
+.PHONY: i18n
+i18n: $(I18Npo:%.po=$(LOCALEDIR)/%/LC_MESSAGES/vdr-text2skin-$(SKIN).mo)
+
+install-i18n: i18n
+	@mkdir -p $(DESTDIR)$(LOCDIR)
+	@cp -r $(LOCALEDIR)/* $(DESTDIR)$(LOCDIR)
+
+### Targets:
+
+install: install-i18n
+	@mkdir -p $(DESTDIR)$(SKINDIR)
+	@cp -r * $(DESTDIR)$(SKINDIR)
+
+clean:
+	@-rm -rf $(LOCALEDIR) $(I18Npot) *~

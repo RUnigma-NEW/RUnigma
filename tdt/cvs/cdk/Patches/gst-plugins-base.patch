@@ -1,0 +1,347 @@
+From c2079da39cc6db268a95c5b361b7cce979ee8249 Mon Sep 17 00:00:00 2001
+From: Mohamed Hafsia <mohamed.hafsia@st.com>
+Date: Tue, 4 Sep 2012 11:08:20 +0100
+Subject: [PATCH 5/5]
+ Patch from Michael Coracin <michael.coracin@st.com> to address Bugzilla #16885,
+   "playbin2 needs to be changed to insert strecordrouterbin for dvr use case".
+
+---
+ gst/playback/gstplay-enum.c    |    2 +
+ gst/playback/gstplay-enum.h    |    3 +-
+ gst/playback/gstplaybin2.c     |    4 +-
+ gst/playback/gsturidecodebin.c |  143 ++++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 145 insertions(+), 7 deletions(-)
+
+diff --git a/gst/playback/gstplay-enum.c b/gst/playback/gstplay-enum.c
+index e337fdf..4b24109 100644
+--- a/gst/playback/gstplay-enum.c
++++ b/gst/playback/gstplay-enum.c
+@@ -65,6 +65,8 @@ gst_play_flags_get_type (void)
+         "buffering"},
+     {C_FLAGS (GST_PLAY_FLAG_DEINTERLACE), "Deinterlace video if necessary",
+         "deinterlace"},
++    {C_FLAGS (GST_PLAY_FLAG_DVR), "Enable Digital Video Recoder",
++        "dvr"},
+     {0, NULL, NULL}
+   };
+   static volatile GType id = 0;
+diff --git a/gst/playback/gstplay-enum.h b/gst/playback/gstplay-enum.h
+index 77a34cf..6c42259 100644
+--- a/gst/playback/gstplay-enum.h
++++ b/gst/playback/gstplay-enum.h
+@@ -70,7 +70,8 @@ typedef enum {
+   GST_PLAY_FLAG_NATIVE_VIDEO  = (1 << 6),
+   GST_PLAY_FLAG_DOWNLOAD      = (1 << 7),
+   GST_PLAY_FLAG_BUFFERING     = (1 << 8),
+-  GST_PLAY_FLAG_DEINTERLACE   = (1 << 9)
++  GST_PLAY_FLAG_DEINTERLACE   = (1 << 9),
++  GST_PLAY_FLAG_DVR           = (1 << 10)
+ } GstPlayFlags;
+ 
+ #define GST_TYPE_PLAY_FLAGS (gst_play_flags_get_type())
+diff --git a/gst/playback/gstplaybin2.c b/gst/playback/gstplaybin2.c
+index e01ff6c..57b3113 100644
+--- a/gst/playback/gstplaybin2.c
++++ b/gst/playback/gstplaybin2.c
+@@ -3517,7 +3517,9 @@ activate_group (GstPlayBin * playbin, GstSourceGroup * group, GstState target)
+       /* configure buffering parameters */
+       "buffer-duration", playbin->buffer_duration,
+       "buffer-size", playbin->buffer_size,
+-      "ring-buffer-max-size", playbin->ring_buffer_max_size, NULL);
++      "ring-buffer-max-size", playbin->ring_buffer_max_size,
++      "enable-router", ((flags & GST_PLAY_FLAG_DVR) != 0),
++      NULL);
+ 
+   /* connect pads and other things */
+   group->pad_added_id = g_signal_connect (uridecodebin, "pad-added",
+diff --git a/gst/playback/gsturidecodebin.c b/gst/playback/gsturidecodebin.c
+index 2a5026f..7ad8500 100644
+--- a/gst/playback/gsturidecodebin.c
++++ b/gst/playback/gsturidecodebin.c
+@@ -92,10 +92,13 @@ struct _GstURIDecodeBin
+   guint buffer_size;            /* When buffering, buffer size (bytes) */
+   gboolean download;
+   gboolean use_buffering;
++  gboolean enable_router;
+ 
+   GstElement *source;
+   GstElement *queue;
+   GstElement *typefind;
++  GstElement *router;
++
+   guint have_type_id;           /* have-type signal id from typefind */
+   GSList *decodebins;
+   GSList *pending_decodebins;
+@@ -173,6 +176,7 @@ enum
+ #define DEFAULT_USE_BUFFERING       FALSE
+ #define DEFAULT_EXPOSE_ALL_STREAMS  TRUE
+ #define DEFAULT_RING_BUFFER_MAX_SIZE 0
++#define DEFAULT_ENABLE_ROUTER       FALSE
+ 
+ enum
+ {
+@@ -188,6 +192,7 @@ enum
+   PROP_USE_BUFFERING,
+   PROP_EXPOSE_ALL_STREAMS,
+   PROP_RING_BUFFER_MAX_SIZE,
++  PROP_ENABLE_ROUTER,
+   PROP_LAST
+ };
+ 
+@@ -196,6 +201,8 @@ static guint gst_uri_decode_bin_signals[LAST_SIGNAL] = { 0 };
+ GType gst_uri_decode_bin_get_type (void);
+ GST_BOILERPLATE (GstURIDecodeBin, gst_uri_decode_bin, GstBin, GST_TYPE_BIN);
+ 
++static void remove_router (GstURIDecodeBin * bin);
++static GstElement * make_router(GstURIDecodeBin * decoder);
+ static void remove_decoders (GstURIDecodeBin * bin, gboolean force);
+ static void gst_uri_decode_bin_set_property (GObject * object, guint prop_id,
+     const GValue * value, GParamSpec * pspec);
+@@ -465,6 +472,12 @@ gst_uri_decode_bin_class_init (GstURIDecodeBinClass * klass)
+           0, G_MAXUINT, DEFAULT_RING_BUFFER_MAX_SIZE,
+           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+ 
++  g_object_class_install_property (gobject_class, PROP_ENABLE_ROUTER,
++      g_param_spec_boolean ("enable-router", "Enable TS Router for DVR",
++          "Plug router element between source and decodebin2, default value is FALSE",
++          DEFAULT_ENABLE_ROUTER,
++          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
+   /**
+    * GstURIDecodeBin::unknown-type:
+    * @bin: The uridecodebin.
+@@ -678,6 +691,7 @@ gst_uri_decode_bin_init (GstURIDecodeBin * dec, GstURIDecodeBinClass * klass)
+   dec->use_buffering = DEFAULT_USE_BUFFERING;
+   dec->expose_allstreams = DEFAULT_EXPOSE_ALL_STREAMS;
+   dec->ring_buffer_max_size = DEFAULT_RING_BUFFER_MAX_SIZE;
++  dec->enable_router = DEFAULT_ENABLE_ROUTER;
+ 
+   GST_OBJECT_FLAG_SET (dec, GST_ELEMENT_IS_SOURCE);
+ }
+@@ -768,6 +782,9 @@ gst_uri_decode_bin_set_property (GObject * object, guint prop_id,
+     case PROP_RING_BUFFER_MAX_SIZE:
+       dec->ring_buffer_max_size = g_value_get_uint64 (value);
+       break;
++    case PROP_ENABLE_ROUTER:
++      dec->enable_router = g_value_get_boolean (value);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -828,6 +845,9 @@ gst_uri_decode_bin_get_property (GObject * object, guint prop_id,
+     case PROP_RING_BUFFER_MAX_SIZE:
+       g_value_set_uint64 (value, dec->ring_buffer_max_size);
+       break;
++    case PROP_ENABLE_ROUTER:
++      g_value_set_boolean (value, dec->enable_router);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -1725,7 +1745,7 @@ static void
+ type_found (GstElement * typefind, guint probability,
+     GstCaps * caps, GstURIDecodeBin * decoder)
+ {
+-  GstElement *dec_elem, *queue;
++  GstElement *dec_elem, *queue, *router_elem;;
+   GstStructure *s;
+   const gchar *media_type;
+ 
+@@ -1745,6 +1765,10 @@ type_found (GstElement * typefind, guint probability,
+         && fmt == GST_FORMAT_BYTES && dur != -1);
+   }
+ 
++  router_elem = make_router (decoder);
++  if (!router_elem)
++    GST_WARNING_OBJECT (decoder, "Router element is disabled");
++
+   dec_elem = make_decoder (decoder);
+   if (!dec_elem)
+     goto no_decodebin;
+@@ -1803,12 +1827,36 @@ type_found (GstElement * typefind, guint probability,
+    * the state change */
+   g_object_set (dec_elem, "sink-caps", caps, NULL);
+ 
+-  if (!gst_element_link_pads (queue, "src", dec_elem, "sink"))
+-    goto could_not_link;
++  /* try to link queue and strouter */
++  if (!router_elem)
++  {
++    /* router is disabled so link queue and decodebin2 */
++    if (!gst_element_link_pads (queue, "src", dec_elem, "sink"))
++      goto could_not_link;
++  }
++  else
++  {
++    /* link queue and router */
++    if (!gst_element_link_pads (queue, "src", router_elem, "sink"))
++    {
++      GST_WARNING_OBJECT (decoder, "Can't link queue element with router element");
++      /* try to link queue and decodebin2 anyway */
++      if (!gst_element_link_pads (queue, "src", dec_elem, "sink"))
++        goto could_not_link;
++    }
++    else
++    {
++      /* link router and dec_elem */
++      if (!gst_element_link_pads (router_elem, "src", dec_elem, "sink"))
++        goto could_not_link_2;
++    }
++  }
+ 
+   /* PLAYING in one go might fail (see bug #632782) */
+   gst_element_set_state (dec_elem, GST_STATE_PAUSED);
+   gst_element_set_state (dec_elem, GST_STATE_PLAYING);
++  if (router_elem)
++    gst_element_set_state (router_elem, GST_STATE_PLAYING);
+   gst_element_set_state (queue, GST_STATE_PLAYING);
+ 
+   do_async_done (decoder);
+@@ -1827,6 +1875,12 @@ could_not_link:
+         (NULL), ("Can't link typefind to decodebin2 element"));
+     return;
+   }
++could_not_link_2:
++  {
++    GST_ELEMENT_ERROR (decoder, CORE, NEGOTIATION,
++        (NULL), ("Can't link router element to queue element"));
++    return;
++  }
+ no_queue2:
+   {
+     post_missing_plugin_error (GST_ELEMENT_CAST (decoder), "queue2");
+@@ -1930,6 +1984,48 @@ remove_source (GstURIDecodeBin * bin)
+   GST_OBJECT_FLAG_SET (bin, GST_ELEMENT_IS_SOURCE);
+ }
+ 
++/* remove routers */
++static void
++remove_router (GstURIDecodeBin * bin)
++{
++  GstElement *router = bin->router;
++  if (router) {
++    GST_DEBUG_OBJECT (bin, "removing old st router element");
++    gst_element_set_state (router, GST_STATE_NULL);
++    gst_bin_remove (GST_BIN_CAST (bin), router);
++    bin->router = NULL;
++  }
++}
++
++/* generate router element */
++static GstElement *
++make_router(GstURIDecodeBin * decoder)
++{
++  GstElement *router;
++
++  if (decoder->enable_router == FALSE)
++    return NULL;
++
++  GST_DEBUG_OBJECT (decoder, "making new st router element");
++  router = gst_element_factory_make ("strecorderrouterbin", NULL);
++
++  if (!router)
++    goto no_router;
++
++  gst_bin_add (GST_BIN_CAST (decoder), router);
++
++  decoder->router = router;
++
++  return router;
++
++  /* ERRORS */
++no_router:
++  {
++    post_missing_plugin_error (GST_ELEMENT_CAST (router), "st router");
++    return NULL;
++  }
++}
++
+ /* is called when a dynamic source element created a new pad. */
+ static void
+ source_new_pad (GstElement * element, GstPad * pad, GstURIDecodeBin * bin)
+@@ -2017,6 +2113,9 @@ setup_source (GstURIDecodeBin * decoder)
+   g_signal_emit (decoder, gst_uri_decode_bin_signals[SIGNAL_SOURCE_SETUP],
+       0, decoder->source);
+ 
++  /* remove routers, if any */
++  remove_router (decoder);
++
+   /* remove the old decoders now, if any */
+   remove_decoders (decoder, FALSE);
+ 
+@@ -2065,7 +2164,12 @@ setup_source (GstURIDecodeBin * decoder)
+         goto streaming_failed;
+     } else {
+       GstElement *dec_elem;
++      GstElement *router_elem;
+ 
++      GST_DEBUG_OBJECT (decoder, "Plugging router to source");
++      router_elem = make_router (decoder);
++      if (!router_elem)
++        GST_WARNING_OBJECT (decoder, "Router element is disabled");
+       /* no streaming source, we can link now */
+       GST_DEBUG_OBJECT (decoder, "Plugging decodebin to source");
+ 
+@@ -2073,8 +2177,29 @@ setup_source (GstURIDecodeBin * decoder)
+       if (!dec_elem)
+         goto no_decoder;
+ 
+-      if (!gst_element_link_pads (decoder->source, NULL, dec_elem, "sink"))
+-        goto could_not_link;
++      if (!router_elem)
++      {
++        /* router is disabled so link source and decodebin2 */
++        if (!gst_element_link_pads (decoder->source, NULL, dec_elem, "sink"))
++          goto could_not_link;
++      }
++      else
++      {
++        /* link source and router */
++        if (!gst_element_link_pads (decoder->source, NULL, router_elem, "sink"))
++        {
++          GST_WARNING_OBJECT (decoder, "Can't link source element with router element");
++          /* try to link source and decoder anyway */
++          if (!gst_element_link_pads (decoder->source, NULL, dec_elem, "sink"))
++            goto could_not_link;
++        }
++        else
++        {
++          /* link router and decodebin2 */
++          if (!gst_element_link_pads (router_elem, "src", dec_elem, "sink"))
++            goto could_not_link_2;
++        }
++      }
+     }
+   }
+   return TRUE;
+@@ -2107,6 +2232,12 @@ could_not_link:
+         (NULL), ("Can't link source to decoder element"));
+     return FALSE;
+   }
++could_not_link_2:
++  {
++    GST_ELEMENT_ERROR (decoder, CORE, NEGOTIATION,
++        (NULL), ("Can't link router element to decoder element"));
++    return FALSE;
++  }
+ }
+ 
+ static void
+@@ -2508,12 +2639,14 @@ gst_uri_decode_bin_change_state (GstElement * element,
+     case GST_STATE_CHANGE_PAUSED_TO_READY:
+       GST_DEBUG ("paused to ready");
+       remove_decoders (decoder, FALSE);
++      remove_router (decoder);
+       remove_source (decoder);
+       do_async_done (decoder);
+       break;
+     case GST_STATE_CHANGE_READY_TO_NULL:
+       GST_DEBUG ("ready to null");
+       remove_decoders (decoder, TRUE);
++      remove_router (decoder);
+       remove_source (decoder);
+       break;
+     default:
+-- 
+1.6.2.5
+

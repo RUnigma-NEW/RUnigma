@@ -1,0 +1,12 @@
+The rating feature of the extrecmenu plugin gives the possibility
+to rate recordings. These ratings are shown in the Recordings menu
+with up to 5 stars.
+
+
+Installation
+============
+
+1. Copy ./vdr-rate-recording.sh to Your local file system
+2. Edit your reccmds.conf file: add entries to rate a recording.
+   You may want to use ./reccmds/reccmds.custom.conf as a starting point.
+   Modify the path to vdr-rate-recording.sh (if neccessary)

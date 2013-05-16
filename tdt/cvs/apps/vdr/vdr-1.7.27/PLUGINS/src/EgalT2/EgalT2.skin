@@ -1,0 +1,634 @@
+<?xml version="1.0"?>
+<skin version="1.1" name="EgalT2" screenBase="relative">
+
+<!-- Menu-Display ======================================= -->
+
+  <display id="menu">
+	<window x1="0" x2="-1" y1="0" y2="-1" bpp="8"/>
+
+	<!-- Menu: default -->
+	<rectangle x1="0" x2="199" y1="0" y2="-36" color="#00000000" condition="and(or(not({MenuText}),equal({MenuTitle:clean},trans('Recording info'))),not(equal({MenuTitle:clean},'VDR')))"/>
+	<block x1="200" x2="-1" y1="0" y2="-36" condition="and(or(not({MenuText}),equal({MenuTitle:clean},trans('Recording info'))),not(equal({MenuTitle:clean},'VDR')))">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<text x1="10" x2="-210" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{MenuTitle}</text>
+		<text x1="-200" x2="-10" y1="5" y2="30" color="TextPassiv" align="right" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+	</block>
+	<!-- MenuList (list does not work in blocks) -->
+	<list x1="205" x2="-6" y1="44" y2="-41" condition="not({MenuText})">
+		<item height="24"/>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuGroup}</text>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuItem}</text>
+		<image condition="{IsMenuCurrent}" x="5" y="0" color="TextActiv" bgColor="GraphDark" path="symbols/current.xpm"/>
+		<marquee x1="30" x2="-5" y1="0" y2="23" color="TextActiv" font="Sml">{MenuCurrent}</marquee>
+	</list>
+	<!-- MenuText Recording -->
+	<block x1="205" x2="-6" y1="44" y2="-41" condition="and({MenuText},equal({MenuTitle:clean},trans('Recording info')))">
+		<scrolltext x1="5" x2="-20" y1="0" y2="-10" color="TextActiv" font="Sml">{MenuText}</scrolltext>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-9" x2="-1" y1="0" y2="-10" color="TextPassiv"/>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-8" x2="-2" y1="1" y2="-11" color="TextPassiv"/>
+		<scrollbar condition="or({CanScrollUp},{CanScrollDown})" x1="-7" x2="-3" y1="2" y2="-12" bgColor="GraphDark" color="TextPassiv"/>
+	</block>
+	<!-- small vdr-logo -->
+	<block condition="or(not({MenuText}),equal({MenuTitle:clean},trans('Recording info')))">
+		<image x1="0" x2="171" y1="-126" y2="-36" bgColor="#00000000" path="symbols/vdr-HDlogo-small.png"/>
+	</block>
+
+	<!-- Menu: Main, Channels, Commands -->
+	<rectangle x1="501" x2="-1" y1="0" y2="-36" color="#00000000" condition="or(equal({MenuTitle:clean},'VDR'),or(equal({MenuTitle:clean},trans('Commands')),equal({MenuTitle:clean},trans('Channels'))))"/>
+	<block x1="0" x2="500" y1="0" y2="-36" condition="or(equal({MenuTitle:clean},'VDR'),or(equal({MenuTitle:clean},trans('Commands')),equal({MenuTitle:clean},trans('Channels'))))">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<text condition="equal({MenuTitle:clean},'VDR')" x1="10" x2="-10" y1="5" y2="30" color="TextActiv" align="left" font="Osd">VDR :::EgalT2:::</text>
+		<text condition="or(equal({MenuTitle:clean},trans('Commands')),equal({MenuTitle:clean},trans('Channels')))" x1="10" x2="-10" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{MenuTitle}</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+		<!-- Title -->
+		<text condition="and(equal({MenuTitle:clean},'VDR'),ge({FreeDiskSpace},5000))" x1="10" x2="-10" y1="-31" y2="-1" color="TextPassiv" align="left" font="Osd">{MenuTitle:rest}</text>
+		<blink condition="and(equal({MenuTitle:clean},'VDR'),lt({FreeDiskSpace},5000))" x1="10" x2="-10" y1="-31" y2="-1" color="TextActiv" align="left" font="Osd" delay="500">{MenuTitle:rest}</blink>
+	</block>
+	<!-- MenuList Main -->
+	<list x1="5" x2="495" y1="60" y2="-80" condition="equal({MenuTitle:clean},'VDR')">
+		<item height="24"/>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuGroup}</text>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuItem}</text>
+		<image condition="{IsMenuCurrent}" x="5" y="0" color="TextActiv" bgColor="GraphDark" path="symbols/current.xpm"/>
+		<marquee x1="30" x2="-5" y1="0" y2="23" color="TextActiv" font="Sml">{MenuCurrent}</marquee>
+	</list>
+	<!-- or MenuList Channels,Commands -->
+	<list x1="5" x2="495" y1="44" y2="-41" condition="or(equal({MenuTitle:clean},trans('Commands')),equal({MenuTitle:clean},trans('Channels')))">
+		<item height="24"/>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuGroup}</text>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuItem}</text>
+		<image condition="{IsMenuCurrent}" x="5" y="0" color="TextActiv" bgColor="GraphDark" path="symbols/current.xpm"/>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextActiv" font="Sml">{MenuCurrent}</text>
+	</list>
+	<!-- big vdr-logo :D -->
+	<block condition="or(equal({MenuTitle:clean},'VDR'),or(equal({MenuTitle:clean},trans('Commands')),equal({MenuTitle:clean},trans('Channels'))))">
+		<image x1="-301" x2="-1" y1="0" y2="210" bgColor="#00000000" path="symbols/vdr-HDlogo.png"/>
+	</block>
+
+	<!-- addtional Info: Timer -->
+	<block x1="450" x2="-1" y1="-180" y2="-36" condition="or(equal({MenuTitle:clean},trans('Commands')),or(equal({MenuTitle:clean},trans('Channels')),equal({MenuTitle:clean},'VDR')))">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<text x1="-200" x2="-10" y1="5" y2="30" color="TextPassiv" align="right" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+		<!-- TimerConflicts -->
+		<text condition="not({TimerConflicts})" x1="0" x2="-10" y1="-105" y2="-81" color="TextPassiv" align="right" font="Sml">____Timer__</text>
+	<!-- text2skin todo: trans not working here
+		<blink condition="{TimerConflicts}" x1="0" x2="-10" y1="-105" y2="-81" color="TextActiv" delay="1000" align="right" font="Sml">{TimerConflicts} trans('TimerConflicts')!</blink> 
+	-->
+		<blink condition="{TimerConflicts}" x1="0" x2="-10" y1="-105" y2="-81" color="TextActiv" delay="1000" align="right" font="Sml">{TimerConflicts} TimerConflicts!</blink>
+		<!-- TimerInfo -->
+		<block condition="{CurrentEventsTitle1}">
+			<marquee condition="not({CurrentEventsIsRecording1})" x1="0" x2="-10" y1="-80" y2="-56" color="TextPassiv" align="right" font="Sml">{CurrentEventsStartDateTime1:%d.%m. %H\:%M}.. {CurrentEventsTitle1}</marquee> 
+			<marquee condition="{CurrentEventsIsRecording1}" x1="0" x2="-10" y1="-80" y2="-56" color="TextActiv" align="right" font="Sml">.. {CurrentEventsStopDateTime1:%H\:%M}  {CurrentEventsTitle1}</marquee> 
+		</block>
+		<block condition="{CurrentEventsTitle2}">
+			<marquee condition="not({CurrentEventsIsRecording2})" x1="0" x2="-10" y1="-55" y2="-31" color="TextPassiv" align="right" font="Sml">{CurrentEventsStartDateTime2:%d.%m. %H\:%M..} {CurrentEventsTitle2}</marquee> 
+			<marquee condition="{CurrentEventsIsRecording2}" x1="0" x2="-10" y1="-55" y2="-31" color="TextActiv" align="right" font="Sml">.. {CurrentEventsStopDateTime2:%H\:%M} {CurrentEventsTitle2}</marquee> 
+		</block>
+		<block condition="{CurrentEventsTitle3}">
+			<marquee condition="not({CurrentEventsIsRecording3})" x1="0" x2="-10" y1="-30" y2="-1" color="TextPassiv" align="right" font="Sml">{CurrentEventsStartDateTime3:%d.%m. %H\:%M}.. {CurrentEventsTitle3}</marquee>
+			<marquee condition="{CurrentEventsIsRecording3}" x1="0" x2="-10" y1="-30" y2="-1" color="TextActiv" align="right" font="Sml">.. {CurrentEventsStopDateTime3:%H\:%M} {CurrentEventsTitle3}</marquee>
+		</block>
+	</block>
+
+	<!-- SubMenu: EpgDetail -->
+	<block x1="205" x2="-6" y1="40" y2="-41" condition="{PresentTitle}"> 
+		<text x1="5" x2="208" y1="1" y2="22" color="TextPassiv" font="Sml">{PresentStartDateTime:%d.%m. %H\:%M} - {PresentEndDateTime:%H\:%M}</text>
+		<image condition="{PresentIsRunning}" x="213" y="2" color="TextPassiv" bgColor="GraphDark" path="symbols/run.xpm"/>
+		<text condition="{PresentHasVPS}" x1="258" x2="350" y1="1" y2="22" color="TextPassiv" font="Sml" align="right">{PresentVPSDateTime:%H\:%M}</text>
+		<image condition="{PresentHasVPS}" x="360" y="2" color="TextPassiv" bgColor="GraphDark" path="symbols/vps.xpm"/>
+		<text condition="{PresentIsRunning}" x1="-150" x2="-10" y1="1" y2="22" color="TextPassiv" font="Sml" align="right">{PresentDuration:%m}/-{PresentProgress:%m}/+{PresentRemaining:%m}'</text>
+		<text condition="not({PresentIsRunning})" x1="-150" x2="-10" y1="1" y2="22" color="TextPassiv" font="Sml" align="right">{PresentDuration:%m}'</text>
+		<image condition="equal({PresentVideoAR},'16:9')" x="20" y="32" color="TextPassiv" bgColor="GraphDark" path="symbols/16:9.xpm"/>
+		<marquee x1="65" x2="-12" y1="32" y2="51" color="TextActiv" font="Osd">{PresentTitle}</marquee>
+		<image condition="{PresentHasTimer}" x="20" y="62" color="TextPassiv" bgColor="GraphDark" path="symbols/timer.xpm"/>
+		<marquee x1="65" x2="-12" y1="62" y2="81" color="TextPassiv" font="Sml">{PresentShortText}</marquee>
+		<scrolltext x1="65" x2="-20" y1="96" y2="-10" color="TextActiv" font="Sml">{PresentDescription}</scrolltext>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-9" x2="-1" y1="96" y2="-10" color="TextPassiv"/>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-8" x2="-2" y1="97" y2="-11" color="TextPassiv"/>
+		<scrollbar condition="or({CanScrollUp},{CanScrollDown})" x1="-7" x2="-3" y1="98" y2="-12" bgColor="GraphDark" color="TextPassiv"/>
+	</block>
+
+	<!-- SubMenu: RecordingDetail -->
+	<block x1="205" x2="-6" y1="40" y2="-41" condition="{RecordingName}">
+		<text x1="5" x2="60" y1="1" y2="22" color="TextPassiv" align="center">{RecordingDateTime:%a}</text>
+		<text x1="65" x2="235" y1="1" y2="22" color="TextPassiv">{RecordingDateTime:%d.%m.%Y  %H\:%M}</text>
+		<text x1="245" x2="305" y1="1" y2="22" color="TextPassiv" align="left">{RecordingLength:%m}'</text>
+		<marquee x1="310" x2="-5" y1="1" y2="22" color="TextPassiv" align="right">({RecordingLanguageCode}, {RecordingLanguageDescription})</marquee>
+		<image condition="equal({RecordingVideoAR},'16:9')" x="20" y="32" color="TextPassiv" bgColor="GraphDark" path="symbols/16:9.xpm"/>
+		<marquee condition="{RecordingDescription}" x1="65" x2="-10" y1="30" y2="51" color="TextActiv">{RecordingTitle}</marquee>
+		<marquee x1="65" x2="-20" y1="60" y2="81" color="TextPassiv">{RecordingShortText}</marquee>
+		<scrolltext x1="65" x2="-20" y1="96" y2="-10" color="TextActiv">{RecordingDescription}</scrolltext>
+		<scrolltext condition="not({RecordingDescription})" x1="65" x2="-10" y1="96" y2="-10" color="TextActiv">{RecordingTitle}</scrolltext>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-9" x2="-1" y1="96" y2="-10" color="TextPassiv"/>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-8" x2="-2" y1="97" y2="-11" color="TextPassiv"/>
+		<scrollbar condition="or({CanScrollUp},{CanScrollDown})" x1="-7" x2="-3" y1="98" y2="-12" bgColor="GraphDark" color="TextPassiv"/>
+	</block>
+
+	<!-- Menu: MenuText Commands+Co > 2.window ! -->
+	<block x1="250" x2="-1" y1="34" y2="-36" condition="and({MenuText},not(equal({MenuTitle:clean},trans('Recording info'))))">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<text x1="10" x2="-165" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{MenuTitle}</text>
+		<text x1="-155" x2="-10" y1="5" y2="30" color="TextPassiv" align="right" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+		<rectangle x1="10" x2="10" y1="33" y2="-10" color="TextPassiv"/>
+		<scrolltext x1="20" x2="-25" y1="40" y2="-10" color="TextActiv" font="Fix">{MenuText}</scrolltext>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-14" x2="-6" y1="40" y2="-10" color="TextPassiv"/>
+		<rectangle condition="or({CanScrollUp},{CanScrollDown})" x1="-13" x2="-7" y1="41" y2="-11" color="TextPassiv"/>
+		<scrollbar condition="or({CanScrollUp},{CanScrollDown})" x1="-12" x2="-8" y1="42" y2="-12" bgColor="GraphDark" color="TextPassiv"/>
+	</block>
+
+	<!-- Bottom: Buttons/Message -->
+	<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="#00000000"/>
+	<block condition="not({Message})">
+		<rectangle x1="-465" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="-115" x2="-5" y1="-32" y2="-29" color="MenuBBlue"/>
+		<rectangle x1="-230" x2="-120" y1="-32" y2="-29" color="MenuBYellow"/>
+		<rectangle x1="-345" x2="-235" y1="-32" y2="-29" color="MenuBGreen"/>
+		<rectangle x1="-460" x2="-350" y1="-32" y2="-29" color="MenuBRed"/>
+		<block condition="or({ButtonRed},{ButtonGreen},{ButtonYellow},{ButtonBlue})">
+			<text x1="-115" x2="-5" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonBlue}</text>
+			<text x1="-230" x2="-120" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonYellow}</text>
+			<text x1="-345" x2="-235" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonGreen}</text>
+			<text x1="-460" x2="-350" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonRed}</text>
+		</block>
+	</block>
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+
+<!-- ChannelInfo-Display ======================================= -->
+
+  <display id="channelInfo">
+	<window x1="0" x2="-1" y1="0" y2="32" bpp="8"/>
+	<window x1="0" x2="-1" y1="-225" y2="-1" bpp="8"/>
+
+	<!-- Top -->
+	<block x1="-200" x2="-1" y1="0" y2="29">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="4" y1="0" y2="4" color = "#00000000" arc="-2"/>
+		<ellipse x1="-5" x2="-1" y1="0" y2="4" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="4" y1="-5" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-5" x2="-1" y1="-5" y2="-1" color = "#00000000" arc="-4"/>
+		<text x1="10" x2="-10" y1="5" y2="-1" color="TextPassiv" align="center" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+	</block>
+	
+	<!-- Info -->
+	<block x1="0" x2="-1" y1="-208" y2="-36">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<!-- Channel, STR/SNR... -->
+		<text x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">{ChannelNumber}</text>
+		<!-- ...textual -->
+		<marquee x1="90" x2="-260" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{ChannelName} ({ChannelBouquet})</marquee>
+		<text x1="-250" x2="-10" y1="5" y2="30" color="TextPassiv" align="right" font="Sml">STR: {FrontendSTR}% / SNR: {FrontendSNR}%</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+        <!-- Progressbar -->
+		<rectangle x1="90" x2="90" y1="33" y2="38" color="TextPassiv"/>
+		<rectangle x1="90" x2="-80" y1="38" y2="38" color="TextPassiv"/>
+		<rectangle x1="-80" x2="-80" y1="33" y2="38" color="TextPassiv"/>
+		<progress x1="90" x2="-80" y1="33" y2="38" color="TextPassiv" current="{PresentProgress}" total="{PresentDuration}"/>
+		<!-- Present -->
+		<text x1="20" x2="80" y1="50" y2="70" color="TextActiv" align="left" font="Sml">{PresentStartDateTime:%H\:%M}</text>
+		<marquee x1="90" x2="-80" y1="50" y2="70" color="TextActiv" align="left" font="Sml">{PresentTitle}</marquee>
+		<text condition="{PresentIsRunning}" x1="-75" x2="-10" y1="50" y2="70" color="TextPassiv" font="Sml" align="right">+{PresentRemaining:%m}'</text>
+		<text condition="not({PresentIsRunning})" x1="-75" x2="-10" y1="50" y2="70" color="TextPassiv" font="Sml" align="right">{PresentDuration:%m}'</text>
+		<image condition="{PresentHasTimer}" x="33" y="72" color="TextPassiv" bgColor="GraphDark" path="symbols/timer.xpm"/>
+		<marquee x1="90" x2="-80" y1="72" y2="95" color="TextPassiv" align="left" font="Sml">{PresentShortText}</marquee>
+		<!-- Following -->
+		<text x1="20" x2="80" y1="97" y2="117" color="TextActiv" align="left" font="Sml">{FollowingStartDateTime:%H\:%M}</text>
+		<marquee x1="90" x2="-80" y1="97" y2="117" color="TextActiv" align="left" font="Sml">{FollowingTitle}</marquee>
+		<text x1="-75" x2="-10" y1="97" y2="117" color="TextPassiv" font="Sml" align="right">{FollowingDuration:%m}'</text>
+		<image condition="{FollowingHasTimer}" x="33" y="119" color="TextPassiv" bgColor="GraphDark" path="symbols/timer.xpm"/>
+		<marquee x1="90" x2="-80" y1="119" y2="139" color="TextPassiv" align="left" font="Sml">{FollowingShortText}</marquee>
+		<!-- Symbols, Audio, Recording -->
+		<rectangle x1="10" x2="-10" y1="-28" y2="-28" color="TextPassiv"/>
+		<image condition="{IsRecording}" x="33" y="-23" bgColor="TextPassiv" path="symbols/recording.xpm"/>
+		<image x="90" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image x="120" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image x="150" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image x="-115" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/16:9.xpm"/>
+		<image x="-85" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/hdtv.xpm"/>
+		<image x="-40" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+		<image condition="{ChannelHasTeletext}" x="90" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image condition="{ChannelIsRadio}" x="90" y="-23" color="SymbolActiv" bgColor="GraphDark" path="symbols/radio.xpm"/>
+		<image condition="{ChannelHasDolby}" x="120" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image condition="{ChannelHasMultilang}" x="150" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image condition="file('langs/{Language}.png')" x="180" y="-23" path="langs/{Language}.png"/> 
+		<marquee condition="not(file('langs/{Language}.png'))" x1="180" x2="208" y1="-23" y2="-1" color="TextPassiv" font="sml">{Language}</marquee>
+		<text condition="equal({AudioChannel},'stereo')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[LR]</text>
+		<text condition="equal({AudioChannel},'left')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[L-]</text>
+		<text condition="equal({AudioChannel},'right')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[-R]</text>
+		<text x1="250" x2="400" y1="-23" y2="-1" color="TextPassiv" align="left" font="Sml">{AudioTrack}</text>
+		<image condition="equal({PresentVideoAR},'16:9')" x="-115" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/16:9.xpm"/>
+	<!-- text2skin todo:  1) 16:9@Live, 2) HDTV or better ResolutionRefresh Vres_i/p_Hz for Live/Replay
+		<image condition="{PresentHDTV}" x="-85" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/hdtv.xpm"/>
+	 -->
+		<image condition="{ChannelIsEncrypted}" x="-40" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+	</block>
+
+	<!-- Bottom: Buttons/Message -->
+	<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="#00000000"/>
+	<block condition="not({Message})">
+		<rectangle x1="-465" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="-115" x2="-5" y1="-32" y2="-29" color="MenuBBlue"/>
+		<rectangle x1="-230" x2="-120" y1="-32" y2="-29" color="MenuBYellow"/>
+		<rectangle x1="-345" x2="-235" y1="-32" y2="-29" color="MenuBGreen"/>
+		<rectangle x1="-460" x2="-350" y1="-32" y2="-29" color="MenuBRed"/>
+		<block condition="or({ButtonRed},{ButtonGreen},{ButtonYellow},{ButtonBlue})">
+			<text x1="-115" x2="-5" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonBlue}</text>
+			<text x1="-230" x2="-120" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonYellow}</text>
+			<text x1="-345" x2="-235" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonGreen}</text>
+			<text x1="-460" x2="-350" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonRed}</text>
+		</block>
+		<block condition="not(or({ButtonRed},{ButtonGreen},{ButtonYellow},{ButtonBlue}))">
+			<text x1="-115" x2="-5" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">Timer</text>
+			<text x1="-230" x2="-120" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">Audio</text>
+			<text x1="-345" x2="-235" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">...</text>
+			<text x1="-460" x2="-350" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">Aufnahmen</text>
+		</block>
+	</block>
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+  
+<!-- ChannelSmall-Display ======================================= -->
+
+  <display id="channelSmall">
+	<window x1="0" x2="-1" y1="0" y2="32" bpp="8"/>
+	<window x1="0" x2="-1" y1="-125" y2="-1" bpp="8"/>
+
+	<!-- Top -->
+	<block x1="-200" x2="-1" y1="0" y2="29">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="4" y1="0" y2="4" color = "#00000000" arc="-2"/>
+		<ellipse x1="-5" x2="-1" y1="0" y2="4" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="4" y1="-5" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-5" x2="-1" y1="-5" y2="-1" color = "#00000000" arc="-4"/>
+		<text x1="10" x2="-10" y1="5" y2="-1" color="TextPassiv" align="center" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+	</block>
+	
+	<!-- Info -->
+	<block x1="0" x2="-1" y1="-94" y2="-36">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-7" x2="-1" y1="-7" y2="-1" color = "#00000000" arc="-4"/>
+		<!-- Channel, STR/SNR... -->
+		<text x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">{ChannelNumber}</text>
+		<!-- ...textual -->
+		<marquee x1="90" x2="-260" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{ChannelName} ({ChannelBouquet})</marquee>
+		<text x1="-250" x2="-10" y1="5" y2="30" color="TextPassiv" align="right" font="Sml">STR: {FrontendSTR}% / SNR: {FrontendSNR}%</text>
+		<!-- Symbols, Audio, Recording -->
+		<rectangle x1="10" x2="-10" y1="-28" y2="-28" color="TextPassiv"/>
+		<image condition="{IsRecording}" x="33" y="-23" bgColor="TextPassiv" path="symbols/recording.xpm"/>
+		<image x="90" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image x="120" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image x="150" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image x="-115" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/16:9.xpm"/>
+		<image x="-85" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/hdtv.xpm"/>
+		<image x="-40" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+		<image condition="{ChannelHasTeletext}" x="90" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image condition="{ChannelIsRadio}" x="90" y="-23" color="SymbolActiv" bgColor="GraphDark" path="symbols/radio.xpm"/>
+		<image condition="{ChannelHasDolby}" x="120" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image condition="{ChannelHasMultilang}" x="150" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image condition="file('langs/{Language}.png')" x="180" y="-23" path="langs/{Language}.png"/> 
+		<marquee condition="not(file('langs/{Language}.png'))" x1="180" x2="208" y1="-23" y2="-1" color="TextPassiv" font="sml">{Language}</marquee>
+        <text condition="equal({AudioChannel},'stereo')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[LR]</text>
+        <text condition="equal({AudioChannel},'left')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[L-]</text>
+        <text condition="equal({AudioChannel},'right')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[-R]</text>
+        <text x1="250" x2="400" y1="-23" y2="-1" color="TextPassiv" align="left" font="Sml">{AudioTrack}</text>
+		<image condition="equal({PresentVideoAR},'16:9')" x="-115" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/16:9.xpm"/>
+	<!-- text2skin todo:  1) 16:9@Live, 2) HDTV or better ResolutionRefresh Vres_i/p_Hz for Live/Replay
+		<image condition="{PresentHDTV}" x="-85" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/hdtv.xpm"/>
+	 -->
+		<image condition="{ChannelIsEncrypted}" x="-40" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+	</block>
+
+	<!-- Bottom: Message -->
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+  
+<!-- ReplayInfo-Display ======================================= -->
+
+  <display id="replayInfo">
+	<window x1="0" x2="-1" y1="0" y2="32" bpp="8"/>
+	<window x1="0" x2="-1" y1="-225" y2="-1" bpp="8"/>
+
+	<!-- Top -->
+	<block x1="-200" x2="-1" y1="0" y2="29">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="4" y1="0" y2="4" color = "#00000000" arc="-2"/>
+		<ellipse x1="-5" x2="-1" y1="0" y2="4" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="4" y1="-5" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-5" x2="-1" y1="-5" y2="-1" color = "#00000000" arc="-4"/>
+		<text x1="10" x2="-10" y1="5" y2="-1" color="TextPassiv" align="center" font="Sml">{DateTime:%a %e.%b %H\:%M}</text>
+	</block>
+	
+	<!-- Info -->
+	<block x1="0" x2="-1" y1="-180" y2="-36">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<!-- Mode, Title -->
+		<text condition="equal({ReplayMode},'normal')" x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">REC</text>
+		<text condition="equal({ReplayMode},'dvd')" x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">DVD</text>
+		<text condition="not(or(equal({ReplayMode},'normal'),equal({ReplayMode},'dvd')))" x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">{ReplayMode}</text>
+		<marquee x1="90" x2="-10" y1="5" y2="30" color="TextActiv" align="left" font="Osd">{ReplayTitle}</marquee>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+		<!-- playMode, Progessbar, -Text -->
+		<image condition="{ReplayIsPlaying}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextPassiv" path="symbols/play.xpm"/>
+		<image condition="{ReplayIsPausing}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/pause.xpm"/>
+		<image condition="or({ReplayIsFastForward},{ReplayIsFastForward:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd.xpm"/>
+		<image condition="{ReplayIsFastForward:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd1.xpm"/>
+		<image condition="{ReplayIsFastForward:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd2.xpm"/>
+		<image condition="{ReplayIsFastForward:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd3.xpm"/>
+		<image condition="{ReplayIsFastForward:4}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd4.xpm"/>
+		<image condition="{ReplayIsFastForward:5}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd5.xpm"/>
+		<image condition="{ReplayIsFastForward:6}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd6xpm"/>
+		<image condition="{ReplayIsFastForward:7}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd7xpm"/>
+		<image condition="{ReplayIsFastForward:8}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd8.xpm"/>
+		<image condition="{ReplayIsFastForward:9}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd9.xpm"/>
+		<image condition="or({ReplayIsSlowForward},{ReplayIsSlowForward:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd.xpm"/>
+		<image condition="{ReplayIsSlowForward:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd1.xpm"/>
+		<image condition="{ReplayIsSlowForward:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd2.xpm"/>
+		<image condition="{ReplayIsSlowForward:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd3.xpm"/>
+		<image condition="or({IsFastRewind},{IsFastRewind:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew.xpm"/>
+		<image condition="{IsFastRewind:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew1.xpm"/>
+		<image condition="{IsFastRewind:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew2.xpm"/>
+		<image condition="{IsFastRewind:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew3.xpm"/>
+		<image condition="{IsFastRewind:4}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew4.xpm"/>
+		<image condition="{IsFastRewind:5}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew5.xpm"/>
+		<image condition="{IsFastRewind:6}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew6.xpm"/>
+		<image condition="{IsFastRewind:7}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew7.xpm"/>
+		<image condition="{IsFastRewind:8}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew8.xpm"/>
+		<image condition="{IsFastRewind:9}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew9.xpm"/>
+		<image condition="or({IsSlowRewind},{IsSlowRewind:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew.xpm"/>
+		<image condition="{IsSlowRewind:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew1.xpm"/>
+		<image condition="{IsSlowRewind:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew2.xpm"/>
+		<image condition="{IsSlowRewind:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew3.xpm"/>
+		<rectangle x1="90" x2="-80" y1="48" y2="48" color="TextPassiv"/>
+		<rectangle x1="90" x2="90" y1="48" y2="73" color="TextPassiv"/>
+		<rectangle x1="90" x2="-80" y1="73" y2="73" color="TextPassiv"/>
+		<rectangle x1="-80" x2="-80" y1="48" y2="73" color="TextPassiv"/>
+		<progress x1="91" x2="-81" y1="49" y2="72" color="TextPassiv" bgColor="GraphDark" mark="MsgErr" active="MsgStat" keep="MsgStat" current="{ReplayPositionIndex}" total="{ReplayDurationIndex}"/>
+		<text x1="-75" x2="-10" y1="53" y2="73" color="TextPassiv" font="Sml" align="right">+{ReplayRemaining:%m}'</text>
+		<text x1="90" x2="300" y1="83" y2="103" color="TextPassiv" align="left" font="Sml">{ReplayPosition} / {ReplayDuration}</text>
+		<text x1="-300" x2="-80" y1="83" y2="103" color="TextActiv" align="right" font="Sml">{ReplayPrompt}</text>
+		<!-- Symbols, Audio, Recording -->
+		<rectangle x1="10" x2="-10" y1="-28" y2="-28" color="TextPassiv"/>
+		<image condition="{IsRecording}" x="33" y="-23" bgColor="TextPassiv" path="symbols/recording.xpm"/>
+		<image x="90" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image x="120" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image x="150" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image x="-115" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/16:9.xpm"/>
+		<image x="-85" y="-23" bgColor="SymbolPassiv"  color="GraphDark" path="symbols/hdtv.xpm"/>
+	<!-- mp3 specific todo
+		<image x="120" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/shuffle.xpm"/>
+		<image x="150" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/loop.xpm"/>
+		<image condition="{ReplayIsShuffle}" x="120" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/shuffle.xpm"/>
+		<image condition="{ReplayIsLoop}" x="150" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/loop.xpm"/>
+	-->
+	<!-- text2skin todo?
+		<image condition="{ReplayHasTeletext}" x="90" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/teletext.xpm"/>
+		<image condition="{ReplayIsRadio}" x="90" y="-23" color="SymbolActiv" bgColor="GraphDark" path="symbols/radio.xpm"/>
+		<image condition="{ReplayHasDolby}" x="120" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/dolbydigital.xpm"/>
+		<image condition="{ReplayHasMultilang}" x="150" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/audio.xpm"/>
+		<image x="-40" y="-23" bgColor="SymbolPassiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+	-->
+		<image condition="file('langs/{Language}.png')" x="180" y="-23" path="langs/{Language}.png"/> 
+		<marquee condition="not(file('langs/{Language}.png'))" x1="180" x2="208" y1="-23" y2="-1" color="TextPassiv" font="sml">{Language}</marquee>
+		<text condition="equal({AudioChannel},'stereo')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[LR]</text>
+		<text condition="equal({AudioChannel},'left')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[L-]</text>
+		<text condition="equal({AudioChannel},'right')" x1="210" x2="245" y1="-23" y2="-1" color="TextPassiv" font="Sml">[-R]</text>
+		<text x1="250" x2="400" y1="-23" y2="-1" color="TextPassiv" align="left" font="Sml">{AudioTrack}</text>
+		<image condition="equal({ReplayVideoAR},'16:9')" x="-115" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/16:9.xpm"/>
+	<!-- text2skin todo:  1) 16:9@Live, 2) HDTV or better ResolutionRefresh Vres_i/p_Hz for Live/Replay
+		<image condition="{PresentHDTV}" x="-85" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/hdtv.xpm"/>
+		<image condition="{ReplayIsEncrypted}" x="-40" y="-23" bgColor="SymbolActiv" color="GraphDark" path="symbols/encrypted.xpm"/>
+	 -->
+	</block>
+
+	<!-- Bottom: Buttons/Message -->
+	<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="#00000000"/>
+	<block condition="not({Message})">
+		<rectangle x1="-465" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="-115" x2="-5" y1="-32" y2="-29" color="MenuBBlue"/>
+		<rectangle x1="-230" x2="-120" y1="-32" y2="-29" color="MenuBYellow"/>
+		<rectangle x1="-345" x2="-235" y1="-32" y2="-29" color="MenuBGreen"/>
+		<rectangle x1="-460" x2="-350" y1="-32" y2="-29" color="MenuBRed"/>
+		<block condition="or({ButtonRed},{ButtonGreen},{ButtonYellow},{ButtonBlue})">
+			<text x1="-115" x2="-5" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonBlue}</text>
+			<text x1="-230" x2="-120" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonYellow}</text>
+			<text x1="-345" x2="-235" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonGreen}</text>
+			<text x1="-460" x2="-350" y1="-25" y2="-1" color="TextActiv" align="center" font="Sml">{ButtonRed}</text>
+		</block>
+		<block condition="not(or({ButtonRed},{ButtonGreen},{ButtonYellow},{ButtonBlue}))">
+			<text x1="-115" x2="-5" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">Stop</text>
+			<text x1="-230" x2="-120" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">+1 Min.</text>
+			<text x1="-345" x2="-235" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">-1 Min.</text>
+			<text x1="-460" x2="-350" y1="-25" y2="-1" color="TextPassiv" align="center" font="Sml">Springen</text>
+		</block>
+	</block>
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+  
+<!-- ReplaySmall-Display ======================================= -->
+
+  <display id="replaySmall">
+	<window x1="0" x2="-1" y1="0" y2="32" bpp="8"/>
+	<window x1="0" x2="-1" y1="-225" y2="-1" bpp="8"/>
+
+	<block x1="0" x2="90" y1="-180" y2="-36">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="4" y1="0" y2="4" color = "#00000000" arc="-2"/>
+		<ellipse x1="-5" x2="-1" y1="0" y2="4" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="4" y1="-5" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-5" x2="-1" y1="-5" y2="-1" color = "#00000000" arc="-4"/>
+		<!-- Mode, Title -->
+		<text condition="equal({ReplayMode},'normal')" x1="10" x2="-10" y1="5" y2="30" color="TextActiv" align="center" font="Osd">REC</text>
+		<text condition="equal({ReplayMode},'dvd')" x1="10" x2="-10" y1="5" y2="30" color="TextActiv" align="center" font="Osd">DVD</text>
+		<text condition="not(or(equal({ReplayMode},'normal'),equal({ReplayMode},'dvd')))" x1="10" x2="80" y1="5" y2="30" color="TextActiv" align="center" font="Osd">{ReplayMode}</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+		<!-- playMode -->
+		<image condition="{ReplayIsPlaying}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextPassiv" path="symbols/play.xpm"/>
+		<image condition="{ReplayIsPausing}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/pause.xpm"/>
+		<image condition="or({ReplayIsFastForward},{ReplayIsFastForward:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd.xpm"/>
+		<image condition="{ReplayIsFastForward:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd1.xpm"/>
+		<image condition="{ReplayIsFastForward:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd2.xpm"/>
+		<image condition="{ReplayIsFastForward:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd3.xpm"/>
+		<image condition="{ReplayIsFastForward:4}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd4.xpm"/>
+		<image condition="{ReplayIsFastForward:5}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd5.xpm"/>
+		<image condition="{ReplayIsFastForward:6}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd6xpm"/>
+		<image condition="{ReplayIsFastForward:7}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd7xpm"/>
+		<image condition="{ReplayIsFastForward:8}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd8.xpm"/>
+		<image condition="{ReplayIsFastForward:9}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/ffwd9.xpm"/>
+		<image condition="or({ReplayIsSlowForward},{ReplayIsSlowForward:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd.xpm"/>
+		<image condition="{ReplayIsSlowForward:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd1.xpm"/>
+		<image condition="{ReplayIsSlowForward:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd2.xpm"/>
+		<image condition="{ReplayIsSlowForward:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/sfwd3.xpm"/>
+		<image condition="or({IsFastRewind},{IsFastRewind:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew.xpm"/>
+		<image condition="{IsFastRewind:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew1.xpm"/>
+		<image condition="{IsFastRewind:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew2.xpm"/>
+		<image condition="{IsFastRewind:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew3.xpm"/>
+		<image condition="{IsFastRewind:4}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew4.xpm"/>
+		<image condition="{IsFastRewind:5}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew5.xpm"/>
+		<image condition="{IsFastRewind:6}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew6.xpm"/>
+		<image condition="{IsFastRewind:7}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew7.xpm"/>
+		<image condition="{IsFastRewind:8}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew8.xpm"/>
+		<image condition="{IsFastRewind:9}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/frew9.xpm"/>
+		<image condition="or({IsSlowRewind},{IsSlowRewind:0})" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew.xpm"/>
+		<image condition="{IsSlowRewind:1}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew1.xpm"/>
+		<image condition="{IsSlowRewind:2}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew2.xpm"/>
+		<image condition="{IsSlowRewind:3}" x1="30" x2="60" y1="58" y2="93" bgColor="GraphDark" color="TextActiv" path="symbols/srew3.xpm"/>
+		<!-- Symbol Recording -->
+		<rectangle x1="10" x2="-10" y1="-28" y2="-28" color="TextPassiv"/>
+		<image condition="{IsRecording}" x="33" y="-23" bgColor="TextPassiv" path="symbols/recording.xpm"/>
+	</block>
+
+	<!-- Bottom: Buttons/Message -->
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+
+<!-- AudioTracks-Display =============================== -->
+  
+  <display id="audioTracks">
+	<window x1="0" x2="-1" y1="-225" y2="-36" bpp="8"/>
+	<window x1="0" x2="-1" y1="-35" y2="-1" bpp="8"/>
+
+	<block x1="0" x2="200" y1="-208" y2="-36">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="6" y1="0" y2="6" color = "#00000000" arc="-2"/>
+		<ellipse x1="-7" x2="-1" y1="0" y2="6" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="6" y1="-7" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-7" x2="-1" y1="-7" y2="-1" color = "#00000000" arc="-4"/>
+		<text x1="10" x2="-10" y1="5" y2="30" color="TextActiv" font="Osd">{MenuTitle}</text>
+		<rectangle x1="10" x2="-10" y1="33" y2="33" color="TextPassiv"/>
+	<!-- text2skin todo: trans() not working @ audioTracks-Display
+		<text condition="{AudioChannel}" x1="10" x2="145" y1="-27" y2="-1" color="TextPassiv" align="right" font="Sml">trans('Channel'):</text>
+	-->
+		<text condition="equal({AudioChannel},'stereo')" x1="150" x2="-10" y1="-27" y2="-1" color="TextPassiv" align="right" font="Sml">[LR]</text>
+		<text condition="equal({AudioChannel},'left')" x1="150" x2="-10" y1="-27" y2="-1" color="TextPassiv" align="right" font="Sml">[L-]</text>
+		<text condition="equal({AudioChannel},'right')" x1="150" x2="-10" y1="-27" y2="-1" color="TextPassiv" align="right" font="Sml">[-R]</text>
+	</block>
+	<!-- TrackList -->
+	<list x1="5" x2="195" y1="-164" y2="-71">
+		<item height="24"/>
+		<text x1="30" x2="-5" y1="0" y2="23" color="TextPassiv" font="Sml">{MenuItem}</text>
+		<image condition="{IsMenuCurrent}" x="5" y="0" color="TextActiv" bgColor="GraphDark" path="symbols/current.xpm"/>
+		<marquee x1="30" x2="-5" y1="0" y2="23" color="TextActiv" font="Sml">{MenuCurrent}</marquee>
+	</list>
+
+	<!-- Bottom: Message -->
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+  
+  </display>
+
+<!-- Volume-Display ======================================= -->
+
+  <display id="volume">
+	<window x1="0" x2="-1" y1="-225" y2="-36" bpp="8"/>
+	<window x1="0" x2="-1" y1="-35" y2="-1" bpp="8"/>
+
+    <!-- Volume -->
+	<block x1="100" x2="-100" y1="-136" y2="-100">
+		<rectangle x1="0" x2="-1" y1="0" y2="-1" color="GraphDark"/>
+		<ellipse x1="0" x2="4" y1="0" y2="4" color = "#00000000" arc="-2"/>
+		<ellipse x1="-5" x2="-1" y1="0" y2="4" color = "#00000000" arc="-1"/>
+		<ellipse x1="0" x2="4" y1="-5" y2="-1" color = "#00000000" arc="-3"/>
+		<ellipse x1="-5" x2="-1" y1="-5" y2="-1" color = "#00000000" arc="-4"/>
+		<rectangle x1="50" x2="-10" y1="7" y2="7" color="TextPassiv"/>
+		<rectangle x1="50" x2="50" y1="7" y2="-8" color="TextPassiv"/>
+		<rectangle x1="50" x2="-10" y1="-8" y2="-8" color="TextPassiv"/>
+		<rectangle x1="-10" x2="-10" y1="7" y2="-8" color="TextPassiv"/>
+		<progress x1="51" x2="-11" y1="8" y2="-9" color="TextActiv" current="{VolumeCurrent}" total="{VolumeTotal}"/>
+		<image condition="not({VolumeIsMute})" bgColor="GraphDark" color="TextPassiv" x="10" y="10" path="symbols/volume.xpm"/>
+		<image condition="{VolumeIsMute}" x="10" y="8" bgColor="GraphDark" color="TextPassiv" path="symbols/mute.xpm"/>
+	</block>
+
+	<!-- Bottom: Message -->
+	<block condition="{Message}">
+		<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+		<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+		<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+	</block>
+
+  </display>
+  
+<!-- Message-Display ======================================= -->
+
+  <display id="message">
+	<window x1="0" x2="-1" y1="-35" y2="-1" bpp="8"/>
+
+	<rectangle x1="0" x2="-1" y1="-35" y2="-1" color="GraphDark"/>
+	<rectangle x1="0" x2="-1" y1="-34" y2="-34" color="TextPassiv"/>
+	<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgInfo" align="center" font="Osd">{MessageInfo}</marquee>
+	<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgStat" align="center" font="Osd">{MessageStatus}</marquee>
+	<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgWarn" align="center" font="Osd">{MessageWarning}</marquee>
+	<marquee x1="5" x2="-5" y1="-28" y2="-1" color="MsgErr" align="center" font="Osd">{MessageError}</marquee>
+
+  </display>
+
+</skin>

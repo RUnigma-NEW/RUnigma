@@ -1,0 +1,23 @@
+Die Abürzung OSD steht für On Screen Display das in dieser Beschreibung Textfeld genannt wurde. 
+In diesem Abschnitt können Einstellungen zu seiner Erscheinungsform gemacht werden
+
+Sprache = Deutsch
+Die Sprache in der die Texte des OSD dargestellt werden sollen.
+Breite = 52
+Höhe = 18
+Die Breite und Höhe des OSD. Gültige Bereiche sind für Breite=40...56, Höhe=12...21.
+Anzeigedauer für Nachrichten = 1
+Die Zeit (in Sekunden) für die eine Information im OSD dargestellt werden soll. Gültige Werte sind zwischen 1...60.
+Kanal-Info Position = unten
+Die Position des Kanal-Info Fensters im OSD (entweder 'unten' oder 'oben').
+Info beim Kanalwechsel = ja
+Schaltet die Darstellung der Momentan/Nächste Information an oder aus wenn der Kanal gewechselt wird. Die Information wird immer dargestellt, wenn der "Ok" Knopf im normalen Anzeigemodus ist.
+Seitenweise scrollen = ja
+Wenn der Cursor auf der ersten (letzen) Zeile einer Seite steht und die 'Auf' ('Ab') Taste gedrÃ¼ckt wird, wird die Liste um jeweils eine ganze Seite zurÃ¼ckgescrollt (vorgescrollt) und der Cursor auf die letzte (erste) Zeile der Seite gesetzt.
+Timer sortieren = ja
+Schaltet das Sortieren im "Timer" Menü an oder aus. Timer werden aufsteigend nach Startzeit sortiert, der erste ist dabei derjenige der als nächstes startet.
+Aufnahmeverzeichnisse = ja
+Symbole in der Kanalinfo = ja
+Zeitbalken in der Kanalinfo = ja
+Zeitbalken in 'Was läuft jetzt?' = ja
+Wochentag anzeigen = nein

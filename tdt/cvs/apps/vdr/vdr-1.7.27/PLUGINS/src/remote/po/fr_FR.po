@@ -1,0 +1,62 @@
+# Remote Control plugin language source file.
+# Copyright (C) 2007 Oliver Endriss <o.endriss@gmx.de>
+# This file is distributed under the same license as the Remote Control plugin package.
+# Pierre Briec <eclipse dot vdr at gmail dot com>, 2006
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Remote Control plugin 0.4.0\n"
+"Report-Msgid-Bugs-To: <o.endriss@gmx.de>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2007-10-05 06:58+0200\n"
+"Last-Translator: Pierre Briec <eclipse dot vdr at gmail dot com>, 2006\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: remote.c:38
+msgid "Remote control"
+msgstr "Télécommande"
+
+#: remote.c:217 remote.c:761
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: remote.c:239
+msgid "Error uploading keymap"
+msgstr "Erreur chargement tables de touches"
+
+#: remote.c:320
+msgid "Press any key to use pre-loaded keymap"
+msgstr "Appuyez sur une touche pour utiliser un Keymap préchargé"
+
+#: remote.c:325
+msgid "User-supplied keymap will be used"
+msgstr "Keymap personnalisé va être utilisé"
+
+#: remote.c:331
+msgid "Remote control test - press and hold down any key"
+msgstr "Test télécommande - Appuyer et maintenir une touche enfoncée"
+
+#: remote.c:350
+msgid "RC5 protocol detected"
+msgstr "Protocole RC5 détecté"
+
+#: remote.c:374
+msgid "RC5 protocol detected (inverted signal)"
+msgstr "Protocole RC5 détecté (signal inversé)"
+
+#: remote.c:385
+msgid "RCMM protocol detected"
+msgstr "Protocole RCMM détecté"
+
+#: remote.c:396
+msgid "RCMM protocol detected (inverted signal)"
+msgstr "Protocole RCMM détecté (signal inversé)"
+
+#: remote.c:404
+msgid "No remote control detected"
+msgstr "Aucune télécommande détectée"

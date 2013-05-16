@@ -1,0 +1,59 @@
+setenv bootdelay 3
+setenv baudrate 115200
+setenv board mb618
+setenv monitor_base 0xA0000000
+setenv monitor_len 0x00080000
+setenv monitor_sec 0xa0000000    0xa007ffff
+setenv load_addr 0x80000000
+setenv unprot protect off ${monitor_sec}
+setenv update protect off ${monitor_sec;erase $monitor_sec;cp.b $load_addr $monitor_base $monitor_len;protect on $monitor_sec}
+setenv hostname spark
+setenv ethaddr 00:80:E1:12:06:38
+setenv ipaddr 192.168.40.63
+setenv netmask 255.255.255.0
+setenv gatewayip 192.168.3.1
+setenv serverip 192.168.40.19
+setenv bootcmd bootm  0xa0080000 
+setenv kernel_base 0xa0080000 
+setenv kernel_base_spark 0xa0080000 
+setenv kernel_base_enigma2 0x18000000
+setenv kernel_sec a0080000 a077ffff 
+setenv kernel_len 0x00700000 
+setenv update_kernel protect off  a0080000 a077ffff ;erase  a0080000 a077ffff ;cp.b 0x80000000 0xa0080000  0x00700000 ;protect on  a0080000 a077ffff 
+setenv rootfs_base 0xa0800000
+setenv rootfs_sec a0800000 a1ffffff
+setenv menucmd update
+setenv tftp_kernel_name mImage
+setenv tftp_kernel_name_spark mImage
+setenv tftp_kernel_name_enigma2 uImage
+setenv tftp_userfs_name userfsub.img
+setenv tftp_userfs_name_spark userfsub.img
+setenv tftp_userfs_name_enigma2 e2jffs2.img
+setenv kernel_name spark/mImage
+setenv kernel_name_spark spark/mImage
+setenv kernel_name_enigma2 enigma2/uImage
+setenv userfs_name spark/userfsub.img
+setenv userfs_name_spark spark/userfsub.img
+setenv userfs_name_enigma2 enigma2/e2jffs2.img
+setenv userfs_base 800000
+setenv userfs_base_spark 800000
+setenv userfs_base_enigma2 18800000
+setenv userfs_len 17800000
+setenv userfs_len_spark 17800000
+setenv userfs_len_enigma2 7700000
+setenv ip ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:eth0:off
+setenv nwhwconf nwhwconf=device:eth0,hwaddr:00:80:E1:12:06:30 
+setenv stmmaceth stmmaceth=debug:0,watchdog:5000,phyaddr:2
+setenv rootfsnfspath ${serverip}:/home/targets/7111
+setenv kernelnfspath ${serverip}:/home/targets/7111/boot
+setenv ubootnfspath ${serverip}:/home/targets/7111/boot
+setenv nfsroot ${rootfsnfspath},nfsvers=2,rsize=4096,wsize=8192,tcp
+setenv bootargs_nfs console=ttyAS0,115200 ${nwhwconf} ${stmmaceth} root=/dev/nfs nfsroot=${nfsroot} ${ip}bigphysarea=4000
+setenv bootargs_flash console=ttyAS0,115200 rw ramdisk_size=6144 init=/linuxrc root=/dev/ram0 ${nwhwconf} ${ip} ${stmmaceth} bigphysarea=4000
+setenv bootargs console=ttyAS0,115200 rw ramdisk_size=6144 init=/linuxrc root=/dev/ram0 ${nwhwconf} ${ip} ${stmmaceth} bigphysarea=4000
+setenv bootargs_spark console=ttyAS0,115200 rw ramdisk_size=6144 init=/linuxrc root=/dev/ram0 ${nwhwconf} ${ip} ${stmmaceth} bigphysarea=4000
+setenv bootargs_enigma2 console=ttyAS0,115200 root=/dev/mtdblock6 rootfstype=jffs2 rw init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 ${nwhwconf} rw ${ip} bigphysarea=6000 ${stmmaceth}
+setenv bootcmd 'nboot.i 80000000 0 18000000;bootm 80000000'
+setenv bootargs $bootargs_enigma2
+saveenv
+ 

@@ -1,0 +1,30 @@
+From 9ec90ba901d66d8c7a99e5852349d09be0d19b7e Mon Sep 17 00:00:00 2001
+From: Mohamed Hafsia <mohamed.hafsia@st.com>
+Date: Tue, 4 Sep 2012 10:23:03 +0100
+Subject: [PATCH 2/5] Patch from David Liu <david.liu@st.com> to address the issue raised in Bugzilla
+
+Signed-off-by: Mohamed Hafsia <mohamed.hafsia@st.com>
+---
+ configure.ac |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 1901bcf..21e6d2c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -434,9 +434,12 @@ AG_GST_CHECK_PLUGIN(volume)
+ 
+ dnl check for gstreamer core features (subsystems)
+ dnl FIXME: this assumes srcdir == builddir for uninstalled setups
++m4_pattern_allow([PKG_CONFIG_SYSROOT_DIR])
+ GST_CONFIGPATH=`$PKG_CONFIG --variable=includedir gstreamer-0.10`"/gst/gstconfig.h"
++GST_CONFIGPATH=$PKG_CONFIG_SYSROOT_DIR$GST_CONFIGPATH
+ AG_GST_PARSE_SUBSYSTEM_DISABLES($GST_CONFIGPATH)
+ AM_CONDITIONAL(USE_XML, test $GST_DISABLE_XML != "1")
++m4_pattern_forbid([PKG_CONFIG_SYSROOT_DIR])
+ 
+ dnl disable plug-ins that require libxml2's HTML support if it is not available
+ if test "x$HAVE_LIBXML_HTML" != "xyes"; then
+-- 
+1.6.2.5
+

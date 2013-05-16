@@ -1,0 +1,7 @@
+MultiSpeed Modus = nein
+
+     Bestimmt die Funktion der Tasten "Links" und "Rechtes" im Wiedergabemodus. Auf "Nein" gesetzt wird nur eine Geschwindigkeit genutzt, auf "Ja" stehen drei Geschwindigkeiten zur Verfügung für langsamen und schnellen Vor-/Rücklauf.
+
+Wiedergabestatus anzeigen = nein
+
+     Schaltet die Anzeige des momentanen Wiedergabemodus an oder aus.

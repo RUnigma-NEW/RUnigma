@@ -1,0 +1,134 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Istvan Koenigsberger <istvnko@hotmail.com>, 2002
+# Guido Josten <guido.josten@t-online.de>, 2002
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2008-01-27 18:38+0100\n"
+"Last-Translator: Istvan Koenigsberger <istvnko@hotmail.com>, Guido Josten <guido.josten@t-online.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "VDR-Setup Extension"
+msgstr ""
+
+msgid "Setup"
+msgstr "Beállítások"
+
+msgid "Menu Edit"
+msgstr ""
+
+msgid "Plugins activate / deactivate"
+msgstr ""
+
+msgid "protected"
+msgstr ""
+
+msgid "PageUp"
+msgstr ""
+
+msgid "PageDown"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "Move"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+#, fuzzy
+msgid "Edit Plugin"
+msgstr "Beállítani"
+
+msgid "Command"
+msgstr ""
+
+msgid "Has to confirm"
+msgstr ""
+
+msgid "Execute as thread"
+msgstr ""
+
+msgid "Edit Command"
+msgstr ""
+
+#, fuzzy
+msgid "Edit Menu"
+msgstr "Beállítani"
+
+msgid "Create Menu"
+msgstr ""
+
+msgid "Create Command"
+msgstr ""
+
+msgid "Delete Menu?"
+msgstr ""
+
+msgid "Up/Dn for new location - color key to move"
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "Into"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Edit"
+msgstr "Beállítani"
+
+msgid "Delete"
+msgstr "Törölni"
+
+msgid "missing channels/xxx.conf"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "Execute"
+msgstr ""
+
+msgid "Error in configuration files"
+msgstr ""
+
+msgid "Reboot"
+msgstr ""
+
+msgid "Enter Pin: "
+msgstr "Pin kód: "
+
+msgid "Really reboot?"
+msgstr ""
+
+msgid "Invalid Pin!"
+msgstr ""
+
+msgid "setupSetup$Main menu entry"
+msgstr ""
+
+msgid "setupSetup$Menu suffix"
+msgstr ""
+
+msgid "setupSetup$Entry prefix"
+msgstr ""
+
+msgid "setupSetup$Return value"
+msgstr ""

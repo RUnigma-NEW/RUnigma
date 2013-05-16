@@ -1,0 +1,21 @@
+diff -Nhur rpmconfig-2.4.orig/common rpmconfig-2.4/common
+--- rpmconfig-2.4.orig/common	2011-09-27 05:09:57.000000000 +0200
++++ rpmconfig-2.4/common	2012-04-15 22:32:33.000000000 +0200
+@@ -350,7 +348,7 @@
+ %autoremake \
+ install="--install" ; \
+ [ -n "`autoreconf --version | grep 2.13`" ] && install="" ; \
+-autoreconf --verbose --force $install
++autoreconf --verbose --force $install -I%{_stm_host_sharedstate_dir}/aclocal
+ 
+ 
+ %target_autoreconf \
+@@ -366,7 +364,7 @@
+     echo "cd $dn"; \
+     pushd $dn ; \
+     rm -f configure ; \
+-    autoreconf --verbose --force --install ; \
++    autoreconf --verbose --force --install -I%{_stm_host_sharedstate_dir}/aclocal ; \
+     %replacelibtool \
+     popd; \
+   done ;\

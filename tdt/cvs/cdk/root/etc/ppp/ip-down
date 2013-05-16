@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# restore route
+eval $( cat /var/run/$1.oldroute)
+rm /var/run/$1.oldroute
+
+# restore DNS
+if [ -e /etc/ppp/resolv.old ]
+ then
+  cat /etc/ppp/resolv.old > /etc/resolv.conf
+  rm -f /etc/ppp/resolv.old
+fi

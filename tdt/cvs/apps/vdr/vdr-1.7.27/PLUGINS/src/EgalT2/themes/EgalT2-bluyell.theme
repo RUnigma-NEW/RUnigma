@@ -1,0 +1,14 @@
+Description = BluYell
+GraphDark = AF00005F
+TextActiv = FFFCF680
+TextPassiv = AFC4BF64
+SymbolPassiv = FF000000
+SymbolActiv = 9F00FF00
+MenuBRed = FFFF0000
+MenuBGreen = FF00FF00
+MenuBYellow = FFFFFF00
+MenuBBlue = FF7590FF
+MsgInfo = FFFFFFFF
+MsgStat = FF00FF00
+MsgWarn = FFFFFF00
+MsgErr = FFFF0000

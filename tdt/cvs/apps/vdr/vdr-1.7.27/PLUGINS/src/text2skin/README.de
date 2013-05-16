@@ -1,0 +1,107 @@
+Dies ist ein "plugin" für den Video Disk Recorder (VDR).
+
+Geschrieben von:               Sascha Volkenandt <sascha@akv-soft.de>
+
+Projekthomepage:               http://linux.kompiliert.net/index.php?view=text2skin
+
+Letzte Version verfügbar auf: http://projects.vdr-developer.org/projects/show/plg-text2skin
+
+Siehe COPYING für Linzensierungsinformationen.
+
+
+Beschreibung:
+-------------
+
+Dieses Plugin wurde designed um eine Reihe von Dateien zu laden und zu 
+interpretieren, die das Aussehen des On Screen Display beschreiben, und diese 
+dem VDR via Einstellungen -> OSD zur Verfügung zu stellen. Natürlich ist es
+möglich mehrere textbasierte Skins auf diesem Wege zu laden, und unter diesen
+bei laufendem VDR auszuwählen. Alle Skins können Themeable (die Farbvarianten
+können geändert werden) und Übersetzbar sein, wenn der Autor des Skins dies
+möchte.
+
+
+Voraussetzungen:
+----------------
+
+Um andere Bildformate als einfaches XPM zu laden, brauchen Sie eine 
+Grafikbibliothek. Es werden drei Bibliotheken unterstützt, aus der Sie eine
+zu benutzende wählen können. Dies sind ImageMagick, GraphicsMagick oder
+Imlib2, wobei ImageMagick standardmäßig herangezogen wird. Sie können mit
+der Makefile-Variable IMAGELIB beeinflussen, welche Bibliothek (wenn überhaupt
+eine) genutzt werden soll. Hier ist eine Übersicht über Möglichkeiten und
+Nachteile jeder möglichen Lösung:
+
+Keine Bibliothek
+ - Sie können nur XPM Dateien laden
+ - XPMs haben weder Teiltransparenzen noch Alphakanäle
+
+ImageMagick oder GraphicsMagick
+ + Sie können viele verschiedene Bildformate laden einschließlich Animationen
+
+Imlib2
+ + Sie können viele verschiedene Bildformate laden
+ - STÜRZT AB, WENN ES ZUSAMMEN MIT DEM GRAPHTFT-PLUGIN ZUM EINSATZ KOMMT!
+
+HINWEIS: Obwohl die Handbücher von ImageMagick und GraphicsMagick behaupten,
+dass die hier benutzte Bibliothek Magick++ integraler Bestandteil der Quellen
+ist, muss auf manchen Distributionen das Paket Magick++ zusätzlich installiert
+werden.
+
+Die Datei Makefile verwendet standardmäßig pkg-config, um die notwendigen
+Compiler-, Preprocessor- und Linker-Flags und -Bibliotheken zu finden, d.h.
+pkg-config muss installiert sein zusammen mit den *.pc-Dateien für die
+verwendeten Pakete.
+
+
+Installation:
+-------------
+
+Installieren Sie text2skin wie jedes andere Plugin. In diesem Beispiel nehme
+ich an Sie sind in den Ordner gewechselt, in dem VDR's Quelltext liegt, und
+Sie wollen Version 1.2 des Plugins installieren.
+
+root@linux # cd PLUGINS/src
+root@linux # wget http://projects.vdr-developer.org/attachments/download/112/vdr-text2skin-1.2.tgz
+root@linux # tar -xzf vdr-text2skin-1.2.tgz
+root@linux # ln -s text2skin-1.2 text2skin
+root@linux # cd ../..
+root@linux # make plugins
+root@linux # ./vdr -P text2skin
+
+
+Wo die Skins hingehören:
+------------------------
+
+Wie Sie vielleicht wissen, hat VDR einen Unterordner "plugins" innerhalb seines
+Konfigurationsordners, in dem alle Dateien, die zu Plugins gehören, enthalten
+sein sollten. Wenn Sie nicht wissen, wo das sein könnte, schauen Sie in dem
+Ordner nach, den Sie VDR beim Starten mit -v (oder -c, falls gegeben) übergeben
+haben. "plugins" sollte in diesem Ordner enthalten sein.
+
+Innerhalb dieses "plugins" Ordners erstellen Sie einen Ordner namens 
+"text2skin". In "text2skin" erstellen Sie einen weiteren Ordner pro Skin. Diese
+Skin-Ordner müssen den gleichen Namen tragen wie die Skins in ihnen. Jedes 
+Skin muss mindestens eine Datei enthalten, die denselben Namen trägt, aber mit
+der Endung ".skin".
+
+Beispiel (das Skin heisst myskin):
+/video0/plugins/text2skin/
+/video0/plugins/text2skin/myskin/
+/video0/plugins/text2skin/msykin/msykin.skin
+/video0/plugins/text2skin/myskin/channeldisplay.png
+
+Die anderen Dateien in dem Skin-Ordner sind weitere Beschreibungsdateien (für
+Farben und Übersetzungen) sowie Bilder, Logos und Symbole.
+
+Wenn Sie einen Skin herunterladen, wechseln Sie normalerweise einfach in den
+plugins/text2skin Ordner und entpacken es dort.
+
+
+Wo die Fonts hingehören:
+------------------------
+
+Font-Dateien (.ttf) müssen so installiert sein, dass fontconfig sie findet,
+siehe die Dokumentation zu fontconfig für mehr Informationen (normalerweise
+*.ttf in ein Verzeichnis kopieren und fc-cache für dieses Verzeichnis aufrufen,
+als root oder als User vdr).
