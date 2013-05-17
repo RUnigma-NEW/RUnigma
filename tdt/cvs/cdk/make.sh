@@ -29,7 +29,7 @@ CONFIGPARAM=" \
 echo ""
 echo "---------------------------------------"
 echo ""
-echo "Вас приветствует teslanet"
+echo "Вас приветствуют TeslaNet Piterkadet Greder"
 echo ""
 echo "---------------------------------------"
 echo ""
