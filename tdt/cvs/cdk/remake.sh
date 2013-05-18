@@ -6,11 +6,11 @@ export PATH=/usr/sbin:/sbin:$PATH
 CONFIGPARAM=`cat lastChoice`
 
 echo ""
-echo "---------------------------------------"
+echo "-------------------------------------------"
 echo ""
-echo "Вас приветствует teslanet"
+echo "Вас приветствует TeslaNet Piterkadet Greder"
 echo ""
-echo "---------------------------------------"
+echo "-------------------------------------------"
 echo ""
 
 echo && \
