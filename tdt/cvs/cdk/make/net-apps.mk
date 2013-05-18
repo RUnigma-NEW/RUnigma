@@ -1,6 +1,22 @@
 #
 # NFS-UTILS
 #
+BEGIN[[
+nfs_utils
+  1.1.1
+  {PN}-{PV}
+  extract:ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.kernel.org/linux/utils/nfs/{PN}-{PV}.tar.bz2
+  patch:file://{PN}_{PV}-12.diff.gz
+  make:install:DESTDIR=PKDIR
+  install:-m644:debian/nfs-common.default:PKDIR/etc/default/nfs-common
+  install:-m755:debian/nfs-common.init:PKDIR/etc/init.d/nfs-common
+  install:-m644:debian/nfs-kernel-server.default:PKDIR/etc/default/nfs-kernel-server
+  install:-m755:debian/nfs-kernel-server.init:PKDIR/etc/init.d/nfs-kernel-server
+  install:-m644:debian/etc.exports:PKDIR/etc/exports
+  remove:PKDIR/sbin/mount.nfs4:PKDIR/sbin/umount.nfs4
+;
+]]END
+
 DESCRIPTION_nfs_utils = "nfs_utils"
 FILES_nfs_utils = \
 /usr/bin/*
@@ -42,12 +58,27 @@ $(DEPDIR)/%nfs_utils: $(NFS_UTILS_ADAPTED_ETC_FILES:%=root/etc/%) \
 		[ "$${i%%/*}" = "init.d" ] && chmod 755 $(PKDIR)/etc/$$i || true; done )
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_nfs_utils)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_nfs_utils)
+	touch $@ || true
 
 #
 # vsftpd
 #
+BEGIN[[
+vsftpd
+  3.0.2
+  {PN}-{PV}
+  extract:http://fossies.org/unix/misc/{PN}-{PV}.tar.gz
+  patch:file://{PN}_{PV}.diff
+  nothing:file://../root/release/vsftpd
+  nothing:file://../root/etc/vsftpd.conf
+  pmove:{PN}-{PV}/vsftpd:{PN}-{PV}/vsftpd.initscript
+  make:install:PREFIX=PKDIR
+  install:-m644:vsftpd.conf:PKDIR/etc
+  install:-m755 -D:vsftpd.initscript:PKDIR/etc/init.d/vsftpd
+;
+]]END
+
 DESCRIPTION_vsftpd = "vsftpd"
 PKGR_vsftpd = r0
 FILES_vsftpd = \
@@ -71,7 +102,7 @@ $(DEPDIR)/vsftpd.do_prepare: $(DEPENDS_vsftpd)
 $(DEPDIR)/vsftpd.do_compile: bootstrap $(DEPDIR)/vsftpd.do_prepare
 	cd $(DIR_vsftpd) && \
 		$(MAKE) clean && \
-		$(MAKE) $(MAKE_OPTS)
+		$(MAKE) $(MAKE_OPTS) CFLAGS="-pipe -Os -g0"
 	touch $@
 
 $(DEPDIR)/vsftpd: \
@@ -85,12 +116,21 @@ $(DEPDIR)/%vsftpd: $(DEPDIR)/vsftpd.do_compile
 		$(INSTALL_vsftpd)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_vsftpd)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_vsftpd)
+	touch $@ || true
 
 #
 # ETHTOOL
 #
+BEGIN[[
+ethtool
+  6
+  {PN}-{PV}
+  extract:http://downloads.openwrt.org/sources/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+]]END
+
 DESCRIPTION_ethtool = "ethtool"
 FILES_ethtool = \
 /usr/sbin/*
@@ -117,12 +157,22 @@ $(DEPDIR)/%ethtool: $(DEPDIR)/ethtool.do_compile
 		$(INSTALL_ethtool)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_ethtool)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_ethtool)
+	touch $@ || true
 
 #
 # SAMBA
 #
+BEGIN[[
+samba
+  3.6.12
+  {PN}-{PV}
+  extract:http://www.{PN}.org/{PN}/ftp/stable/{PN}-{PV}.tar.gz
+  patch:file://{PN}-{PV}.diff
+  make:install bin/smbd bin/nmbd:DESTDIR=PKDIR:prefix=./.
+;
+]]END
+
 DESCRIPTION_samba = "samba"
 FILES_samba = \
 /usr/sbin/* \
@@ -205,12 +255,22 @@ $(DEPDIR)/%samba: $(DEPDIR)/samba.do_compile
 		$(INSTALL_samba)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_samba)
-	)[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_samba)
+	touch $@ || true
 
 #
 # NETIO
 #
+BEGIN[[
+netio
+  1.26
+  {PN}126
+  extract:http://bnsmb.de/files/public/windows/{PN}126.zip
+  install:-m755:{PN}:PKDIR/usr/bin
+  install:-m755:bin/linux-i386:HOST/bin/{PN}
+;
+]]END
+
 DESCRIPTION_netio = "netio"
 FILES_netio = \
 /usr/bin/*
@@ -233,12 +293,21 @@ $(DEPDIR)/%netio: $(DEPDIR)/netio.do_compile
 		$(INSTALL_netio)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_netio)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_netio)
+	touch $@ || true
 
 #
 # LIGHTTPD
 #
+BEGIN[[
+lighttpd
+  1.4.15
+  {PN}-{PV}
+  extract:http://www.{PN}.net/download/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+]]END
+
 DESCRIPTION_lighttpd = "lighttpd"
 FILES_lighttpd = \
 /usr/bin/* \
@@ -277,12 +346,22 @@ $(DEPDIR)/%lighttpd: $(DEPDIR)/lighttpd.do_compile
 	$(INSTALL) -d $(PKDIR)/etc/init.d && $(INSTALL) -m755 root/etc/init.d/lighttpd $(PKDIR)/etc/init.d
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_lighttpd)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_lighttpd)
+	touch $@ || true
 
 #
 # NETKIT_FTP
 #
+BEGIN[[
+netkit_ftp
+  0.17
+  {PN}-{PV}
+  extract:http://ibiblio.org/pub/linux/system/network/netkit//{PN}-{PV}.tar.gz
+#patch:file://{PN}.diff
+  make:install:MANDIR=/usr/share/man:INSTALLROOT=TARGETS
+;
+]]END
+
 DESCRIPTION_netkit_ftp = "netkit_ftp"
 FILES_netkit_ftp = \
 /usr/bin/*
@@ -308,12 +387,21 @@ $(DEPDIR)/%netkit_ftp: $(DEPDIR)/netkit_ftp.do_compile
 		$(INSTALL_netkit_ftp)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_netkit_ftp)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_netkit_ftp)
+	touch $@ || true
 
 #
 # WIRELESS_TOOLS
 #
+BEGIN[[
+wireless_tools
+  29
+  wireless_tools.{PV}
+  extract:http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.{PV}.tar.gz
+  make:install:INSTALL_MAN=PKDIR/usr/share/man:PREFIX=PKDIR/usr
+;
+]]END
+
 DESCRIPTION_wireless_tools = wireless-tools
 RDEPENDS_wireless_tools = rfkill wpa-supplicant
 FILES_wireless_tools = \
@@ -336,12 +424,22 @@ $(DEPDIR)/%wireless_tools: $(DEPDIR)/wireless_tools.do_compile
 		$(INSTALL_wireless_tools)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_wireless_tools)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_wireless_tools)
+	touch $@ || true
 
 #
 # WPA_SUPPLICANT
 #
+BEGIN[[
+wpa_supplicant
+  1.0
+  wpa_supplicant-{PV}
+  extract:http://hostap.epitest.fi/releases/wpa_supplicant-{PV}.tar.gz
+  nothing:file://wpa_supplicant.config
+  make:install:DESTDIR=PKDIR:LIBDIR=/usr/lib:BINDIR=/usr/sbin
+;
+]]END
+
 DESCRIPTION_wpa_supplicant = "wpa-supplicant"
 PKGR_wpa_supplicant = r0
 FILES_wpa_supplicant = \
@@ -364,5 +462,77 @@ $(DEPDIR)/%wpa_supplicant: $(DEPDIR)/wpa_supplicant.do_compile
 		$(INSTALL_wpa_supplicant)
 	$(tocdk_build)
 	$(toflash_build)
-#	$(DISTCLEANUP_wpa_supplicant)
-	[ "x$*" = "x" ] && touch $@ || true
+	$(DISTCLEANUP_wpa_supplicant)
+	touch $@ || true
+
+
+#
+# TRANSMISSION
+#
+
+BEGIN[[
+transmission
+  2.77
+  {PN}-{PV}
+  extract:http://mirrors.m0k.org/transmission/files/{PN}-{PV}.tar.bz2
+  nothing:file://../root/etc/init.d/transmission.init
+  nothing:file://../root/etc/transmission.json
+  make:install:DESTDIR=PKDIR
+;
+]]END
+
+DESCRIPTION_transmission = "A free, lightweight BitTorrent client"
+PKGR_transmission = r3
+RDEPENDS_transmission = curl openssl libevent
+FILES_transmission = \
+/usr/bin/* \
+/usr/share/transmission/*
+
+define postinst_transmission
+#!/bin/sh
+
+initdconfig --add transmission
+endef
+define postrm_transmission
+#!/bin/sh
+
+initdconfig --del transmission
+endef
+
+$(DEPDIR)/transmission.do_prepare: $(DEPENDS_transmission)
+	$(PREPARE_transmission)
+	touch $@
+
+$(DEPDIR)/transmission.do_compile: bootstrap libevent-dev curl $(DEPDIR)/transmission.do_prepare
+	cd $(DIR_transmission) && \
+		$(BUILDENV) \
+		./configure \
+			--prefix=/usr \
+			--disable-nls \
+			--disable-mac \
+			--disable-libappindicator \
+			--disable-libcanberra \
+			--with-gnu-ld \
+			--enable-daemon \
+			--enable-cli \
+			--disable-gtk \
+			--enable-largefile \
+			--enable-lightweight \
+			--build=$(build) \
+			--host=$(target) && \
+		$(MAKE)
+	touch $@
+
+$(DEPDIR)/transmission: \
+$(DEPDIR)/%transmission: $(DEPDIR)/transmission.do_compile
+	$(start_build)
+	cd $(DIR_transmission) && \
+		$(INSTALL_transmission) && \
+		$(INSTALL_DIR) $(PKDIR)/etc && \
+		$(INSTALL_DIR) $(PKDIR)/etc/transmission && \
+		$(INSTALL_FILE) transmission.json $(PKDIR)/etc/transmission/settings.json && \
+		$(INSTALL_DIR) $(PKDIR)/etc/init.d && \
+		$(INSTALL_BIN) transmission.init $(PKDIR)/etc/init.d/transmission
+	$(extra_build)
+	$(DISTCLEANUP_transmission)
+	touch $@
