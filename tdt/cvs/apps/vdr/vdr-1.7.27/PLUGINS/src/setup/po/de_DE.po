@@ -1,0 +1,131 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2008-01-27 18:38+0100\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "VDR-Setup Extension"
+msgstr "VDR-Setup Erweiterung"
+
+msgid "Setup"
+msgstr "Einstellungen"
+
+msgid "Menu Edit"
+msgstr "Menü bearbeiten"
+
+msgid "Plugins activate / deactivate"
+msgstr "Plugins aktivieren / sortieren"
+
+msgid "protected"
+msgstr "geschützt"
+
+msgid "PageUp"
+msgstr "Seite ^"
+
+msgid "PageDown"
+msgstr "Seite v"
+
+msgid "Before"
+msgstr "Davor"
+
+msgid "After"
+msgstr "Dahinter"
+
+msgid "Move"
+msgstr "Verschieben"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Edit Plugin"
+msgstr "Editiere Plugin"
+
+msgid "Command"
+msgstr "Befehl"
+
+msgid "Has to confirm"
+msgstr "Zu bestätigen"
+
+msgid "Execute as thread"
+msgstr "Als Thread ausführen"
+
+msgid "Edit Command"
+msgstr "Editiere Befehl"
+
+msgid "Edit Menu"
+msgstr "Editiere Menü"
+
+msgid "Create Menu"
+msgstr "Neues Menü"
+
+msgid "Create Command"
+msgstr "Neuer Befehl"
+
+msgid "Delete Menu?"
+msgstr "Menü löschen?"
+
+msgid "Up/Dn for new location - color key to move"
+msgstr "Auf/Ab für neue Position - dann Farbtaste"
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "Into"
+msgstr "Hinein"
+
+msgid "Create"
+msgstr "Neu"
+
+msgid "Edit"
+msgstr "Editieren"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "missing channels/xxx.conf"
+msgstr "fehlende channels/xxx.conf"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "Execute"
+msgstr "Starte"
+
+msgid "Error in configuration files"
+msgstr "Fehler in der VDR-Konfiguration"
+
+msgid "Reboot"
+msgstr "Reboot"
+
+msgid "Enter Pin: "
+msgstr "Pin Eingabe: "
+
+msgid "Really reboot?"
+msgstr "Wirklich neu booten?"
+
+msgid "Invalid Pin!"
+msgstr "Ungültige Pin!"
+
+msgid "setupSetup$Main menu entry"
+msgstr "Hauptmenü Eintrag"
+
+msgid "setupSetup$Menu suffix"
+msgstr "Menü Suffix"
+
+msgid "setupSetup$Entry prefix"
+msgstr "Entry Prefix"
+
+msgid "setupSetup$Return value"
+msgstr "Rückgabe Wert"

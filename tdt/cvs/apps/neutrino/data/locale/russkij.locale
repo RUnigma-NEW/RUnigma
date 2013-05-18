@@ -1,0 +1,1365 @@
+apidselector.head Выбор языка
+audio.srs_algo Тип
+audio.srs_algo_light Лёгкий
+audio.srs_algo_normal Нормальный
+audio.srs_iq SRS Выравнивание 
+audio.srs_nmgr Менеджер шума
+audio.srs_volume Стандартная громкость
+audiomenu.analogout Аналоговый выход
+audiomenu.avs avs
+audiomenu.avs_control Управление громкостью avs/ost
+audiomenu.avsync Синхронизировать A/V
+audiomenu.avsync_am Аудио мастер
+audiomenu.clockrec Время записи
+audiomenu.dolbydigital Dolby Digital
+audiomenu.hdmi_dd Кодированный DD на HDMI
+audiomenu.head Настройки Аудио
+audiomenu.lirc Управление пультом
+audiomenu.monoleft Левый
+audiomenu.monoright Правый
+audiomenu.ost ost
+audiomenu.PCMOffset Уменьшение громкости PCM
+audiomenu.spdif_dd Кодированный DD на SPDIF
+audiomenu.stereo Стерео
+audiomenu.volume_step Шаг регулировки громкости
+audioplayer.add Добавить
+audioplayer.add_ic Icecast
+audioplayer.add_loc Локальный список радио
+audioplayer.add_sc Shoutcast
+audioplayer.artist_title Арт., Назв.
+audioplayer.building_search_index Построение индекса поиска
+audioplayer.button_select_title_by_id Поиск по ID
+audioplayer.button_select_title_by_name Поиск по имени
+audioplayer.defdir Каталог по умолч.
+audioplayer.delete Удалить
+audioplayer.deleteall Удалить все
+audioplayer.display_order Порядок сортировки
+audioplayer.enable_sc_metadata Разр.анализ данных
+audioplayer.fastforward Вперед
+audioplayer.follow Выбор текущей
+audioplayer.head Аудио-плейлист
+audioplayer.highprio Высокий приоритет
+audioplayer.jump_backwards Шаг назад
+audioplayer.jump_dialog_hint1 Выберите цель перехода
+audioplayer.jump_dialog_hint2 (в секундах)
+audioplayer.jump_dialog_title Выбор направление отката
+audioplayer.jump_forwards Шаг вперёд
+audioplayer.keylevel Другие кнопки управления
+audioplayer.load_radio_stations Загрузить интернет-радио
+audioplayer.name Аудиоплеер 
+audioplayer.pause Пауза
+audioplayer.play Играть
+audioplayer.playing Выбранный трек
+audioplayer.playlist_fileerror_msg Файл создать не удалось: 
+audioplayer.playlist_fileoverwrite_msg Этот файл будет перезаписан:
+audioplayer.playlist_fileoverwrite_title Перезаписать?
+audioplayer.playlist_name Имя для файла с плей-листом
+audioplayer.playlist_name_hint1 Введите имя для файла плей-листа
+audioplayer.playlist_name_hint2 Расширение .m3u добавится автоматически
+audioplayer.reading_files Чтение файлов
+audioplayer.receiving_list Получение списка, подождите
+audioplayer.repeat_on Разрешить повтор
+audioplayer.rewind Обратно
+audioplayer.save_playlist Сохранить лист
+audioplayer.screensaver_timeout Вкл. Screensaver (мин, 0=откл.)
+audioplayer.select_title_by_name Поиск по имени (SMS)
+audioplayer.show_playlist Показать Плей-лист
+audioplayer.shuffle Смена порядка
+audioplayer.spectrum lcd a-spectrum
+audioplayer.stop Остановить
+audioplayer.title_artist Название, Артист
+audioplayerpicsettings.general Аудиоплеер и Картинки
+AUDIOSelectMenue.head Выбор звука
+AUDIOSelectMenue.no_tracks Нет доступных треков
+bookmarkmanager.delete Удалить
+bookmarkmanager.name Закладки
+bookmarkmanager.rename Переименовать
+bookmarkmanager.select Выбрать
+bouqueteditor.add Добавить
+bouqueteditor.bouquetname Имя пакета
+bouqueteditor.delete Удалить
+bouqueteditor.delete_channel Удалить канал из пакета?
+bouqueteditor.discardingchanges Отмена изменений. /nподождите пожалуйста...
+bouqueteditor.hide Спрятать
+bouqueteditor.lock Блокировать
+bouqueteditor.move Переместить
+bouqueteditor.name Редактор пакетов
+bouqueteditor.newbouquetname Новое имя пакета
+bouqueteditor.rename Переименовать
+bouqueteditor.return готов
+bouqueteditor.savechanges? Сохранить изменения?
+bouqueteditor.savingchanges Сохранение изменений. /nждите...
+bouqueteditor.switch добавить/удалить
+bouqueteditor.switchmode ТВ/Радио
+bouquetlist.head Пакеты
+cablesetup.provider кабельный провайдер
+cam.empty Нет CAM в слоте
+cam.init_ok Инициализация CAM закончена
+cam.inserted CAM вставлен в слот
+cam.removed CAM удален из слота
+cam.settings САМ модуль
+cam.timeout Ждите прочтения меню CI
+cam.waiting Ожидание ответа от CI
+channellist.current_tp Текущий транспондер
+channellist.edit Править
+channellist.epgtext_align_left вправо
+channellist.epgtext_align_right влево
+channellist.extended Расшир.список каналов
+channellist.favs Избранное
+channellist.head Все сервисы
+channellist.history История
+channellist.make_hdlist Созд.список HD
+channellist.nonefound Нет ни одного канала! \nВыполните сканирование\n(кнопка Меню -> Сервисы)
+channellist.provs Провайдеры
+channellist.sats Спутники
+channellist.since начало от %02d:%02d
+channellist.start старт в %02d:%02d
+colorchooser.alpha альфа
+colorchooser.blue синий
+colorchooser.green зеленый
+colorchooser.red красный
+colormenu.background Фон
+colormenu.fade Fade-режим для меню
+colormenu.font Размер шрифта
+colormenu.gtx_alpha Прозрачность (GTX)
+colormenu.head Настройки цвета
+colormenu.menucolors Выбор цветов в меню
+colormenu.statusbar Информационная панель
+colormenu.textcolor Цвет текста
+colormenu.themeselect Выбор темы
+colormenu.timing Время показа OSD
+colormenusetup.head Выбор цветов в меню
+colormenusetup.menucontent Содержимое окна
+colormenusetup.menucontent_inactive Содержимое окна неактивное
+colormenusetup.menucontent_selected Содержимое окна выбранное
+colormenusetup.menuhead Заголовок меню
+colorstatusbar.head Инфопанель
+colorstatusbar.text Инфопанель
+colorthememenu.classic_theme Classic
+colorthememenu.dblue_theme DarkBlue
+colorthememenu.dvb2k_theme DVB2000
+colorthememenu.gray Gray Theme
+colorthememenu.head Выбор темы
+colorthememenu.neutrino_theme Neutrino
+colorthememenu.red_theme Простой красный
+cpu.freq Частота Cpu
+cpu.freq_default Частота по умолчанию
+cpu.freq_normal Нормальная частота
+cpu.freq_standby Частота в Standby
+date.Apr  Апр
+date.Aug  Авг
+date.Dec  Дек
+date.Feb  Фев
+date.Fri  Птн
+date.Jan  Янв
+date.Jul  Июл
+date.Jun  Июн
+date.Mar  Мар
+date.May  Май
+date.Mon  Пнд
+date.Nov  Ноя
+date.Oct  Окт
+date.Sat  Сбт
+date.Sep  Сен
+date.Sun  Вск
+date.Thu  Чтв
+date.Tue  Втр
+date.Wed  Срд
+epgextended.actors Агент
+epgextended.director Директор
+epgextended.guests Гость
+epgextended.original_title Оригин. заголовок
+epgextended.presenter Предъявитель
+epgextended.year_of_production Год выпуска
+epglist.noevents Программа передач отсутствует...
+EPGMenu.epgplus Телегид всех каналов
+EPGMenu.eventinfo Передачи подробно
+EPGMenu.eventlist Телегид канала
+EPGMenu.head Телегид-Информ
+EPGMenu.streaminfo Тех-инфо канала
+EPGPlus.actions Действия 
+EPGPlus.bybouquet_mode по пакетам 
+EPGPlus.bypage_mode по страницам 
+EPGPlus.change_font_size Размер шрифта 
+EPGPlus.change_font_style Вид шрифта 
+EPGPlus.change_size Изменить размер 
+EPGPlus.channelentry_font Шрифт для Канала
+EPGPlus.channelentry_separationlineheigt Высота строк
+EPGPlus.channelentry_width Ширина ячейки канала
+EPGPlus.channelevententry_font Шрифт для Передачи
+EPGPlus.edit_fonts Установка шрифтов 
+EPGPlus.edit_sizes Установка размеров 
+EPGPlus.font_style_bold Жирный
+EPGPlus.font_style_italic Курсив
+EPGPlus.font_style_regular Обычный
+EPGPlus.footer_fontbouquetchannelname Шрифт инф.канала в сноске
+EPGPlus.footer_fontbuttons Шрифт подписей кнопок
+EPGPlus.footer_fonteventdescription Шрифт названия передачи в сноске
+EPGPlus.footer_fonteventshortdescription Шрифт инф.передачи в сноске 
+EPGPlus.head Телегид по всем каналам (просмотр/обзор)
+EPGPlus.header_font Шрифт Заголовка
+EPGPlus.horgap1_height Высота верх.поля раздела
+EPGPlus.horgap2_height Высота ниж.поля раздела
+EPGPlus.next_bouquet Пакет вперед 
+EPGPlus.options Опции
+EPGPlus.page_down вниз страницы
+EPGPlus.page_up вверх страницы
+EPGPlus.prev_bouquet Пакет обратно
+EPGPlus.record запись
+EPGPlus.refresh_epg обновить
+EPGPlus.remind запомнить
+EPGPlus.reset_settings Настройки по умолчанию 
+EPGPlus.save_settings Сохранить настройки
+EPGPlus.scroll_mode Режим листания
+EPGPlus.select_font_name Выбор шрифта
+EPGPlus.settings Настройки
+EPGPlus.slider_width Ширина поля всех программ
+EPGPlus.stretch_mode Режим протяжки
+EPGPlus.swap_mode Режим обмена
+EPGPlus.timeline_fontdate Шрифт даты
+EPGPlus.timeline_fonttime Шрифт времени
+EPGPlus.vergap1_width Ширина прав.поля раздела
+EPGPlus.vergap2_width Ширина лев.поля раздела
+EPGPlus.view_mode Режим просмотра
+epgviewer.More_Screenings Дата/время показа и повтора на этом канале
+epgviewer.nodetailed Подробная информация отсутствует
+epgviewer.notfound EPG не найден
+eventfinder.head Поиск в EPG
+eventfinder.keyword Ключевое слово
+eventfinder.search Искать
+eventfinder.search_within_epg Поиск в пределах
+eventfinder.search_within_list Поиск в пределах
+eventfinder.searching Поиск ключевого слова в EPG...
+eventfinder.start_search  Начало поиска
+eventlistbar.channelswitch Список
+eventlistbar.eventsort Сортировка
+eventlistbar.recordevent Запись
+extra.add_to_bouquet Добавить в пакет
+extra.audio_run_player Аудио кнопка запуска плеера
+extra.auto_delete Авто-удаление
+extra.auto_timeshift Авто-запись, сек. (0=откл.)
+extra.auto_to_record передвинуть timeshift при записи
+extra.cache_txt Кэш телетекста
+extra.chadded Канал добавлен в выбранный пакет....\n
+extra.chalreadyinbq Канал уже существует в выбранном пакете....\n
+extra.clear_log Очистить лог
+extra.dboxinfo Инфо бокса
+extra.east Восток
+extra.english Английский
+extra.fec_1_2 1/2
+extra.fec_2_3 2/3
+extra.fec_3_4 3/4
+extra.fec_5_6 5/6
+extra.fec_7_8 7/8
+extra.fec_s2_8psk_1_2 1/2 s2 8psk
+extra.fec_s2_8psk_2_3 2/3 s2 8psk
+extra.fec_s2_8psk_3_4 3/4 s2 8psk
+extra.fec_s2_8psk_3_5 3/5 s2 8psk
+extra.fec_s2_8psk_4_5 4/5 s2 8psk
+extra.fec_s2_8psk_5_6 5/6 s2 8psk
+extra.fec_s2_8psk_7_8 7/8 s2 8psk
+extra.fec_s2_8psk_8_9 8/9 s2 8psk
+extra.fec_s2_8psk_9_10 9/10 s2 8psk
+extra.fec_s2_qpsk_1_2 1/2 s2 qpsk
+extra.fec_s2_qpsk_2_3 2/3 s2 qpsk
+extra.fec_s2_qpsk_3_4 3/4 s2 qpsk
+extra.fec_s2_qpsk_3_5 3/5 s2 qpsk
+extra.fec_s2_qpsk_4_5 4/5 s2 qpsk
+extra.fec_s2_qpsk_5_6 5/6 s2 qpsk
+extra.fec_s2_qpsk_7_8 7/8 s2 qpsk
+extra.fec_s2_qpsk_8_9 8/9 s2 qpsk
+extra.fec_s2_qpsk_9_10 9/10 s2 qpsk
+extra.hw_sect Раздел оборудования
+extra.key_click Щелкнуть кнопку
+extra.key_list_end Конец
+extra.key_list_start Домой
+extra.key_plugin Один сенсорный плагин
+extra.key_timeshift Таймшифт
+extra.key_unlock Разблок.ключ
+extra.ladirection LaDirection
+extra.latitude Широта
+extra.loadcolors Загрузить цвета из
+extra.loadconfig Загрузить настройки из
+extra.loadkeys Загрузить кнопки из
+extra.lodirection LoDirection
+extra.logo Лого
+extra.longitude Долгота
+extra.manual_scan Ручное сканирование
+extra.menu_left_exit Влево = Выход из меню
+extra.north Север
+extra.record_time Время записи(часов)
+extra.rotor_swap Поменять на E/W
+extra.savecolors Сохранить цвета как
+extra.saveconfig Сохранить настройки как
+extra.savekeys Сохранить кнопки как
+extra.scan_fast Быстро
+extra.scan_full Полный
+extra.scan_mode Режим сканирования
+extra.sms_channel sms-режим канала
+extra.south Юг
+extra.spts_mode Режим SPTS
+extra.start_tostandby Запуск в standby
+extra.temp_timeshift Timeshift
+extra.timeshift_pause Пауза Timeshift
+extra.timezone Час.пояс
+extra.tp_fec FEC
+extra.tp_freq Частота
+extra.tp_mod Модуляция
+extra.tp_mod_128 QAM/128
+extra.tp_mod_16 QAM/16
+extra.tp_mod_256 QAM/256
+extra.tp_mod_32 QAM/32
+extra.tp_mod_64 QAM/64
+extra.tp_pol Поляризация
+extra.tp_pol_h H
+extra.tp_rate Симв.скорость
+extra.tp.pol_v V
+extra.update_dir Каталог для обновлений
+extra.use_gotoxx Использ. gotoXX
+extra.use_log Лог в /tmp/log
+extra.west Запад
+extra.zap_cycle Цикл Zap
+extra.zapit_backup Резервир.каналы в /tmp
+extra.zapit_fast_zap Быстрый zap
+extra.zapit_fe_timeout Tune timeout
+extra.zapit_hvoltage Повышенное (13.5/18.5) напряжение
+extra.zapit_make_bouquet Сделать список Remaining каналов
+extra.zapit_menu Параметры Zapit
+extra.zapit_motor_speed Скор.мотора (10=1deg/sec)
+extra.zapit_restore Восстан. каналы из /tmp
+extra.zapit_rezap_time Re-Zap on emu switch time
+extra.zapit_save_last_chan Сохранить последний канал
+extra.zapit_scan_sdt Скан. SDT для обновлений
+extra.zapit_scanpids Скан./использ. pids
+extra.zapit_sdt_changed Каналы изменились, перегрузка настроек.
+extra.zapit_sort_names Сорт.каналы по имени
+extra.zapit_write_names Имена каналов в bouquets.xml
+fan_speed Скорость вент.CPU
+favorites.addchannel Этот канал будет добавлен \nв пакет каналов "Избранное". \n Это займет несколько секунд...
+favorites.bouquetname Избранное
+favorites.bqcreated Пакет каналов "Избранное" создан...\n
+favorites.chadded Этот канал добавлен в список избранных...\n
+favorites.chalreadyinbq Этот канал уже есть в списке избранных...\n
+favorites.copy Копировать канал в избранное
+favorites.finalhint \nВоспользуйтесь редактором для изменения фаворитов.\n
+favorites.menueadd Добавить в избранное
+favorites.nobouquets Избранное доступно только из активных пакетов.
+filebrowser.delete Удалить
+filebrowser.denydirectoryleave Начало абс.каталога
+filebrowser.dodelete1 удаляем раз
+filebrowser.dodelete2 удаляем два
+filebrowser.filter.active фильтр вкл.
+filebrowser.filter.inactive фильтр выкл.
+filebrowser.head Проводник по каталогам
+filebrowser.mark Пометить
+filebrowser.nextpage След. страница
+filebrowser.prevpage Пред. страница
+filebrowser.scan Сканирование каталога
+filebrowser.select Выбор
+filebrowser.showrights Показ. права файлов
+filebrowser.sort.date Сорт.(дата)
+filebrowser.sort.name Сорт.(имя)
+filebrowser.sort.namedirsfirst Сорт.(иначе)
+filebrowser.sort.size Сорт.(размер)
+filebrowser.sort.type Сорт.(тип)
+filesystem.is.utf8 Файл.система utf8
+filesystem.is.utf8.option.iso8859.1 ISO-8859-1
+filesystem.is.utf8.option.utf8 UTF-8
+flashupdate.actionreadflash Чтение
+flashupdate.cantopenfile Не могу открыть файл
+flashupdate.cantopenmtd Не могу открыть устройство mtd
+flashupdate.checkupdate Поиск новой версии
+flashupdate.currentreleasecycle Версия релиза
+flashupdate.currentversion_sep Текущая версия
+flashupdate.currentversiondate Дата
+flashupdate.currentversionsnapshot Тип прошивки
+flashupdate.currentversiontime Время
+flashupdate.erasefailed Не могу стереть флешь
+flashupdate.erasing Стирание флешь
+flashupdate.experimentalimage Выбранная прошивка не проверена и ваш\nтюнер возможно не загрузится после обновления.\n\nВы действительно хотите обновить на эту версию?
+flashupdate.expertfunctions Экспертные функции
+flashupdate.fileis0bytes Размер файла 0 байт
+flashupdate.fileselector Выбор файла
+flashupdate.flashreadyreboot Прошивка успешно записана.\nТюнер сейчас перегрузится.
+flashupdate.getinfofile Запрос версии
+flashupdate.getinfofileerror Не могу определить версию
+flashupdate.getupdatefile Обновление
+flashupdate.getupdatefileerror Не могу обновить
+flashupdate.globalprogress Общий прогресс:
+flashupdate.head Обновление софта
+flashupdate.md5check Проверка прошивки
+flashupdate.md5sumerror Прошивка без ошибок
+flashupdate.msgbox Найдена следующая новая прошивка:\nДата: %s, %s\nбазовый имидж: %s\nтип имиджа: %s\n\nХотите загрузить и установить эту версию сейчас? 
+flashupdate.msgbox_manual Найден новый файл:\nДата: %s, %s\nБазовый имидж: %s\nТип: %s\n\n Хотите загрузить и установить эту версию сейчас? 
+flashupdate.mtdselector Выбор раздела
+flashupdate.programmingflash Программирование флешь
+flashupdate.proxypassword Пароль
+flashupdate.proxypassword_hint1 Введите пароль прокси-сервера
+flashupdate.proxypassword_hint2 Пустое поле означает, что пароля нет
+flashupdate.proxyserver Хост
+flashupdate.proxyserver_hint1 Введите прокси-сервер или IP-адрес в виде host:port
+flashupdate.proxyserver_hint2 Пустое поле означает, что нет прокси-сервера
+flashupdate.proxyserver_sep Прокси-сервер
+flashupdate.proxyusername Имя
+flashupdate.proxyusername_hint1 Введите имя прокси-сервера
+flashupdate.proxyusername_hint2 Пустое поле означает, что нет авт.прокси
+flashupdate.readflash Сохранить прошивку полностью
+flashupdate.readflashmtd Сохранить один из разделов
+flashupdate.ready Готов
+flashupdate.reallyflashmtd Уверены что хотите записать?\n\nЕсли произойдет ошибка или прошивка не\nправильная тюнер не перегрузится.\n\nимя имиджа: %s\nЦель: %s
+flashupdate.savesuccess Прошивка успешно сохранена\nв %s.
+flashupdate.selectimage Доступные прошивки и файлы
+flashupdate.squashfs.noversion Проверка обновлений для SquashFS-версии возможна только по интернету.\n Вы уверены в своем желании установить эту прошивку?
+flashupdate.titlereadflash Чтение флешь
+flashupdate.titlewriteflash Записываю флешь
+flashupdate.updatemode Режим обновления
+flashupdate.updatemode_internet Интернет
+flashupdate.updatemode_manual Вручную (ftp)
+flashupdate.url_file Файл конфигурации
+flashupdate.versioncheck Проверка версии
+flashupdate.writeflash Записать прошивку полностью
+flashupdate.writeflashmtd Записать один из разделов
+flashupdate.wrongbase Ваша прошивка отличается от выбранной.\nЗагрузить?
+fontmenu.channellist Список каналов
+fontmenu.epg EPG
+fontmenu.eventlist Список событий
+fontmenu.gamelist Список игр
+fontmenu.head Настройки размера шрифтов
+fontmenu.infobar Инфопанель
+fontsize.channel_num_zap Прямой выбор
+fontsize.channellist Список каналов
+fontsize.channellist_descr Описание
+fontsize.channellist_number Номер
+fontsize.epg_date EPG дата
+fontsize.epg_info1 EPG Info 1
+fontsize.epg_info2 EPG Info 2
+fontsize.epg_title EPG заголовок
+fontsize.eventlist_datetime Дата / Время
+fontsize.eventlist_itemlarge Большой
+fontsize.eventlist_itemsmall Маленький
+fontsize.eventlist_title Заголовок
+fontsize.filebrowser_item Содержимое проводника
+fontsize.gamelist_itemlarge Большой
+fontsize.gamelist_itemsmall Маленький
+fontsize.hint Фонт инициализации, \nждем...
+fontsize.infobar_channame Имя канала
+fontsize.infobar_info Информация
+fontsize.infobar_number Номер
+fontsize.infobar_small Маленький
+fontsize.menu Текст меню
+fontsize.menu_info Информация Меню
+fontsize.menu_title Заголовок меню
+GENRE.ARTS.0 искусство / культура
+GENRE.ARTS.1 исполнительное искусство (танец, пьеса т.д.)
+GENRE.ARTS.10 искусство/журнал культуры
+GENRE.ARTS.11 мода
+GENRE.ARTS.2  изобразительное  искусство
+GENRE.ARTS.3 религия
+GENRE.ARTS.4 популярная культура/традиционные искусства
+GENRE.ARTS.5 литература
+GENRE.ARTS.6 кино/фильм
+GENRE.ARTS.7 экспериментальное кино/видео
+GENRE.ARTS.8 трансляции/пресса
+GENRE.ARTS.9 новые течения
+GENRE.CHILDRENs_PROGRAMMES.0 дети/передачи для детей  
+GENRE.CHILDRENs_PROGRAMMES.1 программа для дошкольников
+GENRE.CHILDRENs_PROGRAMMES.2 развлекательная программа от 6 до 14
+GENRE.CHILDRENs_PROGRAMMES.3 развлекательная программа от 10 до 16
+GENRE.CHILDRENs_PROGRAMMES.4 инф./образовательные/школьные программы
+GENRE.CHILDRENs_PROGRAMMES.5 мультфильмы/кукольные фильмы
+GENRE.DOCUS_MAGAZINES.0 документальное кино / тележурналы
+GENRE.DOCUS_MAGAZINES.1 природа/животные/окружающая среда
+GENRE.DOCUS_MAGAZINES.2 технологии/естественные науки
+GENRE.DOCUS_MAGAZINES.3 медицина/психология/физиология
+GENRE.DOCUS_MAGAZINES.4 зарубежные страны/экспедиции
+GENRE.DOCUS_MAGAZINES.5 общество/духовные науки
+GENRE.DOCUS_MAGAZINES.6 дополнительное образование
+GENRE.DOCUS_MAGAZINES.7 языки
+GENRE.MOVIE.0 кино/драма
+GENRE.MOVIE.1 детектив/триллер
+GENRE.MOVIE.2 приключения/вестерн/война
+GENRE.MOVIE.3 научная фантастика/фэнтези/ужас
+GENRE.MOVIE.4 комедии
+GENRE.MOVIE.5 мыло/мелодрама/фольклор
+GENRE.MOVIE.6 романтика
+GENRE.MOVIE.7 серьезный/классический/религиозный/исторический фильм/драма
+GENRE.MOVIE.8 кино для взрослых/драма
+GENRE.MUSIC_DANCE.0 музыка/балет/танцы
+GENRE.MUSIC_DANCE.1 рок/поп
+GENRE.MUSIC_DANCE.2 серьезная музыка /классическая музыка
+GENRE.MUSIC_DANCE.3 фолк/традиционная музыка
+GENRE.MUSIC_DANCE.4 джаз
+GENRE.MUSIC_DANCE.5 музыка/опера
+GENRE.MUSIC_DANCE.6 балет
+GENRE.NEWS.0 новости
+GENRE.NEWS.1 новости/погода
+GENRE.NEWS.2 лента новостей
+GENRE.NEWS.3 документальные
+GENRE.NEWS.4 дискуссии/интервью/дебаты
+GENRE.SHOW.0 Шоу / Игровое шоу
+GENRE.SHOW.1 игровое шоу/викторина/конкурс
+GENRE.SHOW.2 варьете
+GENRE.SHOW.3 разговорное шоу
+GENRE.SOCIAL_POLITICAL.0 социальные & политические события/бизнес
+GENRE.SOCIAL_POLITICAL.1 журналы/отчеты/документалистика
+GENRE.SOCIAL_POLITICAL.2 экономика/общественные консультации
+GENRE.SOCIAL_POLITICAL.3 замечательные люди
+GENRE.SPORTS.0 спорт
+GENRE.SPORTS.1 специальные (Олимпийские игры, Мировые чемпионаты и т.д.)
+GENRE.SPORTS.10 конный спорт 
+GENRE.SPORTS.11 военный спорт
+GENRE.SPORTS.2 спортивные журналы
+GENRE.SPORTS.3 футбол
+GENRE.SPORTS.4 теннис/сквош
+GENRE.SPORTS.5 командный спорт (исключая футбол)
+GENRE.SPORTS.6 атлетика
+GENRE.SPORTS.7 мотоспорт
+GENRE.SPORTS.8 водный спорт
+GENRE.SPORTS.9 зимний спорт
+GENRE.TRAVEL_HOBBIES.0 путешествия и отдых
+GENRE.TRAVEL_HOBBIES.1 туризм/путешествия
+GENRE.TRAVEL_HOBBIES.2 ремесло
+GENRE.TRAVEL_HOBBIES.3 автомобильный спорт
+GENRE.TRAVEL_HOBBIES.4 здоровье
+GENRE.TRAVEL_HOBBIES.5 кухня
+GENRE.TRAVEL_HOBBIES.6 реклама/покупки
+GENRE.TRAVEL_HOBBIES.7 садоводство
+GENRE.UNKNOWN Неизвестный
+gtxalpha.alpha1 Альфа 1
+gtxalpha.alpha2 Альфа 2
+hdd_10min 10 мин.
+hdd_1min 1 мин.
+hdd_20min 20 мин.
+hdd_30min 30 мин.
+hdd_5min 5 мин.
+hdd_60min 60 мин.
+hdd_activate Активировать настройки
+hdd_check Проверить файловую систему
+hdd_check_failed Проверка HDD неудачна !
+hdd_ext3 Ext3
+hdd_ext2 Ext2
+hdd_fast Быстро
+hdd_format Форматировать HDD
+hdd_format_failed Форматирование HDD неудачно !
+hdd_format_warn Действительно хотите форматировать ? Потеряете все данные !
+hdd_fs Файловая система
+hdd_manage Manage
+hdd_middle Средне
+hdd_noise Noise
+hdd_not_found  HDD не найден
+hdd_reiser ReiserFS
+hdd_settings Настройки HDD
+hdd_sleep Время бездействия
+hdd_slow Медленно
+hdd_umount_warn HDD unmount неудачен !
+imageinfo.creator Создатель:
+imageinfo.date Дата:
+imageinfo.dokumentation Док:
+imageinfo.forum Форум:
+imageinfo.head Инфо имиджа:
+imageinfo.homepage Дом. стр.:
+imageinfo.image Имидж:
+imageinfo.license Лицензия:
+imageinfo.version Версия:
+inetradio.name Интернет-радио
+infobar.bar_color Цвет панели
+infobar.picon Пикон
+infobar.picon_big большой
+infobar.picon_move SIG/SNR вместо пикона
+infobar.picon_normal нормальный
+infoviewer.epgnotload EPG не загружено....
+infoviewer.epgwait Попытка получить программу передач...
+infoviewer.eventlist Телегид
+infoviewer.languages Аудио
+infoviewer.motor_moving Позиционирование антенны
+infoviewer.next Дальше
+infoviewer.nocurrent Нет информации о текущей передаче
+infoviewer.noepg Нет доступа к программе передач
+infoviewer.notavailable Канал не доступен
+infoviewer.now Сейчас
+infoviewer.selecttime Время выбора
+infoviewer.streaminfo Функции
+infoviewer.subchan_disp_pos Отобр.подканала
+infoviewer.subservice Дополнения
+infoviewer.waittime Попытка получить текущее время...
+ipsetup.hint_1 Используйте 0..9, или Up/Down,
+ipsetup.hint_2 OK - сохранено, LAME! - Отмена
+keybindingmenu.addrecord Добавить таймер записи
+keybindingmenu.addremind Добавить таймер переключения
+keybindingmenu.allchannels_on_ok Все сервисы
+keybindingmenu.bouquetchannels_on_ok Текущий пакет
+keybindingmenu.bouquetdown Предыдущий пакет
+keybindingmenu.bouquethandling Пакет-контроль
+keybindingmenu.bouquetlist_on_ok Список пакетов
+keybindingmenu.bouquetup Следующий пакет
+keybindingmenu.cancel Закрыть список каналов
+keybindingmenu.channeldown Канал вниз
+keybindingmenu.channellist Список каналов
+keybindingmenu.channelup Канал вверх
+keybindingmenu.head Настройка кнопок
+keybindingmenu.lastchannel Вернуться на канал
+keybindingmenu.modechange Изменение режима
+keybindingmenu.pagedown Страница вниз
+keybindingmenu.pageup Страница вверх
+keybindingmenu.quickzap Quickzap
+keybindingmenu.RC ПДУ: повтор-блок.
+keybindingmenu.repeatblock Задержка повтора
+keybindingmenu.repeatblockgeneric Общая задержка
+keybindingmenu.sort Изменить порядок сортировки
+keybindingmenu.subchanneldown Подканалы вниз
+keybindingmenu.subchannelup Подканалы вверх
+keybindingmenu.tvradiomode ТВ/Радио-режим
+keybindingmenu.zaphistory Список переключений
+keychooser.head Настроить новые кнопки
+keychooser.text1 Нажмите новую кнопку
+keychooser.text2 Подождете несколько секунд для выхода
+keychoosermenu.currentkey Текущая кнопка
+keychoosermenu.setnew Настроить новые кнопки
+keychoosermenu.setnone нет кнопки
+languagesetup.head Настройка языка
+languagesetup.select Язык
+lcdcontroler.brightness Нормальная яркость
+lcdcontroler.brightnessstandby Яркость деж.режима
+lcdcontroler.contrast Контрастность
+lcdmenu.autodimm Авто dimm
+lcdmenu.dim_brightness Ярк.после dim timeout
+lcdmenu.dim_time Dim timeout
+lcdmenu.head Настройки Дисплея (VFD)
+lcdmenu.inverse Инвертировать изображение
+lcdmenu.lcdcontroler Контрастность / Яркость
+lcdmenu.power Питание
+lcdmenu.statusline В строке статуса
+lcdmenu.statusline.both Громкость / время
+lcdmenu.statusline.playtime Время 
+lcdmenu.statusline.volume Громкость
+mainmenu.audioplayer Аудиоплеер
+mainmenu.clearsectionsd Очистить кэш EPG
+mainmenu.games Игры
+mainmenu.head Меню управления
+mainmenu.movieplayer Видеоплеер
+mainmenu.pausesectionsd Чтение EPG
+mainmenu.pictureviewer Просмотр картинок
+mainmenu.radiomode Радио-каналы
+mainmenu.reboot Перезагрузить
+mainmenu.recording Запись
+mainmenu.recording_start Старт
+mainmenu.recording_stop Стоп
+mainmenu.scartmode Scart-режим
+mainmenu.scripts Скрипты
+mainmenu.service Сервисы
+mainmenu.settings Настройки
+mainmenu.shutdown Выключить
+mainmenu.sleeptimer Таймер деж. режима
+mainmenu.tvmode Режим ТВ
+mainsettings.audio Аудио
+mainsettings.head Настройки
+mainsettings.keybinding Настройки кнопок
+mainsettings.language Языки
+mainsettings.lcd VFD-дисплей
+mainsettings.misc Прочие настройки
+mainsettings.network Сеть
+mainsettings.osd Установки OSD
+mainsettings.recording Запись
+mainsettings.savesettingsnow Сохранить изменения
+mainsettings.savesettingsnow_hint Сохранение сделанных изменений.\nвыполняется...
+mainsettings.streaming Видеоплеер
+mainsettings.timezone Часовой пояс
+mainsettings.video Видео
+menu.back Назад
+messagebox.back Назад
+messagebox.cancel Отменить
+messagebox.discard Отменить изменения?
+messagebox.error Ошибка
+messagebox.info Информация
+messagebox.no Нет
+messagebox.yes Да
+miscsettings.bootinfo Показывать информацию при старте
+miscsettings.bootmenu Показывать меню загрузки
+miscsettings.channellist Список каналов
+miscsettings.channellist_epgtext_align Выровнять текст
+miscsettings.driver_boot Загрузка системы 
+miscsettings.epg_head Установки Epg
+miscsettings.epg_cache EPG-кэш (дней)
+miscsettings.epg_cache_hint1 Как долго  EPG-данные будут кэшироваться?
+miscsettings.epg_cache_hint2 Уст.в днях.
+miscsettings.epg_dir Сохр.путь EPG
+miscsettings.epg_extendedcache Длина описания EPG (часов)
+miscsettings.epg_extendedcache_hint1 Как долго будут расширенные описания EPG
+miscsettings.epg_extendedcache_hint2 Кэшировать? (Уст.в часах)
+miscsettings.epg_max_events Макс. событий
+miscsettings.epg_max_events_hint1 Сколько событий должно быть сохранено?
+miscsettings.epg_max_events_hint2 Нормально 6000, 0 для блокировки предела
+miscsettings.epg_old_events EPG Удалить после (станд.)
+miscsettings.epg_old_events_hint1 Сколько будет храниться EPG-Data после синхронизации?
+miscsettings.epg_old_events_hint2 Уст.в часах
+miscsettings.epg_save Сохр./Восст.epg
+miscsettings.fb_destination Эксперт! Консоль загрузки
+miscsettings.general Основное
+miscsettings.head Прочие настройки
+miscsettings.hwsections Использовать раздел HW
+miscsettings.infobar_sat_display Название спутника в инфопанели
+miscsettings.noaviawatchdog Разрешить AVIA контроль
+miscsettings.noenxwatchdog Разрешить eNX контроль
+miscsettings.pmtupdate Разрешить обновление pmt
+miscsettings.shutdown_count Выключить после
+miscsettings.shutdown_count_hint1 Время (в мин.) до выключения в standby
+miscsettings.shutdown_count_hint2 в deep standby (0 = выкл).
+miscsettings.shutdown_real Разрешить standby
+miscsettings.shutdown_real_rcdelay Задержка выключения
+miscsettings.sptsmode Использовать SPTS-Mode 
+miscsettings.virtual_zap_mode Витруальный zap
+motorcontrol.calc_positions Пересчитать позиции
+motorcontrol.disable_limit Запретить лимиты (soft)
+motorcontrol.drive_mode Движение
+motorcontrol.drive_mode_auto Стоп движение/авто
+motorcontrol.east_limit Уст.восточный лимит (soft)
+motorcontrol.enable_limit Разрешить лимиты (soft)
+motorcontrol.goto Идти на позицию (a)
+motorcontrol.halt Стоп мотор
+motorcontrol.head Настройки мотора
+motorcontrol.install_menu Установить меню
+motorcontrol.motor_pos (a) Поз. мотора:
+motorcontrol.movement (b) Движение:
+motorcontrol.msec милисек.
+motorcontrol.no_mode Не заботиться
+motorcontrol.notdef Не использ.
+motorcontrol.pos_decrease Уменьшить поз.мотора (a)
+motorcontrol.pos_increase Увеличить поз.мотора (a)
+motorcontrol.ref_position Идти на позицию 0.
+motorcontrol.sat_pos Позиция спутника (Пошагово):
+motorcontrol.settings Настройки управления мотором
+motorcontrol.status Состояние
+motorcontrol.step_decrease Размер уменьш.шага (c)
+motorcontrol.step_drive Переключение  Шаг/движ. (b)
+motorcontrol.step_east Шаг/движение на восток (b,c)
+motorcontrol.step_increase Размер увелич.шага (c)
+motorcontrol.step_mode Пошагово
+motorcontrol.step_size (c) Размер шага:
+motorcontrol.step_west Шаг/движение на запад (b,c)
+motorcontrol.stop_moving Стоп на хорошем сигнале(движение)
+motorcontrol.stop_stopped Стоп на хорошем сигнале(остановка)
+motorcontrol.store Сохранить позицию мотора (a)
+motorcontrol.timed_mode Уст.пошаговый режим
+motorcontrol.user_menu Пользовательское меню
+motorcontrol.west_limit Уст.западный лимит (soft)
+moviebrowser.book_clear_all Очистить все
+moviebrowser.book_head Закладки
+moviebrowser.book_lastmoviestop Последняя остановка:
+moviebrowser.book_movieend Конец фильма:
+moviebrowser.book_moviestart Начало фильма:
+moviebrowser.book_name Имя:
+moviebrowser.book_new Новая закладка
+moviebrowser.book_position Позиция:
+moviebrowser.book_type переход (<0 назад , >0 вперед):
+moviebrowser.book_type_backward Повторить
+moviebrowser.book_type_forward Перейти
+moviebrowser.browser_frame_high Browser hight [Pixel]
+moviebrowser.browser_row_head Строки настройки
+moviebrowser.browser_row_item Элементы строки
+moviebrowser.browser_row_nr Число строк
+moviebrowser.browser_row_width Ширина строки
+moviebrowser.dir Путь
+moviebrowser.dir_head Дополнительные пути
+moviebrowser.edit_book Изменить закладку
+moviebrowser.edit_book_name_info1 Введите новое имя закладки
+moviebrowser.edit_book_name_info2 имя info2
+moviebrowser.edit_book_pos_info1 Введите новую позицию (s)
+moviebrowser.edit_book_pos_info2 
+moviebrowser.edit_book_type_info1 Введите новую длину перехода (s)
+moviebrowser.edit_book_type_info2 <0 назад , >0 вперед, 0: ничего
+moviebrowser.edit_serie Введие имя серии
+moviebrowser.error_no_movies Фильмы не найдены
+moviebrowser.foot_filter Фильтр:
+moviebrowser.foot_play Начало фильма
+moviebrowser.foot_sort Sort:
+moviebrowser.head TS MovieBrowser
+moviebrowser.head_filter Фильтровать фильмы по категориям:
+moviebrowser.head_playlist Последний запущеный:
+moviebrowser.head_recordlist Последний записанный:
+moviebrowser.hide_series Скрыть серии
+moviebrowser.hint_jumpbackward Вперед на 5 s\n '0' для отмены 
+moviebrowser.hint_jumpforward Назад на 5 s\n '0' для отмены 
+moviebrowser.hint_movieend Filmende in 5 s\n '0' zum weitersehen 
+moviebrowser.hint_newbook_backward Новый переход назад\n 'синняя' для концевой позиции 
+moviebrowser.hint_newbook_forward Новый переход вперед\n 'синяя' для концевой позиции 
+moviebrowser.info_audio Аудио
+moviebrowser.info_channel Канал
+moviebrowser.info_filename Имя
+moviebrowser.info_genre_major Жанр
+moviebrowser.info_genre_minor Жанр
+moviebrowser.info_head Информация о фильме
+moviebrowser.info_head_update Сохранить изменения во всех инфо-файлах кино
+moviebrowser.info_info1 Инфо 1
+moviebrowser.info_length Длина (мин)
+moviebrowser.info_parental_lockage Родительский замок
+moviebrowser.info_parental_lockage_0year Всегда
+moviebrowser.info_parental_lockage_12year 12 лет
+moviebrowser.info_parental_lockage_16year 16 лет
+moviebrowser.info_parental_lockage_18year 18 лет
+moviebrowser.info_parental_lockage_6year 6 лет
+moviebrowser.info_parental_lockage_always Никогда 
+moviebrowser.info_path Путь
+moviebrowser.info_prevplaydate Последняя дата проигр.
+moviebrowser.info_prodcountry Страна
+moviebrowser.info_prodyear Год
+moviebrowser.info_quality Качество
+moviebrowser.info_recorddate дата записи
+moviebrowser.info_serie Серия
+moviebrowser.info_size Размер файла (MB)
+moviebrowser.info_title Заголовок
+moviebrowser.info_videoformat Изображение
+moviebrowser.last_play_max_items Число строк проигрывания
+moviebrowser.last_record_max_items Число строк записи
+moviebrowser.load_default Загрузить настройки по умолчанию
+moviebrowser.menu_directories_head Пути
+moviebrowser.menu_help_head Помощь
+moviebrowser.menu_main_bookmarks Закладки
+moviebrowser.menu_main_head Установки
+moviebrowser.menu_nfs_head NFS установки
+moviebrowser.menu_parental_lock_activated Активирован
+moviebrowser.menu_parental_lock_activated_no Нет
+moviebrowser.menu_parental_lock_activated_no_temp Нет (временный)
+moviebrowser.menu_parental_lock_activated_yes Да
+moviebrowser.menu_parental_lock_head Родительский замок
+moviebrowser.menu_parental_lock_rate_head Залочить фильмы от
+moviebrowser.menu_save Сохранить изменения
+moviebrowser.menu_save_all Запустить обновления для инфо-файлов кино
+moviebrowser.option_browser Опции браузера
+moviebrowser.reload_at_start Перезагр. инф. о кино при старте
+moviebrowser.remount_at_start перемонтировать при старте
+moviebrowser.scan_for_movies Сканировать фильмы ...
+moviebrowser.serie_auto_create Авто создание серии
+moviebrowser.serie_head Серия
+moviebrowser.serie_name Сменить имя
+moviebrowser.short_audio Аудио
+moviebrowser.short_book Книга
+moviebrowser.short_channel Канал
+moviebrowser.short_country Страна
+moviebrowser.short_filename Имя
+moviebrowser.short_format Формат
+moviebrowser.short_genre_major Жанр
+moviebrowser.short_genre_minor Жанр
+moviebrowser.short_info1 Инфо 1
+moviebrowser.short_info2 Инфо 2
+moviebrowser.short_length Мин.
+moviebrowser.short_parental_lockage Возраст
+moviebrowser.short_path Путь
+moviebrowser.short_prevplaydate Последний
+moviebrowser.short_prodyear Год
+moviebrowser.short_quality * (качество)
+moviebrowser.short_recorddate Дата
+moviebrowser.short_serie Серия
+moviebrowser.short_size MB
+moviebrowser.short_title Заголовок
+moviebrowser.start_head Начать от:
+moviebrowser.start_record_start Начать фильм
+moviebrowser.update_if_dest_empty_only Копировать, если адресат пустой
+moviebrowser.use_dir Использ. директорию
+moviebrowser.use_movie_dir Использ.каталог кино
+moviebrowser.use_rec_dir Использ. каталог записи
+movieplayer.bookmark Закладки
+movieplayer.bookmarkname Название закладки
+movieplayer.bookmarkname_hint1 Введите название
+movieplayer.bookmarkname_hint2 для новой закладки
+movieplayer.buffering Буферизация...
+movieplayer.defdir Каталог по умолч.
+movieplayer.defplugin Старт плагина
+movieplayer.dvdplayback Просмотр DVD (VLC)
+movieplayer.fileplayback Просмотр файлов VLC
+movieplayer.goto Перейти в ...
+movieplayer.goto.h1 = -> абсолютный переход
+movieplayer.goto.h2 +,- -> относительный переход
+movieplayer.head Видеоплеер
+movieplayer.nostreamingserver Стрим-сервер недоступен.
+movieplayer.pesplayback Просмотр PES-файлов (Экспериментально)
+movieplayer.pleasewait Подождите пожалуйста.\nСоединение со стрим-сервером...
+movieplayer.toomanybookmarks Слишком много закладок.\n Удалите одну из уже существующих.
+movieplayer.tshelp1 Стоп 
+movieplayer.tshelp10 Назад на 10 мин. 
+movieplayer.tshelp11 Вперед на 10 мин.
+movieplayer.tshelp12 Подробнее смотри на http://www.giggo.de/dbox2/movieplayer.html\n 
+movieplayer.tshelp2 Выбор звук. дорожки
+movieplayer.tshelp3 Пауза/продолжить
+movieplayer.tshelp4 Добавить закладку 
+movieplayer.tshelp5 Общее время
+movieplayer.tshelp6 Назад на 1 мин. 
+movieplayer.tshelp7 Вперед на 1 мин.
+movieplayer.tshelp8 Назад на 5 мин. 
+movieplayer.tshelp9 Вперед на 5 мин.
+movieplayer.tsplayback Просмотр TS-файлов
+movieplayer.vcdplayback Просмотр (S)VCD (VLC)
+movieplayer.vlchelp1 Стоп 
+movieplayer.vlchelp10 Назад на 10 мин. 
+movieplayer.vlchelp11 Вперед на 10 мин.
+movieplayer.vlchelp12 Подробнее смотри на: http://www.giggo.de/dbox2/movieplayer.html\n 
+movieplayer.vlchelp2 Ресинхронизазия
+movieplayer.vlchelp3 Пауза/продолжить
+movieplayer.vlchelp4 Добавить закладку 
+movieplayer.vlchelp5 Общее время
+movieplayer.vlchelp6 Назад на 1 мин. 
+movieplayer.vlchelp7 Вперед на 1 мин.
+movieplayer.vlchelp8 Назад на 5 мин. 
+movieplayer.vlchelp9 Вперед на 5 мин.
+movieplayer.wrongvlcversion Эта функция не поддерживается текущей версией VLC 
+mpkey.audio Аудио трек
+mpkey.bookmark Сохранить закладку
+mpkey.forward Вперед
+mpkey.pause Пауза
+mpkey.play Проиграть
+mpkey.plugin Выполнить плагин
+mpkey.rewind Перемотка
+mpkey.stop Стоп
+mpkey.time Показать время
+networkmenu.broadcast Broadcast
+networkmenu.dhcp DHCP
+networkmenu.gateway Основной шлюз
+networkmenu.head Настройки сети
+networkmenu.ipaddress IP-адрес
+networkmenu.mount NFS/CIFS/FTPFS
+networkmenu.nameserver DNS-сервер
+networkmenu.netmask Маска подсети
+networkmenu.ntpenable Синхронизация
+networkmenu.ntprefresh Рестарт NTP/DVB
+networkmenu.ntprefresh_hint1 NTP/DVB-Время-Синхр. в минутах
+networkmenu.ntprefresh_hint2 Нужна перезагрузка, или обновление epg
+networkmenu.ntpserver NTP-сервер
+networkmenu.ntpserver_hint1 Пример NTP-сервера: ntp1.ptb.de
+networkmenu.ntpserver_hint2 Нужна перезагрузка, или обновление epg
+networkmenu.ntptitle Синхронизация времени
+networkmenu.setupnow Применить изменения
+networkmenu.setuponstartup Настр. сети при старте
+networkmenu.show Используемые настройки
+networkmenu.test Тест сетевого соединения
+neutrino_starting Старт Neutrino...
+nfs.alreadymounted Уже подключали
+nfs.automount Подключать при включении
+nfs.dir Каталог/обший
+nfs.ip IP-адрес сервера
+nfs.localdir Локальный каталог
+nfs.mount Подкл.сетевой диск
+nfs.mount_options Параметры подключения
+nfs.mounterror Ошибка при подключении
+nfs.mounterror_notsup Тип файловой системы не поддерживается
+nfs.mountnow Подключить сейчас
+nfs.mountok Подключение состоялось
+nfs.mounttimeout Ошибка процесса подключения: таймаут
+nfs.password Пароль
+nfs.remount Повторить подключение
+nfs.type Тип
+nfs.type_cifs CIFS
+nfs.type_lufs FTPFS
+nfs.type_nfs NFS
+nfs.umount Откл. сетевой диск
+nfs.umounterror Ошибка отключения раздела
+nfs.username Имя пользователя
+nfsmenu.head NFS/CIFS/FTPFS настройки
+nvod.percentage (%d%% над)
+nvod.starting (Старт через %d минут)
+nvodselector.directormode Директ режим
+nvodselector.head Выбор времени старта
+nvodselector.subservice Выбор доп. сервиса
+options.default Настройки по умолчанию
+options.fb Буфер кадров
+options.null null
+options.off Выкл.
+options.on Вкл.
+options.on.without_messages Без сообщения
+options.serial сериал
+parentallock.changepin Изменить PIN-код
+parentallock.changepin_hint1 Введите новый PIN-код.
+parentallock.changetolocked На пакет
+parentallock.head Введите PIN-код
+parentallock.lockage Передачи
+parentallock.lockage12 до 12 лет
+parentallock.lockage16 до 16 лет
+parentallock.lockage18 до 18 лет
+parentallock.lockedchannel Установлена защита на просмотр...
+parentallock.lockedprogram Установлена зашита на просмотр (с %d лет по)
+parentallock.never Не использовать
+parentallock.onsignal На все
+parentallock.parentallock Возрастная защита
+parentallock.prompt Зашита PIN-кодом
+pictureviewer.decode_server_ip Адрес декод. сервера
+pictureviewer.decode_server_port Порт декод. сервера
+pictureviewer.defdir Каталог по умолч.
+pictureviewer.head Просмотр картинок
+pictureviewer.help1 Режим меню
+pictureviewer.help10 режим просмотра
+pictureviewer.help11 Перезагрузить картинку
+pictureviewer.help12 Предыдущая картинка
+pictureviewer.help13 Следующая картинка
+pictureviewer.help14 Уменьшить
+pictureviewer.help15 Увеличить
+pictureviewer.help16 Прокрутка вверх
+pictureviewer.help17 Прокрутка влево
+pictureviewer.help18 Прокрутка вправо
+pictureviewer.help19 Прокрутка вниз
+pictureviewer.help2 Показ картинки
+pictureviewer.help20 Смена порядка сортировки
+pictureviewer.help21 В оригнальный размер
+pictureviewer.help22 Выход
+pictureviewer.help3 Смена порядка сортировки
+pictureviewer.help4 Не менять размеры
+pictureviewer.help5 Режим слайдов
+pictureviewer.help6 Предыдущая картинка
+pictureviewer.help7 Следующая картинка
+pictureviewer.help8 Смена порядка сортировки
+pictureviewer.help9 Выход
+pictureviewer.resize.color_average Расширенное
+pictureviewer.resize.none Не использовать
+pictureviewer.resize.simple Простое
+pictureviewer.scaling Масштабирование
+pictureviewer.show Показать
+pictureviewer.slide_time Задержка в режиме слайдов
+pictureviewer.slideshow Режим слайдов
+pictureviewer.sortorder Порядок сорт.
+pictureviewer.sortorder.date (дата)
+pictureviewer.sortorder.filename (имя файла)
+ping.ok Доступен (ping)
+ping.protocol Недоступен (ошибка сервера или протокола)
+ping.socket Недоступен (ошибка сокета)
+ping.unreachable Недоступен
+pinprotection.head Введите PIN-код
+pinprotection.wrongcode Неверный PIN-код! Повторите ввод.
+play.button.action Кнопка Play
+plugins.result Вывод плагина
+rclock.lockmsg Ваш пульт управления заблокирован.\n Для разблокирования, нажмите <КРАСНУЮ> \n и <MENU> на вашем пульте управления.
+rclock.menueadd Заблокировать ПДУ 
+rclock.title Заблокировать Пульт управления
+rclock.unlockmsg Пульт управления активирован.
+recordingmenu.apids  Аудио потоки
+recordingmenu.apids_ac3 Зап.AC3 поток
+recordingmenu.apids_alt Зап. альтерн.поток
+recordingmenu.apids_std Зап. станд.поток
+recordingmenu.choose_direct_rec_dir Куда вести запись
+recordingmenu.defdir Каталог записи
+recordingmenu.epg_for_filename Имя файла с данными о программе
+recordingmenu.file direkt (в файл)
+recordingmenu.filesettings Настройки direkt(в файл)
+recordingmenu.head Настройки записи
+recordingmenu.help Режимы записи:\n--------------------------\nсервер:\nиспользуется софт установленный на ПК\n\n(analog) vcr:\nиспользуется выход vcr\n\ndirect (в файл):\nзапись в предварительно монтированный NFS-каталог\nили в каталоги внутреннего жесткого диска\nTS: использует spts-режим (для dbox2)\nPES: spts-режим должен быть выключен (для dbox2)\n\n\nМакс.размер файла:\n---------------------\nNFS V2: 2 GB (2048 MB)\nNFS V3: без ограничений (0 MB)\nFAT: 2 GB (2048 MB)\nFAT32: 4 GB (4096 MB)
+recordingmenu.no_scart Не переключаться на SCART
+recordingmenu.off Отключить
+recordingmenu.record_in_spts_mode Переключить в spts режим перед записью
+recordingmenu.recording_type Режим записи
+recordingmenu.ringbuffers Значение для ringbuffers
+recordingmenu.save_in_channeldir Сохранить в дир. канала
+recordingmenu.server Сервер
+recordingmenu.server_ip IP-адрес сервера записи
+recordingmenu.server_mac MAC-адрес
+recordingmenu.server_port Порт сервера записи
+recordingmenu.server_wakeup WOL сервера записи
+recordingmenu.setupnow Применить изменения
+recordingmenu.splitsize Макс.размер файла (MB)
+recordingmenu.stopplayback Остановить воспроизведение
+recordingmenu.stopsectionsd Остановить sectionsd
+recordingmenu.stream_pmt_pid Записать PMT
+recordingmenu.stream_vtxt_pid запись телетекста
+recordingmenu.tsdir Каталог timeshift
+recordingmenu.use_fdatasync Запись синхрониз. (fdatasync)
+recordingmenu.use_o_sync Синхронизация (O_SYNC)
+recordingmenu.vcr vcr
+recordingmenu.zap_on_announce Zap при записи
+recordtimer.announce Запись начинается через несколько минут
+repeatblocker.hint_1 Время в ms для распознавания 2-го нажатия кнопки
+repeatblocker.hint_2 Нажмите  0 для переключения (красная - пробел)
+reset_all В фабричные
+reset_channels Удалить все каналы
+reset_confirm Вы уверены ?
+reset_settings Восст. по умолчанию
+rfmod.carrier Поднесущая частота
+rfmod.carrier4500 4.5
+rfmod.carrier5500 5.5
+rfmod.carrier6000 6.0
+rfmod.carrier6500 6.5
+rfmod.channel Канал
+rfmod.enable Включить звук
+rfmod.finetune Точная настройка
+rfmod.rfmod RF модулятор
+rfmod.standby Включить модулятор
+rfmod.test Тестовый шаблон
+satsetup.auto_scan Скан. выбранного спутника
+satsetup.auto_scan_all Мультисканирование спутников
+satsetup.comm_input Commited вход
+satsetup.diseqc DiSEqC
+satsetup.diseqc_advanced Расширенные
+satsetup.diseqc_com_uncom Commited/Uncommited
+satsetup.diseqc_input Diseqc вход
+satsetup.diseqc_order Input order
+satsetup.diseqc_uncom_com Uncommited/Commited
+satsetup.diseqc10 DiSEqC 1.0
+satsetup.diseqc11 DiSEqC 1.1
+satsetup.diseqc12 DiSEqC 1.2
+satsetup.diseqcrepeat DiSEqC-повторы
+satsetup.do_scan Включить во все скан.
+satsetup.extended Настройки DiSEqC
+satsetup.extended_motor Настройки мотора
+satsetup.lofh LNB High Offset
+satsetup.lofl LNB Low Offset
+satsetup.lofs LNB switch Offset
+satsetup.manual_scan Ручное скан.частоты
+satsetup.minidiseqc Мини-DiSEqC
+satsetup.motor_pos Позиция мотора
+satsetup.motorcontrol Ручная настройка мотора
+satsetup.nodiseqc Без DiSEqC
+satsetup.sat_setup Уст.input/LNB спутников 
+satsetup.satellite Спутники
+satsetup.savesettingsnow Сохранить изменения
+satsetup.smatvremote Удаленная настройка SMATV
+satsetup.uncomm_input Uncommited вход
+satsetup.usals_repeat Повт.команды USALS
+satsetup.use_nit Использ. NIT
+satsetup.use_usals Использ. usals
+scale.display_type тип Bar
+scale.display_type_dots Точки
+scale.display_type_full Строки
+scale.display_type_rainbow Радуга
+scants.abort_body Действительно прервать поиск?
+scants.abort_header Прекратить сканирование каналов
+scants.actcable Кабельные:
+scants.actsatellite Спутники:
+scants.bouquet Пакеты
+scants.bouquet_create Создать новый
+scants.bouquet_erase Стереть все
+scants.bouquet_leave Использовать текущий
+scants.bouquet_satellite Пакет спутника
+scants.bouquet_update Обновить
+scants.channel Каналы:
+scants.failed Неудачное сканирование транспондера!
+scants.finished Сканирование транспондеров завершено!
+scants.freqdata Частота:
+scants.head Сканирование транспондеров
+scants.numberofdataservices Данные
+scants.numberofradioservices Радио
+scants.numberoftotalservices Всего
+scants.numberoftvservices ТВ
+scants.provider Провайдеры:
+scants.select_tp Выбрать транспондер
+scants.startnow Начать сканирование
+scants.test Тест сигнала
+scants.transponders Транспондеры:
+scrambled_channel Закрытый канал
+screensetup.lowerright Зелёная = Снизу/Справа
+screensetup.upperleft Красная = Сверху/Слева
+servicemenu.getplugins Перезагрузить плагины
+servicemenu.getplugins_hint Перезагрузка плагинов,\nпотерпите.
+servicemenu.head Сервисы
+servicemenu.imageinfo Информация имиджа
+servicemenu.reload Перегрузить список
+servicemenu.reload_hint Перезагрузка списка каналов,\nвыполняется...
+servicemenu.restart Рестарт софта
+servicemenu.restart_failed Рестарт неудачен
+servicemenu.restart_hint Перезапуск, ждите
+servicemenu.restart_refused_recording Не перезапустить, запись в прогрессе
+servicemenu.scants Поиск каналов
+servicemenu.ucodecheck Проверка ucodes
+servicemenu.update Обновление прошивки
+settings.help Подсказка
+settings.missingoptionsconffile Настройки системы обновлены.\nНовые установки заменят настройки по умолчанию.
+settings.noconffile Настройки системы отсутствуют.\nИспользуются настройки по умолчанию.
+settings.pos_bottom_left Низ лево
+settings.pos_bottom_right Низ право
+settings.pos_top_left Верх лево
+settings.pos_top_right Верх право
+shutdown.recoding_query Бокс в режиме записи, вы действительно хотите отключить?
+shutdowntimer.announce Бокс будет выключен через 1 минуту.\nОтменить выключение?
+sleeptimerbox.announce Отключение через 1 минуту
+sleeptimerbox.hint1 Время до выключения в минутах. (000=откл)
+sleeptimerbox.hint2 Ваш Бокс будет выключен через указанное время.
+sleeptimerbox.title Таймер перехода в дежурный режим
+streamfeatures.head Меню дополнений
+streaminfo.aratio Формат изображения
+streaminfo.aratio_unknown Формат изображения: неизвестный
+streaminfo.audiotype Тип аудио
+streaminfo.audiotype_unknown Тип аудио: неизвестный
+streaminfo.bitrate Bitrate
+streaminfo.framerate Framerate
+streaminfo.framerate_unknown Framerate: неизвестный
+streaminfo.head Информация о потоке
+streaminfo.not_available Не представлен
+streaminfo.resolution Разрешение
+streaminfo.signal Сигнал
+streaming.buffer_overflow Запись прервана,\n скорость получения данных низкая.
+streaming.busy Идет запись!\n Если запись не включена, а Вы получили это сообщение, то пожалуйста перегрузите Neutrino.
+streaming.dir_not_writable Нет доступа в папку для записи.\nЗапись невозможна.
+streaming.success Запись прошла успешно.
+streaming.write_error Запись прервана,\n ошибка в процессе самой записи.
+streaming.write_error_open Запись прервана,\n файл для записи не может быть открыт.
+streamingmenu.352x288 352x288
+streamingmenu.352x576 352x576
+streamingmenu.480x576 480x576
+streamingmenu.704x576 704x576
+streamingmenu.head Настройки видеоплеера
+streamingmenu.mpeg1 MPEG1
+streamingmenu.mpeg2 MPEG2
+streamingmenu.off Отключен
+streamingmenu.on Включен
+streamingmenu.server_ip IP-адрес стрим-сервера
+streamingmenu.server_port Порт стрим-сервера
+streamingmenu.streaming_audiorate Аудио-поток (kbs)
+streamingmenu.streaming_force_avi_rawaudio AC3 для AVI
+streamingmenu.streaming_force_transcode_video Транскод видео (MPG/VCD)
+streamingmenu.streaming_resolution Размер кадра
+streamingmenu.streaming_server_cddrive DVD-привод
+streamingmenu.streaming_server_startdir Каталог (VLC)
+streamingmenu.streaming_transcode_audio Транскод аудио (DVD/VCD/MPG)
+streamingmenu.streaming_transcode_video_codec Видео-кодек MPEG
+streamingmenu.streaming_type Стрим-сервер
+streamingmenu.streaming_videorate Видео-поток (kbs)
+streamingserver.noconnect Нет соединения со стрим-сервером.\nПринятие данных остановлено.
+stringinput.caps Большие / маленькие
+stringinput.clear Очистить все
+subtitles.head Субтитры
+subtitles.stop Стоп субтитры
+timer.eventrecord.msg   ... Делать или не делать? ;-)
+timer.eventrecord.title Расписание записи
+timer.eventtimed.msg Событие запланировано.\nВаш ресивер будет включен и \nпереключится на этот канал в заданное время.
+timer.eventtimed.title Расписание событий
+timerbar.channelswitch Расписание
+timerbar.recordevent Запись
+timerlist.alarmtime Будильник
+timerlist.apids Аудио PIDs
+timerlist.apids_dflt Записать аудио поток по умолчанию
+timerlist.bouquetselect Выбор пакета
+timerlist.channel Каналы
+timerlist.channelselect Выбор канала
+timerlist.delete Удалить
+timerlist.menumodify Изменить таймер
+timerlist.menunew Новый таймер
+timerlist.message Сообщение
+timerlist.moderadio Радио каналы
+timerlist.modeselect Тип канала
+timerlist.modetv ТВ каналы
+timerlist.modify Изменить
+timerlist.name Список таймеров
+timerlist.new Новый таймер
+timerlist.overlapping_timer Конфликт таймера. Создать таймер, или нет??
+timerlist.plugin Плагин
+timerlist.program.unknown Неизвестная программа
+timerlist.recording_dir Каталог для записи
+timerlist.reload Перегрузить
+timerlist.repeat Повторение
+timerlist.repeat.biweekly Раз в 2 недели
+timerlist.repeat.byeventdescription См. таймер
+timerlist.repeat.daily Ежедневно
+timerlist.repeat.fourweekly Раз в 4 недели
+timerlist.repeat.friday Птн
+timerlist.repeat.monday Пон
+timerlist.repeat.monthly Ежемесячно
+timerlist.repeat.once Один раз
+timerlist.repeat.saturday Сбт
+timerlist.repeat.sunday Вскр
+timerlist.repeat.thursday Чтв
+timerlist.repeat.tuesday Втр
+timerlist.repeat.unknown Неизвестно
+timerlist.repeat.wednesday Срд
+timerlist.repeat.weekdays По дням недели
+timerlist.repeat.weekly Еженедельно
+timerlist.repeatcount Повторы 
+timerlist.repeatcount.help1 Число повторов 
+timerlist.repeatcount.help2 0 - Повтор навсегда
+timerlist.save Сохранить таймер
+timerlist.standby Тип включения
+timerlist.standby.off Оставить в дежур. режиме
+timerlist.standby.on Вывести из дежур. режима
+timerlist.stoptime Время остановки
+timerlist.type Режим таймера
+timerlist.type.execplugin Запустить плагин
+timerlist.type.nextprogram Следующая программа
+timerlist.type.record Запись
+timerlist.type.remind Напоминание
+timerlist.type.shutdown Полное выкл.
+timerlist.type.sleeptimer Выкл. в дежур. режим
+timerlist.type.standby Вкл. из дежур. режима
+timerlist.type.unknown Определить нельзя
+timerlist.type.zapto Перекл. на канал
+timerlist.weekdays Дни недели
+timerlist.weekdays.hint_1 Пон Втр Срд Чтв Птн Сбт Вскр
+timerlist.weekdays.hint_2 'X'=таймер '-' нет таймера
+timersettings.record_safety_time_after Коррекция остановки записи
+timersettings.record_safety_time_after.hint_1 Коррекция времени в мин. (00=выкл). Это время
+timersettings.record_safety_time_after.hint_2 будет добавляться к каждому таймеру записи.
+timersettings.record_safety_time_before Коррекция старта записи
+timersettings.record_safety_time_before.hint_1 Коррекция времени в мин. (00=выкл). Это время
+timersettings.record_safety_time_before.hint_2 будет отниматься от каждого таймера записи.
+timersettings.separator Настройки таймера
+timing.chanlist Список каналов
+timing.epg Epg
+timing.filebrowser Проводник по каталогам
+timing.head Время показа OSD
+timing.hint_1 Время в секундах. После этого
+timing.hint_2 инфопанель будет прозрачной.
+timing.infobar Инфопанель
+timing.menu Меню
+timing.numericzap При наборе цифрами с пульта
+ucodecheck.avia500 Avia 500
+ucodecheck.avia600 Avia 600
+ucodecheck.cam-alpha Cam-Alpha
+ucodecheck.head Проверка UCode
+ucodecheck.ucode UCode
+ucodes.failure ВНИМАНИЕ, , mCodes нет в наличии!\nПожалуйста загрузите их через FTP(или с помощью DBox-BootManager),\nзатем перегрузите ваш box!
+upnpbrowser.head Браузер UPnP
+upnpbrowser.noservers Не найдено UPnP сервисов
+upnpbrowser.rescan Отсканируйте снова
+upnpbrowser.scanning Сканирование UPnP сервисов.
+usermenu.button_blue Синее меню
+usermenu.button_green Зеленое меню
+usermenu.button_red Красное меню
+usermenu.button_yellow Желтое меню
+usermenu.head Меню пользователя
+usermenu.item_bar ---- Участник ----
+usermenu.item_epg_misc Функции EPG
+usermenu.item_none Ничто
+usermenu.item_vtxt Телетекст
+usermenu.name Имя
+video_mode_ok Этот видео-режим вас устраивает?
+videomenu.43mode Режим 4:3
+videomenu.analog_hd_rgb_cinch RGB на rca (HD)
+videomenu.analog_hd_rgb_scart RGB на скарт (HD)
+videomenu.analog_hd_yprpb_cinch YPbPr на rca (HD)
+videomenu.analog_hd_yprpb_scart YPbPr на скарт (HD)
+videomenu.analog_mode Аналоговый видео выход
+videomenu.analog_sd_rgb_cinch RGB на rca (SD)
+videomenu.analog_sd_rgb_scart RGB на скарт (SD)
+videomenu.analog_sd_yprpb_cinch YPbPr на rca (SD)
+videomenu.analog_sd_yprpb_scart YPbPr на скарт (SD)
+videomenu.auto Авто
+videomenu.cinch RCA(тюльпан)
+videomenu.csync Коррекция синхронизации
+videomenu.dbdr MPEG2 de-block/de-ring
+videomenu.dbdr_both de-block+de-ring
+videomenu.dbdr_deblock de-block
+videomenu.dbdr_none Никакой
+videomenu.enabled_modes Доп. режимы кнопок VF
+videomenu.fullscreen Full screen
+videomenu.hdmi_color_space HDMI Color Space
+videomenu.head Настройки видео-изображения
+videomenu.letterbox Letterbox
+videomenu.osd OSD
+videomenu.panscan Pan&Scan
+videomenu.panscan2 14:9 Pan&Scan
+videomenu.rgb_centering Центровка RGB
+videomenu.scart Скарт
+videomenu.screensetup Настройки экрана
+videomenu.tv-scart TV скарт
+videomenu.vcr-scart VCR скарт
+videomenu.vcrsignal Тип выходного сигнала VCR
+videomenu.vcrsignal_composite CVBS
+videomenu.vcrsignal_svideo S-Video
+videomenu.vcrswitch Авто-включение на СКАРТ
+videomenu.videoformat Формат
+videomenu.videoformat_149 14:9
+videomenu.videoformat_169 16:9
+videomenu.videoformat_43 4:3
+videomenu.videoformat_autodetect Авто-формат
+videomenu.videomode Видео система
+videomenu.videomode_auto Конфиг. Авторазрешения
+videomenu.videomode_ntsc NTSC
+videomenu.videomode_pal PAL
+videomenu.videomode_palm PAL-M
+zapit.scantype Скан.сервисов
+zapit.scantype.all Все сервисы
+zapit.scantype.radio Только радио
+zapit.scantype.tv Только ТВ
+zapit.scantype.tvradio ТВ & радио
+zaptotimer.announce Таймер переключения канала сработает через 1 минуту

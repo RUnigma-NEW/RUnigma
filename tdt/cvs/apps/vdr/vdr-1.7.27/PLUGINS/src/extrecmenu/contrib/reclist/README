@@ -1,0 +1,42 @@
+The reclist is independent of the extrecmenu plugin.
+It's nothing else than a set of scripts to create a 'database' of all
+recordings. And to create different user defined outputs of this DB.
+
+
+Installation
+============
+
+1. Copy the include scripts to /usr/local/bin
+2. Edit vdr_set_values_for_recording_lists.sh to meet Your needs.
+   VIDEODIR should contain Your video directory (eg: /video)
+   RECLISTDIR is the directory, the list will be created in
+   RECLISTFILE is the filename of the list
+   All other parameters are values to define the layout of the output
+3. Edit Your commands.conf file:
+   You may want to use ./commands/commands.reclist.conf as a starting point.
+   Modify the path to vdr_get_recordings.sh and
+   vdr_generate_recording_list.sh (if neccessary)
+
+   
+Explanation of the scripts
+--------------------------
+vdr_set_values_for_recording_lists.sh
+    sets values to generate the list and to generate the user defined outputs
+vdr_get_recordings.sh
+    scans all recordings and calls 'vdr_add_recording.sh' for each recording
+vdr_add_recording.sh
+    calls 'vdr_create_recording_list_entry.awk' to create an entry for each recording
+vdr_create_recording_list_entry.awk
+    does the real work. It extracts the neccessary values out of info or info.vdr
+    and stores them in the reclist. Currently these values will be extracted:
+    Title, Genre, Country, Year, Length, Date, Size, Media, Path.
+vdr_generate_recording_list.sh
+    creates the user defined outputs of the list.
+          usage: vdr_generate_recording_list.sh <type> <what>
+             where   <type> = (title|genre|country|year|length|date|size|media|path)
+               and   <what> = (all|head|tail)
+    'all' shows all entries, 'head' shows the first n entries, 'tail' the last n entries
+    where n id the LINES_PER_PAGE defined in vdr_set_values_for_recording_lists.sh
+vdr_crop_output.sh
+    is just a script for convenience. It can crop a lengthy output to the first/last
+    LINES_PER_PAGE lines

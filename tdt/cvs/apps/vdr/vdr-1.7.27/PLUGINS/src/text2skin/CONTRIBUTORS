@@ -1,0 +1,26 @@
+Special thanks go to the following individuals (if your name is missing here,
+please send an email to sascha (at) akv-soft (dot) de):
+
+Lars Tegeler
+  for implementing true-type-font support
+  for implementing image-scaling and quantizing
+
+Thomas Wehrspann
+  for creating and extending the german and english vdr-wiki with text2skin 
+  sections
+  for creating plaintext conversions of the wiki pages for inclusion in this 
+  package
+
+Andreas Brugger and Stefan Schenk
+  for doing much testing and skinning and for getting the last out of a DVB-Card
+  for all the suggestions and requests that finally made 1.0 this powerful
+
+Reinhard Nissl
+  for pointing out a deadly race condition in cText2SkinDisplayMenu::SetItem
+
+Frank Enderle
+  for sending a patch to fix a crash due to uninitialized pointer
+
+Chris Warren
+  for sending a patch to fix displaying partial channel numbers while changing
+	channels

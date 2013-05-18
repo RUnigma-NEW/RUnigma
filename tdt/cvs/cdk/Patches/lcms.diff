@@ -1,0 +1,14 @@
+--- lcms-1.17/include/lcms.h	2007-07-27 12:00:01.000000000 +0200
++++ lcms-1.17/include/lcms.h-new	2008-03-28 19:02:33.000000000 +0100
+@@ -47,7 +47,10 @@
+ 
+ // Uncomment this one if you are using big endian machines (only meaningful
+ // when NON_WINDOWS is used)
+-// #define USE_BIG_ENDIAN   1
++#include <endian.h>
++#if __BYTE_ORDER == __BIG_ENDIAN
++#define USE_BIG_ENDIAN   1
++#endif
+ 
+ // Uncomment this one if your compiler/machine does support the
+ // "long long" type This will speedup fixed point math. (USE_C only)

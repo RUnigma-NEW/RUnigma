@@ -1,0 +1,239 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Dimitrios Dimitrakos <mail@dimitrios.de>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-11 23:14+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-7\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select"
+msgstr "Epilogi"
+
+msgid "Parent"
+msgstr "Piso"
+
+msgid "ID3 info"
+msgstr "ID3 pliroforia"
+
+msgid "Scanning directory..."
+msgstr ""
+
+msgid "Error scanning directory!"
+msgstr "Lathos stin sarosi tou fakelou!"
+
+msgid "Mount"
+msgstr "Sindesi"
+
+msgid "Unmount"
+msgstr "Aposindesi"
+
+msgid "Eject"
+msgstr ""
+
+msgid "Selected source is not mounted!"
+msgstr "Epilegmeni Pigi den ine sindemeni!"
+
+msgid "Mount failed!"
+msgstr "I sindesi apetixe!"
+
+msgid "Mount succeeded"
+msgstr "I sindesi petixe"
+
+msgid "Unmount succeeded"
+msgstr "I aposindesi itan epitixisi"
+
+msgid "Unmount failed!"
+msgstr "I aposindesi den itan epitixis!"
+
+msgid "Eject failed!"
+msgstr "I apovoli apetixe!"
+
+msgid "MPlayer"
+msgstr "MPlayer"
+
+msgid "Setup.MPlayer$Control mode"
+msgstr ""
+
+msgid "Traditional"
+msgstr ""
+
+msgid "Slave"
+msgstr ""
+
+msgid "disabled"
+msgstr ""
+
+msgid "global only"
+msgstr ""
+
+msgid "local first"
+msgstr ""
+
+msgid "Setup.MPlayer$Resume mode"
+msgstr ""
+
+msgid "Hide mainmenu entry"
+msgstr ""
+
+msgid "Setup.MPlayer$Slave command key"
+msgstr ""
+
+msgid "Jump: "
+msgstr ""
+
+msgid "MPlayer Audio ID"
+msgstr ""
+
+msgid "Audiostream ID"
+msgstr ""
+
+msgid "MPlayer browser"
+msgstr "Mplayer endiksi fakelon"
+
+msgid "Source"
+msgstr "Pigi"
+
+msgid "MPlayer source"
+msgstr "Pigi MPlayer"
+
+msgid "Summary"
+msgstr ""
+
+msgid "Media replay via MPlayer"
+msgstr ""
+
+#~ msgid "OSS"
+#~ msgstr "OSS"
+
+#~ msgid "MP3"
+#~ msgstr "MP3"
+
+#~ msgid "Setup.MP3$Audio mode"
+#~ msgstr "Katastasi audio"
+
+#~ msgid "Round"
+#~ msgstr "Kikli"
+
+#~ msgid "Black"
+#~ msgstr "Mavro"
+
+#~ msgid "Live"
+#~ msgstr "Zontana"
+
+#~ msgid "Filenames"
+#~ msgstr "Onomata arxeion"
+
+#~ msgid "ID3 names"
+#~ msgstr "ID3 onomata"
+
+#~ msgid "Playlists"
+#~ msgstr "Listes peksimatos"
+
+#~ msgid "ID3 information"
+#~ msgstr "Plirofories ID3"
+
+#~ msgid "Filename"
+#~ msgstr "Onoma arxeiou"
+
+#~ msgid "Length"
+#~ msgstr "Megethos"
+
+#~ msgid "Title"
+#~ msgstr "Titlos"
+
+#~ msgid "Artist"
+#~ msgstr "Ermineftis"
+
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Year"
+#~ msgstr "Etos"
+
+#~ msgid "Samplerate"
+#~ msgstr "Sixnotita"
+
+#~ msgid "Bitrate"
+#~ msgstr "Bitrate"
+
+#~ msgid "Directory browser"
+#~ msgstr "Endiski fakelou"
+
+#~ msgid "Playlist editor"
+#~ msgstr "Metatropes stin Playlista"
+
+#~ msgid "Add"
+#~ msgstr "Prosthesi"
+
+#~ msgid "Remove"
+#~ msgstr "Aferesi"
+
+#~ msgid "Add recursivly?"
+#~ msgstr "Prosthesi recursiv?"
+
+#~ msgid "Empty directory!"
+#~ msgstr "Adios fakelos!"
+
+#~ msgid "Remove entry?"
+#~ msgstr "Aferesi simiou?"
+
+#~ msgid "Add all"
+#~ msgstr "Prosthesi olon"
+
+#~ msgid "Rename playlist"
+#~ msgstr "Metonomasi tis Playlistas"
+
+#~ msgid "Old name:"
+#~ msgstr "Palio onoma:"
+
+#~ msgid "New name"
+#~ msgstr "Neo onoma"
+
+#~ msgid "Browse"
+#~ msgstr "Selida"
+
+#~ msgid "Rename"
+#~ msgstr "Alagi Onomatos"
+
+#~ msgid "Error scanning playlists!"
+#~ msgstr "Lathos stin sarosi tis Playlistas!"
+
+#~ msgid "Delete playlist?"
+#~ msgstr "Svisimo listas?"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Ise sigouros?"
+
+#~ msgid "Error deleting playlist!"
+#~ msgstr "Lathos stin akirosi tis Playlistas!"
+
+#~ msgid "unnamed"
+#~ msgstr "xoris onoma"
+
+#~ msgid "Error creating playlist!"
+#~ msgstr "Lathos stin dimiourgia tis Playlistas!"
+
+#~ msgid "Error renaming playlist!"
+#~ msgstr "Latsos stin metonomasi tis Playlistas!"
+
+#~ msgid "Error loading playlist!"
+#~ msgstr "Lathos sto fortoma tis Playlistas!"
+
+#~ msgid "Can't edit a WinAmp playlist!"
+#~ msgstr "Den mporo na kano metatropes se WinAmp Playlista!"
+
+#~ msgid "MP3 source"
+#~ msgstr "Pigi MP3"
+
+#~ msgid "Play all"
+#~ msgstr "Peksimo olon"

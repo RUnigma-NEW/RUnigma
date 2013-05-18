@@ -1,0 +1,7 @@
+Primäres DVB Interface = 1
+
+     Legt das primäre DB Interface fest, (daher dasjenige, das die Menüs darstellt und auf Eingaben reagiert). Gültige Werte reichen von '1' bis zu der Anzahl der installierten DVB Karten. Falls mehr als eine DVB Karte installiert ist und eine Aufnahme begonnen werden soll wird das Programm versuchen, ein anderes als das primäre Interface zum Aufnehmen zu verwenden, um den Benutzer so wenig wie möglich zu stören.
+
+Video Format = 4:3
+
+     Das Video Format (oder Seitenverhältnis) des Fernsehgeräts, das verwendet wird (4:3 oder 16:9).

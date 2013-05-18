@@ -1,0 +1,12 @@
+# Example Busybox inittab
+::sysinit:/etc/init.d/rcSBB
+#ttyAS0::askfirst:/bin/sh
+#ttyAS1::askfirst:/bin/sh
+#A0:2345:respawn:/sbin/getty -L ttyAS0 115200 vt102
+#A0::askfirst:/bin/sh
+#ttyAS0::once:-/bin/ash -s
+ttyAS0:2345:respawn:/sbin/getty -L ttyAS0 115200 vt102
+::ctrlaltdel:/sbin/reboot
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init

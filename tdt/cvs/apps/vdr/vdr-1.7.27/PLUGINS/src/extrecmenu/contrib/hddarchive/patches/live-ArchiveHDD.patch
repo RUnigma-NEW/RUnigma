@@ -1,0 +1,487 @@
+diff -Nurb live-0.2.0-org/i18n-generated.h live-0.2.0/i18n-generated.h
+--- live-0.2.0-org/i18n-generated.h	2008-04-30 21:43:49.000000000 +0200
++++ live-0.2.0/i18n-generated.h	2008-10-10 12:03:33.000000000 +0200
+@@ -501,6 +501,41 @@
+     "",
+ #endif
+   },
++	{ "On archive HDD No.",
++		"Auf Archiv-HDD Nr.",
++		"",
++		"In archivio HDD No.",
++		"",
++		"",
++		"Sur le HDD archive no°",
++		"",
++		"Arkistointi-HDD:llä numero",
++		"",
++		"",
++		"",
++		"",
++		"",
++		"",
++		"",
++#if VDRVERSNUM >= 10302
++		"",
++#endif
++#if VDRVERSNUM >= 10307
++		"",
++#endif
++#if VDRVERSNUM >= 10313
++		"",
++#endif
++#if VDRVERSNUM >= 10316
++		"",
++#endif
++#if VDRVERSNUM >= 10342
++		"",
++#endif
++#if VDRVERSNUM >= 10502
++		"",
++#endif
++	},
+   { "Couldn't find channel or no channels available.",
+     "Kann das Programm nicht finden oder keine vorhanden.",
+     "",
+diff -Nurb live-0.2.0-org/i18n.cpp live-0.2.0/i18n.cpp
+--- live-0.2.0-org/i18n.cpp	2007-08-19 21:48:54.000000000 +0200
++++ live-0.2.0/i18n.cpp	2008-10-10 12:03:33.000000000 +0200
+@@ -3564,7 +3564,7 @@
+     { "On archive DVD No.", // English
+       "Auf Archiv-DVD Nr.", // Deutsch
+       "", // Slovenski
+-      "", // Italiano
++      "In archivio DVD No.", // Italiano
+       "", // Nederlands
+       "", // Português
+       "Sur le DVD archive no°", // Français
+@@ -3583,6 +3583,28 @@
+       "", // Dansk
+       "", // Czech
+     },
++    { "On archive HDD No.", // English
++      "Auf Archiv-HDD Nr.", // Deutsch
++      "", // Slovenski
++      "In archivio HDD No.", // Italiano
++      "", // Nederlands
++      "", // Português
++      "Sur le HDD archive no°", // Français
++      "", // Norsk
++      "Arkistointi-HDD:llä numero",
++      "", // Polski
++      "", // Español
++      "", // Greek
++      "", // Svenska
++      "", // Românã
++      "", // Magyar
++      "", // Català
++      "", // Russian
++      "", // Hrvatski
++      "", // Eesti
++      "", // Dansk
++      "", // Czech
++    },
+     { "Starts between", // English
+       "Beginnt zwischen", // Deutsch
+       "", // Slovenski
+diff -Nurb live-0.2.0-org/po/ca_ES.po live-0.2.0/po/ca_ES.po
+--- live-0.2.0-org/po/ca_ES.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/ca_ES.po	2008-10-10 12:03:33.000000000 +0200
+@@ -59,6 +59,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/cs_CZ.po live-0.2.0/po/cs_CZ.po
+--- live-0.2.0-org/po/cs_CZ.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/cs_CZ.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/da_DK.po live-0.2.0/po/da_DK.po
+--- live-0.2.0-org/po/da_DK.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/da_DK.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/de_DE.po live-0.2.0/po/de_DE.po
+--- live-0.2.0-org/po/de_DE.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/de_DE.po	2008-10-10 12:03:33.000000000 +0200
+@@ -59,6 +59,9 @@
+ msgid "On archive DVD No."
+ msgstr "Auf Archiv-DVD Nr."
+ 
++msgid "On archive HDD No."
++msgstr "Auf Archiv-HDD Nr."
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr "Kann das Programm nicht finden oder keine vorhanden."
+ 
+diff -Nurb live-0.2.0-org/po/el_GR.po live-0.2.0/po/el_GR.po
+--- live-0.2.0-org/po/el_GR.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/el_GR.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/es_ES.po live-0.2.0/po/es_ES.po
+--- live-0.2.0-org/po/es_ES.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/es_ES.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/et_EE.po live-0.2.0/po/et_EE.po
+--- live-0.2.0-org/po/et_EE.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/et_EE.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/fi_FI.po live-0.2.0/po/fi_FI.po
+--- live-0.2.0-org/po/fi_FI.po	2008-04-27 12:49:36.000000000 +0200
++++ live-0.2.0/po/fi_FI.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr "Arkistointi-DVD:llä numero"
+ 
++msgid "On archive HDD No."
++msgstr "Arkistointi-HDD:llä numero"
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr "Kanavaa ei löydy tai yhtään kanavaa ei ole saatavilla."
+ 
+diff -Nurb live-0.2.0-org/po/fr_FR.po live-0.2.0/po/fr_FR.po
+--- live-0.2.0-org/po/fr_FR.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/fr_FR.po	2008-10-10 12:03:33.000000000 +0200
+@@ -60,6 +60,9 @@
+ msgid "On archive DVD No."
+ msgstr "Sur le DVD archive no°"
+ 
++msgid "On archive HDD No."
++msgstr "Sur le HDD archive noÃ¤"
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr "Impossible de trouver la chaîne ou pas de chaînes disponibles."
+ 
+diff -Nurb live-0.2.0-org/po/hr_HR.po live-0.2.0/po/hr_HR.po
+--- live-0.2.0-org/po/hr_HR.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/hr_HR.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/hu_HU.po live-0.2.0/po/hu_HU.po
+--- live-0.2.0-org/po/hu_HU.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/hu_HU.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/it_IT.po live-0.2.0/po/it_IT.po
+--- live-0.2.0-org/po/it_IT.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/it_IT.po	2008-10-10 12:03:33.000000000 +0200
+@@ -59,6 +59,9 @@
+ msgid "On archive DVD No."
+ msgstr "In archivio DVD No."
+ 
++msgid "On archive HDD No."
++msgstr "In archivio HDD No."
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr "Impossibile trovare canale o canali disponibili."
+ 
+diff -Nurb live-0.2.0-org/po/nl_NL.po live-0.2.0/po/nl_NL.po
+--- live-0.2.0-org/po/nl_NL.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/nl_NL.po	2008-10-10 12:03:33.000000000 +0200
+@@ -60,6 +60,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/nn_NO.po live-0.2.0/po/nn_NO.po
+--- live-0.2.0-org/po/nn_NO.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/nn_NO.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/pl_PL.po live-0.2.0/po/pl_PL.po
+--- live-0.2.0-org/po/pl_PL.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/pl_PL.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/pt_PT.po live-0.2.0/po/pt_PT.po
+--- live-0.2.0-org/po/pt_PT.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/pt_PT.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/ro_RO.po live-0.2.0/po/ro_RO.po
+--- live-0.2.0-org/po/ro_RO.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/ro_RO.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/ru_RU.po live-0.2.0/po/ru_RU.po
+--- live-0.2.0-org/po/ru_RU.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/ru_RU.po	2008-10-10 12:03:33.000000000 +0200
+@@ -57,6 +57,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/sl_SI.po live-0.2.0/po/sl_SI.po
+--- live-0.2.0-org/po/sl_SI.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/sl_SI.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/sv_SE.po live-0.2.0/po/sv_SE.po
+--- live-0.2.0-org/po/sv_SE.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/sv_SE.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/po/tr_TR.po live-0.2.0/po/tr_TR.po
+--- live-0.2.0-org/po/tr_TR.po	2008-04-21 00:35:22.000000000 +0200
++++ live-0.2.0/po/tr_TR.po	2008-10-10 12:03:33.000000000 +0200
+@@ -58,6 +58,9 @@
+ msgid "On archive DVD No."
+ msgstr ""
+ 
++msgid "On archive HDD No."
++msgstr ""
++
+ msgid "Couldn't find channel or no channels available."
+ msgstr ""
+ 
+diff -Nurb live-0.2.0-org/recman.cpp live-0.2.0/recman.cpp
+--- live-0.2.0-org/recman.cpp	2008-10-10 12:06:17.000000000 +0200
++++ live-0.2.0/recman.cpp	2008-10-10 12:09:00.000000000 +0200
+@@ -1,5 +1,4 @@
+ #include <unistd.h>
+-#include <cstring>
+ #include <string>
+ #include <sstream>
+ #include <fstream>
+@@ -13,6 +12,7 @@
+ #include "recman.h"
+ 
+ #define INDEXFILESUFFIX   "/index.vdr"
++#define LENGTHFILESUFFIX  "/length.vdr"
+ 
+ using namespace std::tr1;
+ using namespace std;
+@@ -101,24 +101,28 @@
+ 		Recordings.DelByName(name.c_str());
+ 	}
+ 
+-	bool RecordingsManager::IsArchived(cRecording const * recording)
++	int RecordingsManager::GetArchiveType(cRecording const * recording)
+ 	{
+ 		string filename = recording->FileName();
+ 
+-		string vdrFile = filename + "/001.vdr";
+-		if (0 == access(vdrFile.c_str(), R_OK))
+-			return false;
+-
+-		filename += "/dvd.vdr";
+-		return (0 == access(filename.c_str(), R_OK));
++		string dvdFile = filename + "/dvd.vdr";
++		if (0 == access(dvdFile.c_str(), R_OK)) {
++			return 1;
++		}
++		string hddFile = filename + "/hdd.vdr";
++		if (0 == access(hddFile.c_str(), R_OK)) {
++			return 2;
++		}
++		return 0;
+ 	}
+ 
+-	string const RecordingsManager::GetArchiveId(cRecording const * recording)
++	string const RecordingsManager::GetArchiveId(cRecording const * recording, int archiveType)
+ 	{
+ 		string filename = recording->FileName();
+ 
+-		filename += "/dvd.vdr";
+-		ifstream dvd(filename.c_str());
++		if (archiveType==1) {
++			string dvdFile = filename + "/dvd.vdr";
++			ifstream dvd(dvdFile.c_str());
+ 
+ 		if (dvd) {
+ 			string archiveDisc;
+@@ -130,17 +134,35 @@
+ 			}
+ 			return archiveDisc;
+ 		}
++		} else if(archiveType==2) {
++			string hddFile = filename + "/hdd.vdr";
++			ifstream hdd(hddFile.c_str());
++
++			if (hdd) {
++				string archiveDisc;
++				hdd >> archiveDisc;
++				return archiveDisc;
++			}
++		}
+ 		return "";
+ 	}
+ 
+ 	string const RecordingsManager::GetArchiveDescr(cRecording const * recording)
+ 	{
++		int archiveType;
+ 		string archived;
+-		if (IsArchived(recording)) {
++		archiveType = GetArchiveType(recording);
++		if (archiveType==1) {
+ 			archived += " [";
+ 			archived += tr("On archive DVD No.");
+ 			archived += ": ";
+-			archived += GetArchiveId(recording);
++			archived += GetArchiveId(recording, archiveType);
++			archived += "]";
++		} else if (archiveType==2) {
++			archived += " [";
++			archived += tr("On archive HDD No.");
++			archived += ": ";
++			archived += GetArchiveId(recording, archiveType);
+ 			archived += "]";
+ 		}
+ 		return archived;
+@@ -266,6 +266,13 @@
+ 		}
+ 		delete index;
+ #endif
++		if (RecLength == 0) {
++			cString lengthFile = cString::sprintf("%s%s", m_recording->FileName(), LENGTHFILESUFFIX);
++			ifstream length(*lengthFile);
++			if(length)
++				length >> RecLength;
++		}
++		
+ 		return RecLength;
+ 	}
+ 
+diff -Nurb live-0.2.0-org/recman.h live-0.2.0/recman.h
+--- live-0.2.0-org/recman.h	2008-04-08 19:52:00.000000000 +0200
++++ live-0.2.0/recman.h	2008-10-10 12:03:33.000000000 +0200
+@@ -78,14 +78,14 @@
+ 			 *	Determine wether the recording has been archived on
+ 			 *	removable media (e.g. DVD-ROM)
+ 			 */
+-			static bool IsArchived(cRecording const * recording);
++			static int GetArchiveType(cRecording const * recording);
+ 
+ 			/**
+ 			 *	Provide an identification of the removable media
+ 			 *	(e.g. DVD-ROM Number or Name) where the recording has
+ 			 *	been archived.
+ 			 */
+-			static std::string const GetArchiveId(cRecording const * recording);
++			static std::string const GetArchiveId(cRecording const * recording, int archiveType);
+ 
+ 			static std::string const GetArchiveDescr(cRecording const * recording);
+ 

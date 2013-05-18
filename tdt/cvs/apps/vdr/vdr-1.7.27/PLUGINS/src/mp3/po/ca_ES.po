@@ -1,0 +1,317 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Ramon Roca <ramon.roca@xcombo.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-12 02:55+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select"
+msgstr "Escollir"
+
+msgid "Parent"
+msgstr "Anterior"
+
+msgid "ID3 info"
+msgstr "ID3 info"
+
+msgid "Scanning directory..."
+msgstr "Revisant les carpetes.."
+
+msgid "Error scanning directory!"
+msgstr "Error al llegir una carpeta!"
+
+msgid "Mount"
+msgstr "Mount"
+
+msgid "Unmount"
+msgstr "Unmount"
+
+msgid "Eject"
+msgstr ""
+
+msgid "Selected source is not mounted!"
+msgstr "l'Origen sel.leccionat no està muntat!"
+
+msgid "Mount failed!"
+msgstr "No he pogut muntar!"
+
+msgid "Mount succeeded"
+msgstr "mount correcte"
+
+msgid "Unmount succeeded"
+msgstr "unmount amb èxit"
+
+msgid "Unmount failed!"
+msgstr "No puc desmontar!"
+
+msgid "Eject failed!"
+msgstr "No puc expulsar!"
+
+msgid "MPlayer"
+msgstr "MPlayer"
+
+msgid "Setup.MPlayer$Control mode"
+msgstr "Mode de control"
+
+msgid "Traditional"
+msgstr "Tradicional"
+
+msgid "Slave"
+msgstr "Esclau"
+
+msgid "disabled"
+msgstr "desactivat"
+
+msgid "global only"
+msgstr ""
+
+msgid "local first"
+msgstr ""
+
+msgid "Setup.MPlayer$Resume mode"
+msgstr ""
+
+msgid "Hide mainmenu entry"
+msgstr ""
+
+msgid "Setup.MPlayer$Slave command key"
+msgstr ""
+
+msgid "Jump: "
+msgstr ""
+
+msgid "MPlayer Audio ID"
+msgstr ""
+
+msgid "Audiostream ID"
+msgstr ""
+
+msgid "MPlayer browser"
+msgstr "Navegador del MPlayer"
+
+msgid "Source"
+msgstr "Orígen"
+
+msgid "MPlayer source"
+msgstr "Orígen del MPlayer"
+
+msgid "Summary"
+msgstr ""
+
+msgid "Media replay via MPlayer"
+msgstr ""
+
+#~ msgid "OSS"
+#~ msgstr "OSS"
+
+#~ msgid "MP3"
+#~ msgstr "MP3"
+
+#~ msgid "Setup.MP3$Audio mode"
+#~ msgstr "Mode d'audio"
+
+#~ msgid "Round"
+#~ msgstr "Arrodonir"
+
+#~ msgid "Dither"
+#~ msgstr "Compactar"
+
+#~ msgid "Setup.MP3$Use 48kHz mode only"
+#~ msgstr "Només mode 48kHz"
+
+#~ msgid "Setup.MP3$Display mode"
+#~ msgstr "Mode de visualització"
+
+#~ msgid "Black"
+#~ msgstr "Negre"
+
+#~ msgid "Live"
+#~ msgstr "Imatge"
+
+#~ msgid "Setup.MP3$Background mode"
+#~ msgstr "Execució de fons"
+
+#~ msgid "Setup.MP3$Initial loop mode"
+#~ msgstr "Mode de repetició inicial"
+
+#~ msgid "Setup.MP3$Initial shuffle mode"
+#~ msgstr "Lectura aleatòria inicial"
+
+#~ msgid "Setup.MP3$Editor display mode"
+#~ msgstr "Mode de visualització del editor"
+
+#~ msgid "Filenames"
+#~ msgstr "Nom dels arxius"
+
+#~ msgid "ID3 names"
+#~ msgstr "Nom ID3"
+
+#~ msgid "Setup.MP3$Mainmenu mode"
+#~ msgstr "Menú Principal"
+
+#~ msgid "Playlists"
+#~ msgstr "Llista a reproduïr"
+
+#~ msgid "Browser"
+#~ msgstr "Navegador"
+
+#~ msgid "Setup.MP3$Normalizer level"
+#~ msgstr "Nivell de normalització"
+
+#~ msgid "Setup.MP3$Limiter level"
+#~ msgstr "Limitador del nivell"
+
+#~ msgid "Setup.MP3$Use HTTP proxy"
+#~ msgstr "Util·litzar proxy HTTP"
+
+#~ msgid "Setup.MP3$HTTP proxy host"
+#~ msgstr "Nom del proxy HTTP"
+
+#~ msgid "Setup.MP3$HTTP proxy port"
+#~ msgstr "Port del proxy HTTP"
+
+#~ msgid "local only"
+#~ msgstr "solsament local"
+
+#~ msgid "local&remote"
+#~ msgstr "local i remot"
+
+#~ msgid "Setup.MP3$CDDB for CD-Audio"
+#~ msgstr "CDDB per al Audio-CD"
+
+#~ msgid "Setup.MP3$CDDB server"
+#~ msgstr "Servidor CDDB"
+
+#~ msgid "Setup.MP3$CDDB port"
+#~ msgstr "Port CDDB"
+
+#~ msgid "ID3 information"
+#~ msgstr "Informació ID3"
+
+#~ msgid "Filename"
+#~ msgstr "Nom de l'arxiu"
+
+#~ msgid "Length"
+#~ msgstr "Durada"
+
+#~ msgid "Title"
+#~ msgstr "Títol"
+
+#~ msgid "Artist"
+#~ msgstr "Intèrpret"
+
+#~ msgid "Album"
+#~ msgstr "Àlbum"
+
+#~ msgid "Year"
+#~ msgstr "Any"
+
+#~ msgid "Samplerate"
+#~ msgstr "Freqüència"
+
+#~ msgid "Bitrate"
+#~ msgstr "Bitrate"
+
+#~ msgid "Directory browser"
+#~ msgstr "Navegar per les carpetes"
+
+#~ msgid "Playlist editor"
+#~ msgstr "Editor de llistes de reproducció"
+
+#~ msgid "Add"
+#~ msgstr "Afegir"
+
+#~ msgid "Remove"
+#~ msgstr "Esborrar"
+
+#~ msgid "Add recursivly?"
+#~ msgstr "Afegir recursivament?"
+
+#~ msgid "Empty directory!"
+#~ msgstr "Carpeta buida!"
+
+#~ msgid "Remove entry?"
+#~ msgstr "Esborrar la entrada?"
+
+#~ msgid "Add all"
+#~ msgstr "Afegir-ho tot"
+
+#~ msgid "Rename playlist"
+#~ msgstr "Reanomenar la llista de repr."
+
+#~ msgid "Old name:"
+#~ msgstr "Nom anterior:"
+
+#~ msgid "New name"
+#~ msgstr "Nou nom"
+
+#~ msgid "Browse"
+#~ msgstr "Explorar"
+
+#~ msgid "Rename"
+#~ msgstr "Reanomenar"
+
+#~ msgid "Scanning playlists..."
+#~ msgstr "Llegint les llistes de reproducció..."
+
+#~ msgid "Error scanning playlists!"
+#~ msgstr "Error al llegir les llistes!"
+
+#~ msgid "Delete playlist?"
+#~ msgstr "Esborrar la Llista?"
+
+#~ msgid "Are you sure?"
+#~ msgstr "N'esteu segur?"
+
+#~ msgid "Error deleting playlist!"
+#~ msgstr "Error al esborrar una llista!"
+
+#~ msgid "unnamed"
+#~ msgstr "sense nom"
+
+#~ msgid "Error creating playlist!"
+#~ msgstr "Error al crear una llista!"
+
+#~ msgid "Error renaming playlist!"
+#~ msgstr "Error al reanomenar la llista!"
+
+#~ msgid "Error loading playlist!"
+#~ msgstr "Error al carregar la llista de reproducció!"
+
+#~ msgid "Can't edit a WinAmp playlist!"
+#~ msgstr "No puc editar una llista del WinAmp!"
+
+#~ msgid "Loading playlist..."
+#~ msgstr "Carregant la llista de reproducció..."
+
+#~ msgid "MP3 source"
+#~ msgstr "Orígen MP3"
+
+#~ msgid "Play all"
+#~ msgstr "Escoltar-ho tot"
+
+#~ msgid "Building playlist..."
+#~ msgstr "Construïnt la llista de reproducció..."
+
+#~ msgid "Error building playlist!"
+#~ msgstr "Error al consstruir la llista de reproducció!"
+
+#~ msgid "unknown"
+#~ msgstr "desconegut"
+
+#~ msgid "Remote CDDB lookup..."
+#~ msgstr "Consultant CDDB..."
+
+#~ msgid "Connecting to stream server ..."
+#~ msgstr "Connectant al servidor..."

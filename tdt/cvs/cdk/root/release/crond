@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+#
+#
+#
+# crond
+# chkconfig: S 60 0
+#
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON="/usr/sbin/crond"
+OPTIONS=""
+DESC="Cron daemon"
+NAME=crond
+
+test -x $DAEMON || exit 0
+if [ ! -e /var/spool/cron/crontabs/root ]; then
+    if [ ! -d /var/spool/cron/crontabs/ ]; then
+	mkdir -p /var/spool/cron/crontabs
+    fi
+    touch /var/spool/cron/crontabs/root
+fi
+
+# Defaults
+USERID=root
+GROUPID=root
+ENABLE="true"
+
+if [ "$ENABLE" != "true" ]; then
+	echo "$NAME daemon disabled "
+	exit 0
+fi
+
+set -e
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	start-stop-daemon --start --quiet --chuid $USERID:$GROUPID \
+		--exec $DAEMON -b --
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop --oknodo --quiet --exec $DAEMON
+	echo "$NAME."
+	;;
+
+  restart)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon --stop --oknodo --quiet --exec $DAEMON
+	echo "done."
+	sleep 1
+	start-stop-daemon --start --quiet --chuid $USERID:$GROUPID \
+		--exec $DAEMON -b --
+	echo "$NAME."
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

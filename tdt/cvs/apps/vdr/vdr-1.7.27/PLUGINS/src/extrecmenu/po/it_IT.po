@@ -1,0 +1,288 @@
+# ExtRecMenu plugin language source file.
+# Copyright (C) 2008 Martin Prochnow <nordlicht@martins-kabuff.de>
+# This file is distributed under the same license as the ExtRecMenu package.
+# Alberto Carraro <bertocar@tin.it>, 2001
+# Antonio Ospite <ospite@studenti.unina.it>, 2003
+# Sean Carlos <seanc@libero.it>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ExtRecMenu 1.2\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2011-03-19 10:34+0100\n"
+"PO-Revision-Date: 2010-08-07 23:10+0100\n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+msgid "Extended recordings menu"
+msgstr "Menu registrazioni avanzato"
+
+msgid "Rename"
+msgstr "Rinomina"
+
+msgid "Invalid filename!"
+msgstr "Nome file non valido!"
+
+msgid "Creating directories failed!"
+msgstr "Creazione directory fallita!"
+
+msgid "New folder"
+msgstr "Nuova directory"
+
+msgid "Button$Cancel"
+msgstr "Annulla"
+
+msgid "Button$Create"
+msgstr "Crea"
+
+msgid "Button$Move"
+msgstr "Sposta"
+
+msgid "[base dir]"
+msgstr "[dir. base]"
+
+msgid "Target filesystem filled - try anyway?"
+msgstr "Destinazione senza spazio - provare comunque?"
+
+msgid "Moving into own sub-directory not allowed!"
+msgstr "Spostamento nella sotto directory non permesso!"
+
+msgid "Can't get filesystem information"
+msgstr "Impossibile ottenere info sulla partizione"
+
+msgid "Details"
+msgstr "Dettagli"
+
+msgid "Button$Play"
+msgstr "Riproduci"
+
+msgid "Button$Rewind"
+msgstr "Riavvolgi"
+
+msgid "Button$Back"
+msgstr "Indietro"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Path"
+msgstr "Percorso"
+
+msgid "Channel"
+msgstr "Canale"
+
+msgid "Size"
+msgstr "Dimensione"
+
+msgid "Error while mounting DVD!"
+msgstr "Errore durante montaggio DVD!"
+
+msgid "Error while mounting Archive-HDD!"
+msgstr "Errore durante montaggio archivio DVD!"
+
+msgid "Button$Commands"
+msgstr "Comandi"
+
+msgid "Button$Open"
+msgstr "Apri"
+
+msgid "Button$Edit"
+msgstr "Modifica"
+
+msgid "Button$Info"
+msgstr "Info"
+
+#, c-format
+msgid "Please attach Archive-HDD %s"
+msgstr "Allega archivio HDD %s"
+
+msgid "Recording not found on Archive-HDD!"
+msgstr "Registrazione non trovata nell'archivio HDD!"
+
+msgid "Error while linking [0-9]*.vdr!"
+msgstr "Errore creazione collegamento [0-9]*.vdr!"
+
+msgid "sudo or mount --bind / umount error (vfat system)"
+msgstr "Errore sudo o mount --bind / umount (sistema vfat)"
+
+msgid "Script 'hddarchive.sh' not found!"
+msgstr "Script 'hddarchive.sh' non trovato!"
+
+#, c-format
+msgid "Please insert DVD %s"
+msgstr "Inserisci il DVD %s"
+
+msgid "DVD plugin is not installed!"
+msgstr "Plugin DVD non installato!"
+
+msgid "No DVD in drive!"
+msgstr "Nessun DVD nel lettore!"
+
+msgid "Recording not found on DVD!"
+msgstr "Registrazione non trovata nel DVD!"
+
+msgid "Script 'dvdarchive.sh' not found!"
+msgstr "Script 'dvdarchive.sh non trovato!"
+
+msgid "Sort by date"
+msgstr "Ordina per data"
+
+msgid "Sort by name"
+msgstr "Ordina per nome"
+
+msgid "Cancel moving?"
+msgstr "Annullare spostamento?"
+
+msgid "Button$Rename"
+msgstr "Rinomina"
+
+msgid "Button$Delete"
+msgstr "Elimina"
+
+msgid "ascending"
+msgstr "crescente"
+
+msgid "descending"
+msgstr "decrescente"
+
+msgid "Show nr. of new recordings of a directory"
+msgstr "Mostra num. nuove reg. directory"
+
+msgid "Maximum number of recordings per directory"
+msgstr ""
+
+msgid "Items to show in recording list"
+msgstr ""
+
+msgid "Show alternative to new marker"
+msgstr "Mostra opzioni nuovo marcatore"
+
+msgid "Show free disk space for each file system"
+msgstr "Mostra spazio disponibile partizioni"
+
+msgid "Sorting"
+msgstr "Ordinamento"
+
+msgid "Hide main menu entry"
+msgstr "Nascondi voce menu principale"
+
+msgid "Replace original recordings menu"
+msgstr "Sostituisci menu reg. originale"
+
+msgid "Jump to last replayed recording"
+msgstr "Vai all'ultima reg. riprodotta"
+
+msgid "Call plugin after playback"
+msgstr "Chiama plugin dopo esecuzione"
+
+msgid "Limit bandwidth for move recordings"
+msgstr "Limita banda spostamento reg."
+
+msgid "Use VDR's recording info menu"
+msgstr "Utilizza menu info reg. di VDR"
+
+msgid "Use cutter queue"
+msgstr "Utilizza coda tagli"
+
+msgid "--none--"
+msgstr ""
+
+msgid "Blank"
+msgstr ""
+
+msgid "Date of Recording"
+msgstr ""
+
+msgid "Time of Recording"
+msgstr ""
+
+msgid "Date and Time of Recording"
+msgstr ""
+
+msgid "Length of Recording"
+msgstr ""
+
+msgid "Rating of Recording"
+msgstr ""
+
+msgid "Content of File"
+msgstr ""
+
+msgid "Content of File, then Result of a Command"
+msgstr ""
+
+msgid "left"
+msgstr ""
+
+msgid "center"
+msgstr ""
+
+msgid "right"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "(fixed to the first position)"
+msgstr ""
+
+msgid "Item"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Alignment"
+msgstr ""
+
+msgid "Filename"
+msgstr ""
+
+msgid "Command"
+msgstr ""
+
+msgid "Name of the recording"
+msgstr ""
+
+msgid "(fixed to the last position)"
+msgstr ""
+
+msgid "Recording already in cutter queue!"
+msgstr "Registrazione già presente nella coda tagli!"
+
+msgid "No editing marks defined!"
+msgstr "Nessun marcatore di modifica definito!"
+
+msgid "Added recording to cutter queue"
+msgstr "Aggiunta registrazione alla coda tagli"
+
+msgid "Rename/Move failed!"
+msgstr "Rinominazione/Spostamento fallito!"
+
+msgid "Cutter queue not empty"
+msgstr "Coda tagli non vuota"
+
+msgid "Move recordings in progress"
+msgstr "Spostamento registrazioni in corso"
+
+msgid "Can't start editing process!"
+msgstr "Impossibile avviare il processo di modifica!"
+
+#~ msgid "Show recording date"
+#~ msgstr "Mostra data registrazione"
+
+#~ msgid "Show recording time"
+#~ msgstr "Mostra ora registrazione"
+
+#~ msgid "Show recording length"
+#~ msgstr "Mostra durata registrazione"
+
+#~ msgid "Show recording rating"
+#~ msgstr "Mostra valutazione registrazione"

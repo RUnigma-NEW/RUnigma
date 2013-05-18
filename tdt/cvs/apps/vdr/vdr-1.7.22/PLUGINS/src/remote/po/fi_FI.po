@@ -1,0 +1,62 @@
+# Remote Control plugin language source file.
+# Copyright (C) 2007 Oliver Endriss <o.endriss@gmx.de>
+# This file is distributed under the same license as the Remote Control plugin package.
+# Ville Skytt‰ <ville dot skytta at iki dot fi>, 2004
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Remote Control plugin 0.4.0\n"
+"Report-Msgid-Bugs-To: <o.endriss@gmx.de>\n"
+"POT-Creation-Date: 2011-12-21 20:38+0100\n"
+"PO-Revision-Date: 2007-10-05 06:58+0200\n"
+"Last-Translator: Ville Skytt‰ <ville dot skytta at iki dot fi>, 2004\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: remote.c:38
+msgid "Remote control"
+msgstr "Kaukos‰‰din"
+
+#: remote.c:217 remote.c:761
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: remote.c:239
+msgid "Error uploading keymap"
+msgstr "N‰pp‰inkartan lataaminen ep‰onnistui"
+
+#: remote.c:320
+msgid "Press any key to use pre-loaded keymap"
+msgstr "Paina mit‰ tahansa n‰pp‰int‰ k‰ytt‰‰ksesi oletusn‰pp‰inkarttaa"
+
+#: remote.c:325
+msgid "User-supplied keymap will be used"
+msgstr "K‰ytet‰‰n k‰ytt‰j‰n m‰‰rittelem‰‰ n‰pp‰inkarttaa"
+
+#: remote.c:331
+msgid "Remote control test - press and hold down any key"
+msgstr "Kaukos‰‰dintesti - paina ja pid‰ alhaalla jotain kaukos‰‰timen n‰pp‰int‰"
+
+#: remote.c:350
+msgid "RC5 protocol detected"
+msgstr "RC5-yhteysk‰yt‰ntˆ tunnistettu"
+
+#: remote.c:374
+msgid "RC5 protocol detected (inverted signal)"
+msgstr "RC5-yhteysk‰yt‰ntˆ tunnistettu (k‰‰nteinen signaali)"
+
+#: remote.c:385
+msgid "RCMM protocol detected"
+msgstr "RCMM-yhteysk‰yt‰ntˆ tunnistettu"
+
+#: remote.c:396
+msgid "RCMM protocol detected (inverted signal)"
+msgstr "RCMM-yhteysk‰yt‰ntˆ tunnistettu (k‰‰nteinen signaali)"
+
+#: remote.c:404
+msgid "No remote control detected"
+msgstr "Kaukos‰‰dint‰ ei tunnistettu"

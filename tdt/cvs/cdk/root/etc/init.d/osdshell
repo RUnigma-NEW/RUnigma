@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# osdshell        This starts OSDshell on top of kathrein TV driver and frontend.
+#
+# chkconfig: 3 95 0
+# description: 
+#
+# pidfile: 
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+RETVAL=0
+NAME="OSDshell"
+prog="OSDshell"
+
+# Set environment values (see /etc/default/osd910)
+AUTOSTART_OSDSHELL=no
+[ -f /etc/default/osdshell ] && . /etc/default/osdshell
+
+[ -f /root/.install ] && AUTOSTART_OSDSHELL=no
+
+[ "${AUTOSTART_OSDSHELL}" != "yes" ] && exit 0
+
+start(){
+	#start osdshell.sh helper script
+	/usr/bin/osdshell.sh &
+                
+	RETVAL=$?
+}
+
+stop(){
+    echo -n "Stopping $prog: "
+    killall OSDshell
+
+    RETVAL=$?
+    echo "ok"
+
+}
+
+restart(){
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	restart
+	;;
+    *)
+	echo $"Usage: $0 {start|stop|restart}"
+	RETVAL=1
+esac
+exit $RETVAL

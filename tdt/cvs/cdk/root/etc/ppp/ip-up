@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# save DNS
+if [ -e /etc/ppp/resolv.conf ]
+ then
+  cat /etc/resolv.conf > /var/run/resolv.old 
+  cat /etc/ppp/resolv.conf > /etc/resolv.conf
+fi
+
+

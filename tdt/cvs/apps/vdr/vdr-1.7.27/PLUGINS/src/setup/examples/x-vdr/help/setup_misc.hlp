@@ -1,0 +1,8 @@
+Mindest Event Pause = 30
+Min. Benutzer-Inaktivität = 120
+
+     Wenn die Kommandozeilenoption '-s' gesetzt ist wird VDR den Rechner herunterfahren wenn der nächste Timer mindestens MinEventTimeout Minuten in der Zukunft liegt, und der Benutzer mindestens MinUserInactivity nicht aktiv war. MinUserInactivity auf 0 zu setzten deaktiviert ein automatisches Herunterfahren, es bleibt dabei möglich den Recher manuell herunterzufahren.
+
+SVDRP Timeout = 300
+
+     Die Zeit (in Sekunden) einer offenen SVDRP Verbindung, nach der die Verbindung automatisch getrennt wird. Voreingestellt ist 300, ein Wert von 0 bedeutet keinen Timeout.

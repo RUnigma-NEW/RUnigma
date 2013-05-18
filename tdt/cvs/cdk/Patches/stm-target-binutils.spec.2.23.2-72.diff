@@ -1,0 +1,12 @@
+--- stm-target-binutils.spec.orig	2012-07-12 12:08:26.060242765 +0200
++++ stm-target-binutils.spec	2012-07-12 12:08:26.008242763 +0200
+@@ -40,9 +40,7 @@
+ BuildRequires: texinfo
+ %endif
+ BuildRequires: %{_stm_pkg_prefix}-host-autoconf
+-BuildRequires: %{_stm_pkg_prefix}-host-bison
+ BuildRequires: %{_stm_pkg_prefix}-host-flex
+-BuildRequires: %{_stm_pkg_prefix}-host-gettext
+ BuildRequires: %{_stm_pkg_prefix}-host-rpmconfig
+ 
+ Group: Development/Languages

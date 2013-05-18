@@ -1,0 +1,286 @@
+# ExtRecMenu plugin language source file.
+# Copyright (C) 2008 Martin Prochnow <nordlicht@martins-kabuff.de>
+# This file is distributed under the same license as the ExtRecMenu package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ExtRecMenu 1.2\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2011-03-19 10:34+0100\n"
+"PO-Revision-Date: 2008-03-15 16:21+0100\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Extended recordings menu"
+msgstr "Menu enregistrement étandu"
+
+msgid "Rename"
+msgstr "Renommer"
+
+msgid "Invalid filename!"
+msgstr "Nom de fichiers n'est pas valide'"
+
+msgid "Creating directories failed!"
+msgstr ""
+
+msgid "New folder"
+msgstr "Nouveau dossier"
+
+msgid "Button$Cancel"
+msgstr "Interrompre"
+
+msgid "Button$Create"
+msgstr "Créer"
+
+msgid "Button$Move"
+msgstr "Déplacer"
+
+msgid "[base dir]"
+msgstr "[Dossier racine]"
+
+msgid "Target filesystem filled - try anyway?"
+msgstr "La partition de déstination est pleine - essayer tout de même?"
+
+msgid "Moving into own sub-directory not allowed!"
+msgstr "Déplacer dans le sous-dossier propre, n'est pas possible!"
+
+msgid "Can't get filesystem information"
+msgstr "Impossible de déterminer les informations du système de fichiers"
+
+msgid "Details"
+msgstr "Détails"
+
+msgid "Button$Play"
+msgstr "Montrer"
+
+msgid "Button$Rewind"
+msgstr "Début"
+
+msgid "Button$Back"
+msgstr "Retour"
+
+msgid "Name"
+msgstr ""
+
+msgid "Path"
+msgstr "Chemin"
+
+msgid "Channel"
+msgstr ""
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Error while mounting DVD!"
+msgstr "Erreur lors du montage du DVD!"
+
+msgid "Error while mounting Archive-HDD!"
+msgstr ""
+
+msgid "Button$Commands"
+msgstr "Commande"
+
+msgid "Button$Open"
+msgstr "Ouvrir"
+
+msgid "Button$Edit"
+msgstr "Éditer"
+
+msgid "Button$Info"
+msgstr "Info"
+
+#, c-format
+msgid "Please attach Archive-HDD %s"
+msgstr ""
+
+msgid "Recording not found on Archive-HDD!"
+msgstr ""
+
+msgid "Error while linking [0-9]*.vdr!"
+msgstr "Erreur lors de la création des racourcis [0-9]*.vdr!"
+
+msgid "sudo or mount --bind / umount error (vfat system)"
+msgstr "Erreur sudo ou mount --bind / umount (Systeme VFAT)"
+
+msgid "Script 'hddarchive.sh' not found!"
+msgstr ""
+
+#, c-format
+msgid "Please insert DVD %s"
+msgstr "Mettez le DVD %s dans le lecteur"
+
+msgid "DVD plugin is not installed!"
+msgstr "Le plugin DVD n'est pas installé!"
+
+msgid "No DVD in drive!"
+msgstr "Pas de DVD dans le lecteur!"
+
+msgid "Recording not found on DVD!"
+msgstr "Il n'y a pas d'enregistrement sur le DVD!"
+
+msgid "Script 'dvdarchive.sh' not found!"
+msgstr "Impossible de trouver le script 'dvdarchive.sh'!"
+
+msgid "Sort by date"
+msgstr "Triage selon date"
+
+msgid "Sort by name"
+msgstr "Triage selon le nom"
+
+msgid "Cancel moving?"
+msgstr "Interrompre le déplacement?"
+
+msgid "Button$Rename"
+msgstr "Renommer"
+
+msgid "Button$Delete"
+msgstr "Effacer"
+
+msgid "ascending"
+msgstr "montant"
+
+msgid "descending"
+msgstr "descendant"
+
+msgid "Show nr. of new recordings of a directory"
+msgstr "Afficher le nombre de nouveaux enregistrements dans les dossiers"
+
+msgid "Maximum number of recordings per directory"
+msgstr ""
+
+msgid "Items to show in recording list"
+msgstr ""
+
+msgid "Show alternative to new marker"
+msgstr "Afficher les nouveaux symbols alternatifs"
+
+msgid "Show free disk space for each file system"
+msgstr "Afficher la place libre de chaque partition"
+
+msgid "Sorting"
+msgstr "Triage"
+
+msgid "Hide main menu entry"
+msgstr "Menu Enregistrement étandu invisible"
+
+msgid "Replace original recordings menu"
+msgstr "Remplacer le nenu original Enregistrement"
+
+msgid "Jump to last replayed recording"
+msgstr "Retour au dernier enregistrement lu"
+
+msgid "Call plugin after playback"
+msgstr "Après la lecture démarer le plugin"
+
+msgid "Limit bandwidth for move recordings"
+msgstr "Limiter la bande passante lors du déplacement"
+
+msgid "Use VDR's recording info menu"
+msgstr "Utiliser le menu info enregistrement de VDR"
+
+msgid "Use cutter queue"
+msgstr ""
+
+msgid "--none--"
+msgstr ""
+
+msgid "Blank"
+msgstr ""
+
+msgid "Date of Recording"
+msgstr ""
+
+msgid "Time of Recording"
+msgstr ""
+
+msgid "Date and Time of Recording"
+msgstr ""
+
+msgid "Length of Recording"
+msgstr ""
+
+msgid "Rating of Recording"
+msgstr ""
+
+msgid "Content of File"
+msgstr ""
+
+msgid "Content of File, then Result of a Command"
+msgstr ""
+
+msgid "left"
+msgstr ""
+
+msgid "center"
+msgstr ""
+
+msgid "right"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "(fixed to the first position)"
+msgstr ""
+
+msgid "Item"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Alignment"
+msgstr ""
+
+msgid "Filename"
+msgstr ""
+
+msgid "Command"
+msgstr ""
+
+msgid "Name of the recording"
+msgstr ""
+
+msgid "(fixed to the last position)"
+msgstr ""
+
+msgid "Recording already in cutter queue!"
+msgstr "L'enregistrement est déjà dans la queue d'attente découpe!"
+
+msgid "No editing marks defined!"
+msgstr ""
+
+msgid "Added recording to cutter queue"
+msgstr "Enregistrement ajouté à la file d'attente de découpe"
+
+msgid "Rename/Move failed!"
+msgstr "Renommer/déplacer à échoué!"
+
+msgid "Cutter queue not empty"
+msgstr "Queue d'attente découpe n'est pas vide"
+
+msgid "Move recordings in progress"
+msgstr "Des enregistrements sont en déplacement"
+
+msgid "Can't start editing process!"
+msgstr ""
+
+#~ msgid "Show recording date"
+#~ msgstr "Afiicher la date d'enregistrement"
+
+#~ msgid "Show recording time"
+#~ msgstr "Afficher l'heure d'enregistrement"
+
+#~ msgid "Show recording length"
+#~ msgstr "Afficher la longeur de l'enregistrement"
+
+#~ msgid "Patch font"
+#~ msgstr "Patch des police"

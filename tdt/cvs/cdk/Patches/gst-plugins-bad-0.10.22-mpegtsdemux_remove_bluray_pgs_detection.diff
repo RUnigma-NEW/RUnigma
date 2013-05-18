@@ -1,0 +1,14 @@
+--- gst-plugins-bad-0.10.22-org/gst/mpegdemux/gstmpegtsdemux.c	2010-12-24 10:51:18.592735708 +0100
++++ gst-plugins-bad-0.10.22/gst/mpegdemux/gstmpegtsdemux.c	2010-12-24 11:39:52.360746518 +0100
+@@ -821,11 +821,6 @@
+       name = g_strdup_printf ("subpicture_%04x", stream->PID);
+       caps = gst_caps_new_simple ("video/x-dvd-subpicture", NULL);
+       break;
+-    case ST_BD_PGS_SUBPICTURE:
+-      template = klass->subpicture_template;
+-      name = g_strdup_printf ("subpicture_%04x", stream->PID);
+-      caps = gst_caps_new_simple ("subpicture/x-pgs", NULL);
+-      break;
+     default:
+       break;
+   }

@@ -1,0 +1,67 @@
+# German translations for vdr-text2skin package.
+# Copyright (C) Sascha Volkenandt <sascha@akv-soft.de>
+# This file is distributed under the same license as the vdr-text2skin package.
+# Sascha Volkenandt <sascha@akv-soft.de>, 2004, 2005.
+# Andreas Brugger <brougs78@gmx.net>, 2005, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-text2skin 1.3\n"
+"Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/show/plg-text2skin\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2009-06-07 12:12+0200\n"
+"Last-Translator: Andreas Brugger <brougs78@gmx.net>\n"
+"Language-Team: German <vdr@linuxtv.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "WIEDERHOLUNGEN DIESER SENDUNG"
+
+msgid "AUXILIARY INFOS"
+msgstr "ZUSATZINFOS"
+
+msgid "Search timer"
+msgstr "Suchtimer"
+
+msgid "Skin too large or incorrectly aligned"
+msgstr "Skin zu groß oder nicht korrekt ausgerichtet"
+
+msgid "Show scrollbar in the menus"
+msgstr "Zeige Bildlaufleiste in Menüs"
+
+msgid "Scrolling behaviour"
+msgstr "Scroll-Verhalten"
+
+msgid "to the left"
+msgstr "nach links"
+
+msgid "left and right"
+msgstr "links und rechts"
+
+msgid "Reset Marquee for new item"
+msgstr "Marquee für neues Item zurücksetzen"
+
+msgid "Show auxiliary infos of recordings"
+msgstr "Zusatzinfos der Aufnahmen anzeigen"
+
+#. TRANSLATORS: note the leading blanks!
+msgid "   Extract known tags"
+msgstr "   Bekannte Tags extrahieren"
+
+msgid "Use 'epgsearch' to check timer-conflicts"
+msgstr "Timerkonflikte mit 'epgsearch' überprüfen"
+
+msgid "Flush image cache"
+msgstr "Bildspeicher leeren"
+
+msgid "Max. image cache size"
+msgstr "Max. Größe des Bildspeichers"
+
+msgid "Flushing image cache..."
+msgstr "Bildspeicher wird geleert..."
+
+msgid "Loader for text-based skins"
+msgstr "Lader für textbasierte Skins"

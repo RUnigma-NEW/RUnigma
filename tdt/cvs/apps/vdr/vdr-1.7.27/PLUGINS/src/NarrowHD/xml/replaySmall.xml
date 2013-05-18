@@ -1,0 +1,301 @@
+<!--
+#------------------------------------------------------------------------------
+# replaySmall start
+#------------------------------------------------------------------------------ -->
+ 
+<display id="replaySmall">
+
+	<window x1="0" x2="-1" y1="0" y2="-1" bpp="8" />
+	
+	<!--Background-->
+	<rectangle x1="15" x2="95" y1="15" y2="95" color="TRW" />
+	<rectangle x1="20" x2="90" y1="20" y2="90" color="OPA" />
+
+	<!--PLAY-->
+	<block 
+		x1="46" x2="95" y1="31" y2="95" 
+		condition="{IsPlaying}">
+
+		<rectangle x1="0" x2="1" y1="0" y2="47" color="TRW" />
+		<rectangle x1="1" x2="2" y1="1" y2="46" color="TRW" />
+		<rectangle x1="2" x2="3" y1="2" y2="45" color="TRW" />
+		<rectangle x1="3" x2="4" y1="3" y2="44" color="TRW" />
+		<rectangle x1="4" x2="5" y1="4" y2="43" color="TRW" />
+		<rectangle x1="5" x2="6" y1="5" y2="42" color="TRW" />
+		<rectangle x1="6" x2="7" y1="6" y2="41" color="TRW" />
+    	<rectangle x1="7" x2="8" y1="7" y2="40" color="TRW" />
+		<rectangle x1="8" x2="9" y1="8" y2="39" color="TRW" />
+		<rectangle x1="9" x2="10" y1="9" y2="38" color="TRW" />
+		<rectangle x1="10" x2="11" y1="10" y2="37" color="TRW" />
+		<rectangle x1="11" x2="12" y1="11" y2="36" color="TRW" />
+		<rectangle x1="12" x2="13" y1="12" y2="35" color="TRW" />
+		<rectangle x1="13" x2="14" y1="13" y2="34" color="TRW" />
+		<rectangle x1="14" x2="15" y1="14" y2="33" color="TRW" />
+		<rectangle x1="15" x2="16" y1="15" y2="32" color="TRW" />
+		<rectangle x1="16" x2="17" y1="16" y2="31" color="TRW" />
+		<rectangle x1="17" x2="18" y1="17" y2="30" color="TRW" />
+		<rectangle x1="18" x2="19" y1="18" y2="29" color="TRW" />
+		<rectangle x1="19" x2="20" y1="19" y2="28" color="TRW" />
+		<rectangle x1="20" x2="21" y1="20" y2="27" color="TRW" />
+		<rectangle x1="21" x2="22" y1="21" y2="26" color="TRW" />
+		<rectangle x1="22" x2="23" y1="22" y2="25" color="TRW" />
+		<rectangle x1="23" x2="24" y1="23" y2="24" color="TRW" />
+	</block>
+
+	<!--PAUSE-->
+	<block 
+		x1="15" x2="95" y1="13" y2="95" 
+		condition="{IsPausing}">
+
+		<rectangle x1="26" x2="35" y1="19" y2="65" color="TRW" />
+		<rectangle x1="45" x2="54" y1="19" y2="65" color="TRW" />
+	</block>
+
+	<!--FF-->
+	<block 
+		x1="0" x2="95" y1="0" y2="95" 
+		condition="
+			or(
+				or(
+					{IsFastForward:0},
+					{IsFastForward:1}
+				),
+				or(
+					{IsFastForward:3},
+					{IsFastForward:2}
+				)
+			)">
+
+		<block  x1="35" x2="59" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="0" y2="47" color="TRW" />
+			<rectangle x1="1" x2="2" y1="1" y2="46" color="TRW" />
+			<rectangle x1="2" x2="3" y1="2" y2="45" color="TRW" />
+			<rectangle x1="3" x2="4" y1="3" y2="44" color="TRW" />
+			<rectangle x1="4" x2="5" y1="4" y2="43" color="TRW" />
+			<rectangle x1="5" x2="6" y1="5" y2="42" color="TRW" />
+			<rectangle x1="6" x2="7" y1="6" y2="41" color="TRW" />
+			<rectangle x1="7" x2="8" y1="7" y2="40" color="TRW" />
+			<rectangle x1="8" x2="9" y1="8" y2="39" color="TRW" />
+			<rectangle x1="9" x2="10" y1="9" y2="38" color="TRW" />
+			<rectangle x1="10" x2="11" y1="10" y2="37" color="TRW" />
+			<rectangle x1="11" x2="12" y1="11" y2="36" color="TRW" />
+			<rectangle x1="12" x2="13" y1="12" y2="35" color="TRW" />
+			<rectangle x1="13" x2="14" y1="13" y2="34" color="TRW" />
+			<rectangle x1="14" x2="15" y1="14" y2="33" color="TRW" />
+			<rectangle x1="15" x2="16" y1="15" y2="32" color="TRW" />
+			<rectangle x1="16" x2="17" y1="16" y2="31" color="TRW" />
+			<rectangle x1="17" x2="18" y1="17" y2="30" color="TRW" />
+			<rectangle x1="18" x2="19" y1="18" y2="29" color="TRW" />
+			<rectangle x1="19" x2="20" y1="19" y2="28" color="TRW" />
+			<rectangle x1="20" x2="21" y1="20" y2="27" color="TRW" />
+			<rectangle x1="21" x2="22" y1="21" y2="26" color="TRW" />
+			<rectangle x1="22" x2="23" y1="22" y2="25" color="TRW" />
+			<rectangle x1="23" x2="24" y1="23" y2="24" color="TRW" />
+		</block>
+
+		<block  x1="59" x2="95" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="0" y2="47" color="TRW" />
+			<rectangle x1="1" x2="2" y1="1" y2="46" color="TRW" />
+			<rectangle x1="2" x2="3" y1="2" y2="45" color="TRW" />
+			<rectangle x1="3" x2="4" y1="3" y2="44" color="TRW" />
+			<rectangle x1="4" x2="5" y1="4" y2="43" color="TRW" />
+			<rectangle x1="5" x2="6" y1="5" y2="42" color="TRW" />
+			<rectangle x1="6" x2="7" y1="6" y2="41" color="TRW" />
+			<rectangle x1="7" x2="8" y1="7" y2="40" color="TRW" />
+			<rectangle x1="8" x2="9" y1="8" y2="39" color="TRW" />
+			<rectangle x1="9" x2="10" y1="9" y2="38" color="TRW" />
+			<rectangle x1="10" x2="11" y1="10" y2="37" color="TRW" />
+			<rectangle x1="11" x2="12" y1="11" y2="36" color="TRW" />
+			<rectangle x1="12" x2="13" y1="12" y2="35" color="TRW" />
+			<rectangle x1="13" x2="14" y1="13" y2="34" color="TRW" />
+			<rectangle x1="14" x2="15" y1="14" y2="33" color="TRW" />
+			<rectangle x1="15" x2="16" y1="15" y2="32" color="TRW" />
+			<rectangle x1="16" x2="17" y1="16" y2="31" color="TRW" />
+			<rectangle x1="17" x2="18" y1="17" y2="30" color="TRW" />
+			<rectangle x1="18" x2="19" y1="18" y2="29" color="TRW" />
+			<rectangle x1="19" x2="20" y1="19" y2="28" color="TRW" />
+			<rectangle x1="20" x2="21" y1="20" y2="27" color="TRW" />
+			<rectangle x1="21" x2="22" y1="21" y2="26" color="TRW" />
+			<rectangle x1="22" x2="23" y1="22" y2="25" color="TRW" />
+			<rectangle x1="23" x2="24" y1="23" y2="24" color="TRW" />
+		</block>
+		 
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastForward:1}"  font="VDRSymbols Sans:Bold@14" >1</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastForward:2}"  font="VDRSymbols Sans:Bold@14" >2</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastForward:3}"  font="VDRSymbols Sans:Bold@14" >3</text>
+	
+	</block>
+
+	<!--RW-->
+	<block 
+		x1="0" x2="95" y1="0" y2="95" 
+		condition="
+			or(
+				or(
+					{IsFastRewind:0},
+					{IsFastRewind:1}
+				),
+				or(
+					{IsFastRewind:3},
+					{IsFastRewind:2}
+				)
+			)">
+
+		<block  x1="26" x2="50" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="23" y2="24" color="TRW" />
+			<rectangle x1="1" x2="2" y1="22" y2="25" color="TRW" />
+			<rectangle x1="2" x2="3" y1="21" y2="26" color="TRW" />
+			<rectangle x1="3" x2="4" y1="20" y2="27" color="TRW" />
+			<rectangle x1="4" x2="5" y1="19" y2="28" color="TRW" />
+			<rectangle x1="5" x2="6" y1="18" y2="29" color="TRW" />
+			<rectangle x1="6" x2="7" y1="17" y2="30" color="TRW" />
+			<rectangle x1="7" x2="8" y1="16" y2="31" color="TRW" />
+			<rectangle x1="8" x2="9" y1="15" y2="32" color="TRW" />
+			<rectangle x1="9" x2="10" y1="14" y2="33" color="TRW" />
+			<rectangle x1="10" x2="11" y1="13" y2="34" color="TRW" />
+			<rectangle x1="11" x2="12" y1="12" y2="35" color="TRW" />
+			<rectangle x1="12" x2="13" y1="11" y2="36" color="TRW" />
+			<rectangle x1="13" x2="14" y1="10" y2="37" color="TRW" />
+			<rectangle x1="14" x2="15" y1="9" y2="38" color="TRW" />
+			<rectangle x1="15" x2="16" y1="8" y2="39" color="TRW" />
+			<rectangle x1="16" x2="17" y1="7" y2="40" color="TRW" />
+			<rectangle x1="17" x2="18" y1="6" y2="41" color="TRW" />
+			<rectangle x1="18" x2="19" y1="5" y2="42" color="TRW" />
+			<rectangle x1="19" x2="20" y1="4" y2="43" color="TRW" />
+			<rectangle x1="20" x2="21" y1="3" y2="44" color="TRW" />
+			<rectangle x1="21" x2="22" y1="2" y2="45" color="TRW" />
+			<rectangle x1="22" x2="23" y1="1" y2="46" color="TRW" />
+			<rectangle x1="23" x2="24" y1="0" y2="47" color="TRW" />
+		</block>
+
+		<block x1="50" x2="95" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="23" y2="24" color="TRW" />
+			<rectangle x1="1" x2="2" y1="22" y2="25" color="TRW" />
+			<rectangle x1="2" x2="3" y1="21" y2="26" color="TRW" />
+			<rectangle x1="3" x2="4" y1="20" y2="27" color="TRW" />
+			<rectangle x1="4" x2="5" y1="19" y2="28" color="TRW" />
+			<rectangle x1="5" x2="6" y1="18" y2="29" color="TRW" />
+			<rectangle x1="6" x2="7" y1="17" y2="30" color="TRW" />
+			<rectangle x1="7" x2="8" y1="16" y2="31" color="TRW" />
+			<rectangle x1="8" x2="9" y1="15" y2="32" color="TRW" />
+			<rectangle x1="9" x2="10" y1="14" y2="33" color="TRW" />
+			<rectangle x1="10" x2="11" y1="13" y2="34" color="TRW" />
+			<rectangle x1="11" x2="12" y1="12" y2="35" color="TRW" />
+			<rectangle x1="12" x2="13" y1="11" y2="36" color="TRW" />
+			<rectangle x1="13" x2="14" y1="10" y2="37" color="TRW" />
+			<rectangle x1="14" x2="15" y1="9" y2="38" color="TRW" />
+			<rectangle x1="15" x2="16" y1="8" y2="39" color="TRW" />
+			<rectangle x1="16" x2="17" y1="7" y2="40" color="TRW" />
+			<rectangle x1="17" x2="18" y1="6" y2="41" color="TRW" />
+			<rectangle x1="18" x2="19" y1="5" y2="42" color="TRW" />
+			<rectangle x1="19" x2="20" y1="4" y2="43" color="TRW" />
+			<rectangle x1="20" x2="21" y1="3" y2="44" color="TRW" />
+			<rectangle x1="21" x2="22" y1="2" y2="45" color="TRW" />
+			<rectangle x1="22" x2="23" y1="1" y2="46" color="TRW" />
+			<rectangle x1="23" x2="24" y1="0" y2="47" color="TRW" />
+		</block>
+
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastRewind:1}"  font="VDRSymbols Sans:Bold@14" >1</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastRewind:2}"  font="VDRSymbols Sans:Bold@14" >2</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000"  condition="{IsFastRewind:3}"  font="VDRSymbols Sans:Bold@14" >3</text>
+	</block>
+
+	<!--SFF-->
+	<block 
+		x1="0" x2="95" y1="0" y2="95" 
+		condition="
+			or(
+				or(
+					{IsSlowForward:0},
+					{IsSlowForward:1}
+				),
+				or(
+					{IsSlowForward:3},
+					{IsSlowForward:2}
+				)
+			)">
+
+		<rectangle x1="37" x2="49" y1="31" y2="79" color="TRW" /> 
+
+		<block x1="59" x2="95" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="0" y2="47" color="TRW" />
+			<rectangle x1="1" x2="2" y1="1" y2="46" color="TRW" />
+			<rectangle x1="2" x2="3" y1="2" y2="45" color="TRW" />
+			<rectangle x1="3" x2="4" y1="3" y2="44" color="TRW" />
+			<rectangle x1="4" x2="5" y1="4" y2="43" color="TRW" />
+			<rectangle x1="5" x2="6" y1="5" y2="42" color="TRW" />
+			<rectangle x1="6" x2="7" y1="6" y2="41" color="TRW" />
+			<rectangle x1="7" x2="8" y1="7" y2="40" color="TRW" />
+			<rectangle x1="8" x2="9" y1="8" y2="39" color="TRW" />
+			<rectangle x1="9" x2="10" y1="9" y2="38" color="TRW" />
+			<rectangle x1="10" x2="11" y1="10" y2="37" color="TRW" />
+			<rectangle x1="11" x2="12" y1="11" y2="36" color="TRW" />
+			<rectangle x1="12" x2="13" y1="12" y2="35" color="TRW" />
+			<rectangle x1="13" x2="14" y1="13" y2="34" color="TRW" />
+			<rectangle x1="14" x2="15" y1="14" y2="33" color="TRW" />
+			<rectangle x1="15" x2="16" y1="15" y2="32" color="TRW" />
+			<rectangle x1="16" x2="17" y1="16" y2="31" color="TRW" />
+			<rectangle x1="17" x2="18" y1="17" y2="30" color="TRW" />
+			<rectangle x1="18" x2="19" y1="18" y2="29" color="TRW" />
+			<rectangle x1="19" x2="20" y1="19" y2="28" color="TRW" />
+			<rectangle x1="20" x2="21" y1="20" y2="27" color="TRW" />
+			<rectangle x1="21" x2="22" y1="21" y2="26" color="TRW" />
+			<rectangle x1="22" x2="23" y1="22" y2="25" color="TRW" />
+			<rectangle x1="23" x2="24" y1="23" y2="24" color="TRW" />
+		</block>
+
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowForward:1}" font="VDRSymbols Sans:Bold@14" >1</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowForward:2}" font="VDRSymbols Sans:Bold@14" >2</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowForward:3}" font="VDRSymbols Sans:Bold@14" >3</text>
+	</block>
+
+	<!--SRW-->
+	<block 
+		x1="0" x2="95" y1="0" y2="95" 
+		condition="
+			or(
+				or(
+					{IsSlowRewind:0},
+					{IsSlowRewind:1}
+				),
+				or(
+					{IsSlowRewind:3},
+					{IsSlowRewind:2}
+				)
+			)">
+
+		<block  x1="26" x2="50" y1="31" y2="95" >
+			<rectangle x1="0" x2="1" y1="23" y2="24" color="TRW" />
+			<rectangle x1="1" x2="2" y1="22" y2="25" color="TRW" />
+			<rectangle x1="2" x2="3" y1="21" y2="26" color="TRW" />
+			<rectangle x1="3" x2="4" y1="20" y2="27" color="TRW" />
+			<rectangle x1="4" x2="5" y1="19" y2="28" color="TRW" />
+			<rectangle x1="5" x2="6" y1="18" y2="29" color="TRW" />
+			<rectangle x1="6" x2="7" y1="17" y2="30" color="TRW" />
+			<rectangle x1="7" x2="8" y1="16" y2="31" color="TRW" />
+			<rectangle x1="8" x2="9" y1="15" y2="32" color="TRW" />
+			<rectangle x1="9" x2="10" y1="14" y2="33" color="TRW" />
+			<rectangle x1="10" x2="11" y1="13" y2="34" color="TRW" />
+			<rectangle x1="11" x2="12" y1="12" y2="35" color="TRW" />
+			<rectangle x1="12" x2="13" y1="11" y2="36" color="TRW" />
+			<rectangle x1="13" x2="14" y1="10" y2="37" color="TRW" />
+			<rectangle x1="14" x2="15" y1="9" y2="38" color="TRW" />
+			<rectangle x1="15" x2="16" y1="8" y2="39" color="TRW" />
+			<rectangle x1="16" x2="17" y1="7" y2="40" color="TRW" />
+			<rectangle x1="17" x2="18" y1="6" y2="41" color="TRW" />
+			<rectangle x1="18" x2="19" y1="5" y2="42" color="TRW" />
+			<rectangle x1="19" x2="20" y1="4" y2="43" color="TRW" />
+			<rectangle x1="20" x2="21" y1="3" y2="44" color="TRW" />
+			<rectangle x1="21" x2="22" y1="2" y2="45" color="TRW" />
+			<rectangle x1="22" x2="23" y1="1" y2="46" color="TRW" />
+			<rectangle x1="23" x2="24" y1="0" y2="47" color="TRW" />
+		</block>
+
+		<rectangle x1="60" x2="72" y1="31" y2="79" color="TRW" /> 
+
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowRewind:1}"   font="VDRSymbols Sans:Bold@14" >1</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowRewind:2}"   font="VDRSymbols Sans:Bold@14" >2</text>
+		<text x1="39" x2="80" y1="47" y2="80" color="#00000000" condition="{IsSlowRewind:3}"   font="VDRSymbols Sans:Bold@14" >3</text>
+	</block>
+
+</display>

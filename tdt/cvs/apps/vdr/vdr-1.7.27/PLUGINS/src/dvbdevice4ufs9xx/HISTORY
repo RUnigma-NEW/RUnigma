@@ -1,0 +1,16 @@
+VDR Plugin 'dvbdevice' for UFS910 Revision History
+--------------------------------------------------
+
+2010-11-15: Version 0.1.0
+
+- Initial revision. Contents derived from dvbsddevice (VDR plugin) and dvbufs9xx (sh4 duckbox project)
+  plugin.
+
+2011-06-22: Version 0.2.0
+
+- Introduced setup menu and moved configuration items from core vdr into plugin. Code derived
+  from http://powarman.dyndns.org/hgwebdir.cgi/dvbhddevice/summary and adapted for dvbufs9xx plugin.
+
+2012-04-18: Version 0.2.1
+
+- Fixed compilation with vdr 1.7.27

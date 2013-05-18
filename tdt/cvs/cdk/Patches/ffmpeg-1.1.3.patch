@@ -1,0 +1,50 @@
+--- ffmpeg-1.0/libavformat/aviobuf.c	2013-01-22 17:17:42.000000000 +0100
++++ ffmpeg-1.0/libavformat/aviobuf.c.patched	2013-01-22 17:16:26.000000000 +0100
+@@ -32,7 +32,7 @@
+ #include "url.h"
+ #include <stdarg.h>
+ 
+-#define IO_BUFFER_SIZE 32768
++#define IO_BUFFER_SIZE 524288
+ 
+ /**
+  * Do seeks within this distance ahead of the current buffer by skipping
+@@ -701,6 +701,9 @@
+     } else {
+         buffer_size = IO_BUFFER_SIZE;
+     }
++    
++    av_log(NULL, AV_LOG_DEBUG, "[libavformat/aviobuf.c] ffio_fdopen: buffer_size=%d\n", buffer_size);
++    
+     buffer = av_malloc(buffer_size);
+     if (!buffer)
+         return AVERROR(ENOMEM);
+--- ffmpeg-1.0/libavformat/utils.c	2013-01-06 22:53:29.000000000 +0100
++++ ffmpeg-1.0/libavformat/utils.c.pached	2013-01-25 12:38:40.000000000 +0100
+@@ -1996,6 +1996,8 @@
+             if ((ret = avio_seek(s->pb, s->data_offset, SEEK_SET)) < 0)
+                 return ret;
+         }
++        
++        int count = 0;
+         for (;;) {
+             int read_status;
+             do{
+@@ -2003,6 +2005,17 @@
+             } while (read_status == AVERROR(EAGAIN));
+             if (read_status < 0)
+                 break;
++ 
++            if(read_status == 0)
++            {
++                usleep(10000);
++                count--;
++                if(count < 0) break;
++
++            }
++            else
++                count = 500;
++ 	
+             av_free_packet(&pkt);
+             if(stream_index == pkt.stream_index && pkt.dts > timestamp){
+                 if(pkt.flags & AV_PKT_FLAG_KEY)

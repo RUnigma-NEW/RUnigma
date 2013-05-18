@@ -1,0 +1,78 @@
+# Finnish translations for vdr-text2skin-PearlHD skin.
+# Finnish translations for VDR have been used as
+# reference. See VDR translators from VDR sources.
+# Juho Turunen, 2010.
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-text2skin-PearlHD 0.0.4\n"
+"Report-Msgid-Bugs-To: <don_jan@web.de>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2010-02-26 16:10+0200\n"
+"Last-Translator: Juho Turunen <hetas4@gmail.com>\n"
+"Language-Team:  don_jan@web.de\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Volume"
+msgstr "Äänenvoimakkuus"
+
+msgid "Mute"
+msgstr "Mykistys"
+
+msgid "Playing"
+msgstr "Toistaa"
+
+msgid "Pause"
+msgstr "Tauko"
+
+msgid "Fast forward"
+msgstr "Pikakelaus >>"
+
+msgid "Fast rewind"
+msgstr "Pikakelaus <<"
+
+msgid "Slow forward"
+msgstr "Hitaasti >>"
+
+msgid "Slow rewind"
+msgstr "Hitaasti <<"
+
+msgid "of"
+msgstr "/"
+
+msgid "Timers"
+msgstr "Ajastimet"
+
+msgid "Recordings"
+msgstr "Tallenteet"
+
+msgid "Edit timer"
+msgstr "Muokkaa ajastinta"
+
+msgid "Setup"
+msgstr "Asetukset"
+
+msgid "Channels"
+msgstr "Kanavat"
+
+msgid "Schedule"
+msgstr "Ohjelmisto"
+
+msgid "Commands"
+msgstr "Komennot"
+
+msgid "Learning Remote Control Keys"
+msgstr "Opetetaan kaukosäädintä"
+
+msgid "oClock"
+msgstr " "
+
+msgid "length"
+msgstr "pituus"
+
+msgid "cutted"
+msgstr "leikattu"

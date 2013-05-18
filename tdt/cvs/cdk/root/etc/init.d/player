@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# player        This starts player modules.
+#
+# chkconfig: 3 77 0
+# description:
+#
+# pidfile:
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+RETVAL=0
+NAME="player"
+prog="player"
+
+
+start(){
+        echo -n "Loading modules: "
+        echo "LOADING MODULES" > /dev/vfd
+
+	echo -n "firmware"
+	#echo "load a/v firmware"
+	#/bin/stslave -t stb7100.0 -R /boot/video.elf
+	#/bin/stslave -t stb7100.1 -R /boot/audio.elf
+        /bin/stslave -t stb7100.0 -R /boot/vid_firmware-pb08-4-stb7100.elf
+        /bin/stslave -t stb7100.1 -R /boot/ACF_firmware-BL021_03-3-stb710x.elf
+
+	echo -n ", multicom"
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxshell/embxshell.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxmailbox/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxshm/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/mme/mme_host.ko transport0=shm
+
+	echo -n ", player."
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/mmelog/mmelog.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/mpeg2_hard_host_transformer/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/sound/ksound/ksound.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/video/stm/stm_v4l2.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/slim/st-slim.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/tkdma/st-tkdma.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/dvb/stmdvb.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/sound/pseudocard/pseudocard.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/backend/player2.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/h264_preprocessor/sth264pp.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/allocator/stmalloc.ko
+        insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/platform/platform.ko
+
+	#fbgrab /root/player.png
+        #RETVAL=$?
+}
+
+stop(){
+    echo -n $"Stopping $prog: "
+
+    RETVAL=$?
+    echo "ok"
+
+}
+
+reload(){
+    echo -n $"Reloading configuration: "
+
+    RETVAL=$?
+    echo
+}
+
+restart(){
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    reload)
+        reload
+        ;;
+    *)
+        echo $"Usage: $0 {start}"
+#        echo $"Usage: $0 {start|stop|restart|reload}"
+        RETVAL=1
+esac
+exit $RETVAL

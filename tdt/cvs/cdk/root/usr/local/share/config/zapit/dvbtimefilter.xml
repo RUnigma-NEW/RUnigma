@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Ten plik pozwala wyłączyć w tunerze aktualizacje czasu, z transponderow które podają błędny czas.
+-->
+
+<zapit>
+<filter onid="013e" tsid="0640" serviceID="3dba" name="Discovery Channel"/>
+<filter onid="013e" tsid="32c8" serviceID="3914" name="Discovery ID Poland"/>
+<filter onid="013e" tsid="1f40" serviceID="0ca5" name="TVS"/>
+<filter onid="0064" tsid="1250" serviceID="0010" name="VideoBergamo"/>
+</zapit>

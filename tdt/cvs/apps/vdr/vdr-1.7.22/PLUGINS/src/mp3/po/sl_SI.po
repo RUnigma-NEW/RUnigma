@@ -1,0 +1,269 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Matjaz Thaler <matjaz.thaler@guest.arnes.si>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-11 23:14+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select"
+msgstr "Izberi"
+
+msgid "Parent"
+msgstr "Nazaj"
+
+msgid "ID3 info"
+msgstr "ID3 info"
+
+msgid "Scanning directory..."
+msgstr ""
+
+msgid "Error scanning directory!"
+msgstr "Napaka pri pregledovanju direktorija!"
+
+msgid "Mount"
+msgstr "Priklopi"
+
+msgid "Unmount"
+msgstr "Izklopi"
+
+msgid "Eject"
+msgstr ""
+
+msgid "Selected source is not mounted!"
+msgstr "Izbran izvor ni prikljucen!"
+
+msgid "Mount failed!"
+msgstr "Napaka pri priklopu!"
+
+msgid "Mount succeeded"
+msgstr "Priklop izveden"
+
+msgid "Unmount succeeded"
+msgstr "Izklop izveden"
+
+msgid "Unmount failed!"
+msgstr "Napaka pri izklopu!"
+
+msgid "Eject failed!"
+msgstr "Napaka pri izmetu!"
+
+msgid "MPlayer"
+msgstr "MPlayer"
+
+msgid "Setup.MPlayer$Control mode"
+msgstr ""
+
+msgid "Traditional"
+msgstr ""
+
+msgid "Slave"
+msgstr ""
+
+msgid "disabled"
+msgstr ""
+
+msgid "global only"
+msgstr ""
+
+msgid "local first"
+msgstr ""
+
+msgid "Setup.MPlayer$Resume mode"
+msgstr ""
+
+msgid "Hide mainmenu entry"
+msgstr ""
+
+msgid "Setup.MPlayer$Slave command key"
+msgstr ""
+
+msgid "Jump: "
+msgstr ""
+
+msgid "MPlayer Audio ID"
+msgstr ""
+
+msgid "Audiostream ID"
+msgstr ""
+
+msgid "MPlayer browser"
+msgstr "MPlayer navigator"
+
+msgid "Source"
+msgstr "Izvor"
+
+msgid "MPlayer source"
+msgstr "MPlayer izvor"
+
+msgid "Summary"
+msgstr ""
+
+msgid "Media replay via MPlayer"
+msgstr ""
+
+#~ msgid "OSS"
+#~ msgstr "OSS"
+
+#~ msgid "MP3"
+#~ msgstr "MP3"
+
+#~ msgid "Setup.MP3$Audio mode"
+#~ msgstr "Avdio nacin"
+
+#~ msgid "Round"
+#~ msgstr "Zaokrozeni"
+
+#~ msgid "Dither"
+#~ msgstr "Raztrosni"
+
+#~ msgid "Setup.MP3$Display mode"
+#~ msgstr "Nacin prikaza"
+
+#~ msgid "Black"
+#~ msgstr "Crnina"
+
+#~ msgid "Live"
+#~ msgstr "Slika"
+
+#~ msgid "Setup.MP3$Background mode"
+#~ msgstr "Ozadje"
+
+#~ msgid "Setup.MP3$Initial loop mode"
+#~ msgstr "Osnovni nacin ponavljanje"
+
+#~ msgid "Setup.MP3$Initial shuffle mode"
+#~ msgstr "Osnovni nacin mesano"
+
+#~ msgid "Setup.MP3$Editor display mode"
+#~ msgstr "Nacin prikaza urejevalnika"
+
+#~ msgid "Filenames"
+#~ msgstr "Imena datotek"
+
+#~ msgid "ID3 names"
+#~ msgstr "ID3 imena"
+
+#~ msgid "Setup.MP3$Mainmenu mode"
+#~ msgstr "Nacin glavnega menija"
+
+#~ msgid "Playlists"
+#~ msgstr "Lista"
+
+#~ msgid "Browser"
+#~ msgstr "Navigator"
+
+#~ msgid "Setup.MP3$Normalizer level"
+#~ msgstr "Normalni nivo"
+
+#~ msgid "Setup.MP3$Limiter level"
+#~ msgstr "Limitni nivo"
+
+#~ msgid "ID3 information"
+#~ msgstr "ID3 informacija"
+
+#~ msgid "Filename"
+#~ msgstr "Ime datoteke"
+
+#~ msgid "Length"
+#~ msgstr "Dolzina"
+
+#~ msgid "Title"
+#~ msgstr "Naslov"
+
+#~ msgid "Artist"
+#~ msgstr "Avtor"
+
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Year"
+#~ msgstr "Leto"
+
+#~ msgid "Samplerate"
+#~ msgstr "Vzorcenje"
+
+#~ msgid "Bitrate"
+#~ msgstr "Bitna hitrost"
+
+#~ msgid "Directory browser"
+#~ msgstr "Navigator"
+
+#~ msgid "Playlist editor"
+#~ msgstr "Urejevalnik liste"
+
+#~ msgid "Add"
+#~ msgstr "Dodaj"
+
+#~ msgid "Remove"
+#~ msgstr "Odstrani"
+
+#~ msgid "Add recursivly?"
+#~ msgstr "Rekurzivno dodaj?"
+
+#~ msgid "Empty directory!"
+#~ msgstr "Direktorij prazen!"
+
+#~ msgid "Remove entry?"
+#~ msgstr "Odstrani izbrano?"
+
+#~ msgid "Add all"
+#~ msgstr "Dodaj vse"
+
+#~ msgid "Rename playlist"
+#~ msgstr "Preimenuj listo"
+
+#~ msgid "Old name:"
+#~ msgstr "Staro ime:"
+
+#~ msgid "New name"
+#~ msgstr "Novo ime"
+
+#~ msgid "Browse"
+#~ msgstr "Isci"
+
+#~ msgid "Rename"
+#~ msgstr "Preimenuj"
+
+#~ msgid "Error scanning playlists!"
+#~ msgstr "Napaka pri pregledovanju liste!"
+
+#~ msgid "Delete playlist?"
+#~ msgstr "Odstrani listo?"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Ste prepricani?"
+
+#~ msgid "Error deleting playlist!"
+#~ msgstr "Napaka pri odstranjevanju liste!"
+
+#~ msgid "unnamed"
+#~ msgstr "neimenovan"
+
+#~ msgid "Error creating playlist!"
+#~ msgstr "Napaka pri kreiranju liste!"
+
+#~ msgid "Error renaming playlist!"
+#~ msgstr "Napaka pri preimenovanju liste!"
+
+#~ msgid "Error loading playlist!"
+#~ msgstr "Napaka pri nalaganju liste!"
+
+#~ msgid "Can't edit a WinAmp playlist!"
+#~ msgstr "Ne morem vnesti liste od WinAmp-a!"
+
+#~ msgid "MP3 source"
+#~ msgstr "MP3 izvor"
+
+#~ msgid "Play all"
+#~ msgstr "Predvajaj vse"

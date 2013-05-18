@@ -1,0 +1,15 @@
+VDR Plugin 'dvbufs9xx' Revision History
+---------------------------------------
+
+2010-01-10: Version 0.0.1
+- Initial revision.
+
+2010-06-07: Version 0.0.2 egal@egal-vdr.de
+- adapted + concat changes from openwrt
+- correct start Video/AudioEncoding 
+- set VideoSystem  @ startup
+
+2010-06-13: Version 0.0.3pre egal@egal-vdr.de
+- bug in fbosd, internal osd now correct aligned
+- change videostreamtype @ replaymode
+- change getstc() like dvbhddevice-plugin

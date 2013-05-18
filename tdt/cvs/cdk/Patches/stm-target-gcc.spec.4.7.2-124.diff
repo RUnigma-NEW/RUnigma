@@ -1,0 +1,45 @@
+--- stm-target-gcc.spec.orig	2013-04-25 12:50:02.979333190 +0200
++++ stm-target-gcc.spec	2013-04-25 12:51:17.751336290 +0200
+@@ -15,6 +15,7 @@
+ Source0: ftp://gcc.gnu.org/pub/gcc/releases/gcc-%{version}/gcc-%{version}.tar.bz2
+ Source1: gcc-protoize.1
+ 
++Patch0: stm-target-gcc.%{version}-%{release}.diff
+ Patch1: gcc-4.2.4-multilibpath.patch
+ Patch3: gcc-4.5.0-autoconf.patch
+ 
+@@ -70,6 +71,9 @@
+ BuildRequires: %{_stm_pkg_prefix}-%{_stm_target_arch}-gmp
+ BuildRequires: %{_stm_pkg_prefix}-%{_stm_target_arch}-mpc
+ 
++# Quick and dirty workaround. RPM complains about unpackaged files.
++%define _unpackaged_files_terminate_build 0
++
+ %description
+ This is the GNU C compiler, a fairly portable optimizing compiler which
+ supports multiple languages.  This package includes support for C, and
+@@ -166,6 +170,7 @@
+ 
+ %prep
+ %setup -n gcc-%{version} -q
++%patch0 -p1
+ 
+ # Common patches
+ %if %target_cpu sh
+@@ -245,8 +250,6 @@
+ export CFLAGS="-Os"
+ export CXXFLAGS="-Os"
+ 
+-export CC_FOR_BUILD="gcc -m32"
+-export CXX_FOR_BUILD="g++ -m32"
+ 
+ # When cross compiling this fails because it needs to run code
+ export ac_cv_header_stdc=yes
+@@ -383,6 +386,7 @@
+ rm -r %{buildroot}%{_gccdir}/install-tools
+ rm -r %{buildroot}%{_stm_cross_target_dir}%{_stm_target_libexec_dir}/gcc/%{_stm_target_config}/%{version}/install-tools
+ rm -rf %{buildroot}%{_stm_cross_target_dir}%{_stm_target_libexec_dir}/gcc/%{_stm_target_config}/%{version}/plugin/gengtype
++rm -rf %{buildroot}%{_gccdir}/include/ssl
+ %unfixincludes %{buildroot}%{_gccdir}
+ 
+ %find_lang gcc

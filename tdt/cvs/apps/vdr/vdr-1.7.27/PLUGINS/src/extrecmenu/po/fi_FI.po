@@ -1,0 +1,286 @@
+# ExtRecMenu plugin language source file.
+# Copyright (C) 2008 Martin Prochnow <nordlicht@martins-kabuff.de>
+# This file is distributed under the same license as the ExtRecMenu package.
+# Hannu Savolainen <hannu@opensound.com>, 2002
+# Jaakko Hyvätti <jaakko@hyvatti.iki.fi>, 2002
+# Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ExtRecMenu 1.2\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2011-03-19 10:34+0100\n"
+"PO-Revision-Date: 2008-03-15 16:21+0100\n"
+"Last-Translator: Rolf Ahrenberg <rahrenbe@cc.hut.fi>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Extended recordings menu"
+msgstr "Laajennettu tallennevalikko"
+
+msgid "Rename"
+msgstr "Nimeä"
+
+msgid "Invalid filename!"
+msgstr "Virheellinen tiedoston nimi!"
+
+msgid "Creating directories failed!"
+msgstr ""
+
+msgid "New folder"
+msgstr "Uusi kansio"
+
+msgid "Button$Cancel"
+msgstr "Peruuta"
+
+msgid "Button$Create"
+msgstr "Luo"
+
+msgid "Button$Move"
+msgstr "Siirrä"
+
+msgid "[base dir]"
+msgstr "[juurihakemisto]"
+
+msgid "Target filesystem filled - try anyway?"
+msgstr "Kohdepartitio täynnä - yritetäänkö silti?"
+
+msgid "Moving into own sub-directory not allowed!"
+msgstr "Siirto omaan alihakemistoon ei ole sallittu!"
+
+msgid "Can't get filesystem information"
+msgstr "Tiedostojärjestelmän tietojen lukeminen epäonnistui"
+
+msgid "Details"
+msgstr "Lisätiedot"
+
+msgid "Button$Play"
+msgstr "Toista"
+
+msgid "Button$Rewind"
+msgstr "Alkuun"
+
+msgid "Button$Back"
+msgstr "Takaisin"
+
+msgid "Name"
+msgstr ""
+
+msgid "Path"
+msgstr "Polku"
+
+msgid "Channel"
+msgstr ""
+
+msgid "Size"
+msgstr "Koko"
+
+msgid "Error while mounting DVD!"
+msgstr "DVD:n avaaminen epäonnistui!"
+
+msgid "Error while mounting Archive-HDD!"
+msgstr ""
+
+msgid "Button$Commands"
+msgstr "Komennot"
+
+msgid "Button$Open"
+msgstr "Avaa"
+
+msgid "Button$Edit"
+msgstr "Muokkaa"
+
+msgid "Button$Info"
+msgstr "Tiedot"
+
+#, c-format
+msgid "Please attach Archive-HDD %s"
+msgstr ""
+
+msgid "Recording not found on Archive-HDD!"
+msgstr ""
+
+msgid "Error while linking [0-9]*.vdr!"
+msgstr "Tiedostojen [0-9]*.vdr linkittäminen epäonnistui!"
+
+msgid "sudo or mount --bind / umount error (vfat system)"
+msgstr "Sudo tai mount --bind / umount -komento epäonnistui (VFAT)!"
+
+msgid "Script 'hddarchive.sh' not found!"
+msgstr ""
+
+#, c-format
+msgid "Please insert DVD %s"
+msgstr "Laita DVD %s asemaan"
+
+msgid "DVD plugin is not installed!"
+msgstr "DVD-laajennosta ei löydy!"
+
+msgid "No DVD in drive!"
+msgstr "Asemassa ei ole DVD-levyä!"
+
+msgid "Recording not found on DVD!"
+msgstr "Tallennetta ei löydy DVD:ltä!"
+
+msgid "Script 'dvdarchive.sh' not found!"
+msgstr "'dvdarchive.sh'-skriptiä ei löydetä!"
+
+msgid "Sort by date"
+msgstr "Tallenteet järjestetään päivämäärän mukaan"
+
+msgid "Sort by name"
+msgstr "Tallenteet järjestetään nimen mukaan"
+
+msgid "Cancel moving?"
+msgstr "Peruutetaanko siirto?"
+
+msgid "Button$Rename"
+msgstr "Nimeä"
+
+msgid "Button$Delete"
+msgstr "Poista"
+
+msgid "ascending"
+msgstr "nouseva"
+
+msgid "descending"
+msgstr "laskeva"
+
+msgid "Show nr. of new recordings of a directory"
+msgstr "Näytä uusien tallenteiden lukumäärä"
+
+msgid "Maximum number of recordings per directory"
+msgstr ""
+
+msgid "Items to show in recording list"
+msgstr ""
+
+msgid "Show alternative to new marker"
+msgstr "Merkitse uudet tallenteet symbolilla"
+
+msgid "Show free disk space for each file system"
+msgstr "Näytä vapaa levytila jokaisella tiedostojärjestelmällä"
+
+msgid "Sorting"
+msgstr "Järjestys"
+
+msgid "Hide main menu entry"
+msgstr "Piilota valinta päävalikosta"
+
+msgid "Replace original recordings menu"
+msgstr "Korvaa alkuperäinen tallennevalikko"
+
+msgid "Jump to last replayed recording"
+msgstr "Siirry viimeksi toistettuun tallenteeseen"
+
+msgid "Call plugin after playback"
+msgstr "Avaa laajennos toiston loputtua"
+
+msgid "Limit bandwidth for move recordings"
+msgstr "Rajoita tallenteiden siirtokaistaa"
+
+msgid "Use VDR's recording info menu"
+msgstr "Käytä alkuperäistä tallenteen tiedot -valikkoa"
+
+msgid "Use cutter queue"
+msgstr ""
+
+msgid "--none--"
+msgstr ""
+
+msgid "Blank"
+msgstr ""
+
+msgid "Date of Recording"
+msgstr ""
+
+msgid "Time of Recording"
+msgstr ""
+
+msgid "Date and Time of Recording"
+msgstr ""
+
+msgid "Length of Recording"
+msgstr ""
+
+msgid "Rating of Recording"
+msgstr ""
+
+msgid "Content of File"
+msgstr ""
+
+msgid "Content of File, then Result of a Command"
+msgstr ""
+
+msgid "left"
+msgstr ""
+
+msgid "center"
+msgstr ""
+
+msgid "right"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "(fixed to the first position)"
+msgstr ""
+
+msgid "Item"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Alignment"
+msgstr ""
+
+msgid "Filename"
+msgstr ""
+
+msgid "Command"
+msgstr ""
+
+msgid "Name of the recording"
+msgstr ""
+
+msgid "(fixed to the last position)"
+msgstr ""
+
+msgid "Recording already in cutter queue!"
+msgstr "Tallenne on jo leikkausjonossa!"
+
+msgid "No editing marks defined!"
+msgstr ""
+
+msgid "Added recording to cutter queue"
+msgstr "Tallenne on lisätty leikkausjonoon"
+
+msgid "Rename/Move failed!"
+msgstr "Nimeäminen/siirto epäonnistui!"
+
+msgid "Cutter queue not empty"
+msgstr "Leikkausjono ei ole tyhjä"
+
+msgid "Move recordings in progress"
+msgstr "Tallenteiden siirto käynnissä"
+
+msgid "Can't start editing process!"
+msgstr ""
+
+#~ msgid "Show recording date"
+#~ msgstr "Näytä tallenteen päiväys"
+
+#~ msgid "Show recording time"
+#~ msgstr "Näytä tallenteen ajankohta"
+
+#~ msgid "Show recording length"
+#~ msgstr "Näytä tallenteen kesto"
+
+#~ msgid "Patch font"
+#~ msgstr "Käytä paikattua kirjasinta"

@@ -1,0 +1,12 @@
+=== Aufnahme bewerten === : echo "no function"
+-bewerte mit 10: /usr/share/vdr/bin/vdr-rate-recording.sh 10
+-bewerte mit 9: /usr/share/vdr/bin/vdr-rate-recording.sh 9
+-bewerte mit 8: /usr/share/vdr/bin/vdr-rate-recording.sh 8
+-bewerte mit 7: /usr/share/vdr/bin/vdr-rate-recording.sh 7
+-bewerte mit 6: /usr/share/vdr/bin/vdr-rate-recording.sh 6
+-bewerte mit 5: /usr/share/vdr/bin/vdr-rate-recording.sh 5
+-bewerte mit 4: /usr/share/vdr/bin/vdr-rate-recording.sh 4
+-bewerte mit 3: /usr/share/vdr/bin/vdr-rate-recording.sh 3
+-bewerte mit 2: /usr/share/vdr/bin/vdr-rate-recording.sh 2
+-bewerte mit 1: /usr/share/vdr/bin/vdr-rate-recording.sh 1
+-entferne Bewertung: /usr/share/vdr/bin/vdr-rate-recording.sh 0

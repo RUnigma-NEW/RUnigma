@@ -1,0 +1,38 @@
+#! /bin/sh
+#
+# mountall	Mount all filesystems.
+#
+# Version:	@(#)mountall.sh  2.85-23  29-Jul-2004  miquels@cistron.nl
+#
+# chkconfig: S 35 0
+#
+
+VERBOSE=yes
+
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+
+#
+# Mount local file systems in /etc/fstab.
+#
+[ "$VERBOSE" != no ] && echo "Mounting local filesystems..."
+mount -av -t nonfs,nonfs4,nosmbfs,nocifs,noncp,noncpfs,nocoda 2>&1 |
+	egrep -v '(already|nothing was) mounted'
+
+#
+# create temporary directories
+#
+[ ! -d /var/lock ] && mkdir /var/lock
+[ ! -d /var/lock/subsys ] && mkdir /var/lock/subsys
+[ ! -d /var/log ] && mkdir /var/log
+[ ! -d /var/lib ] && mkdir /var/lib
+[ ! -d /var/lib/urandom ] && mkdir /var/lib/urandom
+[ ! -d /var/run ] && mkdir /var/run
+ln -sf /tmp /var/tmp
+
+#
+# Execute swapon command again, in case we want to swap to
+# a file on a now mounted filesystem.
+#
+swapon -a 2> /dev/null
+
+: exit 0

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+REPONAME=$1
+USERNAME=$2
+EMAIL=$3
+
+##############################################
+
+echo "
+  _______                     _____              _     _         _
+ |__   __|                   |  __ \            | |   | |       | |
+    | | ___  __ _ _ __ ___   | |  | |_   _  ____| | __| |_  __ _| | ___ ___
+    | |/ _ \/ _\` | '_ \` _ \  | |  | | | | |/  __| |/ /| __|/ _\` | |/ _ | __|
+    | |  __/ (_| | | | | | | | |__| | |_| |  (__|   < | |_| (_| | |  __|__ \\
+    |_|\___|\__,_|_| |_| |_| |_____/ \__,_|\____|_|\_\ \__|\__,_|_|\___|___/
+
+"
+
+##############################################
+
+echo "Checking if git is installed"
+whatis git | grep git
+if [ "$?" != "0" ]; then
+    echo "    ERROR - git missing, has setuptdt.sh been executed?"
+    wget "http://gitorious.org/open-duckbox-project-sh4/tdt/blobs/raw/master/tdt/cvs/cdk/setuptdt.sh"
+    exit 1
+fi
+echo "    OK - git is installed"
+
+echo "Checking user and email"
+echo "Username: `git config --global user.name`"
+read -p "Is Username correct? Press <ENTER>, else enter correct Username: "
+if [ "$REPLY" != "" ]; then
+    git config --global user.name "$REPLY"
+    echo "Username: `git config --global user.name`"
+fi
+USERNAME=`git config --global user.name`
+echo "Email: `git config --global user.email`"
+read -p "Is Email correct? Press <ENTER>, else enter correct Email: "
+if [ "$REPLY" != "" ]; then
+    git config --global user.email "$REPLY"
+    echo "Email: `git config --global user.email`"
+fi
+EMAIL=`git config --global user.email`
+
+if [ "$REPONAME"  == "" ]; then
+    read -p "Name of repository (default: tdt): "
+    REPONAME=$REPLY
+    if [ "$REPONAME" == "" ]; then
+        REPONAME="tdt"
+    fi
+fi
+
+echo "Cloning repository to $REPONAME"
+git clone git@gitorious.org:open-duckbox-project-sh4/tdt.git $REPONAME
+if [ "$?" != "0" ]; then
+    echo "git-clone failed"
+    echo "Probably causes are:"
+    echo "  - Missing SSH Key"
+    if [ ! -f ~/.ssh/id_rsa.pub ]; then
+        ssh-keygen -t rsa -C $USERNAME@duckbox -N "" << EOF
+
+y
+EOF
+    fi
+    echo "Your SSH Key is (do not copy the ### lines):"
+    echo "############### SSH-KEY START ###############"
+    cat ~/.ssh/id_rsa.pub
+    echo "############### SSH-KEY  END  ###############"
+    echo "Got to the following webpage and enter your key"
+    echo "-> https://secure.gitorious.org/~$USERNAME/keys/new"
+    echo "After entering your key please restart this script"
+    exit 2
+fi
+
+
+cd $REPONAME
+git config --global core.autocrlf input
+
+echo "FINISHED - Your new repository $REPONAME is ready to use"
+

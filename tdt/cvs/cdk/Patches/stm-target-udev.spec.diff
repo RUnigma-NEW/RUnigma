@@ -1,0 +1,13 @@
+--- SPECS/stm-target-udev.spec.orig	2011-04-27 02:05:13.000000000 +0200
++++ SPECS/stm-target-udev.spec	2012-07-11 21:40:50.392654012 +0200
+@@ -23,10 +23,8 @@
+ Prefix:		%{_stm_cross_target_dir}
+ BuildRequires:	%{_stm_pkg_prefix}-host-rpmconfig 
+ BuildRequires:	%{_stm_pkg_prefix}-%{_stm_target_arch}-libacl-dev
+-BuildRequires:  %{_stm_pkg_prefix}-%{_stm_target_arch}-glib2-dev
+ BuildRequires:  %{_stm_pkg_prefix}-%{_stm_target_arch}-libattr-dev
+ BuildRequires: %{_stm_pkg_prefix}-%{_stm_target_arch}-usbutils
+-BuildRequires: %{_stm_pkg_prefix}-%{_stm_target_arch}-libusb-dev
+ Obsoletes:	%{_stm_pkg_prefix}-%{_stm_target_arch}-hotplug
+ 
+ %define _docdir		%{_stm_cross_target_dir}%{_stm_target_doc_dir}

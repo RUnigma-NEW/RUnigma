@@ -1,0 +1,86 @@
+From c518dad08fcdf63da0fea4a25feb38d61df50a99 Mon Sep 17 00:00:00 2001
+From: Mohamed Hafsia <mohamed.hafsia@st.com>
+Date: Tue, 4 Sep 2012 10:29:46 +0100
+Subject: [PATCH 4/5]
+ Patch from David Liu, taken from Gstreamer Bugzilla:
+
+https://bugzilla.gnome.org/show_bug.cgi?id=661726
+
+Signed-off-by: Chris Smith <chris.smith@st.com>
+---
+ gst/subparse/gstsubparse.c |   22 ++++++++++++++++++++++
+ gst/subparse/gstsubparse.h |    4 ++++
+ 2 files changed, 26 insertions(+), 0 deletions(-)
+
+diff --git a/gst/subparse/gstsubparse.c b/gst/subparse/gstsubparse.c
+index 9c31b54..4dfeb1c 100644
+--- a/gst/subparse/gstsubparse.c
++++ b/gst/subparse/gstsubparse.c
+@@ -235,6 +235,11 @@ gst_sub_parse_init (GstSubParse * subparse)
+ 
+   subparse->fps_n = 24000;
+   subparse->fps_d = 1001;
++
++  // initialize lock and cond
++  subparse->mutex = g_mutex_new();
++  subparse->cond = g_cond_new();
++  subparse->is_seek_requested = FALSE;
+ }
+ 
+ /*
+@@ -340,6 +345,12 @@ gst_sub_parse_src_event (GstPad * pad, GstEvent * event)
+         GST_WARNING_OBJECT (self, "seek to 0 bytes failed");
+       }
+ 
++      // wakeup chain function
++      g_mutex_lock (self->mutex);
++      self->is_seek_requested = FALSE;
++      g_cond_signal(self->cond);
++      g_mutex_unlock(self->mutex);
++
+       gst_event_unref (event);
+       break;
+     }
+@@ -1569,6 +1580,14 @@ gst_sub_parse_chain (GstPad * sinkpad, GstBuffer * buf)
+ 
+   self = GST_SUBPARSE (GST_PAD_PARENT (sinkpad));
+ 
++  // sleep here to wait for seek complete
++  g_mutex_lock (self->mutex);
++  if (self->is_seek_requested == TRUE)
++  {
++    g_cond_wait(self->cond, self->mutex);
++  }
++  g_mutex_unlock(self->mutex);
++
+   /* Push newsegment if needed */
+   if (self->need_segment) {
+     GST_LOG_OBJECT (self, "pushing newsegment event with %" GST_SEGMENT_FORMAT,
+@@ -1655,6 +1674,9 @@ gst_sub_parse_sink_event (GstPad * pad, GstEvent * event)
+     {
+       self->flushing = FALSE;
+ 
++      // put chain function in sleep
++      self->is_seek_requested = TRUE;
++
+       ret = gst_pad_event_default (pad, event);
+       break;
+     }
+diff --git a/gst/subparse/gstsubparse.h b/gst/subparse/gstsubparse.h
+index 5731d91..d8f9735 100644
+--- a/gst/subparse/gstsubparse.h
++++ b/gst/subparse/gstsubparse.h
+@@ -107,6 +107,10 @@ struct _GstSubParse {
+ 
+   /* used by frame based parsers */
+   gint fps_n, fps_d;          
++
++  GCond    *cond; // to signal the seek has been done
++  GMutex   *mutex;
++  gboolean is_seek_requested;
+ };
+ 
+ struct _GstSubParseClass {
+-- 
+1.6.2.5
+

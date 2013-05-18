@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zapit api="3">
+	<sat name="Astra (19.2E)" position="192" diseqc="-1" uncommited="-1">
+		<TS id="0003" on="0085" frq="11720000" inv="2" sr="27500000" fec="3" pol="0">
+			<S action="replace" i="010f" n="Sky Select 3" t="1" s="1"/>
+			<S action="replace" i="0119" n="Sky Select 4" t="1" s="1"/>
+			<S action="replace" i="0123" n="Sky Select 5" t="1" s="1"/>
+			<S action="replace" i="012d" n="Sky Select 6" t="1" s="1"/>
+			<S action="replace" i="012f" n="Sky Sport 7" t="1" s="1"/>
+			<S action="replace" i="0125" n="Sky Sport 8" t="1" s="1"/>
+			<S action="replace" i="011b" n="Sky Sport 9" t="1" s="1"/>
+			<S action="replace" i="0111" n="Sky Sport 11" t="1" s="1"/>
+			<S action="replace" i="0110" n="Sky Bundesliga 2" t="1" s="1"/>
+			<S action="replace" i="011a" n="Sky Bundesliga 3" t="1" s="1"/>
+			<S action="replace" i="0124" n="Sky Bundesliga 4" t="1" s="1"/>
+			<S action="replace" i="012e" n="Sky Bundesliga 5" t="1" s="1"/>
+		</TS>
+		<TS id="0011" on="0085" frq="11758000" inv="2" sr="27500000" fec="3" pol="0">
+			<S action="replace" i="0137" n="Sky Select 7" t="1" s="1"/>
+			<S action="replace" i="0141" n="Sky Select 8" t="1" s="1"/>
+			<S action="replace" i="014b" n="Sky Select 9" t="1" s="1"/>
+			<S action="replace" i="014d" n="Sky Sport 4" t="1" s="1"/>
+			<S action="replace" i="0143" n="Sky Sport 5" t="1" s="1"/>
+			<S action="replace" i="0139" n="Sky Sport 6" t="1" s="1"/>
+			<S action="replace" i="0138" n="Sky Bundesliga 6" t="1" s="1"/>
+			<S action="replace" i="0142" n="Sky Bundesliga 7" t="1" s="1"/>
+			<S action="replace" i="014c" n="Sky Bundesliga 8" t="1" s="1"/>
+		</TS>
+		<TS id="0002" on="0085" frq="11798000" inv="2" sr="27500000" fec="3" pol="0">
+			<S action="replace" i="00fe" n="Sky Select Event A" t="1" s="1"/>
+			<S action="replace" i="0108" n="Sky Select Event B" t="1" s="1"/>
+			<S action="replace" i="00fb" n="Sky Select 1" t="1" s="1"/>
+			<S action="replace" i="0105" n="Sky Select 2" t="1" s="1"/>
+			<S action="replace" i="00fd" n="Sky Sport 3" t="1" s="1"/>
+			<S action="replace" i="0107" n="Sky Sport 10" t="1" s="1"/>
+			<S action="replace" i="0106" n="Sky Bundesliga 1" t="1" s="1"/>
+			<S action="replace" i="00fc" n="Sky Bundesliga 11" t="1" s="1"/>
+		</TS>
+		<TS id="0004" on="0085" frq="12032000" inv="2" sr="27500000" fec="3" pol="0">
+			<S action="replace" i="00dd" n="Sky Sport 1" t="1" s="1"/>
+			<S action="replace" i="00de" n="Sky Sport 2" t="1" s="1"/>
+			<S action="replace" i="00df" n="Sky Bundesliga" t="1" s="1"/>
+		</TS>
+		<TS id="0001" on="0085" frq="12070000" inv="2" sr="27500000" fec="3" pol="0">
+			<S action="replace" i="016b" n="Sky Sport 12" t="1" s="1"/>
+			<S action="replace" i="0175" n="Sky Sport 13" t="1" s="1"/>
+			<S action="replace" i="0156" n="Sky Bundesliga 9" t="1" s="1"/>
+			<S action="replace" i="0160" n="Sky Bundesliga 10" t="1" s="1"/>
+			<S action="replace" i="0159" n="Blue Movie 1" t="1" s="1"/>
+			<S action="replace" i="0163" n="Blue Movie 2" t="1" s="1"/>
+			<S action="replace" i="016d" n="Blue Movie 3" t="1" s="1"/>
+		</TS>
+	</sat>
+</zapit>

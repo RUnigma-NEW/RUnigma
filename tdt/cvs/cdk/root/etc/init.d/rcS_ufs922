@@ -1,0 +1,132 @@
+#! /bin/sh
+#
+# rcS		Call all S??* scripts in /etc/rcS.d in
+#		numerical/alphabetical order.
+#
+# Version:	@(#)/etc/init.d/rcS  2.76  19-Apr-1999  miquels@cistron.nl
+#
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+runlevel=S
+prevlevel=N
+umask 022
+export PATH runlevel prevlevel
+
+#
+#	See if system needs to be setup. This is ONLY meant to
+#	be used for the initial setup after a fresh installation!
+#
+if [ -x /sbin/unconfigured.sh ]
+then
+  /sbin/unconfigured.sh
+fi
+
+#
+#	Source defaults.
+#
+. /etc/default/rcS
+export VERBOSE
+
+#
+#	Trap CTRL-C &c only in this shell so we can interrupt subprocesses.
+#
+trap ":" INT QUIT TSTP
+
+if [ ! -e /dev/vfd ]; then
+    mknod -m 0660 /dev/vfd c 147 0
+fi
+insmod /lib/modules/2.6.17.14_stm22_0040/extra/vfd/vfd.ko
+
+if [ -e /var/etc/.firstboot ]; then
+	echo "FIRSTBOOT" > /dev/vfd
+fi
+if [ ! -e /var/etc/.firstboot ]; then
+	echo "LOADING MODULES" > /dev/vfd
+#	mknod -m 0660 /dev/vfd c 147 0
+
+	insmod /lib/modules/2.6.17.14_stm22_0040/kernel/fs/autofs4/autofs4.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/avs/avs.ko type=stv6412
+#	insmod /lib/modules/2.6.17.14_stm22_0040/extra/vfd/vfd.ko
+
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/stgfb/stmfb/stmfb.ko display0=720x576-32@50:10m:pal:rgb:rgb
+	echo "STB7100-VIDEO"
+	/bin/stslave -t stb7100.0 -R /boot/vid_firmware-pb09-12-stb7109.mpeg4p2.elf
+	echo "STB7100-AUDIO"
+	/bin/stslave -t stb7100.1 -R /boot/ACF_firmware-bd-stb710x.elf
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/sound/pseudocard/pseudocard.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxshell/embxshell.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxmailbox/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/embxshm/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/multicom/mme/mme_host.ko transport0=shm
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/mmelog/mmelog.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/slim/st-slim.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/tkdma/st-tkdma.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/video/stm/stm_v4l2.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/dvb/stmdvb.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/sound/ksound/ksound.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/mpeg2_hard_host_transformer/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
+
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/backend/player2.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/h264_preprocessor/sth264pp.ko
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/media/dvb/stm/allocator/stmalloc.ko
+
+	insmod /lib/modules/2.6.17.14_stm22_0040/extra/player2/linux/drivers/stm/platform/platform.ko
+
+# if enigma2 #	/bin/stfbcontrol a 0 
+# if vdr /bin/stfbcontrol a 0
+#	/bin/stfbcontrol a 0 
+fi
+#
+#	Call all parts in order.
+#
+/etc/rc.d/rcS.d/S02mountvirtfs start
+/etc/rc.d/rcS.d/S05bootlogd start
+
+for i in /etc/rc.d/rcS.d/S[1-9]?*
+do
+	# Ignore dangling symlinks for now.
+	[ ! -f "$i" ] && continue
+
+	case "$i" in
+		*.sh)
+			# Source shell script for speed.
+			(
+				trap - INT QUIT TSTP
+				set start
+				. $i
+			)
+			;;
+		*)
+			# No sh extension, so fork subprocess.
+			$i start
+			;;
+	esac
+done
+
+#
+#	Finish setup if needed. The comment above about
+#	/sbin/unconfigured.sh applies here as well!
+#
+if [ -x /sbin/setup.sh ]
+then
+  /sbin/setup.sh
+fi
+if [ ! -e /var/etc/.firstboot ]; then
+echo "LOADING GUI" > /dev/vfd
+
+/bin/evremote ufs922 &
+
+#export LANG="de"
+#rm -f /var/vdr/epg.data
+#vdr -P osddfb -P vfd -P rc_ttyas1
+
+enigma2
+reboot -f
+fi
+
+if [ -e /var/etc/.firstboot ]; then
+  rm /var/etc/.firstboot
+  echo "REBOOT UFS910" > /dev/vfd
+  reboot
+fi

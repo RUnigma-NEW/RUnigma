@@ -1,0 +1,12 @@
+--- SPECS/stm-cross-mpfr.spec.orig	2010-04-04 18:10:05.000000000 +0200
++++ SPECS/stm-cross-mpfr.spec	2010-04-04 20:24:04.000000000 +0200
+@@ -35,7 +35,7 @@
+     ABI=32 \
+     --prefix=%{_stm_cross_dir} \
+     --build=%{_stm_host_config} \
+-    --with-gmp=%{_stm_cross_dir} \
++    --with-gmp=%{_stm_cross_dir} \
+ %if "%{_stm_target_fpu}" == "yes"
+ %if_target_arch armv7 armv7_uclibc
+         --with-float=hard \
+ 

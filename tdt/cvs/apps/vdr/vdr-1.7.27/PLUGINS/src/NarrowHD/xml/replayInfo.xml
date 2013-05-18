@@ -1,0 +1,52 @@
+<!--
+#------------------------------------------------------------------------------
+# replayInfo start
+#------------------------------------------------------------------------------ -->
+ 
+<display id="replayInfo" >
+	<!-- TOP WINDOW-->
+	<window x1="-360" x2="-1" y1="0" y2="70" bpp="4" />
+	
+	<rectangle refresh="all" x1="-360" x2="-1" y1="0" y2="19" color="MainLight" />
+
+	<rectangle refresh="all" x1="-360" x2="-310" y1="20" y2="70" color="MainLight" />
+	<rectangle refresh="all" x1="-310" x2="-1" y1="20" y2="70" color="MainLight" />
+
+	<text condition="{IsPlaying}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Wiedergabe</text>
+	<text condition="{IsPausing}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Pause</text>
+	<text condition="{IsFastForward:0}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight"  font="VDRSymbols Sans:Book@27" >Vorspulen</text>
+	<text condition="{IsFastForward:1}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Vorspulen x1 </text>
+ 	<text condition="{IsFastForward:2}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Vorspulen x2</text>
+	<text condition="{IsFastForward:3}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Vorspulen x3</text>
+	<text condition="{IsFastRewind:0}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zurückspulen</text>
+	<text condition="{IsFastRewind:1}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zurückspulen x1 </text>
+	<text condition="{IsFastRewind:2}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zurückspulen x2</text>
+	<text condition="{IsFastRewind:3}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zurückspulen x3</text>
+	<text condition="{IsSlowForward:0}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Vorwärts</text>
+	<text condition="{IsSlowForward:1}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Vorwärts x1 </text>
+	<text condition="{IsSlowForward:2}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Vorwärts x2</text>
+	<text condition="{IsSlowForward:3}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Vorwärts x3</text>
+	<text condition="{IsSlowRewind:0}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Rückwärts</text>
+	<text condition="{IsSlowRewind:1}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Rückwärts x1 </text>
+	<text condition="{IsSlowRewind:2}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Rückwärts x2</text>
+	<text condition="{IsSlowRewind:3}" x1="-310" x2="-20" y1="20" y2="60" align="right" color="FontColor" bgColor="MainLight" font="VDRSymbols Sans:Book@27" >Zeitlupe Rückwärts x3</text>
+	<!-- TOP WINDOW END-->
+   
+	<!-- BOTTOM WINDOW-->
+	<window x1="0" x2="-1" y1="-160" y2="-1" bpp="4" />
+
+	<rectangle x1="0"  x2="50" y1="-110" y2="-60" color="MainLight" />
+	<rectangle x1="51" x2="-1" y1="-110" y2="-60" color="MainLight" />
+	<rectangle x1="0"  x2="-1" y1="-60"  y2="-40" color="MainSolid" />
+	
+	<text x1="240" x2="-320" y1="-95" y2="-40" color="FontColor" font="VDRSymbols Sans:Book@27" >{ReplayTitle}</text>
+	<text x1="240" x2="-30"  y1="-95" y2="-40" color="FontColor" align="right" font="VDRSymbols Sans:Book@27" >{ReplayPosition} von {ReplayDuration}</text>
+	<progress x1="0" x2="-1" y1="-40" y2="-1" color="BarFill" mark="Mark" keep="Keep" bgColor="Bar" current="{ReplayPositionIndex}" total="{ReplayDurationIndex}" />
+
+	<rectangle x1="-360" x2="-310" y1="-160" y2="-111" condition="{ReplayPrompt}" color="MainLight" />
+	<rectangle x1="-310" x2="-1"   y1="-160" y2="-111" condition="{ReplayPrompt}" color="MainLight" />
+	
+	<text x1="-250" x2="-30" y1="-150" y2="-111" color="FontColor" align="right" font="VDRSymbols Sans:Book@27" >{ReplayPrompt}</text>
+	<!-- BOTTOM WINDOW END-->
+
+</display>

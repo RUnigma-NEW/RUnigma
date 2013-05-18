@@ -1,0 +1,11 @@
+ACTION!="add|change", GOTO="modem_rules_remove"
+KERNEL=="ttyUSB[0-9]" RUN+="/usr/bin/modem.sh add %k"
+KERNEL=="ttyACM[0-9]" RUN+="/usr/bin/modem.sh add %k"
+GOTO="modem_rules_end"
+
+LABEL="modem_rules_remove"
+ACTION!="remove", GOTO="modem_rules_end"
+KERNEL=="ttyUSB[0-9]" RUN+="/usr/bin/modem.sh remove %k"
+KERNEL=="ttyACM[0-9]" RUN+="/usr/bin/modem.sh remove %k"
+
+LABEL="modem_rules_end"

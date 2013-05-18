@@ -1,0 +1,21 @@
+--- rpmconfig-2.4/Makefile.orig	2010-04-10 19:59:24.000000000 +0200
++++ rpmconfig-2.4/Makefile	2010-04-10 19:59:59.000000000 +0200
+@@ -11,15 +11,15 @@
+ 	install -d -m 755 $(HOSTDIR)
+ 	for host in hosts/*; do				\
+ 	    install -m 644 $${host} $(HOSTDIR);		\
+-	done
++	done || true
+ 	install -d -m 755 $(TARGETDIR)
+ 	for target in targets/*; do			\
+ 	    install -m 644 $${target} $(TARGETDIR);	\
+-	done
++	done || true
+ 	install -d -m 755 $(CONFIGDIR)
+ 	for config in site_configs/*; do		\
+ 	    install -m 644 $${config} $(CONFIGDIR);	\
+-	done
++	done || true
+ 	install -m 644 common $(RPMCONFIGDIR)
+ 	install -m 644 config.site.template $(RPMCONFIGDIR)
+ 	install -m 755 find-requires  $(RPMCONFIGDIR)

@@ -1,0 +1,52 @@
+From Michael Coracin. See Bugzilla #15234.
+
+--- a/plugins/elements/gstinputselector.c
++++ b/plugins/elements/gstinputselector.c
+@@ -1265,12 +1265,29 @@ gst_input_selector_set_property (GObject * object, guint prop_id,
+     case PROP_ACTIVE_PAD:
+     {
+       GstPad *pad;
++      GstPad *active_sinkpad;
+ 
+       pad = g_value_get_object (value);
+ 
+       GST_INPUT_SELECTOR_LOCK (sel);
++      active_sinkpad = sel->active_sinkpad;
+       gst_input_selector_set_active_pad (sel, pad,
+           GST_CLOCK_TIME_NONE, GST_CLOCK_TIME_NONE);
++      if (pad != active_sinkpad) {
++        GstEvent *event;
++        GstStructure *structure;
++        structure = gst_structure_empty_new ("track-switch");
++        gst_structure_set (structure, "active", G_TYPE_BOOLEAN, FALSE, NULL);
++        event = gst_event_new_custom (GST_EVENT_CUSTOM_UPSTREAM, structure);
++        /* send de-active event to old active sink pad */
++        gst_pad_push_event (active_sinkpad, event);
++
++        structure = gst_structure_empty_new ("track-switch");
++        gst_structure_set (structure, "active", G_TYPE_BOOLEAN, TRUE, NULL);
++        event = gst_event_new_custom (GST_EVENT_CUSTOM_UPSTREAM, structure);
++        /* send active event to new sink active pad */
++        gst_pad_push_event (pad, event);
++      }
+       GST_INPUT_SELECTOR_UNLOCK (sel);
+       break;
+     }
+@@ -1502,6 +1519,17 @@ gst_input_selector_activate_sinkpad (GstInputSelector * sel, GstPad * pad)
+     if (sel->active_sinkpad)
+       gst_object_unref (sel->active_sinkpad);
+     active_sinkpad = sel->active_sinkpad = gst_object_ref (pad);
++    {
++      /* send event to upstream to inform the 1st active pad selected */
++      GstEvent *event;
++      GstStructure *structure;
++
++      structure = gst_structure_empty_new ("track-switch");
++      gst_structure_set (structure, "intial-active", G_TYPE_BOOLEAN, TRUE,
++          NULL);
++      event = gst_event_new_custom (GST_EVENT_CUSTOM_UPSTREAM, structure);
++      gst_pad_push_event (active_sinkpad, event);
++    }
+     GST_DEBUG_OBJECT (sel, "Activating pad %s:%s", GST_DEBUG_PAD_NAME (pad));
+   }
+ 

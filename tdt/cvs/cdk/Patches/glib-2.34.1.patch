@@ -1,0 +1,49 @@
+diff -Naupr glib-2.34.1.orig/configure.ac glib-2.34.1/configure.ac
+--- glib-2.34.1.orig/configure.ac	2012-10-18 14:30:08.000000000 -0400
++++ glib-2.34.1/configure.ac	2012-10-18 14:31:12.000000000 -0400
+@@ -898,7 +898,6 @@ AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h
+ AC_CHECK_HEADERS([mntent.h sys/mnttab.h sys/vfstab.h sys/mntctl.h fstab.h])
+ AC_CHECK_HEADERS([sys/uio.h sys/mkdev.h])
+ AC_CHECK_HEADERS([linux/magic.h])
+-AC_CHECK_HEADERS([sys/prctl.h])
+ 
+ AC_CHECK_HEADERS([sys/mount.h sys/sysctl.h], [], [],
+ [#if HAVE_SYS_PARAM_H
+diff -Naupr glib-2.34.1.orig/glib/Makefile.am glib-2.34.1/glib/Makefile.am
+--- glib-2.34.1.orig/glib/Makefile.am	2012-10-18 14:30:08.000000000 -0400
++++ glib-2.34.1/glib/Makefile.am	2012-10-18 14:32:30.000000000 -0400
+@@ -449,12 +449,14 @@ CONFIGVARS = \
+ 	"glib-version"  : "${GLIB_VERSION}"
+ 
+ install-exec-hook:
+-	for sf in ${auto_config_binscripts} ; do \
++	for sff in ${auto_config_binscripts} ; do \
++	  sf=`echo $$sff | sed '$(transform);s/$$/$(EXEEXT)/'`; \
+ 	  mv -f "$(DESTDIR)$(bindir)/$$sf" "$(DESTDIR)$(bindir)/$$sf".tmp \
+ 	  && sed < "$(DESTDIR)$(bindir)/$$sf".tmp > "$(DESTDIR)$(bindir)/$$sf" \
+ 	    -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${CONFIGVARS}|' \
+ 	    -e '1,1s|#! /usr/bin/env python\([0-9]\+\(\.[0-9]\+\)\?\)\?|#!${PYTHON}|' \
+ 	  || exit $$? ; \
++	  chmod --reference="$(DESTDIR)$(bindir)/$$sf".tmp "$(DESTDIR)$(bindir)/$$sf"; \
+ 	  chmod a+x $(DESTDIR)$(bindir)/$$sf ; \
+ 	  rm -f "$(DESTDIR)$(bindir)/$$sf".tmp ; \
+ 	done
+diff -Naupr glib-2.34.1.orig/glib/Makefile.in glib-2.34.1/glib/Makefile.in
+--- glib-2.34.1.orig/glib/Makefile.in	2012-10-18 14:30:08.000000000 -0400
++++ glib-2.34.1/glib/Makefile.in	2012-10-18 14:33:35.000000000 -0400
+@@ -1848,12 +1848,14 @@ glib-win32-res.o: glib.rc
+ 	$(WINDRES) glib.rc $@
+ 
+ @OS_UNIX_TRUE@install-exec-hook:
+-@OS_UNIX_TRUE@	for sf in ${auto_config_binscripts} ; do \
++@OS_UNIX_TRUE@ for sff in ${auto_config_binscripts} ; do \
++@OS_UNIX_TRUE@   sf=`echo $$sff | sed '$(transform);s/$$/$(EXEEXT)/'`; \
+ @OS_UNIX_TRUE@	  mv -f "$(DESTDIR)$(bindir)/$$sf" "$(DESTDIR)$(bindir)/$$sf".tmp \
+ @OS_UNIX_TRUE@	  && sed < "$(DESTDIR)$(bindir)/$$sf".tmp > "$(DESTDIR)$(bindir)/$$sf" \
+ @OS_UNIX_TRUE@	    -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${CONFIGVARS}|' \
+ @OS_UNIX_TRUE@	    -e '1,1s|#! /usr/bin/env python\([0-9]\+\(\.[0-9]\+\)\?\)\?|#!${PYTHON}|' \
+ @OS_UNIX_TRUE@	  || exit $$? ; \
++@OS_UNIX_TRUE@   chmod --reference="$(DESTDIR)$(bindir)/$$sf".tmp "$(DESTDIR)$(bindir)/$$sf"; \
+ @OS_UNIX_TRUE@	  chmod a+x $(DESTDIR)$(bindir)/$$sf ; \
+ @OS_UNIX_TRUE@	  rm -f "$(DESTDIR)$(bindir)/$$sf".tmp ; \
+ @OS_UNIX_TRUE@	done

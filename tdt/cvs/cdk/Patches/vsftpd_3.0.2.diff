@@ -1,0 +1,86 @@
+--- vsftpd-3.0.2-org/builddefs.h	2012-04-05 06:24:56.000000000 +0300
++++ vsftpd-3.0.2/builddefs.h	2012-09-14 22:16:40.270056271 +0300
+@@ -2,7 +2,7 @@
+ #define VSF_BUILDDEFS_H
+ 
+ #undef VSF_BUILD_TCPWRAPPERS
+-#define VSF_BUILD_PAM
++#undef VSF_BUILD_PAM
+ #undef VSF_BUILD_SSL
+ 
+ #endif /* VSF_BUILDDEFS_H */
+--- vsftpd-3.0.2-org/Makefile	2012-04-03 10:21:18.000000000 +0300
++++ vsftpd-3.0.2/Makefile	2012-09-15 00:40:28.608148981 +0300
+@@ -3,14 +3,11 @@
+ INSTALL	=	install
+ IFLAGS  = -idirafter dummyinc
+ #CFLAGS = -g
+-CFLAGS	=	-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 \
+-	-Wall -W -Wshadow -Werror -Wformat-security \
+-	-D_FORTIFY_SOURCE=2 \
+-	#-pedantic -Wconversion
++CFLAGS	=	-O2 -Wall -W -Wshadow #-pedantic -Werror -Wconversion
+ 
+-LIBS	=	`./vsf_findlibs.sh`
++LIBS	=	-lcrypt -ldl -lnsl -lresolv -lutil
+ LINK	=	-Wl,-s
+-LDFLAGS	=	-fPIE -pie -Wl,-z,relro -Wl,-z,now
++#LDFLAGS	=	-fPIE -pie -Wl,-z,relro -Wl,-z,now
+ 
+ OBJS	=	main.o utility.o prelogin.o ftpcmdio.o postlogin.o privsock.o \
+ 		tunables.o ftpdataio.o secbuf.o ls.o \
+@@ -29,21 +26,11 @@
+ 	$(CC) -o vsftpd $(OBJS) $(LINK) $(LDFLAGS) $(LIBS)
+ 
+ install:
+-	if [ -x /usr/local/sbin ]; then \
+-		$(INSTALL) -m 755 vsftpd /usr/local/sbin/vsftpd; \
+-	else \
+-		$(INSTALL) -m 755 vsftpd /usr/sbin/vsftpd; fi
+-	if [ -x /usr/local/man ]; then \
+-		$(INSTALL) -m 644 vsftpd.8 /usr/local/man/man8/vsftpd.8; \
+-		$(INSTALL) -m 644 vsftpd.conf.5 /usr/local/man/man5/vsftpd.conf.5; \
+-	elif [ -x /usr/share/man ]; then \
+-		$(INSTALL) -m 644 vsftpd.8 /usr/share/man/man8/vsftpd.8; \
+-		$(INSTALL) -m 644 vsftpd.conf.5 /usr/share/man/man5/vsftpd.conf.5; \
+-	else \
+-		$(INSTALL) -m 644 vsftpd.8 /usr/man/man8/vsftpd.8; \
+-		$(INSTALL) -m 644 vsftpd.conf.5 /usr/man/man5/vsftpd.conf.5; fi
+-	if [ -x /etc/xinetd.d ]; then \
+-		$(INSTALL) -m 644 xinetd.d/vsftpd /etc/xinetd.d/vsftpd; fi
++	$(INSTALL) -m 755 vsftpd $(PREFIX)/usr/bin/vsftpd; $(INSTALL) -m 644 vsftpd.conf $(PREFIX)/etc/
++	( [ -f vsftpd.8 ] && gzip -9f vsftpd.8; $(INSTALL) -m 644 vsftpd.8.gz $(PREFIX)/usr/share/man/man8/; \
++	[ -f vsftpd.conf.5 ] && gzip -9f vsftpd.conf.5; $(INSTALL) -m 644 vsftpd.conf.5.gz $(PREFIX)/usr/share/man/man5/ )
++	if [ -x $(PREFIX)/etc/xinetd.d ]; then \
++		$(INSTALL) -m 644 xinetd.d/vsftpd $(PREFIX)/etc/xinetd.d/vsftpd; fi
+ 
+ clean:
+ 	rm -f *.o *.swp vsftpd
+--- vsftpd-3.0.2-org/parseconf.c	2012-03-28 06:11:39.000000000 +0300
++++ vsftpd-3.0.2/parseconf.c	2012-09-14 22:16:40.274056298 +0300
+@@ -227,7 +227,6 @@
+      * race conditions.
+      */
+     if (vsf_sysutil_retval_is_error(retval) ||
+-        vsf_sysutil_statbuf_get_uid(p_statbuf) != vsf_sysutil_getuid() ||
+         !vsf_sysutil_statbuf_is_regfile(p_statbuf))
+     {
+       die("config file not owned by correct user, or not a file");
+--- vsftpd-3.0.2-org/secutil.c	2012-03-28 06:08:28.000000000 +0300
++++ vsftpd-3.0.2/secutil.c	2012-09-14 23:32:10.448520213 +0300
+@@ -132,13 +132,13 @@
+   /* Misconfiguration check: don't ever chroot() to a directory writable by
+    * the current user.
+    */
+-  if ((options & VSF_SECUTIL_OPTION_CHROOT) &&
++/*  if ((options & VSF_SECUTIL_OPTION_CHROOT) &&
+       !(options & VSF_SECUTIL_OPTION_ALLOW_WRITEABLE_ROOT))
+   {
+     if (vsf_sysutil_write_access("/"))
+     {
+       die("vsftpd: refusing to run with writable root inside chroot()");
+     }
+-  }
++  }   */
+ }
+ 

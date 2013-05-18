@@ -1,0 +1,102 @@
+#!/usr/bin/perl
+
+while (defined($_ = <STDIN>)) {
+	/^Item=Skin/ && do {
+		s/version=0\.0\.1/version=0.0.2/;
+	};
+	/^Item=MenuItem/ && do {
+		chomp $_;
+		s/;$//;
+		%params = map { split(/=/); } split(/,/);
+		print STDOUT sprintf("Item=MenuItem,width=%d,height=%d;\n", $params{width}+0, $params{height}+0);
+		$_  = "Item=Text,display=MenuGroups";
+		$_ .= ",x=$params{x}" if defined($params{x});
+		$_ .= ",y=$params{y}" if defined($params{y});
+		$_ .= sprintf(",width=%d,height=%d", $params{width}+0, $params{height}+0);
+		$_ .= ",fg=$params{fg}" if defined($params{fg});
+		$_ .= ",font=$params{font}" if defined($params{font});
+		$_ .= ";\n";
+		print STDOUT $_;
+		s/display=MenuGroups/display=MenuItems/g;
+	};
+	/^Item=MenuCurrent/ && do {
+		chomp $_;
+		s/;$//;
+		%params = map { split(/=/); } split(/,/);
+		if (defined($params{bg})) {
+			$l  = "Item=Rectangle,display=MenuCurrent";
+			$l .= ",x=$params{x}" if defined($params{x});
+			$l .= ",y=$params{x}" if defined($params{y});
+			$l .= sprintf(",width=%d,height=%d", $params{width}+0, $params{height}+0);
+			$l .= ",fg=$params{bg}";
+			$l .= ";\n";
+			print STDOUT $l;
+		}
+		$_  = "Item=Text,display=MenuCurrent";
+		$_ .= ",x=$params{x}" if defined($params{x});
+		$_ .= ",y=$params{y}" if defined($params{y});
+		$_ .= sprintf(",width=%d,height=%d", $params{width}+0, $params{height}+0);
+		$_ .= ",fg=$params{fg}" if defined($params{fg});
+		$_ .= ",font=$params{font}" if defined($params{font});
+		$_ .= ";\n";
+	};
+	s/^Item=DateTimeF,/Item=Text,display=DateTimeF,/;
+	s/^Item=DateTime,/Item=Text,display=DateTime,/;
+	s/^Item=Date,/Item=Text,display=Date,/;
+	s/^Item=Time,/Item=Text,display=Time,/;
+	s/^Item=ChannelNumberName,/Item=Text,display=ChannelNumberName,/;
+	s/^Item=ChannelNumber,/Item=Text,display=ChannelNumber,/;
+	s/^Item=ChannelName,/Item=Text,display=ChannelName,/;
+	s/^Item=ChannelLogo,/Item=Logo,display=ChannelName,/;
+	s/^Item=SymbolTeletext,/Item=Symbol,display=Teletext,/;
+	s/^Item=SymbolRadio,/Item=Symbol,display=Radio,/;
+	s/^Item=SymbolAudio,/Item=Symbol,display=Audio,/;
+	s/^Item=SymbolDolby,/Item=Symbol,display=Dolby,/;
+	s/^Item=SymbolEncrypted,/Item=Symbol,display=Encrypted,/;
+	s/^Item=SymbolRecording,/Item=Symbol,display=Recording,/;
+	s/^Item=Language,/Item=Logo,display=Language,/;
+	s/^Item=PresentTime,/Item=Text,display=PresentStartTime,/;
+	s/^Item=Timebar,/Item=Progress,display=PresentDuration,/;
+	s/^Item=PresentTitle,/Item=Text,display=PresentTitle,/;
+	s/^Item=PresentShortText,/Item=Text,display=PresentShortText,/;
+	s/^Item=FollowingTime,/Item=Text,display=FollowingStartTime,/;
+	s/^Item=FollowingTitle,/Item=Text,display=FollowingTitle,/;
+	s/^Item=FollowingShortText,/Item=Text,display=FollowingShortText,/;
+	s/^Item=MessageStatus,/Item=Text,display=MessageStatus,/;
+	s/^Item=MessageInfo,/Item=Text,display=MessageInfo,/;
+	s/^Item=MessageWarning,/Item=Text,display=MessageWarning,/;
+	s/^Item=MessageError,/Item=Text,display=MessageError,/;
+	s/^Item=Mute,/Item=Symbol,display=Mute,/;
+	s/^Item=Volumebar,/Item=Progress,display=VolumeCurrent,/;
+	s/^Item=SymbolPlay,/Item=Symbol,display=Play,/;
+	s/^Item=SymbolPause,/Item=Symbol,display=Pause,/;
+	s/^Item=SymbolFastFwd,/Item=Symbol,display=FastFwd,/;
+	s/^Item=SymbolFastRew,/Item=Symbol,display=FastRew,/;
+	s/^Item=SymbolSlowFwd,/Item=Symbol,display=SlowFwd,/;
+	s/^Item=SymbolSlowRew,/Item=Symbol,display=SlowRew,/;
+	s/^Item=ReplayTitle,/Item=Text,display=ReplayTitle,/;
+	s/^Item=ReplayJump,/Item=Text,display=ReplayPrompt,/;
+	s/^Item=Replaybar,/Item=Progress,display=ReplayTime,/;
+	s/^Item=ReplayCurrent,/Item=Text,display=ReplayTime,/;
+	s/^Item=ReplayTotal,/Item=Text,display=ReplayDuration,/;
+	s/^Item=MenuTitle,/Item=Text,display=MenuTitle,/;
+	s/^Item=MenuText,/Item=Scrolltext,display=MenuText,/;
+	s/^Item=MenuRed,/Item=Text,display=MenuRed,/;
+	s/^Item=MenuGreen,/Item=Text,display=MenuGreen,/;
+	s/^Item=MenuYellow,/Item=Text,display=MenuYellow,/;
+	s/^Item=MenuBlue,/Item=Text,display=MenuBlue,/;
+	s/^Item=MenuEventDateTimeF,/Item=Text,display=PresentDateTimeF,/;
+	s/^Item=MenuEventDate,/Item=Text,display=PresentDate,/;
+	s/^Item=MenuEventEndTime,/Item=Text,display=PresentEndTime,/;
+	s/^Item=MenuEventTitle,/Item=Text,display=PresentTitle,/;
+	s/^Item=MenuEventVPSTime,/Item=Text,display=PresentVPSTime,/;
+	s/^Item=MenuEventShortText,/Item=Text,display=PresentShortText,/;
+	s/^Item=MenuEventDescription,/Item=Scrolltext,display=PresentDescription,/;
+	s/^Item=SymbolEventRunning,/Item=Symbol,display=PresentRunning,/;
+	s/^Item=SymbolEventVPS,/Item=Symbol,display=PresentVPS,/;
+	s/^Item=SymbolEventTimer,/Item=Symbol,display=PresentTimer,/;
+	s/^Item=SymbolScrollUp,/Item=Symbol,display=MenuScrollUp,/;
+	s/^Item=SymbolScrollDown,/Item=Symbol,display=MenuScrollDown,/;
+	s/^Item=MenuRecording,/Item=Scrolltext,display=MenuRecording,/;
+	print STDOUT $_;
+}

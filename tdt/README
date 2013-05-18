@@ -1,0 +1,26 @@
+As our project has reached puberty we decided that it is time to release it to the world
+by taking it somewhere more public.
+
+For that we have created a git repository with the most important parts of our project the
+* build environment,
+* kernel sources(patches),
+* all tdt applications,
+* enigma2 source,
+* drivers sources.
+
+What this package does not contain is/are :
+* any proprietary video and audio firmwares + headers
+* the proprietary pti driver, but we replaced this with an limited open source version.
+
+This Packets does not contain any proprietary stuff and is therefor completely legal.
+
+This git repository will soon (later this day) be available for you for cloning, but this will be only for a limited time, max 1 week.
+We hope that you will put it to good use, hopefully you will clone it to an open source git hoster like gitorious or github.
+
+All this means of course that Team Ducktales won't be Team Ducktales as we know an love it any longer,
+but we are sure that the era of sh4 based settopboxes featuring enigma2, neutrino and vdr has just began.
+
+R.I.P. The Ducktales Team (TDT) ( * October 2007, + December 2009 )
+Welcome The OpenSource Team Ducktales Project (OS:TDP) ( * December 2009 )
+
+

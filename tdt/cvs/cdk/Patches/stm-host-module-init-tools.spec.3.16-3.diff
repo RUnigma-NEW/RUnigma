@@ -1,0 +1,40 @@
+--- SPECS/stm-host-module-init-tools.spec.org	2012-08-31 23:17:18.678388768 +0300
++++ SPECS/stm-host-module-init-tools.spec	2012-08-31 23:17:21.785066111 +0300
+@@ -3,6 +3,7 @@
+ Version: 3.16
+ Release: 3
+ Source: module-init-tools-%{version}.tar.bz2
++Patch0: stm-host-module-init-tools.%{version}-%{release}-no-man.diff
+ License: GPL
+ Group: System Environment/Kernel
+ BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+@@ -21,6 +22,7 @@
+ 
+ %prep
+ %setup -q -n module-init-tools-%{version}
++%patch0 -p1
+ 
+ %build
+ %host_setup
+@@ -38,11 +38,8 @@
+ 
+ for f in insmod lsmod modinfo modprobe rmmod; do
+ 	rm %{buildroot}%{_stm_host_bin_dir}/$f
+-	rm %{buildroot}%{_stm_host_man_dir}/man8/$f.8
+ done
+ rm %{buildroot}%{_stm_host_bin_dir}/insmod.static
+-rm %{buildroot}%{_stm_host_man_dir}/man5/modprobe.*.5
+-rm %{buildroot}%{_stm_host_man_dir}/man5/modules.dep*
+ 
+ cd ..
+ cp COPYING LICENSE
+@@ -58,9 +52,6 @@
+ %files -n %{_pkgname}
+ %defattr(-,root,root)
+ %attr(755,root,root)%{_stm_host_bin_dir}/depmod
+-%attr(644,root,root) %doc %{_stm_host_man_dir}/man8/depmod.8.gz
+-%attr(644,root,root) %doc %{_stm_host_man_dir}/man5/depmod.d.5.gz
+-%attr(644,root,root) %doc %{_stm_host_man_dir}/man5/depmod.conf.5.gz
+ %doc LICENSE
+ 
+ %changelog

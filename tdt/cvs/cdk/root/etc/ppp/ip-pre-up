@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# parameters: interface-name peer-name user-name tty-device speed
+
+# save route
+gw=$( route -n | grep '^0.0.0.0' | tr -s ' ' | cut -d' ' -f 2 )
+echo "route add default gw $gw" > /var/run/$1.oldroute
+route del default
+
+

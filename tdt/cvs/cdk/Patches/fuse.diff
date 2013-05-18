@@ -1,0 +1,26 @@
+--- fuse-2.7.2/util/init_script	2007-05-02 16:34:04.000000000 +0200
++++ fuse-2.7.2/util/init_script-new	2008-01-07 10:51:24.000000000 +0100
+@@ -1,19 +1,11 @@
+ #! /bin/sh
+-### BEGIN INIT INFO
+-# Provides:          fuse
+-# Required-Start:    
+-# Should-Start:      udev
+-# Required-Stop:     
+-# Default-Start:     S
+-# Default-Stop:
+-# Short-Description: Start and stop fuse.
+-# Description:       Load the fuse module and mount the fuse control
+-#	filesystem.
+-### END INIT INFO
++#
++# chkconfig: S 34 0
++#
+ 
+ set -e
+ 
+-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PATH=/sbin:/bin:/usr/sbin:/usr/bin
+ MOUNTPOINT=/sys/fs/fuse/connections
+ 
+ # Gracefully exit if the package has been removed.

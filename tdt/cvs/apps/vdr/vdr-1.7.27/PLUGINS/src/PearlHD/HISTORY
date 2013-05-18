@@ -1,0 +1,62 @@
+0.0.9
+
+- Logo rechts eingefügt (optional)
+- Logo im Head vergrößert (optional)
+- Conflicting Timer fix
+- Yaepghd-Skin FullHD+HDReady
+- Makefile Epgimages fix
+- Menuhöhe ist jetzt variabel
+
+0.0.8
+
+- Epgimages integriert
+- Senderlogoplatz geändert 
+- Spalte im FullHD-Skin gefixt
+- Makefile neu aufgebaut
+- Audiokanäle in die Audioansicht integriert
+- Conflicting timer im Channelviewsymbol
+- Audiokanäle im Channelviewsymbol
+- DDinfo im Channelviewsymbol
+
+
+0.0.7
+
+- Scrollfehler behoben
+- Lautstärkenanzeige wiederhergestellt
+- Makefile angepasst
+- Makefile mit Make.config ergänzt
+- Option für Dynamische Schriftgrößen
+- Alle Grafiken durch Beschreibungen ersetzt
+- Skalierungsscript
+- SD und HDReady Auflösung
+
+0.0.6a
+
+- Fehlerhaften Makefile wiederhergestellt
+
+Version 0.0.6
+
+- Symbole aus dem Channelview durch xml-Beschreibung ersetzt
+- Umstellung auf Skinversion 1.1
+- Einfügen der refresh-Optimierung
+- Themes Farben optimiert
+- Recordinginfo extrecmenu
+- Optionale Timerinfos im Menu
+- Optionale Recordinginfos im Menu
+- Falsches Symbol " (Sekunden) ersetzt durch m
+- Layoutanpassungen
+
+Version 0.0.5
+
+Neue Features:
+- Skin ist jetzt relativ angelegt (Design ist getestet bis 90%).
+- Die Themes sind überarbeitet.
+- Es gibt ein Recordinginfofenster.
+- Die Sprungmarken in der Wiedergabe sind sichtbar.
+- Die restliche Dauer der aktuellen Sendung wird angezeigt.
+- Die Dauer der nächsten Sendung wird angezeigt.
+- Wenn für die Aktuelle oder nächste Sendung ein Timer existiert, erscheint ein Stern im Titel.
+- Die Messages im Menu überdecken nicht mehr die Uhr.
+- Die Laufende Aufnahmen Anzeige ist optimiert.
+- Es ist kein text2skin Patch mehr notwendig.
+- Plugins werden in einem angepassten Fenster angezeigt.

@@ -1,0 +1,136 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Alberto Carraro <bertocar@tin.it>, 2001
+# Antonio Ospite <ospite@studenti.unina.it>, 2003
+# Sean Carlos <seanc@libero.it>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-10 18:33+0200\n"
+"PO-Revision-Date: 2009-02-09 23:17+0100\n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+msgid "VDR-Setup Extension"
+msgstr "Estensione delle opzioni per VDR"
+
+msgid "Setup"
+msgstr "Opzioni"
+
+msgid "Menu Edit"
+msgstr "Menu Modifica"
+
+msgid "Plugins activate / deactivate"
+msgstr "Attiva / disattiva plugins"
+
+msgid "protected"
+msgstr "protetto"
+
+msgid "PageUp"
+msgstr "Pagina su"
+
+msgid "PageDown"
+msgstr "Pagina giù"
+
+msgid "Before"
+msgstr "Prima"
+
+msgid "After"
+msgstr "Dopo"
+
+msgid "Move"
+msgstr "Sposta"
+
+msgid "Title"
+msgstr "Titolo"
+
+msgid "Edit Plugin"
+msgstr "Modifica plugin"
+
+msgid "Command"
+msgstr "Comando"
+
+msgid "Has to confirm"
+msgstr "Conferma"
+
+msgid "Execute as thread"
+msgstr "Esegui come processo"
+
+msgid "Edit Command"
+msgstr "Modifica comando"
+
+msgid "Edit Menu"
+msgstr "Modifica menu"
+
+msgid "Create Menu"
+msgstr "Crea menu"
+
+msgid "Create Command"
+msgstr "Crea comando"
+
+msgid "Delete Menu?"
+msgstr "Eliminare il menu?"
+
+msgid "Up/Dn for new location - color key to move"
+msgstr "Su/Giù per nuova posizione - tasto colorato per spostare"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Into"
+msgstr "In"
+
+msgid "Create"
+msgstr "Crea"
+
+msgid "Edit"
+msgstr "Modifica"
+
+msgid "Delete"
+msgstr "Elimina"
+
+msgid "missing channels/xxx.conf"
+msgstr "canali/xxx.conf mancanti"
+
+msgid "Help"
+msgstr "Aiuto"
+
+msgid "Execute"
+msgstr "Esegui"
+
+msgid "Error in configuration files"
+msgstr "Errore nei files di configurazione"
+
+msgid "Reboot"
+msgstr "Riavvia"
+
+msgid "Enter Pin: "
+msgstr "Inserisci PIN:"
+
+msgid "Really reboot?"
+msgstr "Sicuro di riavviare?"
+
+msgid "Invalid Pin!"
+msgstr "PIN non valido!"
+
+msgid "setupSetup$Main menu entry"
+msgstr "Voce menu principale"
+
+msgid "setupSetup$Menu suffix"
+msgstr "Suffisso menu"
+
+msgid "setupSetup$Entry prefix"
+msgstr "Valore prefisso"
+
+msgid "setupSetup$Return value"
+msgstr "Invia valore"

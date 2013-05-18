@@ -1,0 +1,30 @@
+# German translations for vdr-text2skin-EgalT2 skin.
+# Copyright (C) 2009 Uwe Hanke
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-text2skin-EgalT2 0.0.9\n"
+"Report-Msgid-Bugs-To: <vdr-bugs@cadsoft.de>\n"
+"POT-Creation-Date: 2010-06-12 09:59+0200\n"
+"PO-Revision-Date: 2009-10-22 19:38+0100\n"
+"Last-Translator: egal@egal-vdr.de\n"
+"Language-Team:  egaln@egal-vdr.de\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Recording info"
+msgstr "Aufzeichnung"
+
+msgid "Commands"
+msgstr "Befehle"
+
+msgid "Channels"
+msgstr "Kanäle"
+
+msgid "TimerConflicts"
+msgstr "TimerKonflikte"
+
+msgid "Channel"
+msgstr "Kanal"

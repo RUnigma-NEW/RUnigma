@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: anthra_1280_OS\n"
+"Report-Msgid-Bugs-To: <>\n"
+"POT-Creation-Date: 2010-10-03 10:49+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Tomas Saxer <tsaxer@gmx.de>\n"
+"Language-Team:  <tsaxer@gmx.de>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Setup"
+msgstr "Einstellungen"
+
+msgid "Timers"
+msgstr "Timer"
+
+msgid "Commands"
+msgstr "Befehle"
+
+msgid "Recordings"
+msgstr "Aufzeichnungen"
+
+msgid "Schedule"
+msgstr "Programm"
+
+msgid "Channels"
+msgstr "Kanäle"

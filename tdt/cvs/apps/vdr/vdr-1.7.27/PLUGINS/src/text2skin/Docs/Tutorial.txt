@@ -1,0 +1,349 @@
+HOWTO create text2skin-skins
+
+Sascha Volkenandt
+
+english translation by Thomas Wehrspann
+
+16.12.2004
+Last update 13.07.2009
+
+Table of Contents
+ 1. General Structure of XML Documents
+ 2. General Structure of the Skin file
+ 3. Structure of the individual Sections
+ 4. Drawing Objects
+ 5. Tokens and Texts
+ 6. Token Attributes
+ 7. Complex Conditions and Block Objects
+ 8. List in the Main Menu
+ 9. Creation of Image-Maps for Menu Logos
+10. List of all Functions
+11. Scaling of Images
+12. Colors
+13. True-type Fonts
+
+
+1. General Structure of XML Documents
+=====================================
+Those, who already worked with XML can skip this section.
+
+XML files have a tree-like structure of elements. Each document starts with a
+root element (a container) which includes all other elements hierarchically.
+Elements, so called tags, are written in spiky brackets, a slash before the
+name marks an end tag.
+
+  <element>
+    <subelement>
+      ...
+    </subelement>
+  </element>
+
+Every element can provide attributes to specify further properties. Attributes
+are following the element name inside the brackets, their values are written
+after an equal in quotation marks
+
+  <element attribute="value" anotherattribute="another value"
+    ...
+  </element>
+
+Empty elements include no other elements and must be empty even a line break
+is not allowed.
+
+  <element attribute="value"></element>
+
+It is possible to write those elements in a simpler way
+
+  <element attribute="value" />
+
+Normal XML files start with a control instruction to specify the XML version
+used
+
+  <?xml version="1.0"?>
+
+
+2. General Structure of the Skin file
+=====================================
+Each skin file (ending with the extension ".skin") starts with the XML
+declaration (see above) followed by the root element <skin>. This element has
+three attributes which must be specified
+
+* version    - Version of the skin format (current: "1.0")
+* name       - Name of the skin
+* screenBase - Specifies, if the skin is drawn "relative" to the VDR setup of
+               "absolute" to the coordinates 720x576.
+
+  <?xml version="1.0"?>
+  <skin version="1.0" name="brushed Aluminium" screenBase="relative">
+    ...
+  </skin>
+
+
+3. Structure of the individual Sections
+=======================================
+The different sections of the VDR-OSD are defined in several <display>
+elements. The <display> elements get the "id" attribute which specifies the
+actual section
+
+* channelInfo
+* channelSmall
+* volume
+* message
+* replayInfo
+* replaySmall
+* menu
+
+Each <display> definition starts with the definition of drawing areas, so
+called windows. The quantity and color depth of windows depends on the output
+device.
+
+  <display id="replayInfo">
+    <window x1="0" x2="619" y1="-113" y2="-84" bpp="4"/>
+    <window x1="20" x2="99" y1="-83" y2="-44" bpp="4"/>
+    ...
+  </display>
+
+
+4. Drawing Objects
+==================
+After the definition of the drawing areas objects can be drawn on it
+freely. There are three types of objects
+
+* simple objects
+  * rectangle  - draws a filled rectangle
+  * text       - static or compound text
+  * image      - draws a image
+  * ellipse    - ellipse of (pitch)circle
+  * slope      - a curve
+
+* extended or connected objects
+  * progress   - shows a progress bar
+  * scrolltext - multiline text
+  * scrollbar  - a scrollbar
+
+* group and special objects
+  * block      - groups several objects
+  * list       - defines the list in the menu
+  * item       - defines one item in the list
+
+The simple object are mostly self-explanatory, they all have attributes "x1",
+"y1", "x2" and "y2" which describe the position and dimension (exception:
+<image>, which only uses "x" and "y" when no scaling should be applied) and
+"color" which is a symbolic or hexadecimal color description. Images need
+furthermore the attributes "path" and can have the attributes "bgColor" and
+"alpha" (transparency 0-255). Texts can have the attribute align (with values
+"left", "right" and "center"), scrolltexts furthermore "font". Ellipses will
+be pitch circles with the "arc" attribute curves get the direction with it.
+Scroll- and progress-bars also need "bgColor", progress-bars "current" and
+"total".
+
+  <image x="0" y="-70" path="Aluminium_volumebar.png"/>
+  <rectangle x1="20" x2="99" y1="-83" y2="-44" color="#00000000"/>
+  <text x1="42" x2="571" y1="-113" y2="-86" color="#FF000000" font="Osd">{ReplayTitle}</text>
+  <progress x1="124" x2="577" y1="-70" y2="-55" color="#FF84ff00" bgColor="#FFFFFFFF" current="{ReplayPositionIndex}" total="{ReplayDurationIndex}"/>
+  <scrolltext x1="24" y1="138" y2="-72" x2="583" font="Sans Serif@20" color="#AFFFFF00">
+  {PresentShortText}
+  {PresentDescription}
+  </scrolltext> 
+
+
+5. Tokens and Texts
+===================
+In the example above text in curly braces used. These are so called tokens,
+variables which actual embodiment depends on information of VDR. A complete
+list of all tokens is in the reference and the demo skins can be used as
+examples. Normal text and paths can be mixed with token for dynamic display of
+information
+
+  <image x="0" y="0" path="logos/{ChannelName}.mng" />
+
+Each object, in addition to its own attributes, can have the attribute
+"condition" which is a complex function. Conditions are used to bound the
+actual display of an element or block to information provided by VDR. A token
+can also be a condition. A token without content is evaluate to false. Strings
+included in functions are quoted in quotation marks. Quotation marks are
+escaped with a backslash.
+
+  <image x="20" y="-83" alpha="180" condition="file('replay/{ReplayMode}.png')" path="replay/{ReplayMode}.png" />
+  <image x="20" y="-83" alpha="180" condition="not(file('replay/{ReplayMode}.png'))" path="replay/common.png" />
+  <image x="314" y="-34" condition="{IsPlaying}" path="symbols/play_sml.xpm" />
+  <image x="334" y="-34" condition="{IsFastForward:2}" path="symbols/ffwd_sml.xpm" />
+  <image x="420" y="25" condition="or({HasVPS},{HasTimer},{IsRunning})" path="Aluminium_epgbottom.png" />
+
+Shows the image only, if ...
+
+1) ...file exists
+2) ...the does not exist
+3) ...the ReplayMode is ''Replay''
+4) ...the ReplayMode is ''Forward Level 2'' ('':0'' is normal Replay without
+      Multi-Speed and with '':X'' every level is meant)
+5) ...the current Event is either VPS, or is currently aired, or programmed as
+      Timer.
+
+
+6. Token Attributes
+===================
+Some tokens can also have attributes (these are no XML attributes). At the
+moment these tokens are "{MenuTitle}", "{MenuCurrent}" and all
+date/time-token. Attributes follow follow the token name separated by a colon
+":". Colons in the attribute content are escaped with a backslash.
+
+  <text .....>{DateTime:%H\:%M}</text>
+
+For date/time-token the same rules as for strftime applies (see "man
+strftime") for "{MenuTitle}" and "{MenuCurrent}" only the attribute "clean"
+exists, which removes tabs and hotkey numbers from the text.
+
+
+7. Complex Conditions and Block Objects
+=======================================
+Complex conditions are used to bound the display of elements to the existent
+of certain VDR information. Block objects group several element together for
+easier use of the complex condition.
+
+The following example shows the channel logo with a shadow only if the file
+exists, otherwise a transparent display is used.
+
+  <rectangle x1="0" x2="67" y1="0" y2="51" color="#00000000" condition="not(file('logos/{ChannelName}.mng'))"/>   
+
+  <block condition="file('logos/{ChannelName}.mng')"> 
+    <rectangle x1="4" x2="67" y1="4" y2="51" color="#AF000000"/>
+    <image x="0" y="0" path="logos/{ChannelName}.mng"/>
+  </block>
+
+Grouping of a long text with scroll-bars which are only shown if the text does
+not fit on one page.
+
+  <block condition="{MenuText}"> 
+    <scrolltext x1="30" y1="60" x2="519" y2="343" color="#FFFFFFFF" font="Sml">{MenuText}</scrolltext>
+
+    <image condition="or({CanScrollUp},{CanScrollDown})" x="561" y="52" path="menu-scrollbar.png" /> 
+    <scrollbar condition="or({CanScrollUp},{CanScrollDown})" x1="569" y1="69" x2="578" y2="315" color="#FF975000" bgColor="#DAB38D13" /> 
+
+    <image condition="and(not({CanScrollUp}),{CanScrollDown})" x="561" y="39" path="symbols/arrowup-off.png" />
+    <image condition="and(not({CanScrollUp}),{CanScrollDown})" x="561" y="319" path="symbols/arrowdown-on.png" />
+
+    <image condition="and({CanScrollUp},not({CanScrollDown}))" x="561" y="39" path="symbols/arrowup-on.png" />
+    <image condition="and({CanScrollUp},not({CanScrollDown}))" x="561" y="319" path="symbols/arrowdown-off.png" />
+
+    <image condition="and({CanScrollUp},{CanScrollDown})" x="561" y="39" path="symbols/arrowup-on.png" />
+    <image condition="and({CanScrollUp},{CanScrollDown})" x="561" y="319" path="symbols/arrowdown-on.png" />
+  </block>
+
+
+8. List in the Main Menu
+========================
+The special element <list> specifies the display area of a list of entries.
+The only attributes are "x1", "y1", "x2" and "y2". The first subelement has to
+be the special element <item> whose only attribute is "height". After <item>
+elements can be placed as normal. The "height" of <item> defines the dimension
+of the area a list entry can draw on.
+
+  <list x1="24" y1="62" x2="569" y2="-82">
+    <item height="28" />
+    <text x1="25" x2="569" y1="3" y2="27" color="#AF00FFFF" font="Sml">{MenuGroup}</text>
+    <text x1="25" x2="569" y1="3" y2="27" color="#AFFFFFFF" font="Sml">{MenuItem}</text>
+    <rectangle x1="0" x2="579" y1="0" y2="27" color="#FF2B1B9E" condition="{IsMenuCurrent}" />
+    <text x1="22" x2="569" y1="0" y2="27" color="#AFFFFFFF" font="Osd">{MenuCurrent}</text>
+    <text x1="0" x2="25" y1="0" y2="27" color="#AFFFFFFF" font="Osd" condition="{IsMenuCurrent}">-></text>
+  </list>
+
+It might be a bit demanding to understand how a list is rendered. Coordinates
+of objects inside a list is relative to the display area of the list itself.
+Every object in the list is draw several times, for each entry in the list one
+time.  The Y-coordinates are incremented by one <item> "height" each time. The
+tokens "{MenuCurrent}", "{MenuItem}" and "{MenuGroup}" are draw per tab (in
+separate menus like schedule), whereas "{IsMenuCurrent}", "{IsMenuGroup}" or
+"{IsMenuItem}" are drawn only one time per list element.
+
+  <text x1="25" x2="569" y1="3" y2="27" color="#AF00FFFF" font="Sml">{MenuGroup}</text>
+  <text x1="25" x2="569" y1="3" y2="27" color="#AFFFFFFF" font="Sml">{MenuItem}</text>
+  <rectangle x1="0" x2="579" y1="0" y2="27" color="#FF2B1B9E" condition="{IsMenuCurrent}" />
+
+
+9. Creation of Image-Maps for Menu Logos
+========================================
+To show a logo depending on the currently selected element, the cleaned text
+(attribute "clean") of the element (e.g. "Aufzeichnungen") is compared with
+translations (here "Recordings"). With plugins the main menu entry
+(e.g. "MP3") of the plugin (here mp3) is compared to the translations.
+(Beware: This element is not part of the list and has also to be quoted
+outside the <list> container).
+
+  <image x="25" y="100" path="logos/schedule.png" condition="equal({MenuCurrent:clean},trans('Schedule'))" />
+  <image x="25" y="100" path="logos/channels.png" condition="equal({MenuCurrent:clean},trans('Channels'))" />
+  <image x="25" y="100" path="logos/timers.png" condition="equal({MenuCurrent:clean},trans('Timers'))" />
+  <image x="25" y="100" path="logos/music.png" condition="equal({MenuCurrent:clean},plugin('mp3'))" />
+
+The same applies to "{MenuTitle:clean}" if a logo for the current menu page is
+wished, instead of current selected element.
+
+
+10. List of all Functions
+=========================
+* not   - negation of the term 
+          (e.g. "not(equal({PresentStartDateTime},{PresentVPSDateTime}))" )
+* and   - true, if all parameter are true 
+          (e.g. "and({CanScrollUp},{CanScrollDown})" )
+* or    - true, if one parameter is true 
+          (e.g. see above)
+* equal - true, if both parameters are true
+* file  - returns the parameter, if the file exists in the skin directory 
+          (e.g. "file('logos/{ChannelName}.png')" )
+* trans - return the translation (i18n) of the parameter, false, if no translation is found 
+          (e.g. "equal('Kanäle', trans('Channels'))" )
+
+Normally strings in function are quoted in quotation marks, only if the simply
+consists of a token the quotation marks can be omitted.
+(e.g. "not({MenuText})" instead of "not('{MenuText}')" )
+
+
+11. Scaling of Images
+=====================
+With this function it is possible to scale images independently from the OSD
+settings. This function is activated when the attributes "x1", "x2", "y1" and
+"y2" with their relative readings are used instead of "x" and "y" (which
+disable this function).  The attribute "color" specifies the maximum amount of
+colors the must have after scaling.
+
+
+12. Colors
+==========
+Colors are given in RGB-format transparency information
+
+  color=#AARRGGBB
+
+* A - alpha value (transparency 0-255)
+* R - red value
+* G - green value
+* B - blue value
+
+Some examples
+
+         AARRGGBB
+  color=#00000000 = Black, fully transparent
+  color=#FF000000 = Black, full opacity
+  color=#7F000000 = Black, half translucent
+  color=#7FFFFFFF = White, half translucent
+
+
+13. True-type Fonts
+===================
+There are three predefined fonts
+
+* Osd
+* Fix
+* Sml
+
+It is possible to use True Type fonts installed and configured for
+fontconfig's use on the system.  See the fontconfig documentation for details
+how to do that; usually it's a matter of copying the font files somewhere and
+running fc-cache(1) (as root or the VDR user).
+
+In the skin file the font is defined with
+
+  font="Osd"
+
+or with True Type fonts with the desired size and if desirable width
+
+  font="Sans Serif@size[,width]"
+  font="Monospaced:Bold@size[,width]"

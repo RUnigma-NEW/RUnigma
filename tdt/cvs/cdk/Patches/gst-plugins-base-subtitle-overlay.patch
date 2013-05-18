@@ -1,0 +1,25 @@
+From 5231577d2d5bd6daae662641630a453db8e29c5b Mon Sep 17 00:00:00 2001
+From: Mohamed Hafsia <mohamed.hafsia@st.com>
+Date: Tue, 4 Sep 2012 10:24:39 +0100
+Subject: [PATCH 3/5]
+ patches from David Liu to fix subtitle handling
+
+---
+ gst/playback/gstplayback.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/gst/playback/gstplayback.c b/gst/playback/gstplayback.c
+index a83fee1..c2069cd 100644
+--- a/gst/playback/gstplayback.c
++++ b/gst/playback/gstplayback.c
+@@ -55,7 +55,6 @@ plugin_init (GstPlugin * plugin)
+   res = gst_play_bin_plugin_init (plugin);
+   res &= gst_play_bin2_plugin_init (plugin);
+   res &= gst_play_sink_plugin_init (plugin);
+-  res &= gst_subtitle_overlay_plugin_init (plugin);
+ 
+   return res;
+ }
+-- 
+1.6.2.5
+

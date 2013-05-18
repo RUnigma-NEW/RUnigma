@@ -1,0 +1,72 @@
+Skindesign for VDR's text2skin-plugin
+
+* for unmodded DVB-Cards 90kB: max. OSD-Height/Width 90% !
+* small+simple, no Gfx except symbols
+* default vdr-fonts Osd/Sml/Fix
+
+
+Written by:		Uwe Hanke <egal@egal-vdr.de>
+
+Project's homepage:				www.egal-vdr.de/skins
+Latest version available at:	www.egal-vdr.de/skins
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+The complete text of the GNU General Public License can be found
+in /usr/share/common-licenses/GPL on most Debian systems.
+
+
+Installation:
+-------------
+
+1. 	Get the git Version of text2skin
+	cd $VDRDIR/PLUGINS/src
+    git clone git://projects.vdr-developer.org/vdr-plugin-text2skin.git
+    cd ../../../
+    make plugins
+    make plugins install
+
+2. 	Extract the skin-archive to a directory of your choice
+	cd EgalT2
+	edit the file Make to your needs, eg. button-labels
+    make
+	make install (or "make PREFIX=/your/prefix install")
+
+
+History :
+---------
+
+$20100612 V0.3.3
+  - performance handling (for sh4 like UFS910)
+
+$20100204 V0.3.2
+  - some little alignments
+  - modify TimerConflicts display
+  - HD mode default (see Makefile)
+
+$20091114 V0.3.1
+  - add recording smybol @ replaySmall-Osd
+  - some little alignments
+
+$20091030 V0.3.0
+  - add type of signalInfo: none/texttual/grafical (config @ Makefile)
+  - add marker for MenuCurrentItem (config @ Makefile)
+  - switch Recording/Encrypted symbols
+
+$20091028 V0.2.0
+  - changes/additions for HD output 720/1080 (option @ Makefile)
+
+$20091026 V0.1.0
+  - initial release

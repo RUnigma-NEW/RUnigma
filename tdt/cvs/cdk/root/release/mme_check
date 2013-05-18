@@ -1,0 +1,32 @@
+#!/bin/sh
+
+MODDIR=/lib/modules
+
+sleep 2
+if [ -e /etc/mme.tmp ]; then
+   echo "MME BUG"
+
+
+   insmod $MODDIR/boxtype.ko
+   var=`cat /proc/boxtype`
+   case "$var" in
+      0) echo "1W boxtype"
+           /bin/evremote &
+           date -s "121220001970"
+           gotosleep 20:00:02;;
+     *)    var=$(lsmod | grep vfd)
+           if [ -z "$var" ] ; then
+              insmod $MODDIR/vfd.ko       
+           fi
+
+           until false
+           do
+              echo "->  MME  BUG  <-"
+              echo "->  MME  BUG  <-" > /dev/vfd
+              sleep 5
+              echo "HARDRESET NEEDED"
+              echo "HARDRESET NEEDED" > /dev/vfd
+              sleep 5
+           done;;
+   esac
+fi

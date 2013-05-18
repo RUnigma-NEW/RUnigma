@@ -1,0 +1,106 @@
+#!/bin/sh
+
+set -x
+
+#Usage:
+#/home/user/ufs910/mt_build/custom/yaud-none-local.sh /home/user/ufs910/mt_build/tufsbox/cdkroot /home/user/mt_build/ufs910/cvs/cdk
+
+targetprefix=$1
+prefix=$targetprefix
+buildprefix=$2
+
+NEWROOT=$prefix
+MYFILES=$prefix/../../myfiles
+
+
+#----------------------------------------------
+# Additional targets
+#----------------------------------------------
+
+make netio
+make strace
+make glib
+make mc
+
+#----------------------------------------------
+# IP configuration
+#----------------------------------------------
+
+IPADDRESS=192.168.1.100
+HOSTNAME=ufs910
+DOMAIN=home.local
+NAMESERVER1=10.1.1.201
+NAMESERVER2=192.168.1.201
+NAMESERVER3=192.168.1.202
+WORKGROUP=UFS910
+
+#----------------------------------------------
+# Adapt interfaces configuration
+
+#[ ! -d $NEWROOT/etc/network ] && mkdir -p $NEWROOT/etc/network
+#[ -f $MYFILES/etc/network/interfaces_yaud ] && \
+#    cp $MYFILES/etc/network/interfaces_yaud $NEWROOT/etc/network/interfaces
+
+#----------------------------------------------
+# Adapt hostname file
+
+egrep -q "$HOSTNAME" $NEWROOT/etc/hostname || \
+cat >>$NEWROOT/etc/hostname <<EOF
+$HOSTNAME
+EOF
+
+#----------------------------------------------
+# Adapt hosts file
+
+egrep -q "$HOSTNAME" $NEWROOT/etc/hosts || \
+cat >>$NEWROOT/etc/hosts <<EOF
+$IPADDRESS	$HOSTNAME
+EOF
+
+#----------------------------------------------
+# DNS stuff
+
+egrep -q "$DOMAIN" $NEWROOT/etc/resolv.conf || \
+cat <<EOF >> $NEWROOT/etc/resolv.conf
+search $DOMAIN
+nameserver $NAMESERVER1
+nameserver $NAMESERVER2
+nameserver $NAMESERVER3
+EOF
+
+#----------------------------------------------
+# Autofs stuff
+#----------------------------------------------
+
+[ -f $MYFILES/etc/auto.ufs910 ] && \
+    cp $MYFILES/etc/auto.ufs910 $NEWROOT/etc
+
+# uncomment of the lines below if you want to customize timeout
+#sed -e 's/^TIMEOUT=300/TIMEOUT=600/g' -i $NEWROOT/etc/default/autofs
+#sed -e 's|/etc/auto.ufs910 --timeout=30|/etc/auto.ufs910 --timeout=60|g' -i $NEWROOT/etc/auto.master
+
+#----------------------------------------------
+# Adapt samba
+#----------------------------------------------
+
+#replace samba config file or adapt the existing one
+
+#[ -f $MYFILES/etc/samba/smb.conf ] && \
+#    cp $MYFILES/etc/samba/smb.conf $NEWROOT/etc/samba
+
+[ -f $NEWROOT/etc/samba/smb.conf ] && \
+sed -e "s/^interfaces = 192.168.1.100\/24/interfaces = $IPADDRESS\/24/g" \
+    -e "s/^workgroup = MSHEIMNETZ/workgroup = $WORKGROUP/g" \
+    -i $NEWROOT/etc/samba/smb.conf
+
+#----------------------------------------------
+# Adapt NFS server
+#----------------------------------------------
+
+[ -f $NEWROOT/etc/exports ] && ( \
+egrep -q "/var" $NEWROOT/etc/exports || \
+cat >>$NEWROOT/etc/exports <<EOF
+#/var *(rw,sync,no_subtree_check)
+/tmp/usb/0      192.168.1.0/255.255.255.0(rw,sync,no_root_squash,no_subtree_check)
+EOF
+)

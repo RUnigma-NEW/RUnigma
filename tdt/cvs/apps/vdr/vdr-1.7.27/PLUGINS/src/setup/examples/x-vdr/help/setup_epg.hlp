@@ -1,0 +1,22 @@
+Zeit bis EPG Scan = 5
+
+     Die Zeit (in Stunden) die der Nutzer inaktiv sein muss um bei Systemen mit einer Karte das Scannen der Kanäle zu beginnen um die EPG-Daten aktuell zu halten. Ein Wert von '0' schaltet das Scannen ab auf System mit sowohl einer wie auch mehreren Karten.
+
+EPG Fehlerbereinigung = 2
+
+     Manche Sender strahlen merkwürdig formatierte EPG Daten aus. VDR versucht, diese Fehler mit folgendem Aufwand zu beheben:
+
+          0 - Keine Reperatur
+          1 - Einfache Reperatur der Textpositionen (Titel, Epsiode und erweiterte Beschreibung)
+          2 - Entfernen von übermässigen Leerräumen und Bindestrichen, Korrektur von ungültigen Zeichen.
+
+     Voreinstellung ist '2'.
+     Beachten Sie bitte dass bei Änderungen dieser Einstellungen die bereits empfangenen EPG Daten nicht verändert werden. Nur neu empfangene Daten werden entsprechend bearbeitet. Starten Sie VDR neu wenn Sie alle Daten verändert haben wollen.
+
+Systemzeit stellen = nein
+
+     Bestimmt ob die Systemzeit nach der Zeit, die im EPG Strom gesendet wird, gesetzt werden soll. Beachten Sie dass dies nur funktioniert wenn VDR mit einer UserId läuft, die ein Setzen der Uhrzeit zulässt. Sie benötigen ausserdem die Option "Transponder für Systemzeit" für einen Kanal dem Sie die Ausstrahlung einer verlässlichen Zeitbasis zutrauen (Nicht alle Kanäle scheinen Zugriff auf eine korrekte Zeitbasis zu haben).
+
+Transponder für Systemzeit = 0
+
+     Die Frequenz des Transponders, der zum Setzen der Systemzeit genutzt werden soll. Das Menü "Einstellungen" bietet die vollständige Liste der Kanäle an, selbst wenn einiger dieser auf dem gleichen Transponder liegen. Ausserdem kann es sein dass nach Wahl eines Kanals, Verlassen und erneuter Wahl des Menüs ein anderer Kanal eingestellt ist, da der erste Kanal des gewählten Transponders in der Datei 'channels.conf' genommen wird. Beachten Sie weiterhin, daß zum Setzen der Systemzeit mit den Transponderdaten die Option "Systemzeit stellen" ebenfalls aktiviert sein muss.

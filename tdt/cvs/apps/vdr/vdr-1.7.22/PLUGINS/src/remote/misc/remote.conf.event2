@@ -1,0 +1,22 @@
+remote-event2._Setup     /proc/av7110_ir 00008000 0
+remote-event2.Up         0000000100010021
+remote-event2.Down       0000000100010022
+remote-event2.Menu       000000010001000E
+remote-event2.Ok         000000010001002F
+remote-event2.Back       0000000100010023
+remote-event2.Left       0000000100010012
+remote-event2.Right      0000000100010011
+remote-event2.Red        0000000100010010
+remote-event2.Green      000000010001000D
+remote-event2.Yellow     000000010001001F
+remote-event2.Blue       0000000100010027
+remote-event2.0          0000000100010001
+remote-event2.1          0000000100010002
+remote-event2.2          0000000100010003
+remote-event2.3          0000000100010004
+remote-event2.4          0000000100010005
+remote-event2.5          0000000100010006
+remote-event2.6          0000000100010007
+remote-event2.7          0000000100010008
+remote-event2.8          0000000100010009
+remote-event2.9          000000010001000A

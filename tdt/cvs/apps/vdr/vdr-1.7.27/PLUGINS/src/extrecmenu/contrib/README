@@ -1,0 +1,30 @@
+getlength.c
+-------------------------------------------------------------------------------
+Creates a length.vdr from an index.vdr
+Compile with 'gcc getlength.c -o getlength'
+
+isodetect.c
+-------------------------------------------------------------------------------
+Checks, if a dvd is in the drive. Used optionally by dvdarchive.sh
+Compile with 'gcc isodetect.c -o isodetect'
+
+MainMenuHooks-v1_0.patch
+-------------------------------------------------------------------------------
+A patch to replace VDR's recordings menu with the plugin
+Apply with 'patch < MainMenuHooks-v1_0.patch' in VDR's source directory
+
+hddarchive
+-------------------------------------------------------------------------------
+see hddarchive/README
+
+rating
+-------------------------------------------------------------------------------
+see rating/README.
+
+reclist
+-------------------------------------------------------------------------------
+see reclist/README
+
+vdr-getcountryfrominfo.sh + vdr-getyearfrominfo.sh
+-------------------------------------------------------------------------------
+sample scripts to get the country/year out of the info file

@@ -1,0 +1,359 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Diego Pierotto <vdr-italian@tiscali.it>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2012-05-12 02:55+0200\n"
+"PO-Revision-Date: 2008-06-25 23:37+0100\n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select"
+msgstr "Seleziona"
+
+msgid "Parent"
+msgstr "Precedente"
+
+msgid "ID3 info"
+msgstr "Info ID3"
+
+msgid "Scanning directory..."
+msgstr "Scansione directory..."
+
+msgid "Error scanning directory!"
+msgstr "Errore scansione directory!"
+
+msgid "Mount"
+msgstr "Monta"
+
+msgid "Unmount"
+msgstr "Smonta"
+
+msgid "Eject"
+msgstr "Espelli"
+
+msgid "Selected source is not mounted!"
+msgstr "La fonte selezionata non è montata!"
+
+msgid "Mount failed!"
+msgstr "Montaggio fallito!"
+
+msgid "Mount succeeded"
+msgstr "Montaggio riuscito"
+
+msgid "Unmount succeeded"
+msgstr "Smontaggio riuscito"
+
+msgid "Unmount failed!"
+msgstr "Smontaggio fallito!"
+
+msgid "Eject failed!"
+msgstr "Espulsione fallita!"
+
+msgid "MPlayer"
+msgstr "MPlayer"
+
+msgid "Setup.MPlayer$Control mode"
+msgstr "Mod. controllo"
+
+msgid "Traditional"
+msgstr "Tradizionale"
+
+msgid "Slave"
+msgstr "Esclavo"
+
+msgid "disabled"
+msgstr "disabilitato"
+
+msgid "global only"
+msgstr "solo globale"
+
+msgid "local first"
+msgstr "prima locale"
+
+msgid "Setup.MPlayer$Resume mode"
+msgstr "Mod. ripristino"
+
+msgid "Hide mainmenu entry"
+msgstr "Nascondi voce menu principale"
+
+msgid "Setup.MPlayer$Slave command key"
+msgstr "Tasto comando slave"
+
+msgid "Jump: "
+msgstr ""
+
+msgid "MPlayer Audio ID"
+msgstr "ID audio MPlayer"
+
+msgid "Audiostream ID"
+msgstr "ID canale audio"
+
+msgid "MPlayer browser"
+msgstr "Navigatore MPlayer"
+
+msgid "Source"
+msgstr "Fonte"
+
+msgid "MPlayer source"
+msgstr "Fonte MPlayer"
+
+msgid "Summary"
+msgstr "Sommario"
+
+msgid "Media replay via MPlayer"
+msgstr "Riproduci media con MPlayer"
+
+#~ msgid "OSS"
+#~ msgstr "OSS"
+
+#~ msgid "MP3"
+#~ msgstr "MP3"
+
+#~ msgid "Setup.MP3$Audio output mode"
+#~ msgstr "Mod. uscita audio"
+
+#~ msgid "Setup.MP3$Audio mode"
+#~ msgstr "Mod. audio"
+
+#~ msgid "Round"
+#~ msgstr "Arrotonda"
+
+#~ msgid "Dither"
+#~ msgstr "Compatta"
+
+#~ msgid "Setup.MP3$Use 48kHz mode only"
+#~ msgstr "Usa solo mod. 48kHz"
+
+#~ msgid "classic"
+#~ msgstr "classica"
+
+#~ msgid "via skin"
+#~ msgstr "con interfaccia"
+
+#~ msgid "Setup.MP3$Replay display"
+#~ msgstr "Mostra riproduzione"
+
+#~ msgid "Setup.MP3$Display mode"
+#~ msgstr "Mod. visualizzazione"
+
+#~ msgid "Black"
+#~ msgstr "Nero"
+
+#~ msgid "Live"
+#~ msgstr "Dal vivo"
+
+#~ msgid "Images"
+#~ msgstr "Immagini"
+
+#~ msgid "Setup.MP3$Background mode"
+#~ msgstr "Mod. sottofondo"
+
+#~ msgid "Setup.MP3$Initial loop mode"
+#~ msgstr "Mod. ripetizione iniziale"
+
+#~ msgid "Setup.MP3$Initial shuffle mode"
+#~ msgstr "Lettura casuale iniziale"
+
+#~ msgid "Setup.MP3$Abort player at end of list"
+#~ msgstr "Ferma lettore alla fine della lista"
+
+#~ msgid "ID3 only"
+#~ msgstr "Solo ID3"
+
+#~ msgid "ID3 & Level"
+#~ msgstr "ID3 & livello"
+
+#~ msgid "Setup.MP3$Background scan"
+#~ msgstr "Scansione in sottofondo"
+
+#~ msgid "Setup.MP3$Editor display mode"
+#~ msgstr "Mod. visualizzazione editor"
+
+#~ msgid "Filenames"
+#~ msgstr "Nomi dei file"
+
+#~ msgid "ID3 names"
+#~ msgstr "Nome ID3"
+
+#~ msgid "Setup.MP3$Mainmenu mode"
+#~ msgstr "Menu principale"
+
+#~ msgid "Playlists"
+#~ msgstr "Lista esecuzione"
+
+#~ msgid "Browser"
+#~ msgstr "Sfoglia"
+
+#~ msgid "Setup.MP3$Keep selection menu"
+#~ msgstr "Mantieni selezione menu"
+
+#~ msgid "Setup.MP3$Title/Artist order"
+#~ msgstr "Ordine Titolo/Artista"
+
+#~ msgid "Normal"
+#~ msgstr "Normale"
+
+#~ msgid "Reversed"
+#~ msgstr "Invertito"
+
+#~ msgid "Setup.MP3$Normalizer level"
+#~ msgstr "Livello normalizzazione"
+
+#~ msgid "Setup.MP3$Limiter level"
+#~ msgstr "Livello limitatore"
+
+#~ msgid "Setup.MP3$Use HTTP proxy"
+#~ msgstr "Usa proxy HTTP"
+
+#~ msgid "Setup.MP3$HTTP proxy host"
+#~ msgstr "Nome proxy HTTP"
+
+#~ msgid "Setup.MP3$HTTP proxy port"
+#~ msgstr "Porta proxy HTTP"
+
+#~ msgid "local only"
+#~ msgstr "solo locale"
+
+#~ msgid "local&remote"
+#~ msgstr "locale e remoto"
+
+#~ msgid "Setup.MP3$CDDB for CD-Audio"
+#~ msgstr "CDDB per Audio-CD"
+
+#~ msgid "Setup.MP3$CDDB server"
+#~ msgstr "Server CDDB"
+
+#~ msgid "Setup.MP3$CDDB port"
+#~ msgstr "Porta CDDB"
+
+#~ msgid "ID3 information"
+#~ msgstr "Informazione ID3"
+
+#~ msgid "Filename"
+#~ msgstr "Nome file"
+
+#~ msgid "Length"
+#~ msgstr "Durata"
+
+#~ msgid "Title"
+#~ msgstr "Titolo"
+
+#~ msgid "Artist"
+#~ msgstr "Artista"
+
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Year"
+#~ msgstr "Anno"
+
+#~ msgid "Samplerate"
+#~ msgstr "Frequenza"
+
+#~ msgid "Bitrate"
+#~ msgstr "Bitrate"
+
+#~ msgid "Directory browser"
+#~ msgstr "Sfoglia directory"
+
+#~ msgid "Playlist editor"
+#~ msgstr "Editor lista esecuzione"
+
+#~ msgid "Add"
+#~ msgstr "Aggiungi"
+
+#~ msgid "Remove"
+#~ msgstr "Rimuovi"
+
+#~ msgid "Add recursivly?"
+#~ msgstr "Aggiungere ricorsivamente?"
+
+#~ msgid "Empty directory!"
+#~ msgstr "Svuota directory!"
+
+#~ msgid "Remove entry?"
+#~ msgstr "Rimuovere voce?"
+
+#~ msgid "Add all"
+#~ msgstr "Aggiungi tutti"
+
+#~ msgid "Rename playlist"
+#~ msgstr "Rinomina lista esecuzione"
+
+#~ msgid "Old name:"
+#~ msgstr "Vecchio nome:"
+
+#~ msgid "New name"
+#~ msgstr "Nuovo nome"
+
+#~ msgid "Browse"
+#~ msgstr "Sfoglia"
+
+#~ msgid "Rename"
+#~ msgstr "Rinomina"
+
+#~ msgid "Scanning playlists..."
+#~ msgstr "Scansione liste esecuzione..."
+
+#~ msgid "Error scanning playlists!"
+#~ msgstr "Errore scansione liste esecuzione!"
+
+#~ msgid "Delete playlist?"
+#~ msgstr "Eliminare lista esecuzione?"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Sei sicuro?"
+
+#~ msgid "Error deleting playlist!"
+#~ msgstr "Errore eliminazione lista esecuzione!"
+
+#~ msgid "unnamed"
+#~ msgstr "senza nome"
+
+#~ msgid "Error creating playlist!"
+#~ msgstr "Errore creazione lista esecuzione!"
+
+#~ msgid "Error renaming playlist!"
+#~ msgstr "Errore ridenominazione lista esecuzione"
+
+#~ msgid "Error loading playlist!"
+#~ msgstr "Errore caricamento lista esecuzione!"
+
+#~ msgid "Can't edit a WinAmp playlist!"
+#~ msgstr "Non posso modificare un lista esecuzione di Winamp!"
+
+#~ msgid "Loading playlist..."
+#~ msgstr "Caricamento lista esecuzione..."
+
+#~ msgid "MP3 source"
+#~ msgstr "Fonte MP3"
+
+#~ msgid "Play all"
+#~ msgstr "Esegui tutti"
+
+#~ msgid "Building playlist..."
+#~ msgstr "Creazione lista esecuzione..."
+
+#~ msgid "Error building playlist!"
+#~ msgstr "Errore creazione lista esecuzione!"
+
+#~ msgid "A versatile audio player"
+#~ msgstr "Un lettore audio versatile"
+
+#~ msgid "unknown"
+#~ msgstr "sconosciuto"
+
+#~ msgid "Remote CDDB lookup..."
+#~ msgstr "Verifica CDDB remoto..."
+
+#~ msgid "Connecting to stream server ..."
+#~ msgstr "Connessione al server stream..."

@@ -1,0 +1,4 @@
+#git status excludes the following files (except those line who start with !)
+out
+tmp
+mup

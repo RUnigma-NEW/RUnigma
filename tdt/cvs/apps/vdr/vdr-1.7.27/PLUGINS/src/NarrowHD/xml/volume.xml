@@ -1,0 +1,25 @@
+<!-- 
+#------------------------------------------------------------------------------
+# volume start
+#------------------------------------------------------------------------------ -->
+
+<display id="volume" >
+
+	<!-- top window ----------------------------------------------------------- -->
+	<window x1="-360" x2="-1" y1="0" y2="70" bpp="4" />
+
+	<rectangle x1="-360" x2="-1"   y1="0"  y2="20" refresh="all" color="MainLight" />
+	<rectangle x1="-360" x2="-310" y1="20" y2="70" refresh="all" color="MainLight" />
+	<rectangle x1="-310" x2="-1"   y1="20" y2="70" refresh="all" color="MainLight" />
+	
+	<text x1="-300" x2="-20" y1="20" y2="60" refresh="all" color="FontColor" bgColor="MainLight" align="left" condition="not({IsMute})" font="VDRSymbols Sans:Book@27">Lautstärke</text>
+	<text x1="-100" x2="-20" y1="20" y2="60" refresh="all,update" color="FontColor" bgColor="MainLight" align="right" condition="not({IsMute})" font="VDRSymbols Sans:Book@27">{VolumeCurrent}</text>
+	<text x1="-100" x2="-20" y1="20" y2="60" refresh="all,update" color="FontColor" bgColor="MainLight" align="right" condition="{IsMute}"    font="VDRSymbols Sans:Book@27">Stumm</text>
+	
+	<!-- bottom window -------------------------------------------------------- -->
+	<window x1="0" x2="-1" y1="-40" y2="-1" bpp="4" />
+    
+	<progress   x1="0" x2="-1" y1="-40" y2="-1" bgColor="Bar" color="BarFill" current="{VolumeCurrent}" total="{VolumeTotal}" />
+	<rectangle  x1="0" x2="-1" y1="-40" y2="-1" color="BarBlock" condition="{IsMute}" />
+
+</display>

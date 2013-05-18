@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+# telnet daemon
+# chkconfig: S 43 30
+#
+
+case "$1" in
+  start)
+	echo -n "Starting telnetd "
+	start-stop-daemon -S -x /usr/sbin/telnetd -- -l /bin/autologin
+	echo "."
+	;;
+  stop)
+	echo -n "Stopping telnetd: "
+	start-stop-daemon -K -x /usr/sbin/telnetd
+	;;
+  restart)
+	echo "Restarting telnetd..."
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

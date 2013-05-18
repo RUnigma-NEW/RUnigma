@@ -1,0 +1,67 @@
+<!--
+-   Example:
+-
+-  <setup sysconfigFile="/etc/sysconfig"> 
+-         bootLinux="/sbin/reboot" 
+-         VDRlibDir="/usr/lib/vdr/plugins" 
+-    <plugins sysconfig="PLUGINLIST">
+-         <plugin name="setup" info="x-vdr-Setup" active="yes" />
+-         <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="VDR CD"/>
+-         ...
+-    </plugin>
+-    <menus>
+-       <menu name="VDR-Einstellungen">
+-         <menu name="Edit VDR-Menü" system="VDRMenu" />
+-         <menu name="OSD" system="OSD" />
+-         <menu name="EPG" system="EPG" />
+-         <menu name="DVB" system="DVB" />
+-         <menu name="LNB" system="LNB" />
+-         <menu name="CICAM" system="CICAM" /> -- vdr-1.4.7 --
+-         <menu name="CAM" system="CAM" /> -- vdr-1.5.x --
+-         <menu name="Aufnahme" system="Record" />
+-         <menu name="Wiedergabe" system="Replay" />
+-         <menu name="Sonstiges" system="Misc" />
+-         <menu name="Aktiviere Plugins" system="ActPlugins" />
+-         <menu name="Plugins-Setup" system="Plugins" />
+-         <menu name="LiveBuffer-Setup" system="LiveBuffer" /> -- Wenn der LiveBuffer-Patch angewendet wurde --
+-       </menu>
+-    <menu name="Netzwerk" help1="Netzwerkeinstellungen" help2="network.hlp" command="/etc/init.d/network restart">
+-       <entry name="Benutze DHCP" sysconfig="USE_DHCP" type="bool" value="true" command="/etc/init.d/network restart/>
+-       <entry name="IP-Adresse" sysconfig="IP" type="ip" value="192.168.0.111" />
+-        ...
+-    </menu>
+-    <menu name="Sonstiges">
+-        <entry name="Ramddisk im MB" sysconfig="RAMDISK" type="number" value="16" />
+-        <menu name="SubMenu">
+-          <entry ... />
+-        </menu>
+-    </menu>
+-   </menus>
+-  </setup>
+-->
+<setup sysconfigFile="/var/lib/vdr/plugins/setup/sysconfig" bootLinux="sudo /usr/lib/vdr/vdr2root reboot" VDRlibDir="/usr/lib/vdr/plugins">
+    <plugins sysconfig="PLUGINLIST">
+        <plugin name="setup" info="setup" active="yes" />
+    </plugins>
+    <menus>
+        <menu name="VDR">
+            <menu name="OSD" help2="setup_osd.hlp" system="OSD" />
+            <menu name="EPG" help2="setup_epg.hlp" system="EPG" />
+            <menu name="DVB" help2="setup_dvb.hlp" system="DVB" />
+            <menu name="LNB" help2="setup_lnb.hlp" system="LNB" />
+            <menu name="CICAM" help2="setup_cicam.hlp" system="CICAM" />
+            <menu name="Menu Edit" help2="setup_editmenu.hlp" system="VDRMenu" />
+            <menu name="Recording" help2="setup_record.hlp" system="Record" />
+            <menu name="Replay" help2="setup_replay.hlp" system="Replay" />
+            <menu name="Miscellaneous" help2="setup_misc.hlp" system="Misc" />
+            <menu name="Plugins" system="Plugins" />
+        </menu>
+        <menu name="Plugins">
+            <menu name="Plugins" system="Plugins" />
+            <menu name="Plugins activate / deactivate" help2="setup_actplugins.hlp" system="ActPlugins" />
+        </menu>
+        <menu name="System">
+            <entry name="Nutze Sysconfig" sysconfig="USE_SYSCONFIG" type="bool" value="off" />
+        </menu>
+    </menus>
+</setup>

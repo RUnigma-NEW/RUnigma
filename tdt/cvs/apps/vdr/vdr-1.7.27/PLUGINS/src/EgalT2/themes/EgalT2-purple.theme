@@ -1,0 +1,14 @@
+Description = Purple
+GraphDark = BF3e074c
+TextPassiv = FFABABAB
+TextActiv = FFFFFFFF
+SymbolPassiv = FF000000
+SymbolActiv = AF00FF00
+MenuBRed = FFFF0000
+MenuBGreen = FF00FF00
+MenuBYellow = FFFFFF00
+MenuBBlue = FF7590FF
+MsgInfo = FFFFFFFF
+MsgStat = FF00FF00
+MsgWarn = FFFFFF00
+MsgErr = FFFF0000

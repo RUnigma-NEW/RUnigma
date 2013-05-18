@@ -1,0 +1,269 @@
+<display id="channelInfo" >
+<!--
+#------------------------------------------------------------------------------
+# channelInfo start
+#------------------------------------------------------------------------------ -->
+
+<!-- TOP WINDOW-->
+<window x1="-460" x2="-1" y1="0" y2="70" bpp="4" />
+
+<rectangle x1="-460" x2="-1"   y1="0"  y2="20" color="MainLight" />
+<rectangle x1="-460" x2="-410" y1="20" y2="70" color="MainLight" />
+<rectangle x1="-410" x2="-1"   y1="20" y2="70" color="MainLight" />
+	
+<text x1="-430" x2="-20" y1="20" y2="60" color="FontColor" align="right" font="VDRSymbols Sans:Book@27" >{DateTime:%A %e.%m. %H\:%M}</text>
+<!-- TOP WINDOW END--> 
+
+<!-- LOWER WINDOW-->
+<window x1="140" x2="-140" y1="-340" y2="-55" bpp="8" />
+
+<!-- HEAD -->   
+<block>
+	<rectangle x1="140" x2="290"  y1="-340" y2="-290" color="MainLight" />
+	<rectangle x1="290" x2="-140" y1="-340" y2="-290" color="MainLight" />
+	<rectangle x1="140" x2="-140" y1="-290" y2="-270" color="Bar" />
+		
+	<progress x1="140" x2="-140" y1="-290" y2="-270" color="BarFill" bgColor="Bar" mark="Warning" current="{PresentProgress}" total="{PresentDuration}" />
+</block>
+<!-- HEAD END-->
+   
+<!-- BODY -->
+<rectangle x1="140" x2="-140" y1="-270" y2="-55" color="MainSolid" />
+
+<!-- RESOLUTIONS -->
+<!-- {VideoSizeWidth} {VideoSizeHeight} -->
+	
+<!-- sd -->
+<block 
+	condition="le({VideoSizeHeight},576)">
+	<text x1="140" x2="340" y1="-335" y2="-250" color="FontColor" align="right" font="VDRSymbols Sans:Book@22">SD</text>
+</block>
+	
+<!-- hd ready -->
+<block 
+	condition="and(gt({VideoSizeHeight},576),le({VideoSizeHeight},720))">
+	<text x1="140" x2="340" y1="-335" y2="-250" color="FontColor" align="right" font="VDRSymbols Sans:Book@22">720</text>
+</block>
+
+<!-- full hd -->
+<block 
+	condition="gt({VideoSizeHeight},720)">
+	<text x1="140" x2="340" y1="-335" y2="-250" color="FontColor" align="right" font="VDRSymbols Sans:Book@22">1080</text>
+</block>
+	
+<text x1="370" x2="475"  y1="-335" y2="-250" color="FontColor" font="VDRSymbols Sans:Book@37">{ChannelNumber}</text>
+<text x1="480" x2="-340" y1="-335" y2="-250" color="FontColor" font="VDRSymbols Sans:Book@37">{ChannelName}</text>
+
+<!-- channel logo -->
+<image 
+	x1="155" x2="355" y1="-245" y2="-145" 
+	alpha="204" 
+	condition="file('logos/{ChannelName}.png')" 
+	path="logos/{ChannelName}.png" />
+	
+<!-- SYMBOLS --> 
+<block>
+	
+	<!-- vps -->
+	
+	<!-- signal strength, signal-to-noise ratio -->
+	<text x1="140" x2="340" y1="-335" y2="-250" color="FontColor" align="left" font="VDRSymbols Sans:Book@22">{FrontendSTR} {FrontendSNR}</text>
+	
+	<!-- videotext -->
+	<block x1="-335" x2="-295" y1="-325" y2="-345" condition="not({HasTeletext})" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Divider" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+		<rectangle x1="5" x2="20" y1="5" y2="7" color="Divider" />
+		<rectangle x1="5" x2="20" y1="9" y2="11" color="Divider" />
+		<rectangle x1="5" x2="20" y1="13" y2="15" color="Divider" />
+	</block>
+
+	<block x1="-335" x2="-295" y1="-325" y2="-345" condition="{HasTeletext}" >
+ 		<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+		<rectangle x1="5" x2="20" y1="5" y2="7" color="Green" />
+		<rectangle x1="5" x2="20" y1="9" y2="11" color="Green" />
+		<rectangle x1="5" x2="20" y1="13" y2="15" color="Green" />
+	</block>
+	
+	<!-- dolby digital -->
+	<block x1="-295" x2="-255" y1="-325" y2="-345" condition="not({HasDolby})" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Divider" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+		<rectangle x1="12" x2="13" y1="3" y2="17" color="Divider" />
+
+		<ellipse x1="5" x2="10" y1="5" y2="15" arc="5"  color="Divider" />
+		<ellipse x1="15" x2="20" y1="5" y2="15" arc="7"  color="Divider" />
+	</block>
+
+	<block x1="-295" x2="-255" y1="-325" y2="-345" condition="{HasDolby}" >
+		<block>
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Yellow" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+			<rectangle x1="12" x2="13" y1="3" y2="17" color="Yellow" />
+
+			<ellipse x1="5" x2="10" y1="5" y2="15" arc="5"  color="Yellow" />
+			<ellipse x1="15" x2="20" y1="5" y2="15" arc="7"  color="Yellow" />
+		</block>
+	
+		<block condition="equal({Language},'deuDD')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+			<rectangle x1="12" x2="13" y1="3" y2="17" color="Green" />
+
+			<ellipse x1="5" x2="10" y1="5" y2="15" arc="5"  color="Green" />
+			<ellipse x1="15" x2="20" y1="5" y2="15" arc="7"  color="Green" />
+		</block>
+	
+		<block condition="equal({Language},'ddDD')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+ 			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+ 			<rectangle x1="12" x2="13" y1="3" y2="17" color="Green" />
+
+			<ellipse x1="5" x2="10" y1="5" y2="15" arc="5"  color="Green" />
+ 			<ellipse x1="15" x2="20" y1="5" y2="15" arc="7"  color="Green" />
+		</block>
+	</block>
+
+	<!-- multi language audio tracks -->	
+	<block x1="-255" x2="-215" y1="-325" y2="-345" condition="not({HasMultilang})" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Divider" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+		<ellipse x1="5" x2="13" y1="6" y2="14" color="Divider" />
+		<ellipse x1="6" x2="12" y1="7" y2="13" color="Divider" />
+		<ellipse x1="12" x2="20" y1="6" y2="14" color="Divider" />
+		<ellipse x1="13" x2="19" y1="7" y2="13" color="MainLight" />
+	</block>
+
+	<block x1="-255" x2="-215" y1="-325" y2="-345" condition="{HasMultilang}" >
+	
+		<block condition="equal({AudioChannel},'stereo')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="Green" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="Green" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="Green" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="Green" />
+		</block>
+	
+		<block condition="equal({AudioChannel},'left')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="Green" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="Green" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="Green" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="MainLight" />
+		</block>
+	
+		<block condition="equal({AudioChannel},'right')" >
+			<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+			<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+			<ellipse x1="5" x2="13" y1="6" y2="14" color="Green" />
+			<ellipse x1="6" x2="14" y1="7" y2="13" color="MainLight" />
+			<ellipse x1="12" x2="20" y1="6" y2="14" color="Green" />
+			<ellipse x1="13" x2="19" y1="7" y2="13" color="Green" />
+		</block>
+
+	</block>
+
+	<!-- encrypted -->
+	<block x1="-215" x2="-175" y1="-325" y2="-345" condition="not({IsEncrypted})" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Divider" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+		<ellipse x1="13" x2="21" y1="5" y2="15" color="Divider" />
+		<ellipse x1="15" x2="19" y1="7" y2="13" color="MainLight" />
+
+		<rectangle x1="4" x2="14" y1="9" y2="10" color="Divider" />
+		<rectangle x1="4" x2="6" y1="10" y2="13" color="Divider" />
+		<rectangle x1="7" x2="9" y1="10" y2="12" color="Divider" />
+	</block>
+	
+	<block x1="-215" x2="-175" y1="-325" y2="-345" condition="{IsEncrypted}" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Green" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+		<ellipse x1="13" x2="21" y1="5" y2="15" color="Green" />
+		<ellipse x1="15" x2="19" y1="7" y2="13" color="MainLight" />
+
+		<rectangle x1="4" x2="14" y1="9" y2="10" color="Green" />
+		<rectangle x1="4" x2="6" y1="10" y2="13" color="Green" />
+		<rectangle x1="7" x2="9" y1="10" y2="12" color="Green" />
+	</block>
+
+	<!-- recording -->	
+	<block x1="-175" x2="-135" y1="-325" y2="-345" condition="not({IsRecording})" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Divider" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+
+		<blink x1="5" x2="25" y1="4" y2="20" color="Warning" delay="400" condition="{TimerConflicts}"  font="VDRSymbols Sans:Bold@9" >rec</blink>
+		<text x1="5" x2="25" y1="4" y2="20" color="Divider" condition="not({TimerConflicts})"  font="VDRSymbols Sans:Bold@9" >rec</text>
+	</block>
+
+	<block x1="-175" x2="-135" y1="-325" y2="-345" condition="{IsRecording}" >
+		<rectangle x1="2" x2="23" y1="2" y2="18" color="Red" />
+		<rectangle x1="3" x2="22" y1="3" y2="17" color="MainLight" />
+	
+		<blink x1="5" x2="25" y1="4" y2="20" color="Warning" delay="800" condition="{TimerConflicts}"  font="VDRSymbols Sans:Bold@9" >rec</blink>
+		<text x1="5" x2="25" y1="4" y2="20" color="Red" condition="not({TimerConflicts})" font="VDRSymbols Sans:Bold@9" >rec</text>
+	</block>
+
+	<!-- SYMBOLS END --> 
+	
+	<!-- NOW AND NEXT EPG -->
+
+	<!-- now -->
+	<text x1="370" x2="480" y1="-242" y2="-205" color="FontColor" font="VDRSymbols Sans:Book@27" >{PresentStartDateTime:%H\:%M}</text>
+	<text x1="480" x2="-260" y1="-250" y2="-205" color="FontColor" font="VDRSymbols Sans:Book@37" condition="not({HasTimer})" >{PresentTitle}</text>
+	<text x1="480" x2="-260" y1="-250" y2="-205" color="FontColor" font="VDRSymbols Sans:Book@37" condition="{HasTimer}" >{PresentTitle} *</text>
+	<text x1="-360" x2="-285" y1="-245" y2="-205" color="FontColor" align="right" font="VDRSymbols Sans:Book@27" condition="{PresentRemaining}" >{PresentRemaining:%m}</text>
+	<text x1="-360" x2="-265" y1="-245" y2="-205" color="FontColor" align="right" font="VDRSymbols Sans:Book@15" condition="{PresentRemaining}" >m</text>
+	<text x1="480" x2="-360" y1="-205" y2="-145" color="FontColor" font="VDRSymbols Sans:Book@27" >{PresentShortText}</text>
+	<!-- now end -->
+	
+	<!-- next  -->
+	<text x1="370" x2="480" y1="-147" y2="-110" color="FontColor" font="VDRSymbols Sans:Book@27" >{FollowingStartDateTime:%H\:%M}</text>
+	<text x1="480" x2="-260" y1="-155" y2="-110" color="FontColor" font="VDRSymbols Sans:Book@37" condition="not({FollowingHasTimer})" >{FollowingTitle}</text>
+	<text x1="480" x2="-260" y1="-155" y2="-110" color="FontColor" font="VDRSymbols Sans:Book@37" condition="{FollowingHasTimer}" >{FollowingTitle} *</text>
+	<text x1="-360" x2="-285" y1="-150" y2="-110" color="FontColor" align="right" font="VDRSymbols Sans:Book@27" condition="{FollowingDuration}" >{FollowingDuration:%m} </text>
+	<text x1="-360" x2="-265" y1="-150" y2="-110" color="FontColor" align="right" font="VDRSymbols Sans:Book@15" condition="{FollowingDuration}" >m</text>
+	<text x1="480" x2="-360" y1="-110" y2="-20" color="FontColor" font="VDRSymbols Sans:Book@27" >{FollowingShortText}</text>
+	<!-- next end -->
+    
+</block>
+<!-- BODY END -->
+
+<!-- BUTTONS-->
+<block 
+	refresh="all,update,full" 
+	changed="{ButtonRed}{ButtonGreen}{ButtonYellow}{ButtonBlue}">
+	<!-- button background -->
+<!--
+	<rectangle x1="-340" x2="-150" y1="-270" y2="-220" color="#FF222222" />
+	<rectangle x1="-340" x2="-150" y1="-215" y2="-165" color="#FF222222" />
+	<rectangle x1="-340" x2="-150" y1="-160" y2="-110" color="#FF222222" />
+	<rectangle x1="-340" x2="-150" y1="-105" y2="-55"  color="#FF222222" />
+-->
+	<!-- color markers -->
+<!--
+	<rectangle x1="-150" x2="-140" y1="-270" y2="-220" color="#b4ff0000" />
+	<rectangle x1="-150" x2="-140" y1="-215" y2="-165" color="#b400ff00" />
+	<rectangle x1="-150" x2="-140" y1="-160" y2="-110" color="#b4ffff00" />
+	<rectangle x1="-150" x2="-140" y1="-105" y2="-55"  color="#b40000ff" />
+-->
+	<!-- button texts -->
+<!--
+	<text x1="-430" x2="-160" y1="-260" y2="-225" color="FontColorDark" align="right" font="VDRSymbols Sans:Book@27">BUTTON_1</text>
+	<text x1="-430" x2="-160" y1="-205" y2="-170" color="FontColorDark" align="right" font="VDRSymbols Sans:Book@27">BUTTON_2</text>
+	<text x1="-430" x2="-160" y1="-150" y2="-115" color="FontColorDark" align="right" font="VDRSymbols Sans:Book@27">BUTTON_3</text>
+	<text x1="-430" x2="-160" y1="-95"  y2="-60"  color="FontColorDark" align="right" font="VDRSymbols Sans:Book@27">BUTTON_4</text>
+-->
+</block>
+<!-- BUTTONS END-->
+
+<!-- LOWER WINDOW END-->
+</display>
