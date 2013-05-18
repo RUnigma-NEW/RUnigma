@@ -8,7 +8,7 @@
 # Most distributions contain the required packages or
 # get the sources from http://samba.org/ftp/ccache
 
-if ENABLE_CCACHE
+ifdef ENABLE_CCACHE
 # tuxbox-cdk ccache install path
 CCACHE_TUXBOX_BIN = $(ccachedir)/ccache
 
@@ -40,7 +40,7 @@ CCACHE_ENV = $(INSTALL) -d $(CCACHE_BINDIR); \
 		$(CCACHE_SETUP)
 
 # use ccache from your host if is installed
-if USE_CCACHEHOST
+ifdef USE_CCACHEHOST
 $(DEPDIR)/ccache:
 	$(CCACHE_ENV); \
 	$(CCACHE_TEST)
@@ -50,32 +50,33 @@ else
 #
 # build own tuxbox-cdk ccache
 #
-$(DEPDIR)/ccache.do_prepare: $(DEPENDS_ccache)
-	$(PREPARE_ccache)
-	touch $@
+BEGIN[[
+ccache
+  3.1.8
+  {PN}-{PV}
+  extract:http://samba.org/ftp/{PN}/{PN}-{PV}.tar.gz
+  make:install:DESTDIR=HOST
+;
+]]END
 
-$(DEPDIR)/ccache.do_compile: $(DEPDIR)/ccache.do_prepare
+$(hostprefix)/bin/ccache: $(DEPENDS_ccache)
+	$(PREPARE_ccache)
+	$(start_build)
 	cd $(DIR_ccache) && \
 		./configure \
 			--build=$(build) \
 			--host=$(build) \
 			--prefix= && \
 			$(MAKE) all && \
-			$(MAKE) install DESTDIR=$(hostprefix)
-	touch $@
-
-$(DEPDIR)/ccache: \
-$(DEPDIR)/%ccache: $(DEPDIR)/ccache.do_compile
-	$(start_build)
-	cd $(DIR_ccache) && \
 		$(CCACHE_ENV); \
 		$(CCACHE_TEST); \
 		$(INSTALL_ccache)
 	$(tocdk_build)
 	$(toflash_build)
-#	@DISTCLEANUP_ccache@
+	$(DISTCLEANUP_ccache)
 	[ "x$*" = "x" ] && touch $@ || true
 
 endif
 
 endif
+
