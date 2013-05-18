@@ -29,7 +29,7 @@ CONFIGPARAM=" \
 echo ""
 echo "---------------------------------------"
 echo ""
-echo "Вас приветствует teslanet"
+echo "Вас приветствует TeslaNet Piterkadet Greder"
 echo ""
 echo "---------------------------------------"
 echo ""
@@ -95,7 +95,7 @@ CONFIGPARAM="$CONFIGPARAM $KERNEL"
 ##############################################
 
 echo "   python 2.7.3"
-
+PYTHON="--enable-py27"
 ##############################################
 #if [ "$3" ]; then
 #REPLY="$3"
@@ -380,7 +380,9 @@ esac
 CONFIGPARAM="$CONFIGPARAM $PLAYER $MULTICOM $MEDIAFW $EXTERNAL_LCD $IMAGE $PYTHON $GFW"
 
 ##############################################
-
+# configure still want's this
+# ignore errors here
+automake --add-missing
 
 echo && \
 echo "Performing autogen.sh..." && \
