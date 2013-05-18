@@ -1,29 +1,4 @@
 #
-# FILESYSTEM
-#
-$(DEPDIR)/filesystem: \
-$(DEPDIR)/%filesystem: bootstrap-cross
-	$(INSTALL) -d $(targetprefix)/{bin,boot,dev,dev.static,etc,lib,mnt,opt,proc,root,sbin,sys,tmp,usr,var}
-	$(INSTALL) -d $(targetprefix)/etc/{default,opt}
-	$(INSTALL) -d $(targetprefix)/usr/{bin,include,lib,local,sbin,share,src}
-	$(INSTALL) -d $(targetprefix)/usr/local/{bin,include,lib,man,sbin,share,src}
-	$(INSTALL) -d $(targetprefix)/usr/local/man/{man1,man2,man3,man4,man5,man6,man7,man8}
-	$(INSTALL) -d $(targetprefix)/usr/share/{aclocal,doc,info,locale,man,misc,nls}
-	$(INSTALL) -d $(targetprefix)/usr/share/man/{man0p,man1,man1p,man2,man3,man3p,man4,man5,man6,man7,man8,man9}
-	$(INSTALL) -d $(targetprefix)/var/{backups,cache,lib,local,lock,log,mail,opt,run,spool}
-	ln -sf $(targetprefix)/lib $(targetprefix)/lib64
-	ln -sf $(targetprefix)/usr/lib $(targetprefix)/usr/lib64
-	$(INSTALL) -d $(targetprefix)/var/lib/misc
-	$(INSTALL) -d $(targetprefix)/var/lock/subsys
-	$(INSTALL) -d $(targetprefix)/etc/{init.d,rc.d,samba}
-	$(INSTALL) -d $(targetprefix)/etc/rc.d/{rc3.d,rcS.d}
-	ln -s ../init.d $(targetprefix)/etc/rc.d/init.d
-	$(INSTALL) -d $(targetprefix)/etc/samba/private
-	$(INSTALL) -d $(targetprefix)/media
-	$(INSTALL) -d $(targetprefix)/var/bin
-	[ "x$*" = "x" ] && touch $@ || true
-
-#
 # GLIBC
 #
 GLIBC := glibc
@@ -35,68 +10,62 @@ GLIBC_RAWVERSION := $(firstword $(subst -, ,$(GLIBC_VERSION)))
 GLIBC_SPEC := stm-target-$(GLIBC).spec
 GLIBC_SPEC_PATCH :=
 GLIBC_PATCHES :=
+
 GLIBC_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIBC)-$(GLIBC_VERSION).sh4.rpm
 GLIBC_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIBC_DEV)-$(GLIBC_VERSION).sh4.rpm
 
 $(GLIBC_RPM) $(GLIBC_DEV_RPM): \
-		$(if $(GLIBC_SPEC_PATCH),Patches/$(GLIBC_SPEC_PATCH)) \
-		$(if $(GLIBC_PATCHES),$(GLIBC_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(GLIBC_SPEC_PATCH) $(GLIBC_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(GLIBC)-$(GLIBC_VERSION).src.rpm \
 		| filesystem
-	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
+	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(GLIBC_SPEC_PATCH),( cd SPECS && patch -p1 $(GLIBC_SPEC) < $(buildprefix)/Patches/$(GLIBC_SPEC_PATCH) ) &&) \
-	$(if $(GLIBC_PATCHES),cp $(GLIBC_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(GLIBC_PATCHES),cp $(addprefix Patches/,$(GLIBC_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(GLIBC_SPEC)
 
-$(DEPDIR)/$(GLIBC): \
-$(DEPDIR)/%$(GLIBC): $(GLIBC_RPM) | $(DEPDIR)/%filesystem
-	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps  -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	$(start_build)
-	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
-
-$(DEPDIR)/$(GLIBC_DEV): \
-$(DEPDIR)/%$(GLIBC_DEV): $(DEPDIR)/%$(GLIBC) $(GLIBC_DEV_RPM)
+$(DEPDIR)/$(GLIBC): $(GLIBC_RPM) | $(DEPDIR)/filesystem
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
+
+$(DEPDIR)/$(GLIBC_DEV): $(DEPDIR)/$(GLIBC) $(GLIBC_DEV_RPM)
+	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	$(start_build)
+	$(fromrpm_build)
+	touch $@
 
 #
 # BINUTILS
 #
 BINUTILS := binutils
-FILES_binutils = \
-usr/lib/*.so
 BINUTILS_DEV := binutils-dev
 BINUTILS_VERSION := 2.23.2-72
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
-BINUTILS_SPEC_PATCH :=$(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
+BINUTILS_SPEC_PATCH := $(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
 BINUTILS_PATCHES :=
+
 BINUTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(BINUTILS)-$(BINUTILS_VERSION).sh4.rpm
 BINUTILS_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(BINUTILS_DEV)-$(BINUTILS_VERSION).sh4.rpm
 
 $(BINUTILS_RPM) $(BINUTILS_DEV_RPM): \
-		$(if $(BINUTILS_SPEC_PATCH),Patches/$(BINUTILS_SPEC_PATCH)) \
-		$(if $(BINUTILS_PATCHES),$(BINUTILS_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(BINUTILS_SPEC_PATCH) $(BINUTILS_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(BINUTILS)-$(BINUTILS_VERSION).src.rpm
-	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
+	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(BINUTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(BINUTILS_SPEC) < $(buildprefix)/Patches/$(BINUTILS_SPEC_PATCH) ) &&) \
-	$(if $(BINUTILS_PATCHES),cp $(BINUTILS_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(BINUTILS_PATCHES),cp $(addprefix Patches/,$(BINUTILS_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(BINUTILS_SPEC)
+	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(BINUTILS_SPEC)
 
 $(DEPDIR)/$(BINUTILS): $(BINUTILS_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $< \
-	$(start_build)
-	$(fromrpm_build)
+	@rpm $(DRPM) --ignorearch --nodeps -Uhv $<
 	touch $@
 
 $(DEPDIR)/$(BINUTILS_DEV): $(BINUTILS_DEV_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps --noscripts -Uhv $< && \
+	@rpm $(DRPM) --ignorearch --nodeps --noscripts -Uhv $<
 	touch $@
 
 #
@@ -107,15 +76,15 @@ GMP_VERSION := 5.1.0-8
 GMP_SPEC := stm-target-$(GMP).spec
 GMP_SPEC_PATCH :=
 GMP_PATCHES :=
+
 GMP_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GMP)-$(GMP_VERSION).sh4.rpm
 
 $(GMP_RPM): \
-		$(if $(GMP_SPEC_PATCH),Patches/$(GMP_SPEC_PATCH)) \
-		$(if $(GMP_PATCHES),$(GMP_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(GMP_SPEC_PATCH) $(GMP_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(GMP)-$(GMP_VERSION).src.rpm
 	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(GMP_SPEC_PATCH),( cd SPECS && patch -p1 $(GMP_SPEC) < $(buildprefix)/Patches/$(GMP_SPEC_PATCH) ) &&) \
-	$(if $(GMP_PATCHES),cp $(GMP_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(GMP_PATCHES),cp $(addprefix Patches/,$(GMP_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(GMP_SPEC)
 
@@ -135,15 +104,15 @@ MPFR_VERSION := 3.1.2-9
 MPFR_SPEC := stm-target-$(MPFR).spec
 MPFR_SPEC_PATCH :=
 MPFR_PATCHES :=
+
 MPFR_RPM := RPMS/sh4/$(STLINUX)-sh4-$(MPFR)-$(MPFR_VERSION).sh4.rpm
 
 $(MPFR_RPM): \
-		$(if $(MPFR_SPEC_PATCH),Patches/$(MPFR_SPEC_PATCH)) \
-		$(if $(MPFR_PATCHES),$(MPFR_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(MPFR_SPEC_PATCH) $(MPFR_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(MPFR)-$(MPFR_VERSION).src.rpm
 	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(MPFR_SPEC_PATCH),( cd SPECS && patch -p1 $(MPFR_SPEC) < $(buildprefix)/Patches/$(MPFR_SPEC_PATCH) ) &&) \
-	$(if $(MPFR_PATCHES),cp $(MPFR_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(MPFR_PATCHES),cp $(addprefix Patches/,$(MPFR_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(MPFR_SPEC)
 
@@ -161,17 +130,17 @@ $(DEPDIR)/$(MPFR): $(MPFR_RPM)
 MPC := mpc
 MPC_VERSION := 1.0.1-5
 MPC_SPEC := stm-target-$(MPC).spec
-MPC_SPEC_PATCH :=
-MPC_PATCHES :=
+MPC_SPEC_PATCH := 
+MPC_PATCHES := 
+
 MPC_RPM := RPMS/sh4/$(STLINUX)-sh4-$(MPC)-$(MPC_VERSION).sh4.rpm
 
 $(MPC_RPM): \
-		$(if $(MPC_SPEC_PATCH),Patches/$(MPC_SPEC_PATCH)) \
-		$(if $(MPC_PATCHES),$(MPC_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(MPC_SPEC_PATCH) $(MPC_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(MPC)-$(MPC_VERSION).src.rpm
 	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(MPC_SPEC_PATCH),( cd SPECS && patch -p1 $(MPC_SPEC) < $(buildprefix)/Patches/$(MPC_SPEC_PATCH) ) &&) \
-	$(if $(MPC_PATCHES),cp $(MPC_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(MPC_PATCHES),cp $(addprefix Patches/,$(MPC_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(MPC_SPEC)
 
@@ -184,47 +153,71 @@ $(DEPDIR)/$(MPC): $(MPC_RPM)
 	touch $@
 
 #
+# LIBELF
+#
+LIBELF := libelf
+LIBELF_VERSION := 0.8.13-2
+LIBELF_SPEC := stm-target-$(LIBELF).spec
+LIBELF_SPEC_PATCH :=
+LIBELF_PATCHES :=
+
+LIBELF_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBELF)-$(LIBELF_VERSION).sh4.rpm
+
+$(LIBELF_RPM): \
+		$(addprefix Patches/,$(LIBELF_SPEC_PATCH) $(LIBELF_PATCHES)) \
+		$(archivedir)/$(STLINUX)-target-$(LIBELF)-$(LIBELF_VERSION).src.rpm
+	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
+	$(if $(LIBELF_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBELF_SPEC) < $(buildprefix)/Patches/$(LIBELF_SPEC_PATCH) ) &&) \
+	$(if $(LIBELF_PATCHES),cp $(addprefix Patches/,$(LIBELF_PATCHES)) SOURCES/ &&) \
+	export PATH=$(hostprefix)/bin:$(PATH) && \
+	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBELF_SPEC)
+
+$(DEPDIR)/$(LIBELF): $(LIBELF_RPM)
+	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^)
+	touch $@
+
+#
 # ZLIB
 #
-ZLIB := zlib
-ZLIB_DEV := zlib-dev
-ZLIB_BIN := zlib-bin
-ZLIB_VERSION := 1.2.5-21
-ZLIB_SPEC := stm-target-$(ZLIB).spec
-ZLIB_SPEC_PATCH :=
-ZLIB_PATCHES :=
+#ZLIB := zlib
+#ZLIB_DEV := zlib-dev
+#ZLIB_BIN := zlib-bin
+#ZLIB_VERSION := 1.2.5-21
+#ZLIB_SPEC := stm-target-$(ZLIB).spec
+#ZLIB_SPEC_PATCH :=
+#ZLIB_PATCHES :=
 
-ZLIB_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB)-$(ZLIB_VERSION).sh4.rpm
-ZLIB_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB_DEV)-$(ZLIB_VERSION).sh4.rpm
-ZLIB_BIN_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB_BIN)-$(ZLIB_VERSION).sh4.rpm
+#ZLIB_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB)-$(ZLIB_VERSION).sh4.rpm
+#ZLIB_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB_DEV)-$(ZLIB_VERSION).sh4.rpm
+#ZLIB_BIN_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ZLIB_BIN)-$(ZLIB_VERSION).sh4.rpm
 
-$(ZLIB_RPM) $(ZLIB_DEV_RPM) $(ZLIB_BIN_RPM): \
-		$(if $(ZLIB_SPEC_PATCH),Patches/$(ZLIB_SPEC_PATCH)) \
-		$(if $(ZLIB_PATCHES),$(ZLIB_PATCHES:%=Patches/%)) \
-		$(archivedir)/$(STLINUX)-target-$(ZLIB)-$(ZLIB_VERSION).src.rpm
-	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
-	$(if $(ZLIB_SPEC_PATCH),( cd SPECS && patch -p1 $(ZLIB_SPEC) < $(buildprefix)/Patches/$(ZLIB_SPEC_PATCH) ) &&) \
-	$(if $(ZLIB_PATCHES),cp $(ZLIB_PATCHES:%=Patches/%) SOURCES/ &&) \
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(ZLIB_SPEC)
+#$(ZLIB_RPM) $(ZLIB_DEV_RPM) $(ZLIB_BIN_RPM): \
+#		$(if $(ZLIB_SPEC_PATCH),Patches/$(ZLIB_SPEC_PATCH)) \
+#		$(if $(ZLIB_PATCHES),$(ZLIB_PATCHES:%=Patches/%)) \
+#		$(archivedir)/$(STLINUX)-target-$(ZLIB)-$(ZLIB_VERSION).src.rpm
+#	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
+#	$(if $(ZLIB_SPEC_PATCH),( cd SPECS && patch -p1 $(ZLIB_SPEC) < $(buildprefix)/Patches/$(ZLIB_SPEC_PATCH) ) &&) \
+#	$(if $(ZLIB_PATCHES),cp $(ZLIB_PATCHES:%=Patches/%) SOURCES/ &&) \
+#	export PATH=$(hostprefix)/bin:$(PATH) && \
+#	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(ZLIB_SPEC)
 
-$(DEPDIR)/$(ZLIB): $(ZLIB_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) \
-	$(start_build)
-	$(fromrpm_build)
-	$(toflash_build)
-	touch $@
+#$(DEPDIR)/$(ZLIB): $(ZLIB_RPM)
+#	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) \
+#	$(start_build)
+#	$(fromrpm_build)
+#	$(toflash_build)
+#	touch $@
 
-$(DEPDIR)/$(ZLIB_DEV): $(ZLIB_DEV_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) \
-	$(start_build)
-	$(fromrpm_build)
-	$(toflash_build)
-	touch $@
+#$(DEPDIR)/$(ZLIB_DEV): $(ZLIB_DEV_RPM)
+#	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) \
+#	$(start_build)
+#	$(fromrpm_build)
+#	$(toflash_build)
+#	touch $@
 
-$(DEPDIR)/$(ZLIB_BIN): $(ZLIB_BIN_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) && \
-	touch $@
+#$(DEPDIR)/$(ZLIB_BIN): $(ZLIB_BIN_RPM)
+#	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) && \
+#	touch $@
 
 #
 # GCC LIBSTDC++
@@ -251,46 +244,41 @@ LIBSTDC_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBSTDC_DEV)-$(GCC_VERSION).sh4.rpm
 LIBGCC_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBGCC)-$(GCC_VERSION).sh4.rpm
 
 $(GCC_RPM) $(LIBSTDC_RPM) $(LIBSTDC_DEV_RPM) $(LIBGCC_RPM): \
-		$(if $(GCC_SPEC_PATCH),Patches/$(GCC_SPEC_PATCH)) \
-		$(if $(GCC_PATCHES),$(GCC_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(GCC_SPEC_PATCH) $(GCC_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(GCC)-$(GCC_VERSION).src.rpm
 	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(GCC_SPEC_PATCH),( cd SPECS && patch -p1 $(GCC_SPEC) < $(buildprefix)/Patches/$(GCC_SPEC_PATCH) ) &&) \
-	$(if $(GCC_PATCHES),cp $(GCC_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(GCC_PATCHES),cp $(addprefix Patches/,$(GCC_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(GCC_SPEC)
 
-$(DEPDIR)/$(GCC): \
-$(DEPDIR)/%$(GCC): $(DEPDIR)/%$(GLIBC_DEV) $(GCC_RPM)
+$(DEPDIR)/$(GCC): $(DEPDIR)/$(GLIBC_DEV) $(GCC_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
-$(DEPDIR)/$(LIBSTDC): \
-$(DEPDIR)/%$(LIBSTDC): $(DEPDIR)/%$(CROSS_LIBGCC) $(LIBSTDC_RPM)
+$(DEPDIR)/$(LIBSTDC): $(LIBSTDC_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
-$(DEPDIR)/$(LIBSTDC_DEV): \
-$(DEPDIR)/%$(LIBSTDC_DEV): $(DEPDIR)/%$(LIBSTDC) $(LIBSTDC_DEV_RPM)
+$(DEPDIR)/$(LIBSTDC_DEV): $(DEPDIR)/$(LIBSTDC) $(LIBSTDC_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
-	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/lib{std,sup}c++.la; \
-	sed -i '/^dependency_libs=/{ s# /usr/lib# $(targetprefix)/usr/lib#g }' $(targetprefix)/usr/lib/lib{std,sup}c++.la
+	touch $@
+	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/lib{std,sup}c++.la
+	sed -i "/^dependency_libs/s|-L/usr/lib -L/lib ||" $(targetprefix)/usr/lib/lib{std,sup}c++.la
 
-$(DEPDIR)/$(LIBGCC): \
-$(DEPDIR)/%$(LIBGCC): $(LIBGCC_RPM)
+$(DEPDIR)/$(LIBGCC): $(LIBGCC_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 # END OF BOOTSTRAP
 
@@ -300,58 +288,57 @@ $(DEPDIR)/%$(LIBGCC): $(LIBGCC_RPM)
 #FILES_libffi = \
 #/usr/lib/*.so*
 
-LIBFFI := #libffi
-LIBFFI_VERSION := 3.0.10-1
-LIBFFI_SPEC := stm-target-$(LIBFFI).spec
-LIBFFI_SPEC_PATCH :=
-LIBFFI_PATCHES :=
+#LIBFFI := libffi
+#LIBFFI_VERSION := 3.0.10-1
+#LIBFFI_SPEC := stm-target-$(LIBFFI).spec
+#LIBFFI_SPEC_PATCH :=
+#LIBFFI_PATCHES :=
 
-LIBFFI_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBFFI)-dev-$(LIBFFI_VERSION).sh4.rpm
+#LIBFFI_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBFFI)-dev-$(LIBFFI_VERSION).sh4.rpm
 
-$(LIBFFI_RPM): \
-		$(if $(LIBFFI_SPEC_PATCH),Patches/$(LIBFFI_SPEC_PATCH)) \
-		$(if $(LIBFFI_PATCHES),$(LIBFFI_PATCHES:%=Patches/%)) \
-		$(archivedir)/$(STLINUX)-target-$(LIBFFI)-$(LIBFFI_VERSION).src.rpm
-	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
-	$(if $(LIBFFI_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBFFI_SPEC) < $(buildprefix)/Patches/$(LIBFFI_SPEC_PATCH) ) &&) \
-	$(if $(LIBFFI_PATCHES),cp $(LIBFFI_PATCHES:%=Patches/%) SOURCES/ &&) \
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBFFI_SPEC)
+#$(LIBFFI_RPM): \
+#		$(addprefix Patches/,$(LIBFFI_SPEC_PATCH) $(LIBFFI_PATCH)) \
+#		$(if $(LIBFFI_PATCHES),$(LIBFFI_PATCHES:%=Patches/%)) \
+#		$(archivedir)/$(STLINUX)-target-$(LIBFFI)-$(LIBFFI_VERSION).src.rpm
+#	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
+#	$(if $(LIBFFI_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBFFI_SPEC) < $(buildprefix)/Patches/$(LIBFFI_SPEC_PATCH) ) &&) \
+#	$(if $(LIBFFI_PATCHES),cp $(addprefix Patches/,$(LIBFFI_PATCHES)) SOURCES/ &&) \
+#	export PATH=$(hostprefix)/bin:$(PATH) && \
+#	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBFFI_SPEC)
 
-$(DEPDIR)/$(LIBFFI): $(LIBFFI_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) && \
-	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/libffi.la
-	$(start_build)
-	$(fromrpm_build)
-	$(toflash_build)
-	touch $@
+#$(DEPDIR)/$(LIBFFI): $(LIBFFI_RPM)
+#	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) && \
+#	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/libffi.la
+#	$(start_build)
+#	$(fromrpm_build)
+#	$(toflash_build)
+#	touch $@
 
 #
 # GLIB2
 #
-GLIB2 := #glib2
+#GLIB2 := #glib2
 GLIB2_DEV := glib2-dev
 GLIB2_VERSION := 2.32.1-33
 GLIB2_SPEC := stm-target-$(GLIB2).spec
 GLIB2_SPEC_PATCH :=
 GLIB2_PATCHES :=
 
-GLIB2_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIB2)-$(GLIB2_VERSION).sh4.rpm
+#GLIB2_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIB2)-$(GLIB2_VERSION).sh4.rpm
 GLIB2_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIB2_DEV)-$(GLIB2_VERSION).sh4.rpm
 
 $(GLIB2_RPM) $(GLIB2_DEV_RPM): \
-		$(if $(GLIB2_SPEC_PATCH),Patches/$(GLIB2_SPEC_PATCH)) \
-		$(if $(GLIB2_PATCHES),$(GLIB2_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(GLIB2_SPEC_PATCH) $(GLIB2_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(GLIB2)-$(GLIB2_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -ihv $(lastword $^) && \
 	$(if $(GLIB2_SPEC_PATCH),( cd SPECS && patch -p1 $(GLIB2_SPEC) < $(buildprefix)/Patches/$(GLIB2_SPEC_PATCH) ) &&) \
-	$(if $(GLIB2_PATCHES),cp $(GLIB2_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(GLIB2_PATCHES),cp $(addprefix Patches/,$(GLIB2_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(GLIB2_SPEC)
 
-$(DEPDIR)/$(GLIB2): bootstrap $(HOST_GLIB2) $(GLIB2_RPM)
+#$(DEPDIR)/$(GLIB2): bootstrap $(HOST_GLIB2) $(GLIB2_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
 
 $(DEPDIR)/$(GLIB2_DEV): $(DEPDIR)/$(GLIB2) $(GLIB2_DEV_RPM)
@@ -380,17 +367,17 @@ LIBTERMCAP_RAWVERSION := $(firstword $(subst -, ,$(LIBTERMCAP_VERSION)))
 LIBTERMCAP_SPEC := stm-target-$(LIBTERMCAP).spec
 LIBTERMCAP_SPEC_PATCH :=
 LIBTERMCAP_PATCHES :=
+
 LIBTERMCAP_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBTERMCAP)-$(LIBTERMCAP_VERSION).sh4.rpm
 LIBTERMCAP_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBTERMCAP_DEV)-$(LIBTERMCAP_VERSION).sh4.rpm
 LIBTERMCAP_DOC_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBTERMCAP_DOC)-$(LIBTERMCAP_VERSION).sh4.rpm
 
 $(LIBTERMCAP_RPM) $(LIBTERMCAP_DEV_RPM) $(LIBTERMCAP_DOC_RPM): \
-		$(if $(LIBTERMCAP_SPEC_PATCH),Patches/$(LIBTERMCAP_SPEC_PATCH)) \
-		$(if $(LIBTERMCAP_PATCHES),$(LIBTERMCAP_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(LIBTERMCAP_SPEC_PATCH) $(LIBTERMCAP_PATCHES)) \
 		$(archivedir)/$(STM_SRC)-target-$(LIBTERMCAP)-$(LIBTERMCAP_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(LIBTERMCAP_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBTERMCAP_SPEC) < $(buildprefix)/Patches/$(LIBTERMCAP_SPEC_PATCH) ) &&) \
-	$(if $(LIBTERMCAP_PATCHES),cp $(LIBTERMCAP_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(LIBTERMCAP_PATCHES),cp $(addprefix Patches/,$(LIBTERMCAP_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBTERMCAP_SPEC)
 
@@ -402,6 +389,7 @@ $(DEPDIR)/$(LIBTERMCAP): bootstrap $(LIBTERMCAP_RPM)
 	$(start_build)
 	$(fromrpm_build)
 	touch $@
+	
 
 $(DEPDIR)/$(LIBTERMCAP_DEV): $(DEPDIR)/$(LIBTERMCAP) $(LIBTERMCAP_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  -Uhv \
@@ -416,53 +404,6 @@ $(DEPDIR)/$(LIBTERMCAP_DOC): $(LIBTERMCAP_DOC_RPM)
 	touch $@
 
 #
-# ELFUTILS
-#
-ELFUTILS := elfutils
-ELFUTILS_DEV := elfutils-dev
-FILES_elfutils = \
-/usr/lib/*.so \
-/usr/lib/*.so*
-FILES_elfutils_dev = \
-/usr/lib/*.so \
-/usr/lib/*.so*
-
-ELFUTILS_VERSION := 0.152-17
-ELFUTILS_SPEC := stm-target-$(ELFUTILS).spec
-ELFUTILS_SPEC_PATCH :=
-ELFUTILS_PATCHES :=
-ELFUTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ELFUTILS)-$(ELFUTILS_VERSION).sh4.rpm
-ELFUTILS_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(ELFUTILS_DEV)-$(ELFUTILS_VERSION).sh4.rpm
-
-$(ELFUTILS_RPM) $(ELFUTILS_DEV_RPM): \
-		$(addprefix Patches/,$(ELFUTILS_SPEC_PATCH) $(ELFUTILS_PATCHES)) \
-		$(archivedir)/$(STM_SRC)-target-$(ELFUTILS)-$(ELFUTILS_VERSION).src.rpm
-	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
-	$(if $(ELFUTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(ELFUTILS_SPEC) < $(buildprefix)/Patches/$(ELFUTILS_SPEC_PATCH) ) &&) \
-	$(if $(ELFUTILS_PATCHES),cp $(addprefix Patches/,$(ELFUTILS_PATCHES)) SOURCES/ &&) \
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(ELFUTILS_SPEC)
-
-$(DEPDIR)/$(ELFUTILS): \
-$(DEPDIR)/%$(ELFUTILS):$(ELFUTILS_RPM)
-	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	$(start_build)
-	$(fromrpm_build)
-	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
-	
-
-$(DEPDIR)/$(ELFUTILS_DEV): \
-$(DEPDIR)/%$(ELFUTILS_DEV): $(DEPDIR)/%$(ELFUTILS) $(ELFUTILS_DEV_RPM)
-	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	$(start_build)
-	$(fromrpm_build)
-	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
-
-#
 # NCURSES
 #
 NCURSES := ncurses
@@ -472,18 +413,18 @@ NCURSES_VERSION := 5.5-10
 NCURSES_SPEC := stm-target-$(NCURSES).spec
 NCURSES_SPEC_PATCH :=
 NCURSES_PATCHES :=
+
 NCURSES_RPM := RPMS/sh4/$(STLINUX)-sh4-$(NCURSES)-$(NCURSES_VERSION).sh4.rpm
 NCURSES_BASE_RPM := RPMS/sh4/$(STLINUX)-sh4-$(NCURSES_BASE)-$(NCURSES_VERSION).sh4.rpm
 NCURSES_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(NCURSES_DEV)-$(NCURSES_VERSION).sh4.rpm
 
 $(NCURSES_RPM) $(NCURSES_BASE_RPM) $(NCURSES_DEV_RPM): \
-		$(if $(NCURSES_SPEC_PATCH),Patches/$(NCURSES_SPEC_PATCH)) \
-		$(if $(NCURSES_PATCHES),$(NCURSES_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(NCURSES_SPEC_PATCH) $(NCURSES_PATCHES)) \
 		$(archivedir)/$(STM_SRC)-target-$(NCURSES)-$(NCURSES_VERSION).src.rpm \
 		| $(DEPDIR)/$(LIBSTDC_DEV)
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(NCURSES_SPEC_PATCH),( cd SPECS && patch -p1 $(NCURSES_SPEC) < $(buildprefix)/Patches/$(NCURSES_SPEC_PATCH) ) &&) \
-	$(if $(NCURSES_PATCHES),cp $(NCURSES_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(NCURSES_PATCHES),cp $(addprefix Patches/,$(NCURSES_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(NCURSES_SPEC)
 
@@ -498,7 +439,7 @@ $(DEPDIR)/$(NCURSES): $(DEPDIR)/$(NCURSES_BASE) $(NCURSES_RPM)
 	$(start_build)
 	$(fromrpm_build)
 	touch $@
-
+	
 $(DEPDIR)/$(NCURSES_DEV): $(DEPDIR)/$(NCURSES_BASE) $(NCURSES_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
@@ -514,15 +455,15 @@ BASE_PASSWD_VERSION := 3.5.9-11
 BASE_PASSWD_SPEC := stm-target-$(BASE_PASSWD).spec
 BASE_PASSWD_SPEC_PATCH :=
 BASE_PASSWD_PATCHES :=
+
 BASE_PASSWD_RPM := RPMS/sh4/$(STLINUX)-sh4-$(BASE_PASSWD)-$(BASE_PASSWD_VERSION).sh4.rpm
 
 $(BASE_PASSWD_RPM): \
-		$(if $(BASE_PASSWD_SPEC_PATCH),Patches/$(BASE_PASSWD_SPEC_PATCH)) \
-		$(if $(BASE_PASSWD_PATCHES),$(BASE_PASSWD_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(BASE_PASSWD_SPEC_PATCH) $(BASE_PASSWD_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(BASE_PASSWD)-$(BASE_PASSWD_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(BASE_PASSWD_SPEC_PATCH),( cd SPECS && patch -p1 $(BASE_PASSWD_SPEC) < $(buildprefix)/Patches/$(BASE_PASSWD_SPEC_PATCH) ) &&) \
-	$(if $(BASE_PASSWD_PATCHES),cp $(BASE_PASSWD_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(BASE_PASSWD_PATCHES),cp $(addprefix Patches/,$(BASE_PASSWD_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(BASE_PASSWD_SPEC)
 
@@ -545,15 +486,15 @@ MAKEDEV_VERSION := 2.3.1-27
 MAKEDEV_SPEC := stm-target-$(MAKEDEV).spec
 MAKEDEV_SPEC_PATCH :=
 MAKEDEV_PATCHES :=
+
 MAKEDEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(MAKEDEV)-$(MAKEDEV_VERSION).sh4.rpm
 
 $(MAKEDEV_RPM): \
-		$(if $(MAKEDEV_SPEC_PATCH),Patches/$(MAKEDEV_SPEC_PATCH)) \
-		$(if $(MAKEDEV_PATCHES),$(MAKEDEV_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(MAKEDEV_SPEC_PATCH) $(MAKEDEV_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(MAKEDEV)-$(MAKEDEV_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(MAKEDEV_SPEC_PATCH),( cd SPECS && patch -p1 $(MAKEDEV_SPEC) < $(buildprefix)/Patches/$(MAKEDEV_SPEC_PATCH) ) &&) \
-	$(if $(MAKEDEV_PATCHES),cp $(MAKEDEV_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(MAKEDEV_PATCHES),cp $(addprefix Patches/,$(MAKEDEV_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(MAKEDEV_SPEC)
 
@@ -571,15 +512,15 @@ BASE_FILES_VERSION := 2.0-8
 BASE_FILES_SPEC := stm-target-$(BASE_FILES).spec
 BASE_FILES_SPEC_PATCH :=
 BASE_FILES_PATCHES :=
+
 BASE_FILES_RPM := RPMS/sh4/$(STLINUX)-sh4-$(BASE_FILES)-$(BASE_FILES_VERSION).sh4.rpm
 
 $(BASE_FILES_RPM): \
-		$(if $(BASE_FILES_SPEC_PATCH),Patches/$(BASE_FILES_SPEC_PATCH)) \
-		$(if $(BASE_FILES_PATCHES),$(BASE_FILES_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(BASE_FILES_SPEC_PATCH) $(BASE_FILES_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(BASE_FILES)-$(BASE_FILES_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(BASE_FILES_SPEC_PATCH),( cd SPECS && patch -p1 $(BASE_FILES_SPEC) < $(buildprefix)/Patches/$(BASE_FILES_SPEC_PATCH) ) &&) \
-	$(if $(BASE_FILES_PATCHES),cp $(BASE_FILES_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(BASE_FILES_PATCHES),cp $(addprefix Patches/,$(BASE_FILES_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(BASE_FILES_SPEC)
 
@@ -607,12 +548,11 @@ LIBATTR_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBATTR)-$(LIBATTR_VERSION).sh4.rpm
 LIBATTR_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBATTR_DEV)-$(LIBATTR_VERSION).sh4.rpm
 
 $(LIBATTR_RPM) $(LIBATTR_DEV_RPM): \
-		$(if $(LIBATTR_SPEC_PATCH),Patches/$(LIBATTR_SPEC_PATCH)) \
-		$(if $(LIBATTR_PATCHES),$(LIBATTR_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(LIBATTR_SPEC_PATCH) $(LIBATTR_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(LIBATTR)-$(LIBATTR_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(LIBATTR_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBATTR_SPEC) < $(buildprefix)/Patches/$(LIBATTR_SPEC_PATCH) ) &&) \
-	$(if $(LIBATTR_PATCHES),cp $(LIBATTR_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(LIBATTR_PATCHES),cp $(addprefix Patches/,$(LIBATTR_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBATTR_SPEC)
 
@@ -634,7 +574,7 @@ $(DEPDIR)/$(LIBATTR_DEV): $(LIBATTR_DEV_RPM)
 #
 LIBACL := libacl
 LIBACL_DEV := libacl-dev
-LIBACL_VERSION := 2.2.47-5
+LIBACL_VERSION := 2.2.47-6
 LIBACL_SPEC := stm-target-$(LIBACL).spec
 LIBACL_SPEC_PATCH :=
 LIBACL_PATCHES :=
@@ -643,13 +583,12 @@ LIBACL_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBACL)-$(LIBACL_VERSION).sh4.rpm
 LIBACL_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBACL_DEV)-$(LIBACL_VERSION).sh4.rpm
 
 $(LIBACL_RPM) $(LIBACL_DEV_RPM): \
-		libattr libattr-dev \
-		$(if $(LIBACL_SPEC_PATCH),Patches/$(LIBACL_SPEC_PATCH)) \
-		$(if $(LIBACL_PATCHES),$(LIBACL_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(LIBACL_SPEC_PATCH) $(LIBACL_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(LIBACL)-$(LIBACL_VERSION).src.rpm
+		libattr libattr-dev
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(LIBACL_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBACL_SPEC) < $(buildprefix)/Patches/$(LIBACL_SPEC_PATCH) ) &&) \
-	$(if $(LIBACL_PATCHES),cp $(LIBACL_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(LIBACL_PATCHES),cp $(addprefix Patches/,$(LIBACL_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBACL_SPEC)
 
@@ -679,12 +618,11 @@ USBUTILS_usbutils = libusb
 USBUTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(USBUTILS)-$(USBUTILS_VERSION).sh4.rpm
 
 $(USBUTILS_RPM): \
-		$(if $(USBUTILS_SPEC_PATCH),Patches/$(USBUTILS_SPEC_PATCH)) \
-		$(if $(USBUTILS_PATCHES),$(USBUTILS_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(USBUTILS_SPEC_PATCH) $(USBUTILS_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(USBUTILS)-$(USBUTILS_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(USBUTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(USBUTILS_SPEC) < $(buildprefix)/Patches/$(USBUTILS_SPEC_PATCH) ) &&) \
-	$(if $(USBUTILS_PATCHES),cp $(USBUTILS_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(USBUTILS_PATCHES),cp $(addprefix Patches/,$(USBUTILS_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(USBUTILS_SPEC)
 
@@ -696,26 +634,25 @@ $(DEPDIR)/$(USBUTILS): $(USBUTILS_RPM)
 #
 # UDEV
 #
+
 UDEV := udev
 UDEV_DEV := udev-dev
 UDEV_VERSION := 162-34
-PKGR_udev := r1
+PKGR_udev := r0
 UDEV_SPEC := stm-target-$(UDEV).spec
 UDEV_SPEC_PATCH := stm-target-udev.spec.diff
 UDEV_PATCHES := usbhd-automount.rules
+
 UDEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UDEV)-$(UDEV_VERSION).sh4.rpm
 UDEV_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UDEV_DEV)-$(UDEV_VERSION).sh4.rpm
 
-RDEPENDS_udev := libattr libacl
-
 $(UDEV_RPM) $(UDEV_DEV_RPM): \
-		glib2 libacl libacl-dev libusb usbutils \
-		$(if $(UDEV_SPEC_PATCH),Patches/$(UDEV_SPEC_PATCH)) \
-		$(if $(UDEV_PATCHES),$(UDEV_PATCHES:%=Patches/%)) \
+		$(addprefix Patches/,$(UDEV_SPEC_PATCH) $(UDEV_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(UDEV)-$(UDEV_VERSION).src.rpm
+		glib2 glib2-dev libacl libacl-dev libusb usbutils
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(UDEV_SPEC_PATCH),( cd SPECS && patch -p1 $(UDEV_SPEC) < $(buildprefix)/Patches/$(UDEV_SPEC_PATCH) ) &&) \
-	$(if $(UDEV_PATCHES),cp $(UDEV_PATCHES:%=Patches/%) SOURCES/ &&) \
+	$(if $(UDEV_PATCHES),cp $(addprefix Patches/,$(UDEV_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(UDEV_SPEC)
 
@@ -738,3 +675,4 @@ $(DEPDIR)/$(UDEV_DEV): $(UDEV_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --noscripts -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
+	$(REWRITE_LIBDEP)/libgudev-1.0.la
