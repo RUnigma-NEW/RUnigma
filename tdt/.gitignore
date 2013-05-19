@@ -23,7 +23,6 @@ config.status
 config.sub
 configure
 autom4te.cache/
-acinclude.m4
 .libs/
 libtool
 ltmain.sh
