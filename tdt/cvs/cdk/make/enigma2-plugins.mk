@@ -6,6 +6,14 @@ $(DEPDIR)/enigma2-plugins: enigma2_openwebif enigma2_networkbrowser openpli-plug
 #
 # enigma2-openwebif
 #
+BEGIN[[
+enigma2_openwebif
+  git
+  e2openplugin-OpenWebif
+  nothing:git://github.com/schpuntik/e2openplugin-OpenWebif.git
+  make:install:DESTDIR=PKDIR
+;
+]]END
 
 DESCRIPTION_enigma2_openwebif = "open webinteface plugin for enigma2 by openpli team"
 PKGR_enigma2_openwebif = r1
@@ -24,15 +32,25 @@ $(DEPDIR)/%enigma2_openwebif: $(DEPDIR)/enigma2_openwebif.do_prepare
 		mkdir -p $(PKDIR)/usr/bin/ && \
 		cp -a plugin $(PKDIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif && \
 		cp -a $(buildprefix)/root/usr/bin/grab.sh $(PKDIR)/usr/bin/
-	$(toflash_build)
-#	@DISTCLEANUP_enigma2_openwebif@
-	@[ "x$*" = "x" ] && touch $@ || true
+	$(e2extra_build)
+#	$(DISTCLEANUP_enigma2_openwebif)
+	touch $@
 
 #
 # enigma2-networkbrowser
 #
+BEGIN[[
+enigma2_networkbrowser
+  git
+  {PN}-{PV}
+  nothing:git://openpli.git.sourceforge.net/gitroot/openpli/plugins-enigma2:sub=networkbrowser
+  patch:file://{PN}-support_autofs.patch
+  make:install:DESTDIR=PKDIR
+;
+]]END
 
 DESCRIPTION_enigma2_networkbrowser = "networkbrowser plugin for enigma2"
+PKGR_enigma2_networkbrowser = r1
 
 $(DEPDIR)/enigma2_networkbrowser.do_prepare: $(DEPENDS_enigma2_networkbrowser)
 	$(PREPARE_enigma2_networkbrowser)
@@ -70,8 +88,7 @@ $(DEPDIR)/%enigma2_networkbrowser: $(DEPDIR)/enigma2_networkbrowser.do_prepare
 		cp -a src/lib/netscan.so $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/ && \
 		rm -rf $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/lib
 	$(e2extra_build)
-#	@DISTCLEANUP_enigma2_networkbrowser@
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 $(DEPDIR)/%-openpli:
 	$(call git_fetch_prepare,$*_openpli,git://github.com/E2OpenPlugins/e2openplugin-$*.git)
@@ -81,8 +98,9 @@ $(DEPDIR)/%-openpli:
 	$(get_git_version)
 	cd $(DIR_$*_openpli) && \
 		$(python) setup.py install --root=$(PKDIR) --install-lib=/usr/lib/enigma2/python/Plugins
-	$(remove_pyo)
+	$(remove_pyc)
 	$(e2extra_build)
+#	$(DISTCLEANUP_enigma2_networkbrowser)
 	touch $@
 
 DESCRIPTION_NewsReader_openpli = RSS reader
