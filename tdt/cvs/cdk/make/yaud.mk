@@ -2,15 +2,10 @@
 # BOOTSTRAP
 #
 $(DEPDIR)/bootstrap: \
-$(DEPDIR)/%bootstrap: \
+	build.env \
 	$(FILESYSTEM) \
-	| $(GLIBC) \
+	| $(GLIBC_DEV) \
 	$(CROSS_LIBGCC) \
-	$(GLIBC) \
-	$(GLIBC_DEV) \
-	$(ZLIB) \
-	$(ZLIB_DEV) \
-	$(ZLIB_BIN) \
 	$(BINUTILS) \
 	$(BINUTILS_DEV) \
 	$(GMP) \
@@ -23,8 +18,7 @@ $(DEPDIR)/%bootstrap: \
 #
 # BARE-OS
 #
-$(DEPDIR)/bare-os: \
-$(DEPDIR)/%bare-os: \
+bare-os: \
 	bootstrap \
 	$(LIBTERMCAP) \
 	$(NCURSES_BASE) \
@@ -35,17 +29,17 @@ $(DEPDIR)/%bare-os: \
 	$(BASE_FILES) \
 	module_init_tools \
 	busybox \
+	libz \
 	grep \
-	$(SYSVINIT) \
-	$(SYSVINITTOOLS) \
 	$(INITSCRIPTS) \
 	$(NETBASE) \
 	$(BC) \
+	$(SYSVINIT) \
+	$(SYSVINITTOOLS) \
 	$(DISTRIBUTIONUTILS) \
 	u-boot-utils
 
-$(DEPDIR)/net-utils: \
-$(DEPDIR)/%net-utils: \
+net-utils: \
 	$(NETKIT_FTP) \
 	portmap \
 	$(NFSSERVER) \
@@ -54,22 +48,22 @@ $(DEPDIR)/%net-utils: \
 	opkg \
 	grep \
 	$(CIFS)
+	touch $@
 
-$(DEPDIR)/disk-utils: \
-$(DEPDIR)/%disk-utils: \
+disk-utils: \
 	e2fsprogs \
 	$(XFSPROGS) \
 	util-linux \
 	jfsutils \
 	$(SG3)
-
+	touch $@
 #
 # YAUD
 #
 yaud-stock: yaud-none stock
 
 yaud-enigma2-nightly: yaud-none \
-	host_python \
+		host_python \
 		lirc \
 		stslave \
 		boot-elf \
@@ -110,7 +104,6 @@ yaud-none: \
 		stfbcontrol \
 		showiframe \
 		streamproxy
-
 #
 # EXTRAS
 #
@@ -123,16 +116,17 @@ min-extras: \
 	enigma2-plugins-sh4-networkbrowser \
 	enigma2-plugins-sh4-libgisclubskin \
 	$(addsuffix -openpli,$(openpli_plugin_distlist)) \
-	wireless_tools
+	wireless_tools \
+	enigma2-plugins-sh4
 	
 all-extras: \
 	usb_modeswitch \
 	pppd \
 	modem-scripts \
-	evebrowser \
 	enigma2-plugins \
 	xupnpd \
 	ntfs_3g \
+	enigma2-plugins-sh4 \
 	wireless_tools \
 	enigma2-skins-sh4 \
 	ntpclient \
