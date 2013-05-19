@@ -583,9 +583,9 @@ LIBACL_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBACL)-$(LIBACL_VERSION).sh4.rpm
 LIBACL_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBACL_DEV)-$(LIBACL_VERSION).sh4.rpm
 
 $(LIBACL_RPM) $(LIBACL_DEV_RPM): \
+		libattr libattr-dev \
 		$(addprefix Patches/,$(LIBACL_SPEC_PATCH) $(LIBACL_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(LIBACL)-$(LIBACL_VERSION).src.rpm
-		libattr libattr-dev
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(LIBACL_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBACL_SPEC) < $(buildprefix)/Patches/$(LIBACL_SPEC_PATCH) ) &&) \
 	$(if $(LIBACL_PATCHES),cp $(addprefix Patches/,$(LIBACL_PATCHES)) SOURCES/ &&) \
@@ -646,10 +646,12 @@ UDEV_PATCHES := usbhd-automount.rules
 UDEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UDEV)-$(UDEV_VERSION).sh4.rpm
 UDEV_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UDEV_DEV)-$(UDEV_VERSION).sh4.rpm
 
+RDEPENDS_udev := libattr libacl
+
 $(UDEV_RPM) $(UDEV_DEV_RPM): \
+		glib2 libacl libacl-dev libusb usbutils \
 		$(addprefix Patches/,$(UDEV_SPEC_PATCH) $(UDEV_PATCHES)) \
 		$(archivedir)/$(STLINUX)-target-$(UDEV)-$(UDEV_VERSION).src.rpm
-		glib2 glib2-dev libacl libacl-dev libusb usbutils
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(UDEV_SPEC_PATCH),( cd SPECS && patch -p1 $(UDEV_SPEC) < $(buildprefix)/Patches/$(UDEV_SPEC_PATCH) ) &&) \
 	$(if $(UDEV_PATCHES),cp $(addprefix Patches/,$(UDEV_PATCHES)) SOURCES/ &&) \

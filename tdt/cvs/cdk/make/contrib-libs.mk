@@ -855,11 +855,14 @@ DESCRIPTION_glib2 = "libglib2"
 FILES_glib2 = \
 /usr/lib/*.so*
 
-$(DEPDIR)/glib2.do_prepare: bootstrap libffi $(DEPENDS_glib2)
-	$(PREPARE_glib2)
-	touch $@
+DESCRIPTION_glib2 = "libglib2"
 
-$(DEPDIR)/glib2.do_compile: $(DEPDIR)/glib2.do_prepare
+FILES_glib2 = \
+/usr/lib/*.so*
+
+$(DEPDIR)/glib2: bootstrap libffi $(DEPENDS_glib2)
+	$(PREPARE_glib2)
+	$(start_build)
 	echo "glib_cv_va_copy=no" > $(DIR_glib2)/config.cache
 	echo "glib_cv___va_copy=yes" >> $(DIR_glib2)/config.cache
 	echo "glib_cv_va_val_copy=yes" >> $(DIR_glib2)/config.cache
@@ -869,8 +872,6 @@ $(DEPDIR)/glib2.do_compile: $(DEPDIR)/glib2.do_prepare
 	echo "glib_cv_uscore=no" >> $(DIR_glib2)/config.cache
 	cd $(DIR_glib2) && \
 		$(BUILDENV) \
-		CFLAGS="$(TARGET_CFLAGS) -Os" \
-		PKG_CONFIG=$(hostprefix)/bin/pkg-config \
 		./configure \
 			--cache-file=config.cache \
 			--disable-gtk-doc \
@@ -880,13 +881,7 @@ $(DEPDIR)/glib2.do_compile: $(DEPDIR)/glib2.do_prepare
 			--host=$(target) \
 			--prefix=/usr \
 			--mandir=/usr/share/man && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/glib2: \
-$(DEPDIR)/%glib2: $(DEPDIR)/glib2.do_compile
-	$(start_build)
-	cd $(DIR_glib2) && \
+		$(MAKE) all && \
 		$(INSTALL_glib2)
 	$(tocdk_build)
 	$(toflash_build)
