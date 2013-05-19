@@ -28,7 +28,7 @@ def bb_checkset(var, val):
 	if not bb_data.has_key(var):
 		bb_set(var, val)
 
-DATAS_STR = 'PKGV PKGR DESCRIPTION SECTION PRIORITY MAINTAINER LICENSE PACKAGE_ARCH HOMEPAGE RDEPENDS RREPLACES RCONFLICTS SRC_URI FILES NAME preinst postinst prerm postrm'
+DATAS_STR = 'PKGV PKGR DESCRIPTION SECTION PRIORITY MAINTAINER LICENSE PACKAGE_ARCH HOMEPAGE RDEPENDS RREPLACES RCONFLICTS SRC_URI FILES NAME preinst postinst prerm postrm conffiles'
 DATAS = DATAS_STR.split()
 
 #######################################################################
@@ -48,7 +48,8 @@ DEFAULT_DATAS = [
 	['preinst', ''],
 	['postinst', ''],
 	['prerm', ''],
-	['postrm', '']]
+	['postrm', ''],
+	['conffiles', '']]
 
 for x in DEFAULT_DATAS:
 	bb_checkset('%s_%s' % (x[0], parent_pkg), x[1])
@@ -321,14 +322,15 @@ def write_control_file(fdir, full_package):
 	print 'Write control file to', fname
 	open(fname, 'w').write(s)
 	
-	scr = ['preinst', 'postinst', 'prerm', 'postrm']
+	scr = ['preinst', 'postinst', 'prerm', 'postrm', 'conffiles']
 	for s in scr:
 		script = bb_get(ext(s))
 		if script:
 			fd = open(pjoin(fdir, s), 'w')
 			fd.write(script)
 			fd.close()
-			os.chmod(pjoin(fdir, s), 0755)
+			if s != 'conffiles':
+				os.chmod(pjoin(fdir, s), 0755)
 
 def pjoin(*args):
 	#TODO: make it more clean. remove '/' dublicates. Do it with re, it would be faster..
