@@ -33,7 +33,7 @@ ifdef ENABLE_E2PD4
 endif
 
 ifdef ENABLE_E2PD5
-  git://github.com:schpuntik/enigma2-pli.git;b=master;protocol=ssh
+  git://github.com/technic/amiko-e2-pli.git;b=master
   patch:file://enigma2-pli-nightly.5.diff
 endif
 
@@ -43,7 +43,7 @@ ifdef ENABLE_E2PD6
 endif
 
 ifdef ENABLE_E2PD7
-  git://github.com:schpuntik/enigma2-pli.git;b=last
+  git://github.com/technic/amiko-e2-pli.git:b=last
   patch:file://enigma2-pli-nightly-last.diff
 endif
 
