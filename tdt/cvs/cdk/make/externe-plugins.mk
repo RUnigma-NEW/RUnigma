@@ -2,6 +2,14 @@
 # Make Extern-Plugins
 #
 #
+BEGIN[[
+e2plugin
+  git
+  {PN}
+  git://github.com/schpuntik/enigma2-plugins-sh4.git
+;
+]]END
+
 DESCRIPTION_e2plugin := Additional plugins for Enigma2
 
 PKGR_e2plugin = r2
@@ -11,12 +19,15 @@ FILES_e2plugin_meta := /usr/share/meta
 DESCRIPTION_e2plugin_meta := Enigma2 plugins metadata
 PACKAGES_e2plugin = e2plugin_meta
 DIST_e2plugin = enigma2_plugin_systemplugins_networkbrowser \
+enigma2_plugin_extensions_alternativesoftcammanager \
+enigma2_plugin_extensions_webinterface \
 enigma2_plugin_systemplugins_libgisclubskin
 
 # This is list of plugins that have files with non-typical path,
 # that doesn't start with /usr/lib/enigma2/python/Plugins
 enigma2_plugins_nontyp := \
 $(DEPDIR)/enigma2-plugins-sh4-networkbrowser \
+$(DEPDIR)/enigma2-plugins-sh4-multiquickbutton \
 $(DEPDIR)/enigma2-plugins-sh4-libgisclubskin
 
 
@@ -26,7 +37,7 @@ $(DEPDIR)/enigma2-plugins-sh4.do_prepare: $(DEPENDS_e2plugin)
 
 $(DIR_e2plugin)/config.status: enigma2-plugins-sh4.do_prepare
 	cd $(DIR_e2plugin) && \
-		autoreconf -i -I$(hostprefix)/share/aclocal && \
+		./autogen.sh && \
 		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python|' -i xml2po.py && \
 		$(BUILDENV) \
 		./configure \
@@ -41,6 +52,10 @@ $(DIR_e2plugin)/config.status: enigma2-plugins-sh4.do_prepare
 			$(PLATFORM_CPPFLAGS) $(E_CONFIG_OPTS)
 
 enigma2_plugindir = /usr/lib/enigma2/python/Plugins
+
+$(DEPDIR)/enigma2-plugins-bla: $(DIR_e2plugin)/config.status
+	$(eval enigma2-plugins-sh4-list = $(shell echo $(DIR_e2plugin)/*/Makefile | tr ' ' '\n' |sed 's:/Makefile::;s:.*/::'))
+	make $(addprefix $(DEPDIR)/enigma2-plugins-sh4-,$(enigma2-plugins-sh4-list))
 
 $(DEPDIR)/enigma2-plugins-sh4: $(DIR_e2plugin)/config.status $(enigma2_plugins_nontyp)
 	$(call parent_pk,e2plugin)
@@ -61,7 +76,7 @@ $(DEPDIR)/enigma2-plugins-sh4: $(DIR_e2plugin)/config.status $(enigma2_plugins_n
 			read_control_file('$(DIR_e2plugin)/' + pk + '/CONTROL/control') \n\
 		except IOError: \n\
 			print 'skipping', pk \n\
-		for s in ['preinst', 'postinst', 'prerm', 'postrm']: \n\
+		for s in ['preinst', 'postinst', 'prerm', 'postrm', 'conffiles']: \n\
 			try: \n\
 				bb_set(s + '_' + package, open('$(DIR_e2plugin)/' + pk + '/CONTROL/' + s).read()) \n\
 			except IOError: \n\
@@ -72,7 +87,8 @@ $(DEPDIR)/enigma2-plugins-sh4: $(DIR_e2plugin)/config.status $(enigma2_plugins_n
 	$(call do_build_pkg,none,extra)
 	touch $@
 
-$(enigma2_plugins_nontyp):
+#$(enigma2_plugins_nontyp):
+
 $(DEPDIR)/enigma2-plugins-sh4-%: $(DIR_e2plugin)/config.status
 	$(call parent_pk,e2plugin)
 	$(start_build)
@@ -80,6 +96,7 @@ $(DEPDIR)/enigma2-plugins-sh4-%: $(DIR_e2plugin)/config.status
 	cd $(DIR_e2plugin)/$* && \
 		$(MAKE) install DESTDIR=$(PKDIR)
 	rm -rf $(ipkgbuilddir)/*
+	$(flash_prebuild)
 
 	echo -e " \n\
 	from split_packages import * \n\
@@ -90,14 +107,14 @@ $(DEPDIR)/enigma2-plugins-sh4-%: $(DIR_e2plugin)/config.status
 		bb_set('FILES_' + package, '/') \n\
 	except IOError: \n\
 		print 'skipping', pk \n\
-	for s in ['preinst', 'postinst', 'prerm', 'postrm']: \n\
+	for s in ['preinst', 'postinst', 'prerm', 'postrm', 'conffiles']: \n\
 		try: \n\
 			bb_set(s + '_' + package, open('$(DIR_e2plugin)/' + pk + '/CONTROL/' + s).read()) \n\
 		except IOError: \n\
 			pass \n\
 	do_finish() \n\
 	" | $(hostprefix)/bin/python
-
+	
 	rm -r $(ipkgbuilddir)/e2plugin_meta
 	$(call do_build_pkg,none,extra)
 	touch $@
