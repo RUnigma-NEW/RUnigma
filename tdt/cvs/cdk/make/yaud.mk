@@ -6,6 +6,7 @@ $(DEPDIR)/bootstrap: \
 	$(FILESYSTEM) \
 	| $(GLIBC_DEV) \
 	$(CROSS_LIBGCC) \
+	libz \
 	$(BINUTILS) \
 	$(BINUTILS_DEV) \
 	$(GMP) \
@@ -29,7 +30,6 @@ bare-os: \
 	$(BASE_FILES) \
 	module_init_tools \
 	busybox \
-	libz \
 	grep \
 	$(INITSCRIPTS) \
 	$(NETBASE) \
