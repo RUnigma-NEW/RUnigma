@@ -1,15 +1,11 @@
 PARENT_PK = ''
 
-PACKAGE_PARAMS_LIST := PKGV PKGR DESCRIPTION SECTION PRIORITY MAINTAINER LICENSE PACKAGE_ARCH HOMEPAGE RDEPENDS RREPLACES RCONFLICTS SRC_URI FILES NAME preinst postinst prerm postrm PACKAGES
+PACKAGE_PARAMS_LIST := PKGV PKGR DESCRIPTION SECTION PRIORITY MAINTAINER LICENSE PACKAGE_ARCH HOMEPAGE RDEPENDS RREPLACES RCONFLICTS SRC_URI FILES NAME preinst postinst prerm postrm conffiles PACKAGES
 
-EXPORT_ALLENV = $(shell echo '$(.VARIABLES)' | awk -v RS=' ' '/^[a-zA-Z0-9_]+$$/')
+EXPORT_ALLENV = $(shell echo '$(.VARIABLES) ' | awk -v RS=' ' '/^[a-zA-Z0-9_]+$$/')
 EXPORT_ENV = $(filter PARENT_PK, $(EXPORT_ALLENV))
 EXPORT_ENV += $(filter $(addsuffix _%, $(PACKAGE_PARAMS_LIST)), $(EXPORT_ALLENV))
 export $(EXPORT_ENV)
-
-packagingtmpdir := $(buildprefix)/packagingtmpdir
-ipkgbuilddir := $(buildprefix)/ipkgbuild
-PKDIR := $(packagingtmpdir)
 
 export packagingtmpdir
 export ipkgbuilddir
@@ -19,6 +15,7 @@ export IPKGBUILDDIR
 ipkcdk := $(prefix)/ipkcdk
 ipkprefix := $(prefix)/ipkbox
 ipkextras := $(prefix)/ipkextras
+workprefix := $(prefix)/work
 
 $(ipkcdk):
 	$(INSTALL) -d $@
@@ -27,6 +24,9 @@ $(ipkprefix):
 	$(INSTALL) -d $@
 
 $(ipkextras):
+	$(INSTALL) -d $@
+
+$(workprefix):
 	$(INSTALL) -d $@
 
 define extra_build
@@ -166,7 +166,12 @@ endef
 
 define remove_pyo
 	find $(PKDIR) -name "*.pyo" -type f -exec rm -f {} \;
-	rm -rf $(PKDIR)$(PYTHON_DIR)/site-packages/*-py$(PYTHON_VERSION).egg-info
+	rm -rf $(PKDIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/*-py$(PYTHON_VERSION).egg-info
+endef
+
+define remove_pyc
+	find $(PKDIR) -name "*.pyc" -type f -exec rm -f {} \;
+	rm -rf $(PKDIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/*-py$(PYTHON_VERSION).egg-info
 endef
 
 define prepare_pkginfo_for_flash
@@ -233,13 +238,13 @@ opkg-sanitycheck:
 package-index: $(ipkprefix)/Packages
 $(ipkprefix)/Packages: $(ipkprefix)
 	cd $(ipkprefix) && \
-		$(crossprefix)/bin/ipkg-make-index . > Packages && \
+		/usr/bin/python $(crossprefix)/bin/ipkg-make-index . > Packages && \
 		cat Packages | gzip > Packages.gz
 
 package-index-extras: $(ipkextras)/Packages
 $(ipkextras)/Packages: $(ipkextras)
 	cd $(ipkextras) && \
-		$(crossprefix)/bin/ipkg-make-index . > Packages && \
+		/usr/bin/python $(crossprefix)/bin/ipkg-make-index . > Packages && \
 		cat Packages | gzip > Packages.gz
 
 svn_version := svn info | awk '/Revision:/ { print $$2 }'
