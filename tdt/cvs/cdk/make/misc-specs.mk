@@ -1,8 +1,3 @@
-$(DEPDIR)/boot-elf:
-	$(INSTALL_DIR) $(targetprefix)/lib/firmware
-	cp $(buildprefix)/root/firmware/*.fw $(targetprefix)/lib/firmware/
-	@[ "x$*" = "x" ] && touch $@ || true
-
 LIRCD_CONF := lircd_hl101.conf
 
 $(DEPDIR)/misc-cp:
@@ -10,7 +5,7 @@ $(DEPDIR)/misc-cp:
 	cp $(buildprefix)/root/etc/$(LIRCD_CONF) $(targetprefix)/etc/lircd.conf
 	cp -rd $(buildprefix)/root/etc/hotplug $(targetprefix)/etc
 	cp -rd $(buildprefix)/root/etc/hotplug.d $(targetprefix)/etc
-	@[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 $(DEPDIR)/misc-e2:
 	$(INSTALL_DIR) $(targetprefix)/media/hdd
@@ -19,7 +14,7 @@ $(DEPDIR)/misc-e2:
 	$(INSTALL_DIR) $(targetprefix)/hdd/music
 	$(INSTALL_DIR) $(targetprefix)/hdd/picture
 	$(INSTALL_DIR) $(targetprefix)/hdd/movie
-	@[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 #
 # SPLASHUTILS
@@ -29,6 +24,7 @@ SPLASHUTILS_VERSION := 1.5.4.3-9
 SPLASHUTILS_SPEC := stm-target-$(SPLASHUTILS).spec
 SPLASHUTILS_SPEC_PATCH :=
 SPLASHUTILS_PATCHES :=
+
 SPLASHUTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(SPLASHUTILS)-$(SPLASHUTILS_VERSION).sh4.rpm
 
 $(SPLASHUTILS_RPM): \
@@ -51,7 +47,7 @@ $(DEPDIR)/$(SPLASHUTILS): $(SPLASHUTILS_RPM)
 	$(LN_SF) liquid_theme $(targetprefix)/etc/splash/default && \
 	$(INSTALL_DIR) $(targetprefix)/lib/lsb && \
 	cp root/lib/lsb/splash-functions $(targetprefix)/lib/lsb/ && \
-	touch $@
+	touch -r $(lastword $^) $@
 
 #
 # STSLAVE
@@ -73,10 +69,10 @@ $(STSLAVE_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(STSLAVE_SPEC)
 
-$(DEPDIR)/$(STSLAVE): linux-kernel-headers binutils-dev $(STSLAVE_RPM)
+$(DEPDIR)/$(STSLAVE): $(STSLAVE_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
-	touch $@
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	touch -r $(lastword $^) $@
 	$(start_build)
 	$(fromrpm_build)
 
@@ -109,10 +105,7 @@ $(OPENSSL_RPM) $(OPENSSL_DEV_RPM): \
 
 $(DEPDIR)/$(OPENSSL): $(OPENSSL_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
-	sed -i "s,^prefix=.*,prefix=$(targetprefix)/usr," $(targetprefix)/usr/lib/pkgconfig/libcrypto.pc
-	sed -i "s,^prefix=.*,prefix=$(targetprefix)/usr," $(targetprefix)/usr/lib/pkgconfig/libssl.pc
-	sed -i "s,^prefix=.*,prefix=$(targetprefix)/usr," $(targetprefix)/usr/lib/pkgconfig/openssl.pc
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
 	$(start_build)
 	$(fromrpm_build)
@@ -215,3 +208,46 @@ $(DEPDIR)/$(ALSAPLAYER_DEV): $(ALSAPLAYER_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
+
+
+#
+# LIBEVENT
+#
+
+LIBEVENT := libevent
+LIBEVENT_DEV := libevent-dev
+FILES_libevent_dev = \
+/usr/lib
+FILES_libevent = \
+/usr/lib/*.so*
+
+LIBEVENT_VERSION := 2.0.19-4
+LIBEVENT_SPEC := stm-target-$(LIBEVENT).spec
+LIBEVENT_SPEC_PATCH := stm-target-$(LIBEVENT).spec.diff
+LIBEVENT_PATCHES :=
+LIBEVENT_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBEVENT)-$(LIBEVENT_VERSION).sh4.rpm
+LIBEVENT_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBEVENT_DEV)-$(LIBEVENT_VERSION).sh4.rpm
+
+$(LIBEVENT_RPM) $(LIBEVENT_DEV_RPM): \
+		$(if $(LIBEVENT_SPEC_PATCH),Patches/$(LIBEVENT_SPEC_PATCH)) \
+		$(if $(LIBEVENT_PATCHES),$(LIBEVENT_PATCHES:%=Patches/%)) \
+		$(archivedir)/$(STLINUX)-target-$(LIBEVENT)-$(LIBEVENT_VERSION).src.rpm
+	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
+	$(if $(LIBEVENT_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBEVENT_SPEC) < $(buildprefix)/Patches/$(LIBEVENT_SPEC_PATCH) ) &&) \
+	$(if $(LIBEVENT_PATCHES),cp $(LIBEVENT_PATCHES:%=Patches/%) SOURCES/ &&) \
+	export PATH=$(hostprefix)/bin:$(PATH) && \
+	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBEVENT_SPEC)
+
+$(DEPDIR)/$(LIBEVENT): $(LIBEVENT_RPM)
+	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
+	touch $@ || true
+	$(start_build)
+	$(fromrpm_build)
+
+$(DEPDIR)/$(LIBEVENT_DEV): $(LIBEVENT) $(LIBEVENT_DEV_RPM)
+	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
+	touch $@ || true
+	$(start_build)
+	$(fromrpm_build)
