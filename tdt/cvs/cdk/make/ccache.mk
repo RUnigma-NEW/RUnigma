@@ -52,9 +52,9 @@ else
 #
 BEGIN[[
 ccache
-  3.1.8
+  3.1.9
   {PN}-{PV}
-  extract:http://samba.org/ftp/{PN}/{PN}-{PV}.tar.gz
+  extract:http://samba.org/ftp/{PN}/{PN}-{PV}.tar.xz
   make:install:DESTDIR=HOST
 ;
 ]]END
