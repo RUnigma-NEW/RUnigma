@@ -2,6 +2,13 @@
 # Make Extern-Skins
 #
 #
+BEGIN[[
+e2skin
+  git
+  {PN}
+  git://github.com/schpuntik/enigma2-skins-sh4.git:b=master
+;
+]]END
 
 DESCRIPTION_e2skin := Skins for Enigma2
 
@@ -17,7 +24,7 @@ $(DEPDIR)/enigma2-skins-sh4.do_prepare: $(DEPENDS_e2skin)
 
 $(DIR_e2skin)/config.status: enigma2-skins-sh4.do_prepare
 	cd $(DIR_e2skin) && \
-		autoreconf --force --install -I$(hostprefix)/share/aclocal && \
+		./autogen.sh && \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
