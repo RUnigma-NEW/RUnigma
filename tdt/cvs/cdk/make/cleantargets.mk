@@ -24,15 +24,12 @@ cdk-clean:
 		BIN_DEST=$(targetprefix)/bin \
 		INSTALL_MOD_PATH=$(targetprefix) clean
 	-$(MAKE) -C $(appsdir)/misc/tools distclean
-	-$(MAKE) -C $(hostappsdir) clean
 #	-$(MAKE) -C root clean
 	-rm -rf build
 
 # Clean tuxbox source directories. Clean up in cdkroot as much as the
 # uninstall facilities of the components allow.
-clean-local: mostlyclean-local depsclean rpmdepsclean
-	-$(MAKE) -C $(appsdir)/misc/tools uninstall
-	-$(MAKE) -C $(hostappsdir) uninstall
+clean-local: mostlyclean-local depsclean rpmdepsclean misc-tools-clean
 	-rm -rf $(hostprefix)
 	-rm -rf $(crossprefix)/
 	-rm -rf $(configprefix)/
@@ -47,6 +44,9 @@ clean-local: mostlyclean-local depsclean rpmdepsclean
 	-rm -rf $(prefix)/ccache
 	-rm -rf $(DEPDIR)/u-boot-utils*
 	-rm -rf $(DEPDIR)/linux-kernel*
+	-rm -rf $(DEPDIR)/enigma2-pli-nightly.do_compile
+	-rm -rf $(DEPDIR)/enigma2-nightly.do_compile
+	-rm -rf $(DEPDIR)/xbmc-nightly.do_compile
 
 
 
@@ -54,14 +54,10 @@ clean-local: mostlyclean-local depsclean rpmdepsclean
 distclean-local:
 #	-$(MAKE) -C root distclean
 	-$(MAKE) -C $(appsdir) distclean
-	-$(MAKE) -C $(appsdir)/misc/tools distclean
-	-$(MAKE) -C $(hostappsdir) distclean
 	-$(MAKE) driver-clean
 	-rm -f Makefile-archive
 	-rm -f rules-downcheck.pl
 	-rm -f linux-sh4
-	-rm -rf $(appsdir)/enigma2-*
-	-rm -rf $(appsdir)/neutrino-*
 	-rm -rf $(DEPDIR)
 #	-rm -rf $(targetprefix)
 	-rm -rf $(hostprefix)
@@ -69,19 +65,24 @@ distclean-local:
 	-rm -rf $(crossprefix)/
 	-rm -rf $(configprefix)/
 	-rm -rf $(devkitprefix)/
+	-rm -rf $(workprefix)/
+	-rm -rf $(KERNEL_DIR)/
 	-rm -rf $(prefix)/*cdkroot/
 	-rm -rf $(prefix)/ipkcdk/
 	-rm -rf $(prefix)/ipkbox/
+	-rm -rf $(prefix)/ipkextras/
 	-rm -rf $(prefix)/pkgroot/
 	-rm -rf $(prefix)/*cdkroot-rpmdb
 	-rm -rf $(prefix)/*cdkroot-tftpboot
 	-rm -rf $(prefix)/cdkrootrewrite-pkgconfig
 	-rm -rf $(rpmdbprefix)/
+	-rm -rf $(prefix)/release*
 	-rm -rf SOURCES SPECS BUILD BUILDROOT SRPMS RPMS
 	-rm -rf $(prefix)/ccache
 	-rm -rf $(kernelprefix)/u-boot
 	-rm -rf $(STGFB_DIR)
-	-@DISTCLEANUP@
+	-$(DISTCLEANUP)
+	-rm Makefile
 
 #
 # RPM stuff
