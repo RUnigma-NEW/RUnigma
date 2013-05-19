@@ -9,7 +9,7 @@
 *.o.d
 *.swp
 *~
-Makefile.in
+Makefile.am
 aclocal.m4
 COPYING
 INSTALL

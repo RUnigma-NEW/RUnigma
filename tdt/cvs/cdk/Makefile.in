@@ -1,0 +1,18 @@
+## Makefile for Tuxbox
+
+.PRECIOUS: Makefile
+
+$(srcdir)/configure: configure.ac aclocal.m4
+	cd '$(srcdir)' && autoconf
+
+Makefile: Config.in Makefile.in config.status smart-rules.pl *.mk make/*.mk
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+# this makes sure we do not build top-level dependencies in parallel
+# (which would not be too helpful anyway, running many configure and
+# downloads in parallel...), but the sub-targets are still built in
+# parallel, which is useful on multi-processor / multi-core machines
+.NOTPARALLEL:
