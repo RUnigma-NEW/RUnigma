@@ -15,7 +15,7 @@ ETC_RW_FILES += hosts issue.net motd profile resolv.conf \
 BUSYBOX_ADAPTED_ETC_FILES =
 ETC_RW_FILES += shells shells.conf init.d/httpd
 
-INITSCRIPTS_ADAPTED_ETC_FILES = hostname init.d/mountvirtfs init.d/checkroot.sh init.d/mountall.sh init.d/rcS$(if $(HL101),_$(HL101))) vdstandby.cfg
+INITSCRIPTS_ADAPTED_ETC_FILES = hostname init.d/mountvirtfs init.d/checkroot.sh init.d/mountall.sh init.d/rcS$(if $(HL101),_$(HL101)) vdstandby.cfg
 ETC_RW_FILES +=  nologin hostname \
 		default/halt default/tmpfs \
 		init.d/bootmisc.sh \

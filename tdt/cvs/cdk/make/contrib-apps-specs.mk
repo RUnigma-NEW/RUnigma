@@ -80,6 +80,8 @@ $(DEPDIR)/$(SYSVINIT): $(SYSVINIT_ADAPTED_ETC_FILES:%=root/etc/%) $(SYSVINIT_RPM
 $(DEPDIR)/$(SYSVINITTOOLS): $(SYSVINITTOOLS_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $<
+	$(start_build)
+	$(fromrpm_build)
 	touch $@
 
 $(DEPDIR)/$(INITSCRIPTS): $(INITSCRIPTS_ADAPTED_ETC_FILES:%=root/etc/%) $(INITSCRIPTS_RPM) | filesystem
