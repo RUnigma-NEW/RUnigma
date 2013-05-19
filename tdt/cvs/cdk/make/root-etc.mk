@@ -15,7 +15,7 @@ ETC_RW_FILES += hosts issue.net motd profile resolv.conf \
 BUSYBOX_ADAPTED_ETC_FILES =
 ETC_RW_FILES += shells shells.conf init.d/httpd
 
-INITSCRIPTS_ADAPTED_ETC_FILES = hostname init.d/mountvirtfs init.d/checkroot.sh init.d/mountall.sh init.d/rcS$(if $(HL101),_$(HL101))$(if $(SPARK),_$(SPARK))$(if $(SPARK7162),_$(SPARK7162)) vdstandby.cfg
+INITSCRIPTS_ADAPTED_ETC_FILES = hostname init.d/mountvirtfs init.d/checkroot.sh init.d/mountall.sh init.d/rcS$(if $(HL101),_$(HL101))) vdstandby.cfg
 ETC_RW_FILES +=  nologin hostname \
 		default/halt default/tmpfs \
 		init.d/bootmisc.sh \
@@ -25,7 +25,7 @@ ETC_RW_FILES +=  nologin hostname \
 
 OPENRDATE_ADAPTED_ETC_FILES = init.d/rdate.sh
 ETC_RW_FILES += init.d/rdate.sh \
-	localtime 
+	localtime
 
 NETBASE_ADAPTED_ETC_FILES = network/interfaces
 ETC_RW_FILES += network/interfaces \
@@ -37,8 +37,8 @@ ETC_RW_FILES += modules init.d/module-init-tools
 SYSVINIT_ADAPTED_ETC_FILES = inittab
 #ETC_RW_FILES +=
 
-AUTOFS_ADAPTED_ETC_FILES = auto.master auto.ufs910 timezone.xml default/autofs init.d/autofs
-ETC_RW_FILES += auto.master auto.ufs910 timezone.xml default/autofs init.d/autofs \
+AUTOFS_ADAPTED_ETC_FILES = auto.master timezone.xml default/autofs init.d/autofs
+ETC_RW_FILES += auto.master timezone.xml default/autofs init.d/autofs \
 	auto.misc
 
 TCP_WRAPPERS_ADAPTED_ETC_FILES =
@@ -60,9 +60,6 @@ ETC_RW_FILES += default/sg_down init.d/sg_down
 
 DIVERSE_TOOLS_ADAPTED_ETC_FILES = default/swap init.d/allerlei init.d/swap default/framebuffer
 ETC_RW_FILES += default/swap init.d/allerlei init.d/swap default/framebuffer
-
-STOCK_GUI_ADAPTED_ETC_FILES = default/ufs910-common default/ufs910 init.d/ufs910-common init.d/ufs910
-ETC_RW_FILES += default/ufs910-common default/ufs910 init.d/ufs910-common init.d/ufs910
 
 FUSE_ADAPTED_ETC_FILES = init.d/fuse
 #ETC_RW_FILES +=
