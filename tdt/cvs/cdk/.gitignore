@@ -145,3 +145,4 @@ streamproxy-*
 ustslave-*
 !*.diff
 !*.patch
+!*.config

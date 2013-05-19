@@ -20,7 +20,7 @@ busybox
 
 DESCRIPTION_busybox = "Utilities for embedded systems"
 
-$(DEPDIR)/busybox: bootstrap $(DEPENDS_busybox) $(buildprefix)/Patches/busybox.config
+$(DEPDIR)/busybox: bootstrap $(DEPENDS_busybox)
 	$(PREPARE_busybox)
 	$(start_build)
 	cd $(DIR_busybox) && \
