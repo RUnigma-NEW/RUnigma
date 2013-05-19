@@ -1,6 +1,40 @@
 #
+# CONSOLE_DATA
+#
+BEGIN[[
+console_data
+  1.12
+  {PN}-{PV}
+  extract:ftp://ftp.debian.org/debian/pool/main/c/{PN}/{PN}_{PV}.orig.tar.gz
+  make:install
+;
+]]END
+
+$(DEPDIR)/console_data: bootstrap $(DEPENDS_console_data)
+	$(PREPARE_console_data)
+	cd $(DIR_console_data) && \
+		$(BUILDENV) \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			--prefix=$(targetprefix) \
+			--with-main_compressor=gzip && \
+		$(INSTALL_console_data)
+	$(CLEANUP_console_data)
+	touch $@
+
+#
 # SYSVINIT/INITSCRIPTS
 #
+BEGIN[[
+sysvinit
+  2.88
+  {PN}-{PV}
+  extract:ftp://ftp.cistron.nl/pub/people/miquels/{PN}/{PN}-{PV}.tar.gz
+  nothing:http://ftp.de.debian.org/debian/pool/main/s/{PN}/{PN}_{PV}dsf-13.1+squeeze1.diff.gz
+;
+]]END
+
 SYSVINIT := sysvinit
 INITSCRIPTS := initscripts
 FILES_sysvinit = \
@@ -12,8 +46,10 @@ FILES_sysvinit = \
 /sbin/shutdown \
 /sbin/reboot
 
-SYSVINIT_VERSION := 2.86-15
+SYSVINIT := sysvinit
+INITSCRIPTS := initscripts
 SYSVINITTOOLS := sysvinit-tools
+SYSVINIT_VERSION := 2.86-15
 SYSVINIT_SPEC := stm-target-$(SYSVINIT).spec
 SYSVINIT_SPEC_PATCH :=
 SYSVINIT_PATCHES :=
@@ -39,14 +75,12 @@ $(DEPDIR)/$(SYSVINIT): $(SYSVINIT_ADAPTED_ETC_FILES:%=root/etc/%) $(SYSVINIT_RPM
 		[ "$${i%%/*}" = "init.d" ] && chmod 755 $(prefix)/$*cdkroot/etc/$$i || true; done )
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 $(DEPDIR)/$(SYSVINITTOOLS): $(SYSVINITTOOLS_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $<
-	$(start_build)
-	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
 $(DEPDIR)/$(INITSCRIPTS): $(INITSCRIPTS_ADAPTED_ETC_FILES:%=root/etc/%) $(INITSCRIPTS_RPM) | filesystem
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force --nopost -Uhv \
@@ -75,6 +109,7 @@ $(DEPDIR)/$(INITSCRIPTS): $(INITSCRIPTS_ADAPTED_ETC_FILES:%=root/etc/%) $(INITSC
 			$(hostprefix)/bin/target-initdconfig --add $${s#init.d/} || \
 			echo "Unable to enable initd service: $${s#init.d/}" ; done && rm *rpmsave *.orig 2>/dev/null || true )
 	touch $@
+	
 
 #
 # NETBASE
@@ -194,7 +229,8 @@ $(DEPDIR)/$(DISTRIBUTIONUTILS): $(DISTRIBUTIONUTILS_RPM)
 	$(fromrpm_build)
 	touch $@
 
-$(DEPDIR)/$(DISTRIBUTIONUTILS_DOC): $(DISTRIBUTIONUTILS_DOC_RPM)
+$(DEPDIR)/$(DISTRIBUTIONUTILS_DOC): \
+$(DEPDIR)/%$(DISTRIBUTIONUTILS_DOC): $(DISTRIBUTIONUTILS_DOC_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
@@ -246,10 +282,18 @@ $(BASH_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(BASH_SPEC)
 
-$(DEPDIR)/%$(BASH): $(DEPDIR)/%$(GLIBC) $(DEPDIR)/%$(LIBTERMCAP) $(BASH_RPM)
+$(DEPDIR)/$(BASH): $(DEPDIR)/%$(BASH): $(DEPDIR)/%$(GLIBC) $(DEPDIR)/%$(LIBTERMCAP) $(BASH_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --noscripts --force -Uhvv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
 	[ "x$*" = "x" ] && touch -r $(lastword $^) $@ || true
+
+$(BASH).do_clean: %$(BASH).do_clean:
+	export HHL_CROSS_TARGET_DIR=$(prefix)/$*cdkroot && \
+	$(hostprefix)/bin/target-shellconfig --list || true && \
+	( $(hostprefix)/bin/target-shellconfig --del /bin/bash ) &> /dev/null || echo "Unable to unregister shell" && \
+	$(hostprefix)/bin/target-shellconfig --list && \
+	rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) -ev --noscripts $(STLINUX)-sh4-$(BASH) || true && \
+	[ "x$*" = "x" ] && [ -f .deps/$(subst -clean,,$@) ] && rm .deps/$(subst -clean,,$@) || true
 
 #
 # COREUTILS
@@ -324,7 +368,7 @@ $(SED_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(SED_SPEC)
 
-$(DEPDIR)/%$(SEDX): $(DEPDIR)/%$(GLIBC) $(SED_RPM)
+$(DEPDIR)/$(SEDX): $(DEPDIR)/%$(SEDX): $(DEPDIR)/%$(GLIBC) $(SED_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
 	[ "x$*" = "x" ] && touch -r $(lastword $^) $@ || true
@@ -352,7 +396,7 @@ $(DIFF_RPM) $(DIFF_DOC_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(DIFF_SPEC)
 
-$(DEPDIR)/%$(DIFF): $(DEPDIR)/%$(GLIBC) $(DIFF_RPM)
+$(DEPDIR)/$(DIFF): $(DEPDIR)/%$(DIFF): $(DEPDIR)/%$(GLIBC) $(DIFF_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
 	[ "x$*" = "x" ] && touch -r $(lastword $^) .deps/$(notdir $@) || true
@@ -382,7 +426,7 @@ $(FILE_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(FILE_SPEC)
 
-$(DEPDIR)/%$(FILE): $(FILE_RPM)
+$(DEPDIR)/$(FILE): $(DEPDIR)/%$(FILE): $(FILE_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
 	[ "x$*" = "x" ] && touch -r $(lastword $^) $@ || true
@@ -408,7 +452,7 @@ $(TAR_RPM): \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(TAR_SPEC)
 
-$(DEPDIR)/%$(TAR): $(DEPDIR)/%$(GLIBC) $(TAR_RPM)
+$(DEPDIR)/$(TAR): $(DEPDIR)/%$(TAR): $(DEPDIR)/%$(GLIBC) $(TAR_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch  --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
 	[ "x$*" = "x" ] && touch -r $(lastword $^) $@ || true
@@ -442,18 +486,32 @@ $(DEPDIR)/$(STRACE): $(DEPDIR)/%$(GLIBC) $(STRACE_RPM)
 #
 # UTIL LINUX
 # 
+BEGIN[[
+util_linux
+  2.20.1
+  util-linux-{PV}
+  extract:http://mirror.onat.edu.ua/debian/pool/main/u/util-linux/util-linux_{PV}.orig.tar.gz
+  patch:http://mirror.onat.edu.ua/debian/pool/main/u/util-linux/util-linux_{PV}-5.1.diff.gz
+  nothing:file://{PN}-stm.diff
+;
+]]END
+
 UTIL_LINUX = util-linux
 FILES_util_linux = \
 /sbin/mkfs \
 /sbin/blkid \
 /sbin/sfdisk \
 /usr/lib
-UTIL_LINUX_VERSION = 2.16.1-29
-UTIL_LINUX_SPEC = stm-target-$(UTIL_LINUX).spec
-UTIL_LINUX_SPEC_PATCH =
-UTIL_LINUX_PATCHES =
+UTIL_LINUX_MOUNT := mount
+UTIL_LINUX_BSDUTILS := bsdutils
+UTIL_LINUX_VERSION := 2.16.1-29
+UTIL_LINUX_SPEC := stm-target-$(UTIL_LINUX).spec
+UTIL_LINUX_SPEC_PATCH :=
+UTIL_LINUX_PATCHES :=
 
 UTIL_LINUX_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UTIL_LINUX)-$(UTIL_LINUX_VERSION).sh4.rpm
+UTIL_LINUX_MOUNT_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UTIL_LINUX_MOUNT)-$(UTIL_LINUX_VERSION).sh4.rpm
+UTIL_LINUX_BSDUTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(UTIL_LINUX_BSDUTILS)-$(UTIL_LINUX_VERSION).sh4.rpm
 
 $(UTIL_LINUX_RPM): \
 		$(addprefix Patches/,$(UTIL_LINUX_SPEC_PATCH) $(UTIL_LINUX_PATCHES)) \
@@ -468,13 +526,21 @@ $(UTIL_LINUX_RPM): \
 $(DEPDIR)/$(UTIL_LINUX): $(UTIL_LINUX_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uuid.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/blkid.pc
 	$(REWRITE_LIBDEP)/lib{blkid,uuid}.la
 	$(REWRITE_LIBDIR)/lib{blkid,uuid}.la
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch -r $(lastword $^) $@ || true
+	touch $@
+
+$(DEPDIR)/$(UTIL_LINUX_MOUNT): $(UTIL_LINUX_MOUNT_RPM)
+	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	touch $@
+
+$(DEPDIR)/$(UTIL_LINUX_BSDUTILS): $(UTIL_LINUX_BSDUTILS_RPM)
+	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	touch $@
 
 #
 # IPTABLES
@@ -501,16 +567,16 @@ $(IPTABLES_RPM) $(IPTABLES_DEV_RPM) : \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(IPTABLES_SPEC)
 
-$(DEPDIR)/%$(IPTABLES_DEV): $(IPTABLES_DEV_RPM)
+$(DEPDIR)/$(IPTABLES_DEV): $(DEPDIR)/%$(IPTABLES_DEV): $(IPTABLES_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
 
-$(DEPDIR)/%$(IPTABLES): $(IPTABLES_RPM)
+$(DEPDIR)/$(IPTABLES): $(DEPDIR)/%$(IPTABLES): $(IPTABLES_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	$(start_build)
 	$(fromrpm_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@
