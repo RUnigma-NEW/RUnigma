@@ -4094,11 +4094,10 @@ $(DEPDIR)/tuxtxtlib.do_compile: $(DEPDIR)/tuxtxtlib.do_prepare
 		aclocal -I $(hostprefix)/share/aclocal && \
 		autoheader && \
 		autoconf && \
-		automake --foreign && \
 		libtoolize --force && \
+		automake --foreign --add-missing && \
 		$(BUILDENV) \
 		./configure \
-			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--with-boxtype=generic \
@@ -4151,11 +4150,10 @@ $(DEPDIR)/tuxtxt32bpp.do_compile: $(DEPDIR)/tuxtxt32bpp.do_prepare
 		aclocal -I $(hostprefix)/share/aclocal && \
 		autoheader && \
 		autoconf && \
-		automake --foreign --add-missing && \
 		libtoolize --force && \
+		automake --foreign --add-missing && \
 		$(BUILDENV) \
 		./configure \
-			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--with-boxtype=generic \
@@ -4248,17 +4246,12 @@ $(DEPDIR)/libdreamdvd2.do_prepare: bootstrap libdvdnav $(DEPENDS_libdreamdvd2)
 $(DEPDIR)/libdreamdvd2.do_compile: $(DEPDIR)/libdreamdvd2.do_prepare
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_libdreamdvd2) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoheader && \
-		autoconf && \
-		automake --foreign --add-missing && \
-		libtoolize --force && \
-		$(BUILDENV) \
-		./configure \
-			--build=$(build) \
-			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all
+	autoreconf -i && \
+	$(BUILDENV) \
+	./configure \
+		--host=$(target) \
+		--prefix=/usr && \
+	$(MAKE) all
 	touch $@
 
 $(DEPDIR)/libdreamdvd2: \
