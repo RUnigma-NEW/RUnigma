@@ -7,11 +7,11 @@ import re
 # Usage ./dep-graph.py [target to study] [makefile dump]
 
 
-makefile_name = "Makefile.p"
+makefile_name = "Makefile.dump"
 if len(sys.argv) > 2:
 	makefile_name = sys.argv[2]
 else:
-	os.system("make -p > %s" % makefile_name)
+	os.system("export LANG=en_US; make -p > %s" % makefile_name)
 
 rootname = ""
 if len(sys.argv) > 1:
@@ -26,11 +26,13 @@ targ = {}
 
 fdot.write("digraph G{")
 fdot.write("""
-	nodesep=0.2;
+#	nodesep=0.2;
+ranksep=1;
 	charset="latin1";
 	rankdir=LR;
-	fixedsize=true;
-	node [style="rounded,filled", width=0, height=0, shape=box, fillcolor="#E5E5E5", concentrate=true]
+#	fixedsize=true;
+	concentrate=true;
+	node [style="rounded,filled", width=0, height=0, shape=box, fillcolor="#E5E5E5"]
 """)
 
 
@@ -39,7 +41,7 @@ def debug(s):
 
 def process(s):
 	s = s.strip()
-	if s.find("Patches") > -1 or s.find("Archive") > -1:
+	if s.find("Patches") > -1 or s.find("Archive") > -1 or s.startswith('root/'):
 		return ''
 	l = s.split('/')
 	if s.find(".deps") < 0:
@@ -134,6 +136,9 @@ for x in targ:
 			l[i] = l[i].replace('.do_prepare', '')
 		elif l[i].endswith('.do_compile'):
 			l[i] = l[i].replace('.do_compile', '')
+		elif l[i].find('.version_') > -1:
+			print 'VERSION', l[i][:l[i].find('.version_')]
+			l[i] = l[i][:l[i].find('.version_')]
 	targ[x] = l
 	targ2[x] = targ[x]
 
@@ -204,7 +209,7 @@ fdot.write("}")
 fdot.close()
 
 print "Drawing graph...."
-cmd = "cat dep.dot |tred |dot -Tsvg -o dot.svg"
+cmd = "cat dep.dot |grep -v '.version_' |tred |dot -Tsvg -o dot.svg"
 print "exec:", cmd
 os.system(cmd)
 print "output is in dot.svg"
