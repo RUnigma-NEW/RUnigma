@@ -1,18 +1,18 @@
 ############ Patches Kernel 24 ###############
 
-if ENABLE_P0207
+ifdef ENABLE_P0207
 PATCH_STR=_0207
 endif
 
-if ENABLE_P0209
+ifdef ENABLE_P0209
 PATCH_STR=_0209
 endif
 
-if ENABLE_P0210
+ifdef ENABLE_P0210
 PATCH_STR=_0210
 endif
 
-if ENABLE_P0211
+ifdef ENABLE_P0211
 PATCH_STR=_0211
 endif
 
@@ -37,7 +37,8 @@ COMMONPATCHES_24 = \
 		$(if $(P0209)$(P0210)$(P0211),linux-sh4-mmap_stm24.patch) \
 		$(if $(P0209)$(P0210)$(P0211),linux-sh4-remove_pcm_reader_stm24.patch) \
 		$(if $(P0209),linux-sh4-dwmac_stm24_0209.patch) \
-		$(if $(P0207),linux-sh4-sti7100_missing_clk_alias_stm24$(PATCH_STR).patch)
+		$(if $(P0207),linux-sh4-sti7100_missing_clk_alias_stm24$(PATCH_STR).patch) \
+		$(if $(P0209)$(P0211),linux-sh4-directfb_stm24$(PATCH_STR).patch)
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		stx7100_fdma_fix_stm24$(PATCH_STR).patch \
@@ -51,7 +52,7 @@ HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 
 KERNELPATCHES_24 =  \
 		$(if $(HL101),$(HL101_PATCHES_24))
-	
+
 ############ Patches Kernel 24 End ###############
 
 #
@@ -67,16 +68,16 @@ $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
 	touch $@
 
 KERNELHEADERS := linux-kernel-headers
-if ENABLE_P0207
+ifdef ENABLE_P0207
 KERNELHEADERS_VERSION := 2.6.32.16-44
 else
-if ENABLE_P0209
+ifdef ENABLE_P0209
 KERNELHEADERS_VERSION := 2.6.32.46-45
 else
-if ENABLE_P0210
+ifdef ENABLE_P0210
 KERNELHEADERS_VERSION := 2.6.32.46-45
 else
-if ENABLE_P0211
+ifdef ENABLE_P0211
 KERNELHEADERS_VERSION := 2.6.32.46-45
 endif
 endif
@@ -112,24 +113,24 @@ $(DEPDIR)/%$(KERNELHEADERS): $(KERNELHEADERS_RPM)
 # IMPORTANT: it is expected that only one define is set
 MODNAME = $(HL101)
 
-if DEBUG
+ifdef DEBUG
 DEBUG_STR=.debug
-else !DEBUG
+else
 DEBUG_STR=
-endif !DEBUG
+endif
 
 HOST_KERNEL := host-kernel
 
-if ENABLE_P0207
+ifdef ENABLE_P0207
 HOST_KERNEL_VERSION = 2.6.32.28$(KERNELSTMLABEL)-$(KERNELLABEL)
 else
-if ENABLE_P0209
+ifdef ENABLE_P0209
 HOST_KERNEL_VERSION = 2.6.32.46$(KERNELSTMLABEL)-$(KERNELLABEL)
 else
-if ENABLE_P0210
+ifdef ENABLE_P0210
 HOST_KERNEL_VERSION = 2.6.32.57$(KERNELSTMLABEL)-$(KERNELLABEL)
 else
-if ENABLE_P0211
+ifdef ENABLE_P0211
 HOST_KERNEL_VERSION = 2.6.32.59$(KERNELSTMLABEL)-$(KERNELLABEL)
 endif
 endif
@@ -153,8 +154,9 @@ $(HOST_KERNEL_RPM): \
 $(DEPDIR)/linux-kernel.do_prepare: \
 		$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=Patches/%)) \
 		$(HOST_KERNEL_RPM)
+	@rpm $(DRPM) -ev $(HOST_KERNEL_SRC_RPM:%.src.rpm=%) || true
 	rm -rf $(KERNEL_DIR)
-	rm -rf linux-sh4
+	rm -rf linux{,-sh4}
 	rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^)
 	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR) && cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1)
 	$(INSTALL) -m644 Patches/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
@@ -167,7 +169,7 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 	rm $(KERNEL_DIR)/.config
 	touch $@
 
-if ENABLE_GRAPHICFWDIRECTFB
+ifdef ENABLE_GRAPHICFWDIRECTFB
 GRAPHICFWDIRECTFB_SED_CONF=-i s"/^\# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set/CONFIG_BPA2_DIRECTFBOPTIMIZED=y/"
 else
 GRAPHICFWDIRECTFB_SED_CONF=-i s"/^CONFIG_BPA2_DIRECTFBOPTIMIZED=y/\# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set/"
@@ -184,26 +186,27 @@ $(DEPDIR)/linux-kernel.do_compile: \
 		export PATH=$(hostprefix)/bin:$(PATH) && \
 		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- mrproper && \
 		@M4@ $(buildprefix)/Patches/$(HOST_KERNEL_CONFIG) > .config && \
+	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" .config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> .config; fi && \
 		sed $(GRAPHICFWDIRECTFB_SED_CONF) .config && \
 		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- uImage modules
 	touch $@
 
 NFS_FLASH_SED_CONF=$(foreach param,XCONFIG_NFS_FS XCONFIG_LOCKD XCONFIG_SUNRPC,-e s"/^.*$(param)[= ].*/$(param)=m/")
 
-if ENABLE_XFS
+ifdef ENABLE_XFS
 XFS_SED_CONF=$(foreach param,CONFIG_XFS_FS,-e s"/^.*$(param)[= ].*/$(param)=m/")
 else
 XFS_SED_CONF=-e ""
 endif
 
-if ENABLE_NFSSERVER
+ifdef ENABLE_NFSSERVER
 #NFSSERVER_SED_CONF=$(foreach param,CONFIG_NFSD CONFIG_NFSD_V3 CONFIG_NFSD_TCP,-e s"/^.*$(param)[= ].*/$(param)=y/")
 NFSSERVER_SED_CONF=$(foreach param,CONFIG_NFSD,-e s"/^.*$(param)[= ].*/$(param)=y\nCONFIG_NFSD_V3=y\n\# CONFIG_NFSD_V3_ACL is not set\n\# CONFIG_NFSD_V4 is not set\nCONFIG_NFSD_TCP=y/")
 else
 NFSSERVER_SED_CONF=-e ""
 endif
 
-if ENABLE_NTFS
+ifdef ENABLE_NTFS
 NTFS_SED_CONF=$(foreach param,CONFIG_NTFS_FS,-e s"/^.*$(param)[= ].*/$(param)=m/")
 else
 NTFS_SED_CONF=-e ""
@@ -232,7 +235,7 @@ $(DEPDIR)/linux-kernel.%.do_compile: \
 
 DESCRIPTION_linux_kernel = "The Linux Kernel and modules"
 PKGV_linux_kernel = $(KERNELVERSION)
-PKGR_linux_kernel = r3
+PKGR_linux_kernel = r4
 SRC_URI_linux_kernel = stlinux.com
 FILES_linux_kernel = \
 /lib/modules/$(KERNELVERSION)/kernel \
@@ -269,12 +272,18 @@ $(DEPDIR)/linux-kernel: bootstrap $(DEPDIR)/linux-kernel.do_compile
 
 linux-kernel-distclean: $(KERNELHEADERS)-distclean
 
+BEGIN[[
+driver
+  git
+  {PN}-{PV}
+  plink:$(driverdir):{PN}-{PV}
+;
+]]END
 DESCRIPTION_driver = Drivers for stm box
-PKGR_driver = r2
+PKGR_driver = r3
 PACKAGES_driver = driver_pti driver
 FILES_driver = /lib/modules/$(KERNELVERSION)/extra
 SRC_URI_driver = "http://gitorious.org/~schpuntik/open-duckbox-project-sh4/tdt-amiko"
-DIR_driver = $(driverdir)
 DESCRIPTION_driver_pti = open source st-pti kernel module
 RCONFLICTS_driver_pti = driver_ptinp
 FILES_driver_pti = /lib/modules/$(KERNELVERSION)/extra/pti
@@ -285,13 +294,15 @@ define postinst_driver
 depmod
 endef
 
-$(DEPDIR)/driver: $(driverdir)/Makefile linux-kernel.do_compile
+$(DEPDIR)/driver: $(DEPENDS_driver) $(driverdir)/Makefile glibc-dev linux-kernel.do_compile
+	$(PREPARE_driver)
 #	$(MAKE) -C $(KERNEL_DIR) $(MAKE_OPTS) ARCH=sh modules_prepare
 	$(start_build)
 	$(get_git_version)
 	$(eval export PKGV_driver = $(PKGV_driver)$(KERNELSTMLABEL))
 	$(if $(PLAYER191),cp $(driverdir)/stgfb/stmfb/linux/drivers/video/stmfb.h $(targetprefix)/usr/include/linux)
 	cp $(driverdir)/player2/linux/include/linux/dvb/stm_ioctls.h $(targetprefix)/usr/include/linux/dvb
+	$(LN_SF) $(driverdir)/wireless/rtl8192cu/autoconf_rtl8192c_usb_linux.h $(buildprefix)/
 	$(MAKE) -C $(driverdir) ARCH=sh \
 		CONFIG_MODULES_PATH=$(targetprefix) \
 		KERNEL_LOCATION=$(buildprefix)/$(KERNEL_DIR) \
@@ -314,11 +325,21 @@ $(DEPDIR)/driver: $(driverdir)/Makefile linux-kernel.do_compile
 	$(toflash_build)
 	touch $@
 
-driver-clean:
+# overwrite make driver-distclean
+define DISTCLEANUP_driver
 	rm -f $(DEPDIR)/driver
+	rm -f $(buildprefix)/autoconf_rtl8192c_usb_linux.h
 	$(MAKE) -C $(driverdir) ARCH=sh \
 		KERNEL_LOCATION=$(buildprefix)/$(KERNEL_DIR) \
 		distclean
+endef
+define DEPSCLEANUP_driver
+	rm -f $(DEPDIR)/driver
+	rm -f $(buildprefix)/autoconf_rtl8192c_usb_linux.h
+	$(MAKE) -C $(driverdir) ARCH=sh \
+		KERNEL_LOCATION=$(buildprefix)/$(KERNEL_DIR) \
+		distclean
+endef
 
 #------------------- Helper
 
