@@ -70,7 +70,7 @@ stfbcontrol \
 showiframe
 
 # Select enigma2 keymap.xml
-enigma2_keymap_file = keymap$(if $(HL101),_$(HL101))$(if $(SPARK)$(SPARK7162),_spark).xml
+enigma2_keymap_file = keymap$(if $(HL101),_$(HL101)).xml
 
 E_CONFIG_OPTS =
 
@@ -81,7 +81,7 @@ endif
 ifdef ENABLE_MEDIAFWGSTREAMER
 E_CONFIG_OPTS += --enable-mediafwgstreamer
 else
-E_CONFIG_OPTS += --enable-libeplayer3 LIBEPLAYER3_CPPFLAGS="-I$(appsdir)/misc/tools/libeplayer3/include"
+E_CONFIG_OPTS += --enable-libeplayer3 LIBEPLAYER3_CPPFLAGS="-I $(appsdir)/misc/tools/libeplayer3/include"
 endif
 
 $(DEPDIR)/enigma2-pli-nightly.do_prepare: $(DEPENDS_enigma2_pli)
@@ -124,7 +124,6 @@ $(DEPDIR)/enigma2-pli-nightly: enigma2-pli-nightly.do_compile
 		$(MAKE) install DESTDIR=$(PKDIR)
 	$(target)-strip $(PKDIR)/usr/bin/enigma2
 	cp -f $(buildprefix)/root/usr/local/share/enigma2/$(enigma2_keymap_file) $(PKDIR)/usr/share/enigma2/keymap.xml
-	cp -f $(buildprefix)/root/usr/local/share/enigma2/keymap_amiko.xml $(PKDIR)/usr/share/enigma2/
 	$(tocdk_build)
 	$(toflash_build)
 	touch $@
