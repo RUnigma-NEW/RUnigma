@@ -79,7 +79,7 @@
    modprobe platform
 
    modprobe smartcard debug=100
-   modprobe cec
+   #modprobe cec
 
    #modprobe bpamem
    echo "init oc"
