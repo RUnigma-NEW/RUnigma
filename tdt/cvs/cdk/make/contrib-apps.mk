@@ -1668,7 +1668,7 @@ grab
 
 DESCRIPTION_grab = make enigma2 screenshots
 PKGR_grab = r1
-RDEPENDS_grab = libpng jpeg
+RDEPENDS_grab = libpng libjpeg
 
 $(DEPDIR)/grab.do_prepare: bootstrap $(RDEPENDS_grab) $(DEPENDS_grab)
 	$(PREPARE_grab)
