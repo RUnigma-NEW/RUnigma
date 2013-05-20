@@ -30,19 +30,27 @@
    echo "LOADING MODULES"   
    echo "ЗАГРУЗКА" >/dev/vfd
 
-   /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
-   /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
-   
-   echo "load v firmware"
-   /bin/stslave -t st231.0 -R /lib/firmware/video.elf
-   echo "load a firmware"
-   /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
+   if [ -e /lib/modules/ics.ko ]; then
+      modprobe /lib/modules/ics.ko firmware=1:video.elf,2:audio.elf bpa2_part=LMI_VID
+      modprobe /lib/modules/embx.ko
+      modprobe /lib/modules/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2
+      modprobe /lib/modules/mme.ko pool_size=524288
+      modprobe /lib/modules/mme_user.ko
+   else
+      /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+      /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
+      
+      echo "load v firmware"
+      /bin/stslave -t st231.0 -R /lib/firmware/video.elf
+      echo "load a firmware"
+      /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
 
-   echo "init embx"
-   modprobe embxshell
-   modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-   modprobe embxshm mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
-   modprobe mme_host transport0=shm
+      echo "init embx"
+      modprobe embxshell
+      modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
+      modprobe embxshm mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
+      modprobe mme_host transport0=shm
+   fi
 
    echo "init AVS"
    modprobe avs type=stv6418
