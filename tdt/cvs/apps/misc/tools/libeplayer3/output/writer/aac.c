@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
 #include <memory.h>
@@ -257,16 +258,21 @@ static int writeData(void* _call)
 
     unsigned int  HeaderLength = InsertPesHeader (PesHeader, PacketLength, AAC_AUDIO_PES_START_CODE, call->Pts, 0);
 
-    unsigned char* PacketStart = malloc(HeaderLength + sizeof(ExtraData) + call->len);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, ExtraData, sizeof(ExtraData));
-    memcpy (PacketStart + HeaderLength + sizeof(ExtraData), call->data, call->len);
-
     aac_printf(100, "H %d d %d ExtraData %d\n", HeaderLength, call->len, sizeof(ExtraData));
 
-    int len = write(call->fd, PacketStart, HeaderLength + call->len + sizeof(ExtraData));
+    int iovcnt = 0;
+    struct iovec iov[3];
+    iov[iovcnt].iov_base = PesHeader;
+    iov[iovcnt].iov_len  = HeaderLength;
+    iovcnt++;
+    iov[iovcnt].iov_base = ExtraData;
+    iov[iovcnt].iov_len  = sizeof(ExtraData);
+    iovcnt++;
+    iov[iovcnt].iov_base = call->data;
+    iov[iovcnt].iov_len  = call->len;
+    iovcnt++;
 
-    free(PacketStart);
+    int len = writev(call->fd, iov, iovcnt);
 
     return len;
 }

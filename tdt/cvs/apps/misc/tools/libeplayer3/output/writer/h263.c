@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
 #include <memory.h>
@@ -92,7 +93,6 @@ static int writeData(void* _call)
     WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
     unsigned char PesHeader[PES_MAX_HEADER_SIZE];
-    int len = 0;
 
     h263_printf(10, "\n");
 
@@ -129,22 +129,16 @@ static int writeData(void* _call)
 
     HeaderLength                           += PrivateHeaderLength;
 
-		unsigned char *PacketData = malloc(HeaderLength + call->len);
+    int iovcnt = 0;
+    struct iovec iov[2];
+    iov[iovcnt].iov_base = PesHeader;
+    iov[iovcnt].iov_len  = HeaderLength;
+    iovcnt++;
+    iov[iovcnt].iov_base = call->data;
+    iov[iovcnt].iov_len  = call->len;
+    iovcnt++;
 
-		if(PacketData != NULL)
-		{
-      memcpy(PacketData, PesHeader, HeaderLength);
-      memcpy(PacketData + HeaderLength, call->data, call->len);
-
-      len = write(call->fd, PacketData, call->len + HeaderLength);
-
-      free(PacketData);
-		}
-		else
-		{
-			h263_err("no mem\n");
-		}
-
+    int len = writev(call->fd, iov, iovcnt);
     h263_printf(10, "< len %d\n", len);
     return len;
 }

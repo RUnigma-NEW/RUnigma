@@ -91,7 +91,7 @@ int InsertPesHeader (unsigned char *data, int size, unsigned char stream_id, uns
     BitPacker_t ld2 = {data, 0, 32};
 
     if (size > MAX_PES_PACKET_SIZE)
-        printf("%s: Packet bigger than 63.9K eeeekkkkk\n",__FUNCTION__);
+        printf("%s: Packet size %d bigger than %dK eeeekkkkk\n",__FUNCTION__, size, (int)(MAX_PES_PACKET_SIZE/1024));
 
     PutBits(&ld2,0x0  ,8);
     PutBits(&ld2,0x0  ,8);

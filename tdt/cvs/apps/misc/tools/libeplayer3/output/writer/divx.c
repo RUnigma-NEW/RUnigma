@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
 #include <memory.h>
@@ -149,19 +150,27 @@ static int writeData(void* _call)
 
     if (initialHeader) ExtraLength = call->private_size;
 
-    HeaderLength        = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
-    unsigned char* PacketStart = malloc(call->len + HeaderLength + FakeHeaderLength + ExtraLength);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, FakeHeaders, FakeHeaderLength);
+    HeaderLength = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
+    int iovcnt = 0;
+    struct iovec iov[4];
+    iov[iovcnt].iov_base = PesHeader;
+    iov[iovcnt].iov_len  = HeaderLength;
+    iovcnt++;
+    iov[iovcnt].iov_base = FakeHeaders;
+    iov[iovcnt].iov_len  = FakeHeaderLength;
+    iovcnt++;
+
     if (initialHeader) {
-        memcpy (PacketStart + HeaderLength + FakeHeaderLength, call->private_data, call->private_size);
         initialHeader = 0;
+        iov[iovcnt].iov_base = call->private_data;
+        iov[iovcnt].iov_len  = call->private_size;
+        iovcnt++;
     }
-    memcpy (PacketStart + HeaderLength + FakeHeaderLength + ExtraLength, call->data, call->len);
 
-    int len = write(call->fd, PacketStart ,call->len + HeaderLength + FakeHeaderLength + ExtraLength);
-
-    free(PacketStart);
+    iov[iovcnt].iov_base = call->data;
+    iov[iovcnt].iov_len  = call->len;
+    iovcnt++;
+    int len = writev(call->fd, iov, iovcnt); 
 
     divx_printf(10, "xvid_Write < len=%d\n", len);
 

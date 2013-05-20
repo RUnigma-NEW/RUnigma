@@ -228,7 +228,7 @@ static int writeData(void* _call)
         PacketStartSIZE = HeaderLength + ParametersLength;
         memcpy (PacketStart, PesHeader, HeaderLength);
         memcpy (PacketStart + HeaderLength, HeaderData, ParametersLength);
-        len += write (call->fd, PacketStart, HeaderLength + ParametersLength);
+        len += write(call->fd, PacketStart, HeaderLength + ParametersLength);
 
         NalLengthBytes  = (avcCHeader->NalLengthMinusOne & 0x03) + 1;
         ParamSets       = avcCHeader->NumParamSets & 0x1f;
