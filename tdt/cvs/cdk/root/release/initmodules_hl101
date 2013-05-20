@@ -34,9 +34,9 @@
    /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
    
    echo "load v firmware"
-   /bin/stslave -t st231.0 -R /boot/video.elf
+   /bin/stslave -t st231.0 -R /lib/firmware/video.elf
    echo "load a firmware"
-   /bin/stslave -t st231.1 -R /boot/audio.elf
+   /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
 
    echo "init embx"
    modprobe embxshell
