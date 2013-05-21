@@ -42,6 +42,8 @@ $(DEPDIR)/$(GLIBC_DEV): $(DEPDIR)/$(GLIBC) $(GLIBC_DEV_RPM)
 # BINUTILS
 #
 BINUTILS := binutils
+FILES_binutils = \
+usr/lib/*.so
 BINUTILS_DEV := binutils-dev
 BINUTILS_VERSION := 2.23.2-72
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
@@ -61,7 +63,9 @@ $(BINUTILS_RPM) $(BINUTILS_DEV_RPM): \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(BINUTILS_SPEC)
 
 $(DEPDIR)/$(BINUTILS): $(BINUTILS_RPM)
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv $<
+	@rpm $(DRPM) --ignorearch --nodeps -Uhv $< \
+	$(start_build)
+	$(fromrpm_build)
 	touch $@
 
 $(DEPDIR)/$(BINUTILS_DEV): $(BINUTILS_DEV_RPM)
