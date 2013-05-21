@@ -389,6 +389,7 @@ release_hl101:
 	cp -f $(buildprefix)/root/release/fstab_hl101 $(prefix)/release/etc/fstab
 	cp $(buildprefix)/root/firmware/dvb-fe-avl2108.fw $(prefix)/release/lib/firmware/ && \
 	cp $(buildprefix)/root/firmware/dvb-fe-stv6306.fw $(prefix)/release/lib/firmware/
+	cp -dp $(buildprefix)/root/etc/11-usbhd-automount.rules $(prefix)/release/etc/udev/rules.d
 	cp -dp $(buildprefix)/root/release/auto_rb_st.sh $(prefix)/release/etc/init.d
 	cp -dp $(buildprefix)/root/etc/init.d/rdate.sh $(prefix)/release/etc/init.d
 	ln -sf /etc/init.d/rdate.sh $(prefix)/release/etc/rc.d/rcS.d/S99rdate.sh
