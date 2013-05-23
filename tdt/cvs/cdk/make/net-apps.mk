@@ -3,63 +3,44 @@
 #
 BEGIN[[
 nfs_utils
-  1.1.1
+  1.2.3
   {PN}-{PV}
-  extract:ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.kernel.org/linux/utils/nfs/{PN}-{PV}.tar.bz2
-  patch:file://{PN}_{PV}-12.diff.gz
+  extract:http://downloads.sourceforge.net/project/nfs/nfs-utils/1.2.3/nfs-utils-1.2.3.tar.bz2
+  patch:file://nfs-utils-1.2.3.patch
   make:install:DESTDIR=PKDIR
-  install:-m644:debian/nfs-common.default:PKDIR/etc/default/nfs-common
-  install:-m755:debian/nfs-common.init:PKDIR/etc/init.d/nfs-common
-  install:-m644:debian/nfs-kernel-server.default:PKDIR/etc/default/nfs-kernel-server
-  install:-m755:debian/nfs-kernel-server.init:PKDIR/etc/init.d/nfs-kernel-server
-  install:-m644:debian/etc.exports:PKDIR/etc/exports
   remove:PKDIR/sbin/mount.nfs4:PKDIR/sbin/umount.nfs4
 ;
 ]]END
 
 DESCRIPTION_nfs_utils = "nfs_utils"
 FILES_nfs_utils = \
-/usr/bin/*
+/usr/sbin/* \
+sbin/*
 
-$(DEPDIR)/nfs_utils.do_prepare: $(DEPENDS_nfs_utils)
+$(DEPDIR)/nfs_utils: bootstrap e2fsprogs $(DEPENDS_nfs_utils)
 	$(PREPARE_nfs_utils)
-	chmod +x $(DIR_nfs_utils)/autogen.sh
-	cd $(DIR_nfs_utils) && \
-		gunzip -cd ../$(lastword $^) | cat > debian.patch && \
-		patch -p1 <debian.patch && \
-		sed -e 's/### BEGIN INIT INFO/# chkconfig: 2345 19 81\n### BEGIN INIT INFO/g' -i debian/nfs-common.init && \
-		sed -e 's/### BEGIN INIT INFO/# chkconfig: 2345 20 80\n### BEGIN INIT INFO/g' -i debian/nfs-kernel-server.init && \
-		sed -e 's/do_modprobe nfsd/# do_modprobe nfsd/g' -i debian/nfs-kernel-server.init && \
-		sed -e 's/RPCNFSDCOUNT=8/RPCNFSDCOUNT=3/g' -i debian/nfs-kernel-server.default
-	touch $@
-
-$(DEPDIR)/nfs_utils.do_compile: bootstrap e2fsprogs $(DEPDIR)/nfs_utils.do_prepare
+	$(start_build)
 	cd $(DIR_nfs_utils) && \
 		$(BUILDENV) \
 		./configure \
+			CC_FOR_BUILD=$(target)-gcc \
 			--build=$(build) \
 			--host=$(target) \
-			--target=$(target) \
-			CC_FOR_BUILD=$(target)-gcc \
+			--prefix=/usr \
 			--disable-gss \
+			--enable-ipv6=no \
+			--disable-tirpc \
 			--disable-nfsv4 \
 			--without-tcp-wrappers && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/nfs_utils: \
-$(DEPDIR)/%nfs_utils: $(NFS_UTILS_ADAPTED_ETC_FILES:%=root/etc/%) \
-		$(DEPDIR)/nfs_utils.do_compile
-	$(start_build)
-	cd $(DIR_nfs_utils) && \
+		$(MAKE) && \
 		$(INSTALL_nfs_utils)
-	( cd root/etc && for i in $(NFS_UTILS_ADAPTED_ETC_FILES); do \
+	( cd $(buildprefix)/root/etc && for i in $(NFS_UTILS_ADAPTED_ETC_FILES); do \
 		[ -f $$i ] && $(INSTALL) -m644 $$i $(PKDIR)/etc/$$i || true; \
 		[ "$${i%%/*}" = "init.d" ] && chmod 755 $(PKDIR)/etc/$$i || true; done )
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_nfs_utils)
-	touch $@ || true
+	touch $@
 
 #
 # vsftpd

@@ -1,0 +1,29 @@
+--- a/configure
++++ b/configure
+@@ -16806,6 +16806,7 @@
+ if test "x$ac_cv_func_gethostbyname" = x""yes; then :
+ 
+ else
++if false; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
+ $as_echo_n "checking for gethostbyname in -lnsl... " >&6; }
+ if test "${ac_cv_lib_nsl_gethostbyname+set}" = set; then :
+@@ -16845,6 +16846,7 @@
+ if test "x$ac_cv_lib_nsl_gethostbyname" = x""yes; then :
+   LIBNSL="-lnsl"
+ fi
++fi
+ 
+ fi
+ 
+--- a/configure
++++ b/configure
+@@ -18186,7 +18186,7 @@
+ 
+ 
+ 
+-for ac_header in arpa/inet.h fcntl.h libintl.h limits.h \
++for ac_header in arpa/inet.h fcntl.h limits.h \
+                  malloc.h memory.h netdb.h netinet/in.h paths.h \
+                  stdlib.h string.h sys/file.h sys/ioctl.h sys/mount.h \
+                  sys/param.h sys/socket.h sys/time.h sys/vfs.h \
