@@ -47,9 +47,8 @@ ETC_RW_FILES += hosts.allow hosts.deny
 PORTMAP_ADAPTED_ETC_FILES =
 ETC_RW_FILES += init.d/portmap
 
-#NFS_UTILS_ADAPTED_ETC_FILES = exports init.d/nfs-common init.d/nfs-kernel-server
 #NFS_UTILS_ADAPTED_ETC_FILES = init.d/nfs-common init.d/nfs-kernel-server
-NFS_UTILS_ADAPTED_ETC_FILES =
+NFS_UTILS_ADAPTED_ETC_FILES = exports init.d/nfs-common init.d/nfs-kernel-server
 ETC_RW_FILES += exports init.d/nfs-common init.d/nfs-kernel-server
 
 E2FSPROGS_ADAPTED_ETC_FILES =
