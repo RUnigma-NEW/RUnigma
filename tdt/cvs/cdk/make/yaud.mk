@@ -42,7 +42,7 @@ bare-os: \
 net-utils: \
 	$(NETKIT_FTP) \
 	portmap \
-	$(NFSSERVER) \
+	nfs_utils \
 	vsftpd \
 	ethtool \
 	opkg \
