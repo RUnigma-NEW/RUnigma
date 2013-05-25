@@ -76,29 +76,21 @@ define prerm_vsftpd
 initdconfig --del vsftpd
 endef
 
-$(DEPDIR)/vsftpd.do_prepare: $(DEPENDS_vsftpd)
+$(DEPDIR)/vsftpd: $(DEPENDS_vsftpd)
 	$(PREPARE_vsftpd)
-	touch $@
-
-$(DEPDIR)/vsftpd.do_compile: bootstrap $(DEPDIR)/vsftpd.do_prepare
-	cd $(DIR_vsftpd) && \
-		$(MAKE) clean && \
-		$(MAKE) $(MAKE_OPTS) CFLAGS="-pipe -Os -g0"
-	touch $@
-
-$(DEPDIR)/vsftpd: \
-$(DEPDIR)/%vsftpd: $(DEPDIR)/vsftpd.do_compile
 	$(start_build)
 	mkdir -p $(PKDIR)/etc/
 	mkdir -p $(PKDIR)/usr/bin/
 	mkdir -p $(PKDIR)/usr/share/man/man8/
 	mkdir -p $(PKDIR)/usr/share/man/man5/
 	cd $(DIR_vsftpd) && \
+		$(MAKE) clean && \
+		$(MAKE) $(MAKE_OPTS) CFLAGS="-pipe -Os -g0" && \
 		$(INSTALL_vsftpd)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_vsftpd)
-	touch $@ || true
+	touch $@
 
 #
 # ETHTOOL
@@ -116,11 +108,9 @@ DESCRIPTION_ethtool = "ethtool"
 FILES_ethtool = \
 /usr/sbin/*
 
-$(DEPDIR)/ethtool.do_prepare: $(DEPENDS_ethtool)
+$(DEPDIR)/ethtool: $(DEPENDS_ethtool)
 	$(PREPARE_ethtool)
-	touch $@
-
-$(DEPDIR)/ethtool.do_compile: bootstrap $(DEPDIR)/ethtool.do_prepare
+	$(start_build)
 	cd $(DIR_ethtool)  && \
 		$(BUILDENV) \
 		./configure \
@@ -128,18 +118,12 @@ $(DEPDIR)/ethtool.do_compile: bootstrap $(DEPDIR)/ethtool.do_prepare
 			--host=$(target) \
 			--libdir=$(targetprefix)/usr/lib \
 			--prefix=/usr && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/ethtool: \
-$(DEPDIR)/%ethtool: $(DEPDIR)/ethtool.do_compile
-	$(start_build)
-	cd $(DIR_ethtool)  && \
+		$(MAKE) && \
 		$(INSTALL_ethtool)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_ethtool)
-	touch $@ || true
+	touch $@
 
 #
 # SAMBA
@@ -297,11 +281,9 @@ FILES_lighttpd = \
 /etc/init.d/* \
 /etc/lighttpd/*.conf 
 
-$(DEPDIR)/lighttpd.do_prepare: $(DEPENDS_lighttpd)
+$(DEPDIR)/lighttpd: bootstrap $(DEPENDS_lighttpd)
 	$(PREPARE_lighttpd)
-	touch $@
-
-$(DEPDIR)/lighttpd.do_compile: bootstrap $(DEPDIR)/lighttpd.do_prepare
+	$(start_build)
 	cd $(DIR_lighttpd) && \
 		$(BUILDENV) \
 		./configure \
@@ -310,13 +292,7 @@ $(DEPDIR)/lighttpd.do_compile: bootstrap $(DEPDIR)/lighttpd.do_prepare
 			--prefix= \
 			--exec-prefix=/usr \
 			--datarootdir=/usr/share && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/lighttpd: \
-$(DEPDIR)/%lighttpd: $(DEPDIR)/lighttpd.do_compile
-	$(start_build)
-	cd $(DIR_lighttpd) && \
+		$(MAKE) && \
 		$(INSTALL_lighttpd)
 	cd $(DIR_lighttpd) && \
 		$(INSTALL) -d $(PKDIR)/etc/lighttpd && \
@@ -328,7 +304,7 @@ $(DEPDIR)/%lighttpd: $(DEPDIR)/lighttpd.do_compile
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_lighttpd)
-	touch $@ || true
+	touch $@
 
 #
 # NETKIT_FTP
@@ -347,29 +323,21 @@ DESCRIPTION_netkit_ftp = "netkit_ftp"
 FILES_netkit_ftp = \
 /usr/bin/*
 
-$(DEPDIR)/netkit_ftp.do_prepare: $(DEPENDS_netkit_ftp)
+$(DEPDIR)/netkit_ftp: bootstrap ncurses libreadline $(DEPENDS_netkit_ftp)
 	$(PREPARE_netkit_ftp)
-	touch $@
-
-$(DEPDIR)/netkit_ftp.do_compile: bootstrap ncurses libreadline $(DEPDIR)/netkit_ftp.do_prepare
+	$(start_build)
 	cd $(DIR_netkit_ftp)  && \
 		$(BUILDENV) \
 		./configure \
 			--with-c-compiler=$(target)-gcc \
 			--prefix=/usr \
 			--installroot=$(PKDIR) && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/netkit_ftp: \
-$(DEPDIR)/%netkit_ftp: $(DEPDIR)/netkit_ftp.do_compile
-	$(start_build)
-	cd $(DIR_netkit_ftp)  && \
+		$(MAKE) && \
 		$(INSTALL_netkit_ftp)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_netkit_ftp)
-	touch $@ || true
+	touch $@
 
 #
 # WIRELESS_TOOLS
@@ -389,19 +357,11 @@ FILES_wireless_tools = \
 /usr/sbin/* \
 /usr/lib/*.so*
 
-$(DEPDIR)/wireless_tools.do_prepare: wpa_supplicant rfkill $(DEPENDS_wireless_tools)
+$(DEPDIR)/wireless_tools: bootstrap wpa_supplicant rfkill $(DEPENDS_wireless_tools)
 	$(PREPARE_wireless_tools)
-	touch $@
-
-$(DEPDIR)/wireless_tools.do_compile: bootstrap $(DEPDIR)/wireless_tools.do_prepare
-	cd $(DIR_wireless_tools)  && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/wireless_tools: \
-$(DEPDIR)/%wireless_tools: $(DEPDIR)/wireless_tools.do_compile
 	$(start_build)
 	cd $(DIR_wireless_tools)  && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_wireless_tools)
 	$(tocdk_build)
 	$(toflash_build)
@@ -426,25 +386,17 @@ PKGR_wpa_supplicant = r0
 FILES_wpa_supplicant = \
 /usr/sbin/*
 
-$(DEPDIR)/wpa_supplicant.do_prepare: $(DEPENDS_wpa_supplicant)
+$(DEPDIR)/wpa_supplicant: bootstrap $(DEPENDS_wpa_supplicant)
 	$(PREPARE_wpa_supplicant)
-	touch $@
-
-$(DEPDIR)/wpa_supplicant.do_compile: bootstrap $(DEPDIR)/wpa_supplicant.do_prepare
+	$(start_build)
 	cd $(DIR_wpa_supplicant)/wpa_supplicant  && \
 		mv ../wpa_supplicant.config .config && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/wpa_supplicant: \
-$(DEPDIR)/%wpa_supplicant: $(DEPDIR)/wpa_supplicant.do_compile
-	$(start_build)
-	cd $(DIR_wpa_supplicant)/wpa_supplicant && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_wpa_supplicant)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_wpa_supplicant)
-	touch $@ || true
+	touch $@
 
 
 #
@@ -480,11 +432,9 @@ define postrm_transmission
 initdconfig --del transmission
 endef
 
-$(DEPDIR)/transmission.do_prepare: $(DEPENDS_transmission)
+$(DEPDIR)/transmission: bootstrap libevent-dev curl $(DEPENDS_transmission)
 	$(PREPARE_transmission)
-	touch $@
-
-$(DEPDIR)/transmission.do_compile: bootstrap libevent-dev curl $(DEPDIR)/transmission.do_prepare
+	$(start_build)
 	cd $(DIR_transmission) && \
 		$(BUILDENV) \
 		./configure \
@@ -501,13 +451,7 @@ $(DEPDIR)/transmission.do_compile: bootstrap libevent-dev curl $(DEPDIR)/transmi
 			--enable-lightweight \
 			--build=$(build) \
 			--host=$(target) && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/transmission: \
-$(DEPDIR)/%transmission: $(DEPDIR)/transmission.do_compile
-	$(start_build)
-	cd $(DIR_transmission) && \
+		$(MAKE) && \
 		$(INSTALL_transmission) && \
 		$(INSTALL_DIR) $(PKDIR)/etc && \
 		$(INSTALL_DIR) $(PKDIR)/etc/transmission && \
