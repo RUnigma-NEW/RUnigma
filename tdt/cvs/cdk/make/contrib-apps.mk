@@ -16,20 +16,12 @@ FILES_bzip2 = \
 /usr/bin/* \
 /usr/lib/*
 
-$(DEPDIR)/bzip2.do_prepare: bootstrap $(DEPENDS_bzip2)
+$(DEPDIR)/bzip2: bootstrap $(DEPENDS_bzip2)
 	$(PREPARE_bzip2)
-	touch $@
-
-$(DEPDIR)/bzip2.do_compile: $(DEPDIR)/bzip2.do_prepare
-	cd $(DIR_bzip2) && \
-		mv Makefile-libbz2_so Makefile && \
-		$(MAKE) all CC=$(target)-gcc
-	touch $@
-
-$(DEPDIR)/bzip2: \
-$(DEPDIR)/%bzip2: $(DEPDIR)/bzip2.do_compile
 	$(start_build)
 	cd $(DIR_bzip2) && \
+		mv Makefile-libbz2_so Makefile && \
+		$(MAKE) all CC=$(target)-gcc && \
 		$(INSTALL_bzip2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -49,23 +41,15 @@ module_init_tools
 ;
 ]]END
 
-$(DEPDIR)/module_init_tools.do_prepare: bootstrap $(DEPENDS_module_init_tools)
+$(DEPDIR)/module_init_tools: bootstrap $(DEPDIR)/lsb $(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES:%=root/etc/%) $(DEPENDS_module_init_tools)
 	$(PREPARE_module_init_tools)
-	touch $@
-
-$(DEPDIR)/module_init_tools.do_compile: $(DEPDIR)/module_init_tools.do_prepare
 	cd $(DIR_module_init_tools) && \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix= && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/module_init_tools: \
-$(DEPDIR)/%module_init_tools: $(DEPDIR)/%lsb $(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES:%=root/etc/%) $(DEPDIR)/module_init_tools.do_compile
-	cd $(DIR_module_init_tools) && \
+		$(MAKE) && \
 		$(INSTALL_module_init_tools)
 	$(call adapted-etc-files,$(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES))
 	$(call initdconfig,module-init-tools)
@@ -140,16 +124,14 @@ FILES_pppd = \
 /usr/sbin/* \
 /usr/lib/*
 
-$(DEPDIR)/pppd.do_prepare: bootstrap $(DEPENDS_pppd)
+$(DEPDIR)/pppd: bootstrap $(DEPENDS_pppd)
 	$(PREPARE_pppd)
+	$(start_build)
 	cd $(DIR_pppd) && \
-              sed -ie s:/usr/include/pcap-bpf.h:$(prefix)/cdkroot/usr/include/pcap-bpf.h: pppd/Makefile.linux
-	touch $@
-
-$(DEPDIR)/pppd.do_compile: pppd.do_prepare
+		sed -ie s:/usr/include/pcap-bpf.h:$(prefix)/cdkroot/usr/include/pcap-bpf.h: pppd/Makefile.linux
 	cd $(DIR_pppd)  && \
 		$(BUILDENV) \
-	      CFLAGS="$(TARGET_CFLAGS) -I$(buildprefix)/linux/arch/sh" \
+		CFLAGS="$(TARGET_CFLAGS) -I$(buildprefix)/linux/arch/sh" \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
@@ -157,19 +139,13 @@ $(DEPDIR)/pppd.do_compile: pppd.do_prepare
 			--with-kernel=$(buildprefix)/$(KERNEL_DIR) \
 			--disable-kernel-module \
 			--prefix=/usr && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/pppd: \
-$(DEPDIR)/%pppd: $(DEPDIR)/pppd.do_compile
-	$(start_build)
-	cd $(DIR_pppd)  && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_pppd)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pppd)
 	touch $@
-	
+
 #
 # USB MODESWITCH
 #
@@ -190,17 +166,11 @@ FILES_usb_modeswitch = \
 /lib/udev/* \
 /usr/sbin/*
 
-$(DEPDIR)/usb_modeswitch.do_prepare: $(DEPENDS_usb_modeswitch) $(RDEPENDS_usb_modeswitch)
+$(DEPDIR)/usb_modeswitch: $(DEPENDS_usb_modeswitch) $(RDEPENDS_usb_modeswitch)
 	$(PREPARE_usb_modeswitch)
-	touch $@
-$(DEPDIR)/usb_modeswitch.do_compile: $(DEPDIR)/usb_modeswitch.do_prepare
-	  touch $@
-
-$(DEPDIR)/usb_modeswitch: \
-$(DEPDIR)/%usb_modeswitch: $(DEPDIR)/usb_modeswitch.do_compile
 	$(start_build)
 	cd $(DIR_usb_modeswitch)  && \
-	  $(BUILDENV) \
+		$(BUILDENV) \
 		DESTDIR=$(PKDIR) \
 		PREFIX=$(PKDIR)/usr \
 	  $(MAKE) $(MAKE_OPTS) install
@@ -230,15 +200,8 @@ FILES_usb_modeswitch_data = \
 /etc/* \
 /lib/udev/rules.d
 
-$(DEPDIR)/usb_modeswitch_data.do_prepare: $(DEPENDS_usb_modeswitch_data)
+$(DEPDIR)/usb_modeswitch_data: $(DEPENDS_usb_modeswitch_data)
 	$(PREPARE_usb_modeswitch_data)
-	touch $@
-	
-$(DEPDIR)/usb_modeswitch_data.do_compile: $(DEPDIR)/usb_modeswitch_data.do_prepare
-	touch $@
-
-$(DEPDIR)/usb_modeswitch_data: \
-$(DEPDIR)/%usb_modeswitch_data: $(DEPDIR)/usb_modeswitch_data.do_compile
 	$(start_build)
 	cd $(DIR_usb_modeswitch_data)  && \
 		$(BUILDENV) \
@@ -269,11 +232,9 @@ FILES_ntfs_3g = \
 /usr/lib/* \
 /lib/*
 
-$(DEPDIR)/ntfs_3g.do_prepare: $(DEPENDS_ntfs_3g)
+$(DEPDIR)/ntfs_3g: $(DEPENDS_ntfs_3g)
 	$(PREPARE_ntfs_3g)
-	touch $@
-
-$(DEPDIR)/ntfs_3g.do_compile: bootstrap fuse $(DEPDIR)/ntfs_3g.do_prepare
+	$(start_build)
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	LDCONFIG=$(prefix)/cdkroot/sbin/ldconfig \
 	cd $(DIR_ntfs_3g)  && \
@@ -283,14 +244,8 @@ $(DEPDIR)/ntfs_3g.do_compile: bootstrap fuse $(DEPDIR)/ntfs_3g.do_prepare
 			--build=$(build) \
 			--disable-ldconfig \
 			--host=$(target) \
-			--prefix=/usr
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/ntfs_3g: \
-$(DEPDIR)/%ntfs_3g: $(DEPDIR)/ntfs_3g.do_compile
-	$(start_build)
-	cd $(DIR_ntfs_3g)  && \
+			--prefix=/usr && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_ntfs_3g)
 	$(tocdk_build)	
 	$(toflash_build)
@@ -315,15 +270,8 @@ DESCRIPTION_lsb = "lsb"
 FILES_lsb = \
 /lib/lsb/*
 
-$(DEPDIR)/lsb.do_prepare: bootstrap $(DEPENDS_lsb)
+$(DEPDIR)/lsb: bootstrap $(DEPENDS_lsb)
 	$(PREPARE_lsb)
-	touch $@
-
-$(DEPDIR)/lsb.do_compile: $(DEPDIR)/lsb.do_prepare
-	touch $@
-
-$(DEPDIR)/lsb: \
-$(DEPDIR)/%lsb: $(DEPDIR)/lsb.do_compile
 	$(start_build)
 	cd $(DIR_lsb) && \
 		$(INSTALL_lsb)
@@ -352,27 +300,18 @@ FILES_portmap = \
 /sbin/* \
 /etc/init.d/
 
-$(DEPDIR)/portmap.do_prepare: bootstrap $(DEPENDS_portmap)
+$(DEPDIR)/portmap: bootstrap $(DEPENDS_portmap)
 	$(PREPARE_portmap)
-	cd $(DIR_portmap) && \
-		gunzip -cd $(lastword $^) | cat > debian.patch && \
-		patch -p1 <debian.patch && \
-		sed -e 's/### BEGIN INIT INFO/# chkconfig: S 41 10\n### BEGIN INIT INFO/g' -i debian/init.d
-	touch $@
-
-$(DEPDIR)/portmap.do_compile: $(DEPDIR)/portmap.do_prepare
-	cd $(DIR_portmap) && \
-		$(BUILDENV) \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/portmap: \
-$(DEPDIR)/%portmap: $(DEPDIR)/%lsb $(PORTMAP_ADAPTED_ETC_FILES:%=root/etc/%) $(DEPDIR)/portmap.do_compile
 	$(start_build)
 	mkdir -p $(PKDIR)/sbin/
 	mkdir -p $(PKDIR)/etc/init.d/
 	mkdir -p $(PKDIR)/usr/share/man/man8
 	cd $(DIR_portmap) && \
+		gunzip -cd $(lastword $^) | cat > debian.patch && \
+		patch -p1 <debian.patch && \
+		sed -e 's/### BEGIN INIT INFO/# chkconfig: S 41 10\n### BEGIN INIT INFO/g' -i debian/init.d && \
+		$(BUILDENV) \
+		$(MAKE) && \
 		$(INSTALL_portmap)
 	$(call adapted-etc-files,$(PORTMAP_ADAPTED_ETC_FILES))
 	$(call initdconfig,portmap)
@@ -398,12 +337,9 @@ FILES_openrdate = \
 /usr/bin/* \
 /etc/init.d/*
 
-$(DEPDIR)/openrdate.do_prepare: bootstrap $(DEPENDS_openrdate)
+$(DEPDIR)/openrdate: bootstrap $(DEPENDS_openrdate)
 	$(PREPARE_openrdate)
-	cd $(DIR_openrdate)
-	touch $@
-
-$(DEPDIR)/openrdate.do_compile: $(DEPDIR)/openrdate.do_prepare
+	$(start_build)
 	cd $(DIR_openrdate) && \
 		$(BUILDENV) \
 		./configure \
@@ -411,14 +347,7 @@ $(DEPDIR)/openrdate.do_compile: $(DEPDIR)/openrdate.do_prepare
 			--host=$(target) \
 			--target=$(target) \
 			--prefix=/usr && \
-		$(MAKE) 
-	touch $@
-
-$(DEPDIR)/openrdate: \
-$(DEPDIR)/%openrdate: $(OPENRDATE_ADAPTED_ETC_FILES:%=root/etc/%) \
-		$(DEPDIR)/openrdate.do_compile
-	$(start_build)
-	cd $(DIR_openrdate) && \
+		$(MAKE) && \
 		$(INSTALL_openrdate)
 	$(INSTALL_DIR) $(PKDIR)/etc/init.d/ && \
 	( cd root/etc && for i in $(OPENRDATE_ADAPTED_ETC_FILES); do \
@@ -458,47 +387,41 @@ FILES_e2fsprogs = \
 /lib/*.so* \
 /usr/lib/*.so
 
-$(DEPDIR)/e2fsprogs.do_prepare: bootstrap $(DEPENDS_e2fsprogs)
+$(DEPDIR)/e2fsprogs: bootstrap $(DEPENDS_e2fsprogs) | $(UTIL_LINUX)
 	$(PREPARE_e2fsprogs)
-	touch $@
-
-$(DEPDIR)/e2fsprogs.do_compile: $(DEPDIR)/e2fsprogs.do_prepare | $(UTIL_LINUX)
 	cd $(DIR_e2fsprogs) && \
-	$(BUILDENV) \
-	CFLAGS="$(TARGET_CFLAGS) -Os" \
-	cc=$(target)-gcc \
-	./configure \
-		--build=$(build) \
-		--host=$(target) \
-		--target=$(target) \
-		--with-linker=$(target)-ld \
-		--enable-e2initrd-helper \
-		--enable-compression \
-		--disable-uuidd \
-		--disable-rpath \
-		--disable-quota \
-		--disable-defrag \
-		--disable-nls \
-		--disable-libuuid \
-		--disable-libblkid \
-		--enable-elf-shlibs \
-		--enable-verbose-makecmds \
-		--enable-symlink-install \
-		--without-libintl-prefix \
-		--without-libiconv-prefix \
-		--with-root-prefix= && \
-	$(MAKE) all && \
-	$(MAKE) -C e2fsck e2fsck.static
-	touch $@
-
-$(DEPDIR)/e2fsprogs: $(DEPDIR)/e2fsprogs.do_compile
-	$(start_build)
-	cd $(DIR_e2fsprogs) && \
-	$(BUILDENV) \
-	$(MAKE) install install-libs \
-		LDCONFIG=true \
-		DESTDIR=$(PKDIR) && \
-	$(INSTALL) e2fsck/e2fsck.static $(PKDIR)/sbin
+		$(BUILDENV) \
+		CFLAGS="$(TARGET_CFLAGS) -Os" \
+		cc=$(target)-gcc \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			--target=$(target) \
+			--with-linker=$(target)-ld \
+			--enable-e2initrd-helper \
+			--enable-compression \
+			--disable-uuidd \
+			--disable-rpath \
+			--disable-quota \
+			--disable-defrag \
+			--disable-nls \
+			--disable-libuuid \
+			--disable-libblkid \
+			--enable-elf-shlibs \
+			--enable-verbose-makecmds \
+			--enable-symlink-install \
+			--without-libintl-prefix \
+			--without-libiconv-prefix \
+			--with-root-prefix= && \
+		$(MAKE) all && \
+		$(MAKE) -C e2fsck e2fsck.static
+		$(start_build)
+		( cd $(DIR_e2fsprogs) && \
+		$(BUILDENV) \
+		$(MAKE) install install-libs \
+			LDCONFIG=true \
+			DESTDIR=$(PKDIR) && \
+		$(INSTALL) e2fsck/e2fsck.static $(PKDIR)/sbin) || true
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_e2fsprogs)
@@ -581,11 +504,9 @@ FILES_mc = \
 /usr/libexec/mc/extfs.d/* \
 /usr/libexec/mc/fish/*
 
-$(DEPDIR)/mc.do_prepare: bootstrap glib2 $(DEPENDS_mc)
+$(DEPDIR)/mc.do_prepare: bootstrap glib2 $(DEPENDS_mc) | $(NCURSES_DEV)
 	$(PREPARE_mc)
-	touch $@
-
-$(DEPDIR)/mc.do_compile: $(DEPDIR)/mc.do_prepare | $(NCURSES_DEV)
+	$(start_build)
 	cd $(DIR_mc) && \
 		$(BUILDENV) \
 		./configure \
@@ -595,13 +516,7 @@ $(DEPDIR)/mc.do_compile: $(DEPDIR)/mc.do_prepare | $(NCURSES_DEV)
 			--without-gpm-mouse \
 			--with-screen=ncurses \
 			--without-x && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/mc: \
-$(DEPDIR)/%mc: %glib2 $(DEPDIR)/mc.do_compile
-	$(start_build)
-	cd $(DIR_mc) && \
+		$(MAKE) all && \
 		$(INSTALL_mc)
 	$(tocdk_build)
 	$(toflash_build)
@@ -867,19 +782,11 @@ PKGR_rfkill = r1
 FILES_rfkill = \
 /usr/sbin/*
 
-$(DEPDIR)/rfkill.do_prepare: bootstrap $(DEPENDS_rfkill)
+$(DEPDIR)/rfkill: bootstrap $(DEPENDS_rfkill)
 	$(PREPARE_rfkill)
-	touch $@
-
-$(DEPDIR)/rfkill.do_compile: $(DEPDIR)/rfkill.do_prepare
-	cd $(DIR_rfkill) && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/rfkill: \
-$(DEPDIR)/%rfkill: $(DEPDIR)/rfkill.do_compile
 	$(start_build)
 	cd $(DIR_rfkill) && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_rfkill)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1192,11 +1099,9 @@ DESCRIPTION_jfsutils = "jfsutils"
 FILES_jfsutils = \
 /sbin/*
 
-$(DEPDIR)/jfsutils.do_prepare: bootstrap e2fsprogs $(DEPENDS_jfsutils)
+$(DEPDIR)/jfsutils: bootstrap e2fsprogs $(DEPENDS_jfsutils)
 	$(PREPARE_jfsutils)
-	touch $@
-
-$(DEPDIR)/jfsutils.do_compile: $(DEPDIR)/jfsutils.do_prepare
+	$(start_build)
 	cd $(DIR_jfsutils) && \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
@@ -1206,13 +1111,7 @@ $(DEPDIR)/jfsutils.do_compile: $(DEPDIR)/jfsutils.do_prepare
 			--target=$(target) \
 			--disable-dependency-tracking \
 			--prefix= && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/jfsutils: \
-$(DEPDIR)/%jfsutils: $(DEPDIR)/jfsutils.do_compile
-	$(start_build)
-	cd $(DIR_jfsutils) && \
+		$(MAKE) && \
 		$(INSTALL_jfsutils)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1239,11 +1138,9 @@ FILES_opkg = \
 /usr/bin \
 /usr/lib
 
-$(DEPDIR)/opkg.do_prepare: bootstrap $(DEPENDS_opkg)
+$(DEPDIR)/opkg: bootstrap $(DEPENDS_opkg)
 	$(PREPARE_opkg)
-	touch $@
-
-$(DEPDIR)/opkg.do_compile: $(DEPDIR)/opkg.do_prepare
+	$(start_build)
 	cd $(DIR_opkg) && \
 		$(BUILDENV) \
 		./configure \
@@ -1253,13 +1150,7 @@ $(DEPDIR)/opkg.do_compile: $(DEPDIR)/opkg.do_prepare
 			--disable-curl \
 			--disable-gpg \
 			--with-opkglibdir=/usr/lib && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/opkg: \
-$(DEPDIR)/%opkg: $(DEPDIR)/opkg.do_compile
-	$(start_build)
-	cd $(DIR_opkg) && \
+		$(MAKE) all && \
 		$(INSTALL_opkg)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1670,23 +1561,17 @@ DESCRIPTION_grab = make enigma2 screenshots
 PKGR_grab = r1
 RDEPENDS_grab = libpng libjpeg
 
-$(DEPDIR)/grab.do_prepare: bootstrap $(RDEPENDS_grab) $(DEPENDS_grab)
+$(DEPDIR)/grab: bootstrap $(RDEPENDS_grab) $(DEPENDS_grab)
 	$(PREPARE_grab)
-	touch $@
-
-$(DEPDIR)/grab.do_compile: grab.do_prepare
+	$(start_build)
 	cd $(DIR_grab) && \
 		autoreconf -i && \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr
-	touch $@
-
-$(DEPDIR)/grab: grab.do_compile
-	$(start_build)
-	cd $(DIR_grab) && \
+			--prefix=/usr && \
+		$(MAKE) && \
 		$(INSTALL_grab)
 	$(toflash_build)
 	touch $@
