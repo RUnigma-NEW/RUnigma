@@ -1,0 +1,77 @@
+dir /proc 					755 0 0
+dir /rootfs 					755 0 0
+dir /sys 					755 0 0
+dir /mnt 					755 0 0
+dir /etc 					755 0 0
+dir /usr					0777 0 0
+dir /usr/bin					0777 0 0
+dir /usr/sbin					0777 0 0
+dir /sbin					755 1000 1000
+dir /bin 					755 1000 1000
+dir /dev 					755 0 0
+dir /drvko 					755 0 0
+dir /install 					755 0 0
+dir /install/backup 				755 0 0
+dir /update 					755 0 0
+nod /dev/console 				644 0 0 c 5 1
+nod /dev/loop0 					644 0 0 b 7 0
+nod   /dev/null      			        644 0 0 c   1   3
+nod   /dev/sda      				744 0 0 b   8   0
+nod   /dev/sda1      				744 0 0 b   8   1
+nod   /dev/sda2       				744 0 0 b   8   2
+nod   /dev/sda3      				744 0 0 b   8   3
+nod   /dev/sda4      				744 0 0 b   8   4
+nod   /dev/sdb       				744 0 0 b   8   16
+nod   /dev/sdb1      				744 0 0 b   8   17
+nod   /dev/sdb2       				744 0 0 b   8   18
+nod   /dev/sdb3       				744 0 0 b   8   19
+nod   /dev/sdb4       				744 0 0 b   8   20
+nod   /dev/vfd        				644 0 0 c  147  0
+file  /bin/busybox	../ramfs/bin/busybox 	0755 0 0
+file  /sbin/e2fsck	../ramfs/bin/e2fsck 	0755 0 0
+file  /sbin/tune2fs	../ramfs/bin/tune2fs 	0755 0 0
+file  /sbin/mke2fs	../ramfs/bin/mke2fs 	0755 0 0
+file  /sbin/sfdisk	../ramfs/bin/sfdisk 	0755 0 0
+file  /install/install.sh	../ramfs/install.sh 	0755 0 0
+file  /install/update.sh	../ramfs/update.sh 	0755 0 0
+# Das sind nodebug Kernel 207 Module zum Aktuellen Kernel
+file /drvko/proton.ko		../ramfs/proton.ko	0755 0 0
+slink /bin/sh busybox 				777 0 0
+slink /bin/echo		/bin/busybox		0777 0 0
+slink /bin/ash		/bin/busybox		0777 0 0
+slink /bin/sh		/bin/busybox		0777 0 0
+slink /bin/bash		/bin/busybox		0777 0 0
+slink /bin/ls		/bin/busybox		0777 0 0
+slink /bin/cat		/bin/busybox		0777 0 0
+slink /bin/sleep	/bin/busybox		0777 0 0
+slink /bin/expr	   	/bin/busybox		0777 0 0
+slink /bin/wc	   	/bin/busybox		0777 0 0
+slink /bin/grep	   	/bin/busybox		0777 0 0
+slink /bin/stty	   	/bin/busybox		0777 0 0
+slink /bin/tee	   	/bin/busybox		0777 0 0
+slink /sbin/init	/bin/busybox		0755 0 0
+slink /sbin/getty	/bin/busybox		0755 0 0
+slink /sbin/mount	/bin/busybox		0755 0 0
+slink /sbin/umount	/bin/busybox		0755 0 0
+slink /sbin/swapoff	/bin/busybox		0755 0 0
+slink /sbin/reboot	/bin/busybox		0755 0 0
+slink /sbin/mkfs.ext2	/sbin/mke2fs            0755 0 0
+slink /sbin/mkfs.ext3	/sbin/mke2fs            0755 0 0
+slink /sbin/mkfs.ext4	/sbin/mke2fs            0755 0 0
+slink /sbin/mkfs.jfs	/sbin/mke2fs            0755 0 0
+slink /sbin/fsck.ext2	/sbin/e2fsck            0755 0 0
+slink /sbin/fsck.ext3	/sbin/e2fsck            0755 0 0
+slink /sbin/fsck.ext4	/sbin/e2fsck            0755 0 0
+slink /sbin/fsck.jfs	/sbin/e2fsck            0755 0 0
+slink /etc/mtab		/proc/mounts            0755 0 0
+dir  /lib					0755 0 0
+file /lib/libc.so.6		../ramfs/libs/libc.so.6			0755 0 0
+file /lib/libpthread.so.0	../ramfs/libs/libpthread.so.0		0755 0 0
+file /lib/ld-linux.so.2		../ramfs/libs/ld-linux.so.2		0755 0 0
+file /lib/libe2p.so.2		../ramfs/libs/libe2p.so.2		0755 0 0
+file /lib/libext2fs.so.2	../ramfs/libs/libext2fs.so.2		0755 0 0
+file /lib/libcom_err.so.2	../ramfs/libs/libcom_err.so.2		0755 0 0
+file /lib/libblkid.so.1		../ramfs/libs/libblkid.so.1		0755 0 0
+file /lib/libuuid.so.1		../ramfs/libs/libuuid.so.1		0755 0 0
+file /init ../ramfs/init.sh 			755 0 0
+
