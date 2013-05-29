@@ -5,7 +5,7 @@ GLIBC := glibc
 GLIBC_DEV := glibc-dev
 FILES_glibc = /lib
 FILES_glibc_dev = /lib /usr/lib
-GLIBC_VERSION := 2.10.2-41
+GLIBC_VERSION := 2.10.2-42
 GLIBC_RAWVERSION := $(firstword $(subst -, ,$(GLIBC_VERSION)))
 GLIBC_SPEC := stm-target-$(GLIBC).spec
 GLIBC_SPEC_PATCH :=
@@ -45,7 +45,7 @@ BINUTILS := binutils
 FILES_binutils = \
 usr/lib/*.so
 BINUTILS_DEV := binutils-dev
-BINUTILS_VERSION := 2.23.2-72
+BINUTILS_VERSION := 2.23.2-73
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
 BINUTILS_SPEC_PATCH := $(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
 BINUTILS_PATCHES :=
@@ -237,7 +237,7 @@ FILES_libstdc++-dev = \
 
 LIBGCC := libgcc
 GCC := gcc
-GCC_VERSION := 4.7.2-124
+GCC_VERSION := 4.7.3-125
 GCC_SPEC := stm-target-$(GCC).spec
 GCC_SPEC_PATCH := $(GCC_SPEC).$(GCC_VERSION).diff
 GCC_PATCHES := stm-target-$(GCC).$(GCC_VERSION).diff
