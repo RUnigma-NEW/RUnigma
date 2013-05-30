@@ -746,6 +746,7 @@ $(DEPDIR)/glib2: bootstrap libffi $(DEPENDS_glib2)
 	echo "glib_cv_uscore=no" >> $(DIR_glib2)/config.cache
 	cd $(DIR_glib2) && \
 		$(BUILDENV) \
+		PKG_CONFIG=$(hostprefix)/bin/pkg-config \
 		./configure \
 			--cache-file=config.cache \
 			--disable-gtk-doc \
