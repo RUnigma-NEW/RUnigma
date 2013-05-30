@@ -23,3 +23,42 @@
  
  # this will fail for python < 1.5, but that doesn't matter ...
  $PYTHON -O -c "
+--- automake-1.11.6.org/aclocal.in.orig	2012-07-09 17:39:57.000000000 +0200
++++ automake-1.11.6/aclocal.in	2013-05-11 10:58:36.439485204 +0200
+@@ -27,7 +27,8 @@
+ 
+ BEGIN
+ {
+-  my $perllibdir = $ENV{'perllibdir'} || '@datadir@/@PACKAGE@-@APIVERSION@';
++  my $perllibdir = $ENV{'perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/@PACKAGE@-@APIVERSION@' : '@datadir@/@PACKAGE@-@APIVERSION@');
+   unshift @INC, (split '@PATH_SEPARATOR@', $perllibdir);
+ }
+ 
+@@ -58,8 +59,8 @@
+ # ACLOCAL_PATH environment variable, and reset with the `--system-acdir'
+ # option.
+ my @user_includes = ();
+-my @automake_includes = ("@datadir@/aclocal-$APIVERSION");
+-my @system_includes = ('@datadir@/aclocal');
++my @automake_includes = ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . "/../host/share/aclocal-$APIVERSION" : "@datadir@/aclocal-$APIVERSION");
++my @system_includes = ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/aclocal' : '@datadir@/aclocal');
+ 
+ # Whether we should copy M4 file in $user_includes[0].
+ my $install = 0;
+--- automake-1.10.2.orig/aclocal.in	2008-12-04 20:49:17.736664229 +0000
++++ automake-1.10.2/aclocal.in	2008-12-04 20:54:51.984663898 +0000
+@@ -1044,6 +1044,11 @@ sub parse_arguments ()
+ 
+ parse_WARNINGS;		    # Parse the WARNINGS environment variable.
+ parse_arguments;
+ parse_ACLOCAL_PATH;
++if ($ENV{'ACLOCAL_PATH'})
++  {
++	unshift (@system_includes, $ENV{'ACLOCAL_PATH'});
++	print STDERR "aclocal: adding $ENV{'ACLOCAL_PATH'} to path\n";
++  }
+ $configure_ac = require_configure_ac;
+ 
+ # We may have to rerun aclocal if some file have been installed, but
+

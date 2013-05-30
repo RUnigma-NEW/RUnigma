@@ -1,17 +1,301 @@
-We have problem using hardcoded directories like /usr/local here
-which will be checked for cross builds. This is a special case which
-is valid for AIX only. We do not have AIX as one of our supported
-build host or target. Therefore we get rid of the hardcoded paths
-and make life easier for cross compilation process.
-
-Signed-off-by: Khem Raj <raj.khem@gmail.com>
-
-Upstream-Status: Inappropriate [Upstream does care for AIX while we may not]
-Index: autoconf-2.68/lib/autoconf/functions.m4
-===================================================================
---- autoconf-2.68.orig/lib/autoconf/functions.m4	2010-09-22 14:52:19.000000000 -0700
-+++ autoconf-2.68/lib/autoconf/functions.m4	2011-08-03 11:57:05.822199513 -0700
-@@ -749,15 +749,6 @@ if test $ac_have_func = no; then
+--- autoconf-2.68/bin/autoconf.as.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/autoconf.as	2013-05-10 22:10:58.878108649 +0200
+@@ -86,7 +86,11 @@
+ # restore font-lock: '
+ 
+ # Variables.
+-: ${AUTOM4TE='@bindir@/@autom4te-name@'}
++if test -n "$targetprefix"; then
++	: ${AUTOM4TE="$targetprefix/../host/bin/@autom4te-name@"}
++else
++	: ${AUTOM4TE='@bindir@/@autom4te-name@'}
++fi
+ autom4te_options=
+ outfile=
+ verbose=false
+--- autoconf-2.68/bin/autoheader.in.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/autoheader.in	2013-05-10 22:10:58.874108650 +0200
+@@ -31,7 +31,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, "$pkgdatadir";
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -53,7 +54,7 @@
+ use vars qw ($config_h %verbatim %symbol);
+ 
+ # Lib files.
+-my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
++my $autom4te = $ENV{'AUTOM4TE'} || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/@autom4te-name@' : '@bindir@/@autom4te-name@');
+ local $config_h;
+ my $config_h_in;
+ my @prepend_include;
+--- autoconf-2.68/bin/autom4te.in.orig	2009-07-22 14:45:09.000000000 +0200
++++ autoconf-2.68/bin/autom4te.in	2013-05-10 22:10:58.874108650 +0200
+@@ -27,7 +27,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -47,7 +48,8 @@
+ use strict;
+ 
+ # Data directory.
+-my $pkgdatadir = $ENV{'AC_MACRODIR'} || '@pkgdatadir@';
++my $pkgdatadir = $ENV{'AC_MACRODIR'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+ 
+ # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
+ my %language;
+@@ -88,7 +90,7 @@
+ my $freeze = 0;
+ 
+ # $M4.
+-my $m4 = $ENV{"M4"} || '@M4@';
++my $m4 = $ENV{"M4"} || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/m4' : '@M4@');
+ # Some non-GNU m4's don't reject the --help option, so give them /dev/null.
+ fatal "need GNU m4 1.4 or later: $m4"
+   if system "$m4 --help </dev/null 2>&1 | grep reload-state >/dev/null";
+@@ -270,6 +272,12 @@
+ 
+       my @words = shellwords ($_);
+       my $type = shift @words;
++
++      if ($ENV{'targetprefix'})
++      {
++        @words = map { s!^@pkgdatadir@!$ENV{'targetprefix'}/../host/share/autoconf!; $_ } @words;
++      }
++
+       if ($type eq 'begin-language:')
+ 	{
+ 	  fatal "$file:$.: end-language missing for: $lang"
+--- autoconf-2.68/bin/autoreconf.in.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/autoreconf.in	2013-05-10 22:10:58.878108649 +0200
+@@ -29,7 +29,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -76,6 +77,7 @@
+   -i, --install            copy missing auxiliary files
+       --no-recursive       don't rebuild sub-packages
+   -s, --symlink            with -i, install symbolic links instead of copies
++  -x, --exclude=STEPS      steps we should not run
+   -m, --make               when applicable, re-run ./configure && make
+   -W, --warnings=CATEGORY  report the warnings falling in CATEGORY [syntax]
+ 
+@@ -109,8 +111,8 @@
+ ";
+ 
+ # Lib files.
+-my $autoconf   = $ENV{'AUTOCONF'}   || '@bindir@/@autoconf-name@';
+-my $autoheader = $ENV{'AUTOHEADER'} || '@bindir@/@autoheader-name@';
++my $autoconf   = $ENV{'AUTOCONF'}   || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/@autoconf-name@' : '@bindir@/@autoconf-name@');
++my $autoheader = $ENV{'AUTOHEADER'} || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/@autoheader-name@' : '@bindir@/@autoheader-name@');
+ my $automake   = $ENV{'AUTOMAKE'}   || 'automake';
+ my $aclocal    = $ENV{'ACLOCAL'}    || 'aclocal';
+ my $libtoolize = $ENV{'LIBTOOLIZE'} || 'libtoolize';
+@@ -138,6 +140,13 @@
+ # Recurse into subpackages
+ my $recursive = 1;
+ 
++# Steps to exclude
++my @exclude;
++my @ex;
++
++my $uses_gettext;
++my $configure_ac;
++
+ ## ---------- ##
+ ## Routines.  ##
+ ## ---------- ##
+@@ -155,6 +164,7 @@
+ 	  'B|prepend-include=s'	 => \@prepend_include,
+ 	  'i|install'            => \$install,
+ 	  's|symlink'            => \$symlink,
++	  'x|exclude=s'          => \@exclude,
+ 	  'm|make'               => \$run_make,
+ 	  'recursive!'           => \$recursive);
+ 
+@@ -164,6 +174,8 @@
+   parse_WARNINGS;
+   parse_warnings '--warnings', @warning;
+ 
++  @exclude = map { split /,/ } @exclude;
++
+   # Even if the user specified a configure.ac, trim to get the
+   # directory, and look for configure.ac again.  Because (i) the code
+   # is simpler, and (ii) we are still able to diagnose simultaneous
+@@ -186,6 +198,8 @@
+   $aclocal_supports_force = `$aclocal --help 2>/dev/null` =~ /--force/;
+   $automake_supports_force_missing = `$automake --help 2>/dev/null` =~ /--force-missing/;
+ 
++  $automake   .= ' --foreign';
++
+   # Dispatch autoreconf's option to the tools.
+   # --include;
+   $aclocal    .= join (' -I ', '', map { shell_quote ($_) } @include);
+@@ -193,6 +207,7 @@
+   $autoconf   .= join (' --prepend-include=', '', map { shell_quote ($_) } @prepend_include);
+   $autoheader .= join (' --include=', '', map { shell_quote ($_) } @include);
+   $autoheader .= join (' --prepend-include=', '', map { shell_quote ($_) } @prepend_include);
++  $aclocal    .= join (' -I ', '', @include);
+ 
+   # --install and --symlink;
+   if ($install)
+@@ -257,6 +272,11 @@
+ {
+   my ($aclocal, $flags) = @_;
+ 
++  @ex = grep (/^aclocal$/, @exclude);
++  if ($#ex != -1) {
++    return;
++  }
++
+   # aclocal 1.8+ does all this for free.  It can be recognized by its
+   # --force support.
+   if ($aclocal_supports_force)
+@@ -370,8 +390,11 @@
+     }
+   else
+     {
+-      xsystem_hint ("autopoint is needed because this package uses Gettext", "$autopoint");
+-    }
++      @ex = grep (/^autopoint$/, @exclude);
++      if ($#ex == -1) {
++            xsystem_hint ("autopoint is needed because this package uses Gettext", "$autopoint");
++      }
++  }
+ 
+ 
+   # ----------------- #
+@@ -534,7 +557,10 @@
+ 	{
+ 	  $libtoolize .= " --ltdl";
+ 	}
+-      xsystem_hint ("libtoolize is needed because this package uses Libtool", $libtoolize);
++      @ex = grep (/^libtoolize$/, @exclude);
++      if ($#ex == -1) {
++        xsystem_hint ("libtoolize is needed because this package uses Libtool", $libtoolize);
++      }
+       $rerun_aclocal = 1;
+     }
+   else
+@@ -595,7 +621,10 @@
+     }
+   else
+     {
+-      xsystem ($autoheader);
++      @ex = grep (/^autoheader$/, @exclude);
++      if ($#ex == -1) {
++        xsystem ("$autoheader");
++      }
+     }
+ 
+ 
+@@ -612,7 +641,10 @@
+       # We should always run automake, and let it decide whether it shall
+       # update the file or not.  In fact, the effect of `$force' is already
+       # included in `$automake' via `--no-force'.
+-      xsystem ($automake);
++      @ex = grep (/^automake$/, @exclude);
++      if ($#ex == -1) {
++        xsystem ("$automake");
++      }
+     }
+ 
+ 
+@@ -636,7 +668,10 @@
+ 	    }
+ 	  else
+ 	    {
+-	      xsystem ("$make");
++              @ex = grep (/^make$/, @exclude);
++              if ($#ex == -1) {
++                xsystem ("make");
++              }
+ 	    }
+ 	}
+     }
+--- autoconf-2.68/bin/autoscan.in.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/autoscan.in	2013-05-10 22:10:58.878108649 +0200
+@@ -28,7 +28,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -94,10 +95,10 @@
+ my $log;
+ 
+ # Autoconf and lib files.
+-my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
++my $autom4te = $ENV{'AUTOM4TE'} || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/@autom4te-name@' : '@bindir@/@autom4te-name@');
+ my $autoconf = "$autom4te --language=autoconf";
+ my @prepend_include;
+-my @include = ('@pkgdatadir@');
++my @include = ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+ 
+ # $help
+ # -----
+--- autoconf-2.68/bin/autoupdate.in.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/autoupdate.in	2013-05-10 22:10:58.878108649 +0200
+@@ -29,7 +29,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -53,10 +54,10 @@
+ my $autoconf = "$autom4te --language=autoconf";
+ # We need to find m4sugar.
+ my @prepend_include;
+-my @include = ('@pkgdatadir@');
++my @include = ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+ my $force = 0;
+ # m4.
+-my $m4 = $ENV{"M4"} || '@M4@';
++my $m4 = $ENV{"M4"} || ($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/bin/m4' : '@M4@');
+ 
+ 
+ # $HELP
+--- autoconf-2.68/bin/ifnames.in.orig	2009-03-16 15:37:03.000000000 +0100
++++ autoconf-2.68/bin/ifnames.in	2013-05-10 22:10:58.878108649 +0200
+@@ -33,7 +33,8 @@
+ 
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} ||
++	($ENV{'targetprefix'} ? $ENV{'targetprefix'} . '/../host/share/autoconf' : '@pkgdatadir@');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+--- autoconf-2.68/lib/autoconf/functions.m4.orig	2009-05-13 14:29:15.000000000 +0200
++++ autoconf-2.68/lib/autoconf/functions.m4	2013-05-10 22:30:24.790059619 +0200
+@@ -751,15 +751,6 @@
      [LIBS="-lutil $LIBS" ac_have_func=yes ac_cv_func_getloadavg_setgid=yes])
  fi
  
@@ -27,3 +311,196 @@ Index: autoconf-2.68/lib/autoconf/functions.m4
  # Make sure it is really in the library, if we think we found it,
  # otherwise set up the replacement function.
  AC_CHECK_FUNCS(getloadavg, [],
+--- autoconf-2.68/lib/autoconf/general.m4.orig	2009-07-25 13:45:54.000000000 +0200
++++ autoconf-2.68/lib/autoconf/general.m4	2013-05-10 22:30:24.790059619 +0200
+@@ -1892,7 +1892,7 @@
+   ac_site_file1=$ac_default_prefix/share/config.site
+   ac_site_file2=$ac_default_prefix/etc/config.site
+ fi
+-for ac_site_file in "$ac_site_file1" "$ac_site_file2"
++for ac_site_file in $ac_site_file1 "$ac_site_file2"
+ do
+   test "x$ac_site_file" = xNONE && continue
+   if test -r "$ac_site_file"; then
+--- autoconf-2.68.orig/lib/autoconf/libs.m4.orig	2009-05-13 14:29:15.000000000 +0200
++++ autoconf-2.68/lib/autoconf/libs.m4	2013-05-10 22:30:24.790059619 +0200
+@@ -179,54 +179,6 @@
+ # Checks for X window.  #
+ # --------------------- #
+ 
+-
+-# _AC_PATH_X_XMKMF
+-# ----------------
+-# Internal subroutine of _AC_PATH_X.
+-# Set ac_x_includes and/or ac_x_libraries.
+-m4_define([_AC_PATH_X_XMKMF],
+-[AC_ARG_VAR(XMKMF, [Path to xmkmf, Makefile generator for X Window System])dnl
+-rm -f -r conftest.dir
+-if mkdir conftest.dir; then
+-  cd conftest.dir
+-  cat >Imakefile <<'_ACEOF'
+-incroot:
+-	@echo incroot='${INCROOT}'
+-usrlibdir:
+-	@echo usrlibdir='${USRLIBDIR}'
+-libdir:
+-	@echo libdir='${LIBDIR}'
+-_ACEOF
+-  if (export CC; ${XMKMF-xmkmf}) >/dev/null 2>/dev/null && test -f Makefile; then
+-    # GNU make sometimes prints "make[1]: Entering...", which would confuse us.
+-    for ac_var in incroot usrlibdir libdir; do
+-      eval "ac_im_$ac_var=\`\${MAKE-make} $ac_var 2>/dev/null | sed -n 's/^$ac_var=//p'\`"
+-    done
+-    # Open Windows xmkmf reportedly sets LIBDIR instead of USRLIBDIR.
+-    for ac_extension in a so sl dylib la dll; do
+-      if test ! -f "$ac_im_usrlibdir/libX11.$ac_extension" &&
+-	 test -f "$ac_im_libdir/libX11.$ac_extension"; then
+-	ac_im_usrlibdir=$ac_im_libdir; break
+-      fi
+-    done
+-    # Screen out bogus values from the imake configuration.  They are
+-    # bogus both because they are the default anyway, and because
+-    # using them would break gcc on systems where it needs fixed includes.
+-    case $ac_im_incroot in
+-	/usr/include) ac_x_includes= ;;
+-	*) test -f "$ac_im_incroot/X11/Xos.h" && ac_x_includes=$ac_im_incroot;;
+-    esac
+-    case $ac_im_usrlibdir in
+-	/usr/lib | /usr/lib64 | /lib | /lib64) ;;
+-	*) test -d "$ac_im_usrlibdir" && ac_x_libraries=$ac_im_usrlibdir ;;
+-    esac
+-  fi
+-  cd ..
+-  rm -f -r conftest.dir
+-fi
+-])# _AC_PATH_X_XMKMF
+-
+-
+ # _AC_PATH_X_DIRECT
+ # -----------------
+ # Internal subroutine of _AC_PATH_X.
+@@ -234,44 +186,7 @@
+ m4_define([_AC_PATH_X_DIRECT],
+ [# Standard set of common directories for X headers.
+ # Check X11 before X11Rn because it is often a symlink to the current release.
+-ac_x_header_dirs='
+-/usr/X11/include
+-/usr/X11R7/include
+-/usr/X11R6/include
+-/usr/X11R5/include
+-/usr/X11R4/include
+-
+-/usr/include/X11
+-/usr/include/X11R7
+-/usr/include/X11R6
+-/usr/include/X11R5
+-/usr/include/X11R4
+-
+-/usr/local/X11/include
+-/usr/local/X11R7/include
+-/usr/local/X11R6/include
+-/usr/local/X11R5/include
+-/usr/local/X11R4/include
+-
+-/usr/local/include/X11
+-/usr/local/include/X11R7
+-/usr/local/include/X11R6
+-/usr/local/include/X11R5
+-/usr/local/include/X11R4
+-
+-/usr/X386/include
+-/usr/x386/include
+-/usr/XFree86/include/X11
+-
+-/usr/include
+-/usr/local/include
+-/usr/unsupported/include
+-/usr/athena/include
+-/usr/local/x11r5/include
+-/usr/lpp/Xamples/include
+-
+-/usr/openwin/include
+-/usr/openwin/share/include'
++ac_x_header_dirs=''
+ 
+ if test "$ac_x_includes" = no; then
+   # Guess where to find include files, by looking for Xlib.h.
+@@ -320,7 +235,6 @@
+ [AC_CACHE_VAL(ac_cv_have_x,
+ [# One or both of the vars are not set, and there is no cached value.
+ ac_x_includes=no ac_x_libraries=no
+-_AC_PATH_X_XMKMF
+ _AC_PATH_X_DIRECT
+ case $ac_x_includes,$ac_x_libraries in #(
+   no,* | *,no | *\'*)
+--- autoconf-2.68/lib/Makefile.am.org	2009-07-27 05:28:44.000000000 +0200
++++ autoconf-2.68/lib/Makefile.am	2013-05-10 22:30:24.794059618 +0200
+@@ -16,7 +16,7 @@
+ # You should have received a copy of the GNU General Public License
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+-SUBDIRS = Autom4te m4sugar autoconf autotest autoscan emacs
++SUBDIRS = Autom4te m4sugar autoconf autotest autoscan
+ nodist_pkgdata_DATA = autom4te.cfg
+ EXTRA_DIST = autom4te.in freeze.mk
+ 
+--- autoconf-2.68/lib/Makefile.in.orig	2009-07-27 05:28:44.000000000 +0200
++++ autoconf-2.68/lib/Makefile.in	2013-05-10 22:30:24.794059618 +0200
+@@ -214,7 +214,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = Autom4te m4sugar autoconf autotest autoscan emacs
++SUBDIRS = Autom4te m4sugar autoconf autotest autoscan
+ nodist_pkgdata_DATA = autom4te.cfg
+ EXTRA_DIST = autom4te.in freeze.mk
+ edit = sed \
+--- autoconf-2.68.orig/m4/m4.m4	2009-07-26 23:21:30.000000000 +0100
++++ autoconf-2.68/m4/m4.m4	2010-03-31 22:26:32.946821209 +0100
+@@ -1,4 +1,4 @@
+-# m4.m4 serial 9
++# m4.m4 serial 10
+ 
+ # Copyright (C) 2000, 2006, 2007, 2008, 2009 Free Software Foundation,
+ # Inc.
+@@ -29,7 +29,7 @@
+       ac_snippet=change'quote(<,>)in''dir(<if''def>,mac,bug)'
+       ac_snippet=${ac_snippet}pat'subst(a,\(b\)\|\(a\),\1)d'nl
+       test -z "`$ac_path_M4 -F conftest.m4f </dev/null 2>&1`" \
+-      && test -z "`echo $ac_snippet | $ac_path_M4 --trace=mac 2>&1`" \
++      && test -z "`AS_ECHO([$ac_snippet]) | $ac_path_M4 --trace=mac 2>&1`" \
+       && test -f conftest.m4f \
+       && ac_cv_path_M4=$ac_path_M4 ac_path_M4_found=:
+       rm -f conftest.m4f],
+--- autoconf-2.68.orig/configure	2009-07-27 04:28:36.000000000 +0100
++++ autoconf-2.68/configure	2010-04-23 16:42:54.110927356 +0100
+@@ -2377,7 +2377,7 @@
+       ac_snippet=change'quote(<,>)in''dir(<if''def>,mac,bug)'
+       ac_snippet=${ac_snippet}pat'subst(a,\(b\)\|\(a\),\1)d'nl
+       test -z "`$ac_path_M4 -F conftest.m4f </dev/null 2>&1`" \
+-      && test -z "`echo $ac_snippet | $ac_path_M4 --trace=mac 2>&1`" \
++      && test -z "`$as_echo $ac_snippet | $ac_path_M4 --trace=mac 2>&1`" \
+       && test -f conftest.m4f \
+       && ac_cv_path_M4=$ac_path_M4 ac_path_M4_found=:
+       rm -f conftest.m4f
+-- autoconf-2.68/build-aux/git-version-gen.orig	2010-04-28 13:53:55.000000000 +0200
++++ autoconf-2.68/build-aux/git-version-gen	2010-04-28 13:55:22.000000000 +0200
+@@ -128,18 +128,6 @@
+ 
+ v=`echo "$v" |sed 's/^v//'`
+ 
+-# Don't declare a version "dirty" merely because a time stamp has changed.
+-git status > /dev/null 2>&1
+-
+-dirty=`sh -c 'git diff-index --name-only HEAD' 2>/dev/null` || dirty=
+-case "$dirty" in
+-    '') ;;
+-    *) # Append the suffix only if there isn't one already.
+-	case $v in
+-	  *-dirty) ;;
+-	  *) v="$v-dirty" ;;
+-	esac ;;
+-esac
+ 
+ # Omit the trailing newline, so that m4_esyscmd can use the result directly.
+ echo "$v" | tr -d '\012'
