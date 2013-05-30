@@ -137,9 +137,10 @@ $(DEPDIR)/freetype-old: $(DEPDIR)/freetype-old.do_compile
 #
 BEGIN[[
 libfreetype
-  2.4.11
+  2.4.12
   freetype-{PV}
   extract:http://download.savannah.gnu.org/releases/freetype/freetype-{PV}.tar.bz2
+  patch:file://libfreetype-2.4.12.diff
   make:install:prefix=/usr:DESTDIR=PKDIR
 ;
 ]]END
@@ -1388,6 +1389,7 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 			--enable-avresample \
 			--enable-pthreads \
 			--enable-bzlib \
+			--enable-zlib \
 			--pkg-config="pkg-config" \
 			--cross-prefix=$(target)- \
 			--target-os=linux \
