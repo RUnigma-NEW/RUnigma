@@ -1552,7 +1552,8 @@ BEGIN[[
 grab
   git
   {PN}-{PV}
-  git://github.com/technic/aio-grab.git
+  git://git.code.sf.net/p/openpli/aio-grab
+  patch:file://aio-grab-ADD_ST_SUPPORT.patch
   make:install:DESTDIR=PKDIR
 ;
 ]]END
