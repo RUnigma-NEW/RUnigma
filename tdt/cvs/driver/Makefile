@@ -40,6 +40,7 @@ obj-y	+= frontcontroller/
 obj-y	+= wireless/
 obj-y	+= pti/
 obj-y	+= compcache/
+obj-y	+= bpamem/
 obj-y	+= cic/
 obj-y	+= smartcard/
 obj-y	+= cpu_frequ/
