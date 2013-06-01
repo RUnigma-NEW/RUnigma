@@ -74,15 +74,12 @@ DESCRIPTION_grep = "grep"
 FILES_grep = \
 /usr/bin/grep
 
-$(DEPDIR)/grep.do_prepare: bootstrap $(DEPENDS_grep)
+$(DEPDIR)/grep: bootstrap $(DEPENDS_grep)
 	$(PREPARE_grep)
+	$(start_build)
 	cd $(DIR_grep) && \
 		gunzip -cd $(lastword $^) | cat > debian.patch && \
-		patch -p1 <debian.patch
-	touch $@
-
-$(DEPDIR)/grep.do_compile: $(DEPDIR)/grep.do_prepare
-	cd $(DIR_grep) && \
+		patch -p1 <debian.patch && \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -92,13 +89,7 @@ $(DEPDIR)/grep.do_compile: $(DEPDIR)/grep.do_prepare
 			--disable-perl-regexp \
 			--libdir=$(targetprefix)/usr/lib \
 			--prefix=/usr && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/grep: \
-$(DEPDIR)/%grep: $(DEPDIR)/grep.do_compile
-	$(start_build)
-	cd $(DIR_grep) && \
+		$(MAKE) && \
 		$(INSTALL_grep)
 	$(tocdk_build)
 	$(toflash_build)
@@ -445,11 +436,9 @@ DESCRIPTION_xfsprogs = "xfsprogs"
 FILES_xfsprogs = \
 /bin/*
 
-$(DEPDIR)/xfsprogs.do_prepare: bootstrap $(DEPDIR)/e2fsprogs $(DEPDIR)/libreadline $(DEPENDS_xfsprogs)
+$(DEPDIR)/xfsprogs: bootstrap $(DEPDIR)/e2fsprogs $(DEPDIR)/libreadline $(DEPENDS_xfsprogs)
 	$(PREPARE_xfsprogs)
-	touch $@
-
-$(DEPDIR)/xfsprogs.do_compile: $(DEPDIR)/xfsprogs.do_prepare
+	$(start_build)
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_xfsprogs) && \
 		export DEBUG=-DNDEBUG && export OPTIMIZER=-O2 && \
@@ -469,14 +458,7 @@ $(DEPDIR)/xfsprogs.do_compile: $(DEPDIR)/xfsprogs.do_prepare
 			--enable-editline=no \
 			--enable-termcap=yes && \
 		cp -p Makefile.sgi Makefile && export top_builddir=`pwd` && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/xfsprogs: \
-$(DEPDIR)/%xfsprogs: $(DEPDIR)/xfsprogs.do_compile
-	$(start_build)
-	cd $(DIR_xfsprogs) && \
-		export top_builddir=`pwd` && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_xfsprogs)
 	$(tocdk_build)
 	$(toflash_build)
@@ -504,7 +486,7 @@ FILES_mc = \
 /usr/libexec/mc/extfs.d/* \
 /usr/libexec/mc/fish/*
 
-$(DEPDIR)/mc.do_prepare: bootstrap glib2 $(DEPENDS_mc) | $(NCURSES_DEV)
+$(DEPDIR)/mc: bootstrap glib2 $(DEPENDS_mc) | $(NCURSES_DEV)
 	$(PREPARE_mc)
 	$(start_build)
 	cd $(DIR_mc) && \
@@ -542,11 +524,9 @@ DESCRIPTION_sdparm = "sdparm"
 FILES_sdparm = \
 /sbin/sdparm
 
-$(DEPDIR)/sdparm.do_prepare: bootstrap $(DEPENDS_sdparm)
+$(DEPDIR)/sdparm: bootstrap $(DEPENDS_sdparm)
 	$(PREPARE_sdparm)
-	touch $@
-
-$(DEPDIR)/sdparm.do_compile: $(DEPDIR)/sdparm.do_prepare
+	$(start_build)
 	cd $(DIR_sdparm) && \
 		export PATH=$(MAKE_PATH) && \
 		$(MAKE) clean || true && \
@@ -557,15 +537,7 @@ $(DEPDIR)/sdparm.do_compile: $(DEPDIR)/sdparm.do_prepare
 			--prefix= \
 			--exec-prefix=/usr \
 			--mandir=/usr/share/man && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/sdparm: \
-$(DEPDIR)/%sdparm: $(DEPDIR)/sdparm.do_compile
-	$(start_build)
-	mkdir $(PKDIR)/sbin
-	cd $(DIR_sdparm) && \
-		export PATH=$(MAKE_PATH) && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_sdparm)
 	$(tocdk_build)
 	mv -f $(PKDIR)/usr/bin/sdparm $(PKDIR)/sbin
@@ -586,11 +558,8 @@ sg3_utils
 ;
 ]]END
 
-$(DEPDIR)/sg3_utils.do_prepare: bootstrap $(DEPENDS_sg3_utils)
+$(DEPDIR)/sg3_utils: bootstrap $(DEPENDS_sg3_utils)
 	$(PREPARE_sg3_utils)
-	touch $@
-
-$(DEPDIR)/sg3_utils.do_compile: $(DEPDIR)/sg3_utils.do_prepare
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_sg3_utils) && \
 		$(MAKE) clean || true && \
@@ -603,13 +572,7 @@ $(DEPDIR)/sg3_utils.do_compile: $(DEPDIR)/sg3_utils.do_prepare
 			--build=$(build) \
 			--host=$(target) \
 			--prefix= && \
-		$(MAKE) $(MAKE_OPTS)
-	touch $@
-
-$(DEPDIR)/sg3_utils: \
-$(DEPDIR)/%sg3_utils: $(DEPDIR)/sg3_utils.do_compile
-	cd $(DIR_sg3_utils) && \
-		export PATH=$(MAKE_PATH) && \
+		$(MAKE) $(MAKE_OPTS) && \
 		$(INSTALL_sg3_utils)
 	$(INSTALL) -d $(prefix)/$*cdkroot/etc/default && \
 	$(INSTALL) -d $(prefix)/$*cdkroot/etc/init.d && \
@@ -633,23 +596,15 @@ ipkg
 ;
 ]]END
 
-$(DEPDIR)/ipkg.do_prepare: bootstrap $(DEPENDS_ipkg)
+$(DEPDIR)/ipkg: bootstrap $(DEPENDS_ipkg)
 	$(PREPARE_ipkg)
-	touch $@
-
-$(DEPDIR)/ipkg.do_compile: $(DEPDIR)/ipkg.do_prepare
 	cd $(DIR_ipkg) && \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/ipkg: \
-$(DEPDIR)/%ipkg: $(DEPDIR)/ipkg.do_compile
-	cd $(DIR_ipkg) && \
+		$(MAKE) && \
 		$(INSTALL_ipkg)
 	ln -sf ipkg-cl $(prefix)/$*cdkroot/usr/bin/ipkg && \
 	$(INSTALL) -d $(prefix)/$*cdkroot/etc && $(INSTALL) -m 644 root/etc/ipkg.conf $(prefix)/$*cdkroot/etc && \
@@ -672,24 +627,15 @@ zd1211
 ]]END
 
 CONFIG_ZD1211B :=
-$(DEPDIR)/zd1211.do_prepare: bootstrap $(DEPENDS_zd1211)
+$(DEPDIR)/zd1211: bootstrap $(DEPENDS_zd1211)
 	$(PREPARE_zd1211)
-	touch $@
-
-$(DEPDIR)/zd1211.do_compile: $(DEPDIR)/zd1211.do_prepare
 	cd $(DIR_zd1211) && \
-		$(MAKE) KERNEL_LOCATION=$(buildprefix)/linux \
+		$(MAKE) KERNEL_LOCATION=$(buildprefix)/linux-sh4 \
 			ZD1211B=$(ZD1211B) \
-			CROSS_COMPILE=$(target)- ARCH=sh
-	touch $@
-
-$(DEPDIR)/zd1211: \
-$(DEPDIR)/%zd1211: $(DEPDIR)/zd1211.do_compile
-	cd $(DIR_zd1211) && \
-		$(MAKE) KERNEL_LOCATION=$(buildprefix)/linux \
+			CROSS_COMPILE=$(target)- ARCH=sh \
 			BIN_DEST=$(targetprefix)/bin \
 			INSTALL_MOD_PATH=$(targetprefix) \
-			install
+			install && \
 	$(DEPMOD) -ae -b $(targetprefix) -r $(KERNELVERSION)
 	$(DISTCLEANUP_zd1211)
 	touch $@
@@ -706,11 +652,8 @@ nano
 ;
 ]]END
 
-$(DEPDIR)/nano.do_prepare: bootstrap ncurses ncurses-dev $(DEPENDS_nano)
+$(DEPDIR)/nano: bootstrap ncurses ncurses-dev $(DEPENDS_nano)
 	$(PREPARE_nano)
-	touch $@
-
-$(DEPDIR)/nano.do_compile: $(DEPDIR)/nano.do_prepare
 	cd $(DIR_nano) && \
 		$(BUILDENV) \
 		./configure \
@@ -720,12 +663,7 @@ $(DEPDIR)/nano.do_compile: $(DEPDIR)/nano.do_prepare
 			--disable-nls \
 			--enable-tiny \
 			--enable-color && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/nano: \
-$(DEPDIR)/%nano: $(DEPDIR)/nano.do_compile
-	cd $(DIR_nano) && \
+		$(MAKE) && \
 		$(INSTALL_nano)
 	$(DISTCLEANUP_nano)
 	touch $@
@@ -742,11 +680,8 @@ rsync
 ;
 ]]END
 
-$(DEPDIR)/rsync.do_prepare: bootstrap $(DEPENDS_rsync)
+$(DEPDIR)/rsync: bootstrap $(DEPENDS_rsync)
 	$(PREPARE_rsync)
-	touch $@
-
-$(DEPDIR)/rsync.do_compile: $(DEPDIR)/rsync.do_prepare
 	cd $(DIR_rsync) && \
 		$(BUILDENV) \
 		./configure \
@@ -755,12 +690,7 @@ $(DEPDIR)/rsync.do_compile: $(DEPDIR)/rsync.do_prepare
 			--prefix=/usr \
 			--disable-debug \
 			--disable-locale && \
-		$(MAKE)
-	touch $@
-
-$(DEPDIR)/rsync: \
-$(DEPDIR)/%rsync: $(DEPDIR)/rsync.do_compile
-	cd $(DIR_rsync) && \
+		$(MAKE) && \
 		$(INSTALL_rsync)
 	$(DISTCLEANUP_rsync)
 	touch $@
@@ -813,19 +743,11 @@ FILES_lm_sensors = \
 /usr/lib/*.so* \
 /usr/sbin/*
 
-$(DEPDIR)/lm_sensors.do_prepare: bootstrap $(DEPENDS_lm_sensors)
+$(DEPDIR)/lm_sensors: bootstrap $(DEPENDS_lm_sensors)
 	$(PREPARE_lm_sensors)
-	touch $@
-
-$(DEPDIR)/lm_sensors.do_compile: $(DEPDIR)/lm_sensors.do_prepare
-	cd $(DIR_lm_sensors) && \
-		$(MAKE) $(MAKE_OPTS) MACHINE=sh PREFIX=/usr user
-	touch $@
-
-$(DEPDIR)/lm_sensors: \
-$(DEPDIR)/%lm_sensors: $(DEPDIR)/lm_sensors.do_compile
 	$(start_build)
 	cd $(DIR_lm_sensors) && \
+		$(MAKE) $(MAKE_OPTS) MACHINE=sh PREFIX=/usr user && \
 		$(INSTALL_lm_sensors) && \
 		rm $(PKDIR)/usr/bin/*.pl && \
 		rm $(PKDIR)/usr/sbin/*.pl && \
@@ -859,11 +781,9 @@ FILES_fuse = \
 /etc/udev/* \
 /usr/bin/*
 
-$(DEPDIR)/fuse.do_prepare: bootstrap curl glib2 $(DEPENDS_fuse)
+$(DEPDIR)/fuse: bootstrap curl glib2 $(DEPENDS_fuse)
 	$(PREPARE_fuse)
-	touch $@
-
-$(DEPDIR)/fuse.do_compile: $(DEPDIR)/fuse.do_prepare
+	$(start_build)
 	cd $(DIR_fuse) && \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -I$(buildprefix)/linux/arch/sh" \
@@ -872,13 +792,7 @@ $(DEPDIR)/fuse.do_compile: $(DEPDIR)/fuse.do_prepare
 			--host=$(target) \
 			--target=$(target) \
 			--prefix=/usr && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/fuse: \
-$(DEPDIR)/%fuse: %curl %glib2 $(DEPDIR)/fuse.do_compile
-	  $(start_build)
-	  cd $(DIR_fuse) && \
+		$(MAKE) all && \
 		$(INSTALL_fuse)
 	rm -R $(PKDIR)/dev
 	$(LN_SF) sh4-linux-fusermount $(PKDIR)/usr/bin/fusermount
@@ -904,11 +818,8 @@ curlftpfs
 ;
 ]]END
 
-$(DEPDIR)/curlftpfs.do_prepare: bootstrap fuse $(DEPENDS_curlftpfs)
+$(DEPDIR)/curlftpfs: bootstrap fuse $(DEPENDS_curlftpfs)
 	$(PREPARE_curlftpfs)
-	touch $@
-
-$(DEPDIR)/curlftpfs.do_compile: $(DEPDIR)/curlftpfs.do_prepare
 	cd $(DIR_curlftpfs) && \
 		export ac_cv_func_malloc_0_nonnull=yes && \
 		export ac_cv_func_realloc_0_nonnull=yes && \
@@ -917,12 +828,7 @@ $(DEPDIR)/curlftpfs.do_compile: $(DEPDIR)/curlftpfs.do_prepare
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr && \
-		$(MAKE) 
-	touch $@
-
-$(DEPDIR)/curlftpfs: \
-$(DEPDIR)/%curlftpfs: %fuse $(DEPDIR)/curlftpfs.do_compile
-	cd $(DIR_curlftpfs) && \
+		$(MAKE) && \
 		$(INSTALL_curlftpfs)
 	$(DISTCLEANUP_curlftpfs)
 	touch $@
@@ -944,18 +850,10 @@ fbset
 ;
 ]]END
 
-$(DEPDIR)/fbset.do_prepare: bootstrap $(DEPENDS_fbset)
+$(DEPDIR)/fbset: bootstrap $(DEPENDS_fbset)
 	$(PREPARE_fbset)
-	touch $@
-
-$(DEPDIR)/fbset.do_compile: $(DEPDIR)/fbset.do_prepare
 	cd $(DIR_fbset) && \
-		make CC="$(target)-gcc -Wall -O2 -I."
-	touch $@
-
-$(DEPDIR)/fbset: \
-$(DEPDIR)/%fbset: fbset.do_compile
-	cd $(DIR_fbset) && \
+		make CC="$(target)-gcc -Wall -O2 -I." && \
 		$(INSTALL_fbset)
 	$(DISTCLEANUP_fbset)
 	touch $@
@@ -972,18 +870,10 @@ pngquant
 ;
 ]]END
 
-$(DEPDIR)/pngquant.do_prepare: bootstrap libz libpng $(DEPENDS_pngquant)
+$(DEPDIR)/pngquant: bootstrap libz libpng $(DEPENDS_pngquant)
 	$(PREPARE_pngquant)
-	touch $@
-
-$(DEPDIR)/pngquant.do_compile: $(DEPDIR)/pngquant.do_prepare
 	cd $(DIR_pngquant) && \
-		$(target)-gcc -O3 -Wall -I. -funroll-loops -fomit-frame-pointer -o pngquant pngquant.c rwpng.c -lpng -lz -lm
-	touch $@
-
-$(DEPDIR)/pngquant: \
-$(DEPDIR)/%pngquant: $(DEPDIR)/pngquant.do_compile
-	cd $(DIR_pngquant) && \
+		$(target)-gcc -O3 -Wall -I. -funroll-loops -fomit-frame-pointer -o pngquant pngquant.c rwpng.c -lpng -lz -lm && \
 		$(INSTALL_pngquant)
 	$(DISTCLEANUP_pngquant)
 	touch $@
@@ -1000,11 +890,8 @@ mplayer
 ;
 ]]END
 
-$(DEPDIR)/mplayer.do_prepare: bootstrap $(DEPENDS_mplayer)
+$(DEPDIR)/mplayer: bootstrap $(DEPENDS_mplayer)
 	$(PREPARE_mplayer)
-	touch $@
-
-$(DEPDIR)/mplayer.do_compile: $(DEPDIR)/mplayer.do_prepare
 	cd $(DIR_mplayer) && \
 		$(BUILDENV) \
 		./configure \
@@ -1013,12 +900,7 @@ $(DEPDIR)/mplayer.do_compile: $(DEPDIR)/mplayer.do_prepare
 			--host-cc=gcc \
 			--prefix=/usr \
 			--disable-mencoder && \
-		$(MAKE) CC="$(target)-gcc"
-	touch $@
-
-$(DEPDIR)/mplayer: \
-$(DEPDIR)/%mplayer: $(DEPDIR)/mplayer.do_compile
-	cd $(DIR_mplayer) && \
+		$(MAKE) CC="$(target)-gcc" && \
 		$(INSTALL_mplayer)
 	$(DISTCLEANUP_mplayer)
 	touch $@
@@ -1035,11 +917,8 @@ mencoder
 ;
 ]]END
 
-#$(DEPDIR)/mencoder.do_prepare: bootstrap $(DEPENDS_mencoder)
-#	$(PREPARE_mencoder)
-#	touch $@
-
-$(DEPDIR)/mencoder.do_compile: $(DEPDIR)/mplayer.do_prepare
+$(DEPDIR)/mencoder: bootstrap $(DEPENDS_mencoder)
+	$(PREPARE_mencoder)
 	cd $(DIR_mencoder) && \
 		$(BUILDENV) \
 		./configure \
@@ -1073,12 +952,7 @@ $(DEPDIR)/mencoder.do_compile: $(DEPDIR)/mplayer.do_prepare
 			--disable-fbdev \
 			--disable-dvb \
 			--disable-mplayer && \
-		$(MAKE) CC="$(target)-gcc"
-	touch $@
-
-$(DEPDIR)/mencoder: \
-$(DEPDIR)/%mencoder: $(DEPDIR)/mencoder.do_compile
-	cd $(DIR_mencoder) && \
+		$(MAKE) CC="$(target)-gcc" && \
 		$(INSTALL_mencoder)
 	$(DISTCLEANUP_mencoder)
 	touch $@
@@ -1205,20 +1079,13 @@ define postrm_ntpclient
 initdconfig --del ntpclient
 endef
 
-$(DEPDIR)/ntpclient.do_prepare: $(DEPENDS_ntpclient)
+$(DEPDIR)/ntpclient: $(DEPENDS_ntpclient)
 	$(PREPARE_ntpclient)
-	touch $@
-
-$(DEPDIR)/ntpclient.do_compile: $(DEPDIR)/ntpclient.do_prepare
+	$(start_build)
 	cd $(DIR_ntpclient)  && \
 		export CC=sh4-linux-gcc CFLAGS="$(TARGET_CFLAGS)"; \
 		$(MAKE) ntpclient; \
-		$(MAKE) adjtimex
-	touch $@
-
-$(DEPDIR)/ntpclient: $(DEPDIR)/ntpclient.do_compile
-	$(start_build)
-	cd $(DIR_ntpclient)  && \
+		$(MAKE) adjtimex && \
 		install -D -m 0755 ntpclient $(PKDIR)/sbin/ntpclient; \
 		install -D -m 0755 adjtimex $(PKDIR)/sbin/adjtimex; \
 		install -D -m 0755 rate.awk $(PKDIR)/sbin/ntpclient-drift-rate.awk
@@ -1409,11 +1276,9 @@ FILES_hotplug_e2 = \
 /sbin/bdpoll \
 /usr/bin/hotplug_e2_helper
 
-$(DEPDIR)/hotplug_e2.do_prepare: bootstrap $(DEPENDS_hotplug_e2)
+$(DEPDIR)/hotplug_e2: bootstrap $(DEPENDS_hotplug_e2)
 	$(PREPARE_hotplug_e2)
-	touch $@
-
-$(DEPDIR)/hotplug_e2.do_compile: $(DEPDIR)/hotplug_e2.do_prepare
+	$(start_build)
 	cd $(DIR_hotplug_e2) && \
 		./autogen.sh &&\
 		$(BUILDENV) \
@@ -1421,13 +1286,7 @@ $(DEPDIR)/hotplug_e2.do_compile: $(DEPDIR)/hotplug_e2.do_prepare
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/hotplug_e2: \
-$(DEPDIR)/%hotplug_e2: $(DEPDIR)/hotplug_e2.do_compile
-	$(start_build)
-	cd $(DIR_hotplug_e2) && \
+		$(MAKE) all && \
 		$(INSTALL_hotplug_e2)
 	$(tocdk_build)
 	mkdir $(PKDIR)/sbin
@@ -1464,11 +1323,9 @@ DESCRIPTION_autofs = "autofs"
 FILES_autofs = \
 /usr/*
 
-$(DEPDIR)/autofs.do_prepare: bootstrap $(DEPENDS_autofs)
+$(DEPDIR)/autofs: bootstrap $(DEPENDS_autofs)
 	$(PREPARE_autofs)
-	touch $@
-
-$(DEPDIR)/autofs.do_compile: $(DEPDIR)/autofs.do_prepare
+	$(start_build)
 	cd $(DIR_autofs) && \
 		cp aclocal.m4 acinclude.m4 && \
 		autoconf && \
@@ -1477,13 +1334,7 @@ $(DEPDIR)/autofs.do_compile: $(DEPDIR)/autofs.do_prepare
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr && \
-		$(MAKE) all CC=$(target)-gcc STRIP=$(target)-strip
-	touch $@
-
-$(DEPDIR)/autofs: \
-$(DEPDIR)/%autofs: $(DEPDIR)/autofs.do_compile
-	$(start_build)
-	cd $(DIR_autofs) && \
+		$(MAKE) all CC=$(target)-gcc STRIP=$(target)-strip && \
 		$(INSTALL_autofs)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1505,40 +1356,32 @@ imagemagick
 DESCRIPTION_imagemagick = "imagemagick"
 FILES_imagemagick = \
 /usr/*
-$(DEPDIR)/imagemagick.do_prepare: bootstrap $(DEPENDS_imagemagick)
+$(DEPDIR)/imagemagick: bootstrap $(DEPENDS_imagemagick)
 	$(PREPARE_imagemagick)
-	touch $@
-
-$(DEPDIR)/imagemagick.do_compile: $(DEPDIR)/imagemagick.do_prepare
-	cd $(DIR_imagemagick) && \
-	$(BUILDENV) \
-	CFLAGS="-O1" \
-	PKG_CONFIG=$(hostprefix)/bin/pkg-config \
-	./configure \
-		--host=$(target) \
-		--prefix=/usr \
-		--without-dps \
-		--without-fpx \
-		--without-gslib \
-		--without-jbig \
-		--without-jp2 \
-		--without-lcms \
-		--without-tiff \
-		--without-xml \
-		--without-perl \
-		--disable-openmp \
-		--disable-opencl \
-		--without-zlib \
-		--enable-shared \
-		--enable-static \
-		--without-x && \
-	$(MAKE) all
-	touch $@
-
-$(DEPDIR)/imagemagick: \
-$(DEPDIR)/%imagemagick: $(DEPDIR)/imagemagick.do_compile
 	$(start_build)
 	cd $(DIR_imagemagick) && \
+		$(BUILDENV) \
+		CFLAGS="-O1" \
+		PKG_CONFIG=$(hostprefix)/bin/pkg-config \
+		./configure \
+			--host=$(target) \
+			--prefix=/usr \
+			--without-dps \
+			--without-fpx \
+			--without-gslib \
+			--without-jbig \
+			--without-jp2 \
+			--without-lcms \
+			--without-tiff \
+			--without-xml \
+			--without-perl \
+			--disable-openmp \
+			--disable-opencl \
+			--without-zlib \
+			--enable-shared \
+			--enable-static \
+			--without-x && \
+		$(MAKE) all && \
 		$(INSTALL_imagemagick)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1595,19 +1438,12 @@ SRC_URI_enigma2_plugin_cams_oscam = http://www.streamboard.tv/oscam/
 FILES_enigma2_plugin_cams_oscam = \
 /usr/bin/cam/oscam
 
-$(DEPDIR)/enigma2_plugin_cams_oscam.do_prepare: bootstrap $(DEPENDS_enigma2_plugin_cams_oscam)
+$(DEPDIR)/enigma2_plugin_cams_oscam: bootstrap $(DEPENDS_enigma2_plugin_cams_oscam)
 	$(PREPARE_enigma2_plugin_cams_oscam)
-	touch $@
-
-$(DEPDIR)/enigma2_plugin_cams_oscam.do_compile: enigma2_plugin_cams_oscam.do_prepare
+	$(start_build)
 	cd $(DIR_enigma2_plugin_cams_oscam) && \
 	$(BUILDENV) \
-	$(MAKE) CROSS=$(prefix)/devkit/sh4/bin/$(target)-  CONF_DIR=/var/keys
-	touch $@
-
-$(DEPDIR)/enigma2_plugin_cams_oscam: enigma2_plugin_cams_oscam.do_compile
-	$(start_build)
-	cd $(DIR_enigma2_plugin_cams_oscam)  && \
+	$(MAKE) CROSS=$(prefix)/devkit/sh4/bin/$(target)-  CONF_DIR=/var/keys && \
 		$(INSTALL_DIR) $(PKDIR)/usr/bin/cam; \
 		$(INSTALL_BIN) Distribution/oscam*-sh4-linux $(PKDIR)/usr/bin/cam/oscam
 	$(tocdk_build)
@@ -1638,21 +1474,17 @@ FILES_enigma2_plugin_cams_oscam_config = \
 /var/keys/oscam.*
 
 $(DEPDIR)/enigma2-plugin-cams-oscam-config: $(DEPENDS_enigma2_plugin_cams_oscam_config)
-	 $(PREPARE_enigma2_plugin_cams_oscam_config)
-	 $(start_build)
+	$(PREPARE_enigma2_plugin_cams_oscam_config)
+	$(start_build)
 		$(INSTALL_DIR) $(PKDIR)/var/keys
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.conf     $(PKDIR)/var/keys/oscam.conf
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.dvbapi   $(PKDIR)/var/keys/oscam.dvbapi
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.services $(PKDIR)/var/keys/oscam.services
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.srvid    $(PKDIR)/var/keys/oscam.srvid
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.user     $(PKDIR)/var/keys/oscam.user
-ifdef ENABLE_SPARK7162
-		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.server2  $(PKDIR)/var/keys/oscam.server
-else
 		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.server   $(PKDIR)/var/keys/oscam.server
-endif
-		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.guess    $(PKDIR)/var/keys/oscam.guess	 
-	 $(e2extra_build)
+		$(INSTALL_FILE) $(buildprefix)/root/var/keys/oscam.guess    $(PKDIR)/var/keys/oscam.guess
+	$(e2extra_build)
 	touch $@
 
 
@@ -1675,11 +1507,9 @@ FILES_parted = \
 /usr/lib/libparted.s* \
 /usr/sbin/parted
 
-$(DEPDIR)/parted.do_prepare: bootstrap $(DEPENDS_parted)
+$(DEPDIR)/parted: bootstrap $(DEPENDS_parted)
 	$(PREPARE_parted)
-	touch $@
-
-$(DEPDIR)/parted.do_compile: $(DEPDIR)/parted.do_prepare
+	$(start_build)
 	cd $(DIR_parted) && \
 		cp aclocal.m4 acinclude.m4 && \
 		autoconf && \
@@ -1690,13 +1520,7 @@ $(DEPDIR)/parted.do_compile: $(DEPDIR)/parted.do_prepare
 			--prefix=/usr \
 			--disable-Werror \
 			--disable-device-mapper && \
-		$(MAKE) all CC=$(target)-gcc STRIP=$(target)-strip
-	touch $@
-
-$(DEPDIR)/parted: \
-$(DEPDIR)/%parted: $(DEPDIR)/parted.do_compile
-	$(start_build)
-	cd $(DIR_parted) && \
+		$(MAKE) all CC=$(target)-gcc STRIP=$(target)-strip && \
 		$(INSTALL_parted)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1719,11 +1543,9 @@ DESCRIPTION_gettext = "gettext"
 FILES_gettext = \
 *
 
-$(DEPDIR)/gettext.do_prepare: bootstrap $(DEPENDS_gettext)
+$(DEPDIR)/gettext: bootstrap $(DEPENDS_gettext)
 	$(PREPARE_gettext)
-	touch $@
-
-$(DEPDIR)/gettext.do_compile: $(DEPDIR)/gettext.do_prepare
+	$(start_build)
 	cd $(DIR_gettext) && \
 		cp aclocal.m4 acinclude.m4 && \
 		autoconf && \
@@ -1735,13 +1557,7 @@ $(DEPDIR)/gettext.do_compile: $(DEPDIR)/gettext.do_prepare
 			--without-emacs \
 			--without-cvs \
 			--disable-java && \
-		$(MAKE) all 
-	touch $@
-
-$(DEPDIR)/gettext: \
-$(DEPDIR)/%gettext: $(DEPDIR)/gettext.do_compile
-	$(start_build)
-	cd $(DIR_gettext) && \
+		$(MAKE) all && \
 		$(INSTALL_gettext)
 	$(tocdk_build)
 	$(toflash_build)
