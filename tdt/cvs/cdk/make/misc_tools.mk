@@ -71,31 +71,23 @@ define DEPSCLEANUP_devinit
 	rm -f $(DEPDIR)/devinit.do_compile
 endef
 
-$(DEPDIR)/devinit.do_prepare: bootstrap $(DEPENDS_devinit)
+$(DEPDIR)/devinit: bootstrap $(DEPENDS_devinit)
 	$(PREPARE_devinit)
-	touch $@
-
-$(DEPDIR)/devinit.do_compile: $(DEPDIR)/devinit.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_devinit) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/devinit: \
-$(DEPDIR)/%devinit: $(DEPDIR)/devinit.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_devinit) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_devinit)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # EVREMOTE2
@@ -128,31 +120,23 @@ define DEPSCLEANUP_evremote2
 	rm -f $(DEPDIR)/evremote2.do_compile
 endef
 
-$(DEPDIR)/evremote2.do_prepare: bootstrap $(DEPENDS_evremote2)
+$(DEPDIR)/evremote2: bootstrap $(DEPENDS_evremote2)
 	$(PREPARE_evremote2)
-	touch $@
-
-$(DEPDIR)/evremote2.do_compile: $(DEPDIR)/evremote2.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_evremote2) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/evremote2: \
-$(DEPDIR)/%evremote2: $(DEPDIR)/evremote2.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_evremote2) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_evremote2)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # FP-CONTROL
@@ -184,31 +168,23 @@ define DEPSCLEANUP_fp_control
 	rm -f $(DEPDIR)/fp_control.do_compile
 endef
 
-$(DEPDIR)/fp_control.do_prepare: bootstrap $(DEPENDS_fp_control)
+$(DEPDIR)/fp_control: bootstrap $(DEPENDS_fp_control)
 	$(PREPARE_fp_control)
-	touch $@
-
-$(DEPDIR)/fp_control.do_compile: $(DEPDIR)/fp_control.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_fp_control) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/fp_control: \
-$(DEPDIR)/%fp_control: $(DEPDIR)/fp_control.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_fp_control) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_fp_control)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # gitVCInfo
@@ -240,31 +216,23 @@ define DEPSCLEANUP_gitVCInfo
 	rm -f $(DEPDIR)/gitVCInfo.do_compile
 endef
 
-$(DEPDIR)/gitVCInfo.do_prepare: bootstrap $(DEPENDS_gitVCInfo)
+$(DEPDIR)/gitVCInfo: bootstrap $(DEPENDS_gitVCInfo)
 	$(PREPARE_gitVCInfo)
-	touch $@
-
-$(DEPDIR)/gitVCInfo.do_compile: $(DEPDIR)/gitVCInfo.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gitVCInfo) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/gitVCInfo: \
-$(DEPDIR)/%gitVCInfo: $(DEPDIR)/gitVCInfo.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_gitVCInfo) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_gitVCInfo)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # HOTPLUG
@@ -296,31 +264,23 @@ define DEPSCLEANUP_hotplug
 	rm -f $(DEPDIR)/hotplug.do_compile
 endef
 
-$(DEPDIR)/hotplug.do_prepare: bootstrap $(DEPENDS_hotplug)
+$(DEPDIR)/hotplug: bootstrap $(DEPENDS_hotplug)
 	$(PREPARE_hotplug)
-	touch $@
-
-$(DEPDIR)/hotplug.do_compile: $(DEPDIR)/hotplug.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_hotplug) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/hotplug: \
-$(DEPDIR)/%hotplug: $(DEPDIR)/hotplug.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_hotplug) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_hotplug)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true#
+	touch $@ || true
 
 #
 # LIBEPLAYER3
@@ -354,32 +314,24 @@ define DEPSCLEANUP_libeplayer3
 	rm -f $(DEPDIR)/libeplayer3.do_compile
 endef
 
-$(DEPDIR)/libeplayer3.do_prepare: bootstrap driver libstdc++-dev libdvdnav libdvdcss libpng libjpeg ffmpeg libexpat fontconfig bzip2 $(DEPENDS_libeplayer3)
+$(DEPDIR)/libeplayer3: bootstrap libstdc++-dev libdvdnav libdvdcss libpng libjpeg ffmpeg libexpat fontconfig bzip2 $(DEPENDS_libeplayer3)
 	$(PREPARE_libeplayer3)
-	touch $@
-
-$(DEPDIR)/libeplayer3.do_compile: $(DEPDIR)/libeplayer3.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libeplayer3) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-		--includedir=/usr/include \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/libeplayer3: \
-$(DEPDIR)/%libeplayer3: $(DEPDIR)/libeplayer3.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_libeplayer3) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+			--includedir=/usr/include \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_libeplayer3)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # LIBMME-HOST
@@ -411,31 +363,23 @@ define DEPSCLEANUP_libmme_host
 	rm -f $(DEPDIR)/libmme_host.do_compile
 endef
 
-$(DEPDIR)/libmme_host.do_prepare: bootstrap $(DEPENDS_libmme_host)
+$(DEPDIR)/libmme_host: bootstrap $(DEPENDS_libmme_host)
 	$(PREPARE_libmme_host)
-	touch $@
-
-$(DEPDIR)/libmme_host.do_compile: $(DEPDIR)/libmme_host.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmme_host) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/libmme_host: \
-$(DEPDIR)/%libmme_host: $(DEPDIR)/libmme_host.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_libmme_host) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_libmme_host)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # LIBMMEIMAGE
@@ -467,32 +411,24 @@ define DEPSCLEANUP_libmmeimage
 	rm -f $(DEPDIR)/libmmeimage.do_compile
 endef
 
-$(DEPDIR)/libmmeimage.do_prepare: bootstrap $(DEPENDS_libmmeimage)
+$(DEPDIR)/libmmeimage: bootstrap $(DEPENDS_libmmeimage)
 	$(PREPARE_libmmeimage)
-	touch $@
-
-$(DEPDIR)/libmmeimage.do_compile: $(DEPDIR)/libmmeimage.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmmeimage) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-		     --includedir=/usr/include \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/libmmeimage: \
-$(DEPDIR)/%libmmeimage: $(DEPDIR)/libmmeimage.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_libmmeimage) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+			--includedir=/usr/include \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_libmmeimage)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # SHOWIFRAME
@@ -524,31 +460,23 @@ define DEPSCLEANUP_showiframe
 	rm -f $(DEPDIR)/showiframe.do_compile
 endef
 
-$(DEPDIR)/showiframe.do_prepare: bootstrap $(DEPENDS_showiframe)
+$(DEPDIR)/showiframe: bootstrap $(DEPENDS_showiframe)
 	$(PREPARE_showiframe)
-	touch $@
-
-$(DEPDIR)/showiframe.do_compile: $(DEPDIR)/showiframe.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_showiframe) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/showiframe: \
-$(DEPDIR)/%showiframe: $(DEPDIR)/showiframe.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_showiframe) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_showiframe)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 #STFBCONTROL
@@ -580,24 +508,16 @@ define DEPSCLEANUP_stfbcontrol
 	rm -f $(DEPDIR)/stfbcontrol.do_compile
 endef
 
-$(DEPDIR)/stfbcontrol.do_prepare: bootstrap $(DEPENDS_stfbcontrol)
+$(DEPDIR)/stfbcontrol: bootstrap $(DEPENDS_stfbcontrol)
 	$(PREPARE_stfbcontrol)
-	touch $@
-
-$(DEPDIR)/stfbcontrol.do_compile: $(DEPDIR)/stfbcontrol.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_stfbcontrol) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/stfbcontrol: \
-$(DEPDIR)/%stfbcontrol: $(DEPDIR)/stfbcontrol.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_stfbcontrol) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_stfbcontrol)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
@@ -636,24 +556,16 @@ define DEPSCLEANUP_streamproxy
 	rm -f $(DEPDIR)/streamproxy.do_compile
 endef
 
-$(DEPDIR)/streamproxy.do_prepare: bootstrap $(DEPENDS_streamproxy)
+$(DEPDIR)/streamproxy: bootstrap $(DEPENDS_streamproxy)
 	$(PREPARE_streamproxy)
-	touch $@
-
-$(DEPDIR)/streamproxy.do_compile: $(DEPDIR)/streamproxy.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_streamproxy) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/streamproxy: \
-$(DEPDIR)/%streamproxy: $(DEPDIR)/streamproxy.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_streamproxy) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_streamproxy)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
@@ -692,31 +604,23 @@ define DEPSCLEANUP_ustslave
 	rm -f $(DEPDIR)/ustslave.do_compile
 endef
 
-$(DEPDIR)/ustslave.do_prepare: bootstrap $(DEPENDS_ustslave)
+$(DEPDIR)/ustslave: bootstrap $(DEPENDS_ustslave)
 	$(PREPARE_ustslave)
-	touch $@
-
-$(DEPDIR)/ustslave.do_compile: $(DEPDIR)/ustslave.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_ustslave) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/ustslave: \
-$(DEPDIR)/%ustslave: $(DEPDIR)/ustslave.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_ustslave) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_ustslave)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
 
 #
 # EPLAYER4
@@ -748,28 +652,20 @@ define DEPSCLEANUP_eplayer4
 	rm -f $(DEPDIR)/eplayer4.do_compile
 endef
 
-$(DEPDIR)/eplayer4.do_prepare: bootstrap $(DEPENDS_eplayer4)
+$(DEPDIR)/eplayer4: bootstrap $(DEPENDS_eplayer4)
 	$(PREPARE_eplayer4)
-	touch $@
-
-$(DEPDIR)/eplayer4.do_compile: $(DEPDIR)/eplayer4.do_prepare
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_eplayer4) && \
-	libtoolize -f -c && \
-	$(CONFIGURE) --prefix= \
-	$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
-	$(MAKE)
-	touch $@
-
-$(DEPDIR)/eplayer4: \
-$(DEPDIR)/%eplayer4: $(DEPDIR)/eplayer4.do_compile
 	$(start_build)
 	$(get_git_version)
+	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_eplayer4) && \
+		libtoolize -f -c && \
+		$(CONFIGURE) --prefix= \
+		$(if $(MULTICOM406), --enable-multicom406) $(if $(MULTICOM324), --enable-multicom324) \
+		$(MAKE) && \
 		$(INSTALL_eplayer4)
 	CPPFLAGS="\
 	$(if $(HL101), -DPLATFORM_HL101) \
 	$(if $(PLAYER191), -DPLAYER191)"
 	$(tocdk_build)
 	$(toflash_build)
-	[ "x$*" = "x" ] && touch $@ || true
+	touch $@ || true
