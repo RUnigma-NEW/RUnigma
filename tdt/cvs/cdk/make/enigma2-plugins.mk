@@ -19,12 +19,8 @@ DESCRIPTION_enigma2_openwebif = "open webinteface plugin for enigma2 by openpli 
 PKGR_enigma2_openwebif = r1
 RDEPENDS_enigma2_openwebif = python pythoncheetah grab
 
-$(DEPDIR)/enigma2_openwebif.do_prepare: bootstrap $(RDEPENDS_enigma2_openwebif) $(DEPENDS_enigma2_openwebif)
+$(DEPDIR)/enigma2_openwebif: bootstrap $(RDEPENDS_enigma2_openwebif) $(DEPENDS_enigma2_openwebif)
 	$(PREPARE_enigma2_openwebif)
-	touch $@
-
-$(DEPDIR)/enigma2_openwebif: \
-$(DEPDIR)/%enigma2_openwebif: $(DEPDIR)/enigma2_openwebif.do_prepare
 	$(start_build)
 	cd $(DIR_enigma2_openwebif) && \
 		$(BUILDENV) \
@@ -33,7 +29,7 @@ $(DEPDIR)/%enigma2_openwebif: $(DEPDIR)/enigma2_openwebif.do_prepare
 		cp -a plugin $(PKDIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif && \
 		cp -a $(buildprefix)/root/usr/bin/grab.sh $(PKDIR)/usr/bin/
 	$(e2extra_build)
-#	$(DISTCLEANUP_enigma2_openwebif)
+	$(DISTCLEANUP_enigma2_openwebif)
 	touch $@
 
 #
@@ -52,12 +48,8 @@ enigma2_networkbrowser
 DESCRIPTION_enigma2_networkbrowser = "networkbrowser plugin for enigma2"
 PKGR_enigma2_networkbrowser = r1
 
-$(DEPDIR)/enigma2_networkbrowser.do_prepare: $(DEPENDS_enigma2_networkbrowser)
+$(DEPDIR)/enigma2_networkbrowser: $(DEPENDS_enigma2_networkbrowser)
 	$(PREPARE_enigma2_networkbrowser)
-	touch $@
-
-$(DEPDIR)/enigma2_networkbrowser: \
-$(DEPDIR)/%enigma2_networkbrowser: $(DEPDIR)/enigma2_networkbrowser.do_prepare
 	$(start_build)
 	cd $(DIR_enigma2_networkbrowser)/src/lib && \
 		$(BUILDENV) \
@@ -100,7 +92,7 @@ $(DEPDIR)/%-openpli:
 		$(python) setup.py install --root=$(PKDIR) --install-lib=/usr/lib/enigma2/python/Plugins
 	$(remove_pyc)
 	$(e2extra_build)
-#	$(DISTCLEANUP_enigma2_networkbrowser)
+	$(DISTCLEANUP_enigma2_networkbrowser)
 	touch $@
 
 DESCRIPTION_NewsReader_openpli = RSS reader
