@@ -1306,7 +1306,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) {
 #else
     av_dict_set(&avio_opts, "timeout", "20000000", 0); //20sec
-    if ((err = avformat_open_input(&avContext, filename, NULL, &avio_opts)) != 0) {
+    if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0) {
 #endif
         char error[512];
 
