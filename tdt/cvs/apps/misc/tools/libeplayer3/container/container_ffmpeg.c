@@ -66,7 +66,8 @@ static unsigned char* ffmpeg_buf_read = NULL;
 static unsigned char* ffmpeg_buf_write = NULL;
 static unsigned char* ffmpeg_buf = NULL;
 static pthread_t fillerThread;
-static int hasfillerThreadStarted = 0;
+static int hasfillerThreadStarted[10] = {0,0,0,0,0,0,0,0,0,0};
+int hasfillerThreadStartedID = 0;
 static pthread_mutex_t fillermutex;
 static int ffmpeg_buf_valid_size = 0;
 static int ffmpeg_do_seek_ret = 0;
@@ -854,397 +855,408 @@ if(!context->playback->BackWard && audioMute)
 //for buffered io
 int container_set_ffmpeg_buf_seek_time(int* time)
 {
-	ffmpeg_buf_seek_time = (*time);
-
-	return cERR_CONTAINER_FFMPEG_NO_ERROR;
+    ffmpeg_buf_seek_time = (*time);
+    return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 int container_set_ffmpeg_buf_size(int* size)
 {
-	if(ffmpeg_buf == NULL)
-	{
-		if(*size == 0)
-			ffmpeg_buf_size = 0;
-		else
-			ffmpeg_buf_size = (*size) + FILLBUFDIFF;
-	}
+    if(ffmpeg_buf == NULL)
+    {
+        if(*size == 0)
+            ffmpeg_buf_size = 0;
+        else
+            ffmpeg_buf_size = (*size) + FILLBUFDIFF;
+    }
 
-	return cERR_CONTAINER_FFMPEG_NO_ERROR;
+    return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 int container_get_ffmpeg_buf_size(int* size)
 {
-	*size = ffmpeg_buf_size - FILLBUFDIFF;
-
-	return cERR_CONTAINER_FFMPEG_NO_ERROR;
+    *size = ffmpeg_buf_size - FILLBUFDIFF;
+    return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 int container_get_fillbufstatus(int* size)
 {
-	int rwdiff = 0;
+    int rwdiff = 0;
 
-	if(ffmpeg_buf != NULL && ffmpeg_buf_read != NULL && ffmpeg_buf_write != NULL)
-	{
-		if(ffmpeg_buf_read < ffmpeg_buf_write)
-			rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
-		if(ffmpeg_buf_read > ffmpeg_buf_write)
-		{
-			rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
-			rwdiff += ffmpeg_buf_write - ffmpeg_buf;
-		}
+    if(ffmpeg_buf != NULL && ffmpeg_buf_read != NULL && ffmpeg_buf_write != NULL)
+    {
+        if(ffmpeg_buf_read < ffmpeg_buf_write)
+            rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
+        if(ffmpeg_buf_read > ffmpeg_buf_write)
+        {
+            rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
+            rwdiff += ffmpeg_buf_write - ffmpeg_buf;
+        }
 
-		*size = rwdiff;
-	}
+        *size = rwdiff;
+    }
 
-	return cERR_CONTAINER_FFMPEG_NO_ERROR;
+    return cERR_CONTAINER_FFMPEG_NO_ERROR;
 }
 
 int container_stop_buffer()
 {
-	ffmpeg_buf_stop = 1;
-	return 0;
+    ffmpeg_buf_stop = 1;
+    return 0;
 }
 
 //flag 0: start direct
 //flag 1: from thread
-void ffmpeg_filler(Context_t *context, int* inpause, int flag)
+void ffmpeg_filler(Context_t *context, int id, int* inpause, int flag)
 {
-	int len = 0;
-	int rwdiff = ffmpeg_buf_size;
-	uint8_t buf[FILLBUFPAKET];
+    int len = 0;
+    int rwdiff = ffmpeg_buf_size;
+    uint8_t buf[FILLBUFPAKET];
 
-	if(ffmpeg_read_org == NULL || ffmpeg_seek_org == NULL)
-	{
-		ffmpeg_err("ffmpeg_read_org or ffmpeg_seek_org is NULL\n");
-		return;
-	}
-
-	while( (flag == 0 && avContext != NULL && avContext->pb != NULL && rwdiff > FILLBUFDIFF) || (flag == 1 && hasfillerThreadStarted != 2 && avContext != NULL && avContext->pb != NULL && rwdiff > FILLBUFDIFF) )
-	{
-		if(flag == 0 && ffmpeg_buf_stop == 1)
-		{
-			ffmpeg_buf_stop = 0;
-			break;
-		}
-
-		getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
-		//do a seek
-		if(ffmpeg_do_seek != 0)
-		{
-			ffmpeg_do_seek_ret = ffmpeg_seek_org(avContext->pb->opaque, avContext->pb->pos + ffmpeg_do_seek, SEEK_SET);
-			if(ffmpeg_do_seek_ret >= 0)
-			{
-				ffmpeg_buf_write = ffmpeg_buf;
-				ffmpeg_buf_read = ffmpeg_buf;
-			}
-
-			ffmpeg_do_seek = 0;
-		}
-
-		if(ffmpeg_buf_read == ffmpeg_buf_write)
-		{
-			ffmpeg_buf_valid_size = 0;
-			rwdiff = ffmpeg_buf_size;
-		}
-		if(ffmpeg_buf_read < ffmpeg_buf_write)
-		{
-			rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_write;
-			rwdiff += ffmpeg_buf_read - ffmpeg_buf;
-		}
-		if(ffmpeg_buf_read > ffmpeg_buf_write)
-			rwdiff = ffmpeg_buf_read - ffmpeg_buf_write;
-
-		int size = FILLBUFPAKET;
-		if(rwdiff - FILLBUFDIFF < size)
-			size = (rwdiff - FILLBUFDIFF);
-
-		if(ffmpeg_buf_write + size > ffmpeg_buf + ffmpeg_buf_size)
-			size = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_write;
-
-		if(ffmpeg_buf_write == ffmpeg_buf + ffmpeg_buf_size)
-			ffmpeg_buf_write = ffmpeg_buf;
-
-		releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-
-		if(size > 0)
-		{
-			if(flag == 1 && hasfillerThreadStarted == 2) break;
-			len = ffmpeg_read_org(avContext->pb->opaque, buf, size);
-			if(flag == 1 && hasfillerThreadStarted == 2) break;
-
-			ffmpeg_printf(20, "buffer-status (free buffer=%d)\n", rwdiff - FILLBUFDIFF - len);
-
-			getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
-			if(len > 0)
-			{
-				memcpy(ffmpeg_buf_write, buf, len);
-				ffmpeg_buf_write += len;
-			}
-			else
-			{
-				releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-				ffmpeg_err("read not ok ret=%d\n", len);
-				break;
-			}
-			releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-		}
-    else
+    if(ffmpeg_read_org == NULL || ffmpeg_seek_org == NULL)
     {
-      //on long pause the server close the connection, so we use seek to reconnect
-      if(context != NULL && context->playback != NULL && inpause != NULL)
-      {
-        if((*inpause) == 0 && context->playback->isPaused)
-        {
-          (*inpause) = 1;
-        }
-        else if((*inpause) == 1 && !context->playback->isPaused)
-        {
-          int buflen = 0;
-          (*inpause) = 0;
-
-          getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
-          if(ffmpeg_buf_read < ffmpeg_buf_write)
-			     buflen = ffmpeg_buf_write - ffmpeg_buf_read;
-		      if(ffmpeg_buf_read > ffmpeg_buf_write)
-		      {
-			      buflen = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
-			      buflen += ffmpeg_buf_write - ffmpeg_buf;
-		      } 
-          ffmpeg_seek_org(avContext->pb->opaque, avContext->pb->pos + buflen, SEEK_SET);
-          releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-        }
-      }
+        ffmpeg_err("ffmpeg_read_org or ffmpeg_seek_org is NULL\n");
+        return;
     }
-	}
+
+    while( (flag == 0 && avContext != NULL && avContext->pb != NULL && rwdiff > FILLBUFDIFF) || (flag == 1 && hasfillerThreadStarted[id] == 1 && avContext != NULL && avContext->pb != NULL && rwdiff > FILLBUFDIFF) )
+    {
+         if(flag == 0 && ffmpeg_buf_stop == 1)
+         {
+             ffmpeg_buf_stop = 0;
+             break;
+         }
+
+         getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
+         //do a seek
+         if(ffmpeg_do_seek != 0)
+         {
+             ffmpeg_do_seek_ret = ffmpeg_seek_org(avContext->pb->opaque, avContext->pb->pos + ffmpeg_do_seek, SEEK_SET);
+             if(ffmpeg_do_seek_ret >= 0)
+             {
+                 ffmpeg_buf_write = ffmpeg_buf;
+                 ffmpeg_buf_read = ffmpeg_buf;
+             }
+
+             ffmpeg_do_seek = 0;
+         }
+
+         if(ffmpeg_buf_read == ffmpeg_buf_write)
+         {
+             ffmpeg_buf_valid_size = 0;
+             rwdiff = ffmpeg_buf_size;
+         }
+         if(ffmpeg_buf_read < ffmpeg_buf_write)
+         {
+             rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_write;
+             rwdiff += ffmpeg_buf_read - ffmpeg_buf;
+         }
+         if(ffmpeg_buf_read > ffmpeg_buf_write)
+         rwdiff = ffmpeg_buf_read - ffmpeg_buf_write;
+
+         int size = FILLBUFPAKET;
+         if(rwdiff - FILLBUFDIFF < size)
+             size = (rwdiff - FILLBUFDIFF);
+
+         if(ffmpeg_buf_write + size > ffmpeg_buf + ffmpeg_buf_size)
+             size = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_write;
+
+         if(ffmpeg_buf_write == ffmpeg_buf + ffmpeg_buf_size)
+             ffmpeg_buf_write = ffmpeg_buf;
+
+         releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+
+         if(size > 0)
+         {
+             if(flag == 1 && hasfillerThreadStarted[id] == 2) break;
+             len = ffmpeg_read_org(avContext->pb->opaque, buf, size);
+             if(flag == 1 && hasfillerThreadStarted[id] == 2) break;
+
+             ffmpeg_printf(20, "buffer-status (free buffer=%d)\n", rwdiff - FILLBUFDIFF - len);
+
+             getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
+             if(len > 0)
+             { 
+                 memcpy(ffmpeg_buf_write, buf, len);
+                 ffmpeg_buf_write += len;
+             }
+             else
+             {
+                 releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+                 ffmpeg_err("read not ok ret=%d\n", len);
+                 break;
+             }
+             releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+        }
+        else
+        {
+            //on long pause the server close the connection, so we use seek to reconnect
+            if(context != NULL && context->playback != NULL && inpause != NULL)
+            {
+                if((*inpause) == 0 && context->playback->isPaused)
+                {
+                    (*inpause) = 1;
+                }
+                else if((*inpause) == 1 && !context->playback->isPaused)
+                {
+                    int buflen = 0;
+                    (*inpause) = 0;
+
+                    getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
+                    if(ffmpeg_buf_read < ffmpeg_buf_write)
+                        buflen = ffmpeg_buf_write - ffmpeg_buf_read;
+                    if(ffmpeg_buf_read > ffmpeg_buf_write)
+                    {
+                        buflen = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
+                        buflen += ffmpeg_buf_write - ffmpeg_buf;
+                    } 
+                    ffmpeg_seek_org(avContext->pb->opaque, avContext->pb->pos + buflen, SEEK_SET);
+                    releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+                }
+            }
+        }
+    }
 }
 
 static void ffmpeg_fillerTHREAD(Context_t *context)
 {
-	ffmpeg_printf(10, "Running!\n");
-  int inpause = 0;
+    int inpause = 0;
+    int id = hasfillerThreadStartedID;
 
-	while(hasfillerThreadStarted != 2)
-	{
-		ffmpeg_filler(context, &inpause, 1);
-		usleep(10000);
-	}
+    ffmpeg_printf(10, "Running ID=%d!\n", id);
 
-	hasfillerThreadStarted = 0;
+    while(hasfillerThreadStarted[id] == 1)
+    {
+        ffmpeg_filler(context, id, &inpause, 1);
+        usleep(10000);
+    }
 
-	ffmpeg_printf(10, "terminating\n");
+    hasfillerThreadStarted[id] = 0;
+
+    ffmpeg_printf(10, "terminating ID=%d\n", id);
 }
 
 static int ffmpeg_start_fillerTHREAD(Context_t *context)
 {
-	int error;
-	int ret = 0;
-	pthread_attr_t attr;
+    int error;
+    int ret = 0, i = 0;
+    pthread_attr_t attr;
 
-	ffmpeg_printf(10, "\n");
+    ffmpeg_printf(10, "\n");
 
-	if ( context && context->playback && context->playback->isPlaying )
-		ffmpeg_printf(10, "is Playing\n");
-	else
-		ffmpeg_printf(10, "is NOT Playing\n");
+    if ( context && context->playback && context->playback->isPlaying )
+        ffmpeg_printf(10, "is Playing\n");
+    else
+        ffmpeg_printf(10, "is NOT Playing\n");
 
-	if (hasfillerThreadStarted == 0)
-	{
-		pthread_attr_init(&attr);
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    //get filler thread ID
+    //if the thread hangs for long time, we use a new id
+    for(i = 0; i < 10; i++)
+    {
+        if(hasfillerThreadStarted[i] == 0)
+        {
+            hasfillerThreadStartedID = i;
+            break;
+        }
+    }
 
-		if((error = pthread_create(&fillerThread, &attr, (void *)&ffmpeg_fillerTHREAD, context)) != 0)
-		{
-			ffmpeg_printf(10, "Error creating filler thread, error:%d:%s\n", error,strerror(error));
+    if (hasfillerThreadStarted[hasfillerThreadStartedID] == 0)
+    {
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-			hasfillerThreadStarted = 0;
-			ret = cERR_CONTAINER_FFMPEG_ERR;
-		}
-		else
-		{
-			ffmpeg_printf(10, "Created filler thread\n");
+        hasfillerThreadStarted[hasfillerThreadStartedID] = 1;
+        if((error = pthread_create(&fillerThread, &attr, (void *)&ffmpeg_fillerTHREAD, context)) != 0)
+        {
+            hasfillerThreadStarted[hasfillerThreadStartedID] = 0;
+            ffmpeg_printf(10, "Error creating filler thread, error:%d:%s\n", error,strerror(error));
 
-			hasfillerThreadStarted = 1;
-		}
-	}
-	else
-	{
-		ffmpeg_printf(10, "A filler thread already exists!\n");
+            ret = cERR_CONTAINER_FFMPEG_ERR;
+        }
+        else
+        {
+            ffmpeg_printf(10, "Created filler thread\n");
+        }
+    }
+    else
+    {
+        ffmpeg_printf(10, "All filler thread ID's in use!\n");
 
-		ret = cERR_CONTAINER_FFMPEG_ERR;
-	}
+        ret = cERR_CONTAINER_FFMPEG_ERR;
+    }
 
-	ffmpeg_printf(10, "exiting with value %d\n", ret);
-	return ret;
+    ffmpeg_printf(10, "exiting with value %d\n", ret);
+    return ret;
 }
 
 int ffmpeg_read_real(void *opaque, uint8_t *buf, int buf_size)
 {
-	int len = buf_size;
-	int rwdiff = 0;
+    int len = buf_size;
+    int rwdiff = 0;
 
-	if(buf_size > 0)
-	{
-		getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
+    if(buf_size > 0)
+    {
+        getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
 
-		if(ffmpeg_buf_read < ffmpeg_buf_write)
-			rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
-		if(ffmpeg_buf_read > ffmpeg_buf_write)
-		{
-			rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
-			rwdiff += ffmpeg_buf_write - ffmpeg_buf;
-		}
-		rwdiff--;
+        if(ffmpeg_buf_read < ffmpeg_buf_write)
+            rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
+        if(ffmpeg_buf_read > ffmpeg_buf_write)
+        {
+            rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
+            rwdiff += ffmpeg_buf_write - ffmpeg_buf;
+        }
+        rwdiff--;
 
-		if(len > rwdiff)
-			len = rwdiff;
+        if(len > rwdiff)
+            len = rwdiff;
 
-		if(ffmpeg_buf_read + len > ffmpeg_buf + ffmpeg_buf_size)
-			len = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
+        if(ffmpeg_buf_read + len > ffmpeg_buf + ffmpeg_buf_size)
+            len = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
 
-		if(len > 0)
-		{
-			memcpy(buf, ffmpeg_buf_read, len);
-			ffmpeg_buf_read += len;
+        if(len > 0)
+        {
+            memcpy(buf, ffmpeg_buf_read, len);
+            ffmpeg_buf_read += len;
 
-			if(ffmpeg_buf_valid_size < FILLBUFDIFF)
-			{
-				if(ffmpeg_buf_valid_size + len > FILLBUFDIFF)
-					ffmpeg_buf_valid_size = FILLBUFDIFF;
-				else
-					ffmpeg_buf_valid_size += len;
-			}
+            if(ffmpeg_buf_valid_size < FILLBUFDIFF)
+            {
+                if(ffmpeg_buf_valid_size + len > FILLBUFDIFF)
+                    ffmpeg_buf_valid_size = FILLBUFDIFF;
+                else
+                    ffmpeg_buf_valid_size += len;
+            }
 
-			if(ffmpeg_buf_read == ffmpeg_buf + ffmpeg_buf_size)
-				ffmpeg_buf_read = ffmpeg_buf;
-		}
-		else
-			len = 0;
+            if(ffmpeg_buf_read == ffmpeg_buf + ffmpeg_buf_size)
+                ffmpeg_buf_read = ffmpeg_buf;
+        }
+        else
+            len = 0;
 
-		releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-	}
+        releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+    }
 
-	return len;
+    return len;
 }
 
 int ffmpeg_read(void *opaque, uint8_t *buf, int buf_size)
 {
-	int sumlen = 0;
-	int len = 0;
-	int count = 2000;
+    int sumlen = 0;
+    int len = 0;
+    int count = 2000;
 
-	while(sumlen < buf_size && (--count) > 0)
-	{
-		len = ffmpeg_read_real(opaque, buf, buf_size - sumlen);
-		sumlen += len;
-		buf += len;
-		if(len == 0)
-			usleep(10000);
-	}
+    while(sumlen < buf_size && (--count) > 0)
+    {
+        len = ffmpeg_read_real(opaque, buf, buf_size - sumlen);
+        sumlen += len;
+        buf += len;
+        if(len == 0)
+            usleep(10000);
+    }
 
-	if(count == 0)
-	{
-		if(sumlen == 0)
-			ffmpeg_err( "Timeout waiting for buffered data (buf_size=%d sumlen=%d)!\n", buf_size, sumlen);
-		else
-			ffmpeg_err( "Timeout, not all buffered data availabel (buf_size=%d sumlen=%d)!\n", buf_size, sumlen);
-	}
+    if(count == 0)
+    {
+        if(sumlen == 0)
+            ffmpeg_err( "Timeout waiting for buffered data (buf_size=%d sumlen=%d)!\n", buf_size, sumlen);
+        else
+            ffmpeg_err( "Timeout, not all buffered data availabel (buf_size=%d sumlen=%d)!\n", buf_size, sumlen);
+    }
 
-	return sumlen;
+    return sumlen;
 }
 
 int64_t ffmpeg_seek(void *opaque, int64_t offset, int whence)
 {
-	int64_t diff;
-	int rwdiff = 0;
-	whence &= ~AVSEEK_FORCE;
+    int64_t diff;
+    int rwdiff = 0;
+    whence &= ~AVSEEK_FORCE;
 
-	if(whence != SEEK_CUR && whence != SEEK_SET)
-		return AVERROR(EINVAL);
+    if(whence != SEEK_CUR && whence != SEEK_SET)
+        return AVERROR(EINVAL);
 
-	if(whence == SEEK_CUR)
-		diff = offset;
-	else
-		diff = offset - avContext->pb->pos;
+    if(whence == SEEK_CUR)
+        diff = offset;
+    else
+        diff = offset - avContext->pb->pos;
 
-	if(diff == 0)
-			return avContext->pb->pos;
+    if(diff == 0)
+        return avContext->pb->pos;
 
-	getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
+    getfillerMutex(FILENAME, __FUNCTION__,__LINE__);
 
-	if(ffmpeg_buf_read < ffmpeg_buf_write)
-		rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
-	if(ffmpeg_buf_read > ffmpeg_buf_write)
-	{
-		rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
-		rwdiff += ffmpeg_buf_write - ffmpeg_buf;
-	}
+    if(ffmpeg_buf_read < ffmpeg_buf_write)
+        rwdiff = ffmpeg_buf_write - ffmpeg_buf_read;
+    if(ffmpeg_buf_read > ffmpeg_buf_write)
+    {
+        rwdiff = (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read;
+        rwdiff += ffmpeg_buf_write - ffmpeg_buf;
+    }
 
-	if(diff > 0 && diff < rwdiff)
-	{
-		/* can do the seek inside the buffer */
-		ffmpeg_printf(20, "buffer-seek diff=%lld\n", diff);
-		if(diff > (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read)
-			ffmpeg_buf_read = ffmpeg_buf + (diff - ((ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read));
-		else
-			ffmpeg_buf_read = ffmpeg_buf_read + diff;
-	}
-	else if(diff < 0 && diff * -1 < ffmpeg_buf_valid_size)
-	{
-		/* can do the seek inside the buffer */
-		ffmpeg_printf(20, "buffer-seek diff=%lld\n", diff);
-		int tmpdiff = diff * -1;
-		if(tmpdiff > ffmpeg_buf_read - ffmpeg_buf)
-			ffmpeg_buf_read = (ffmpeg_buf + ffmpeg_buf_size) - (tmpdiff - (ffmpeg_buf_read - ffmpeg_buf));
-		else
-			ffmpeg_buf_read = ffmpeg_buf_read - tmpdiff;
-	}
-	else
-	{
-		releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-		ffmpeg_printf(20, "real-seek diff=%lld\n", diff);
+    if(diff > 0 && diff < rwdiff)
+    {
+        /* can do the seek inside the buffer */
+        ffmpeg_printf(20, "buffer-seek diff=%lld\n", diff);
+        if(diff > (ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read)
+            ffmpeg_buf_read = ffmpeg_buf + (diff - ((ffmpeg_buf + ffmpeg_buf_size) - ffmpeg_buf_read));
+        else
+            ffmpeg_buf_read = ffmpeg_buf_read + diff;
+    }
+    else if(diff < 0 && diff * -1 < ffmpeg_buf_valid_size)
+    {
+        /* can do the seek inside the buffer */
+        ffmpeg_printf(20, "buffer-seek diff=%lld\n", diff);
+        int tmpdiff = diff * -1;
+        if(tmpdiff > ffmpeg_buf_read - ffmpeg_buf)
+            ffmpeg_buf_read = (ffmpeg_buf + ffmpeg_buf_size) - (tmpdiff - (ffmpeg_buf_read - ffmpeg_buf));
+        else
+            ffmpeg_buf_read = ffmpeg_buf_read - tmpdiff;
+    }
+    else
+    {
+        releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+        ffmpeg_printf(20, "real-seek diff=%lld\n", diff);
 
-		ffmpeg_do_seek_ret = 0;
-		ffmpeg_do_seek = diff;
-		while(ffmpeg_do_seek != 0)
-			usleep(100000);
+        ffmpeg_do_seek_ret = 0;
+        ffmpeg_do_seek = diff;
+        while(ffmpeg_do_seek != 0)
+            usleep(100000);
 
-		ffmpeg_do_seek = 0;
-		if(ffmpeg_do_seek_ret < 0)
-		{
-			ffmpeg_err("seek not ok ret=%d\n", ffmpeg_do_seek_ret);
-			return ffmpeg_do_seek_ret;
-		}
+        ffmpeg_do_seek = 0;
+        if(ffmpeg_do_seek_ret < 0)
+        {
+            ffmpeg_err("seek not ok ret=%d\n", ffmpeg_do_seek_ret);
+            return ffmpeg_do_seek_ret;
+        }
 
-		//fill buffer
-		int count = ffmpeg_buf_seek_time * 10;
-		int size = 0;
+        //fill buffer
+        int count = ffmpeg_buf_seek_time * 10;
+        int size = 0;
 
-		container_get_fillbufstatus(&size);
-		while(size < ffmpeg_buf_size - FILLBUFDIFF && (--count) > 0)
-		{
-			usleep(100000);
-			container_get_fillbufstatus(&size);
-		}
+        container_get_fillbufstatus(&size);
+        while(size < ffmpeg_buf_size - FILLBUFDIFF && (--count) > 0)
+        {
+            usleep(100000);
+            container_get_fillbufstatus(&size);
+        }
 
-		return avContext->pb->pos + diff;
-	}
+        return avContext->pb->pos + diff;
+    }
 
-	releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
-	return avContext->pb->pos + diff;
+    releasefillerMutex(FILENAME, __FUNCTION__,__LINE__);
+    return avContext->pb->pos + diff;
 }
 
 static void ffmpeg_buf_free()
 {
-	ffmpeg_read_org = NULL;
-	ffmpeg_seek_org = NULL;
-	ffmpeg_buf_read = NULL;
-	ffmpeg_buf_write = NULL;
-	free(ffmpeg_buf);
-	ffmpeg_buf = NULL;
-	ffmpeg_buf_valid_size = 0;
-	ffmpeg_do_seek_ret = 0;
-	ffmpeg_do_seek = 0;
-	ffmpeg_buf_stop = 0;
+    ffmpeg_read_org = NULL;
+    ffmpeg_seek_org = NULL;
+    ffmpeg_buf_read = NULL;
+    ffmpeg_buf_write = NULL;
+    free(ffmpeg_buf);
+    ffmpeg_buf = NULL;
+    ffmpeg_buf_valid_size = 0;
+    ffmpeg_do_seek_ret = 0;
+    ffmpeg_do_seek = 0;
+    ffmpeg_buf_stop = 0;
+    hasfillerThreadStartedID = 0;
 }
 //for buffered io (end)
 
@@ -1257,6 +1269,10 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     int n, err;
 
     ffmpeg_printf(10, ">\n");
+
+    //for buffered io
+    ffmpeg_buf_free();
+    //for buffered io end
 
     if (filename == NULL) {
         ffmpeg_err("filename NULL\n");
@@ -1302,8 +1318,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
         av_strerror(err, error, 512);
         ffmpeg_err("Cause: %s\n", error);
 
-				if(avio_opts != NULL) av_dict_free(&avio_opts);
-				//for buffered io
+        if(avio_opts != NULL) av_dict_free(&avio_opts);
+        //for buffered io
         ffmpeg_buf_free();
         //for buffered io (end)
         releaseMutex(FILENAME, __FUNCTION__,__LINE__);
@@ -1340,41 +1356,31 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
 //for buffered io
 #if LIBAVCODEC_VERSION_MAJOR >= 54
-		ffmpeg_read_org = NULL;
-		ffmpeg_seek_org = NULL;
-    ffmpeg_buf_read = NULL;
-    ffmpeg_buf_write = NULL;
-    ffmpeg_buf = NULL;
-    ffmpeg_buf_valid_size = 0;
-    ffmpeg_do_seek_ret = 0;
-    ffmpeg_do_seek = 0;
-    ffmpeg_buf_stop = 0;
+    if(strstr(filename, "http://") == filename)
+    {
+        if(ffmpeg_buf_size > 0 && ffmpeg_buf_size > FILLBUFDIFF + FILLBUFPAKET)
+        {
+            if(avContext != NULL && avContext->pb != NULL)
+            {
+                ffmpeg_buf = av_malloc(ffmpeg_buf_size);
 
-		if(strstr(filename, "http://") == filename)
-		{
-			if(ffmpeg_buf_size > 0 && ffmpeg_buf_size > FILLBUFDIFF + FILLBUFPAKET)
-			{
-    		if(avContext != NULL && avContext->pb != NULL)
-    		{
-      		ffmpeg_buf = av_malloc(ffmpeg_buf_size);
-
-      		if(ffmpeg_buf != NULL)
-      		{
-      			ffmpeg_printf(10, "buffer size=%d\n", ffmpeg_buf_size);
+                if(ffmpeg_buf != NULL)
+                {
+                    ffmpeg_printf(10, "buffer size=%d\n", ffmpeg_buf_size);
       		
-						ffmpeg_read_org = avContext->pb->read_packet;
-      		  avContext->pb->read_packet = ffmpeg_read;
-						ffmpeg_seek_org = avContext->pb->seek;
-      		  avContext->pb->seek = ffmpeg_seek;
-						ffmpeg_buf_read = ffmpeg_buf;
-						ffmpeg_buf_write = ffmpeg_buf;
+                    ffmpeg_read_org = avContext->pb->read_packet;
+                    avContext->pb->read_packet = ffmpeg_read;
+                    ffmpeg_seek_org = avContext->pb->seek;
+                    avContext->pb->seek = ffmpeg_seek;
+                    ffmpeg_buf_read = ffmpeg_buf;
+                    ffmpeg_buf_write = ffmpeg_buf;
 
-						//fill buffer
-						ffmpeg_filler(context, NULL, 0);
-						ffmpeg_start_fillerTHREAD(context);
-      		}
-    		}
-    	}
+                    //fill buffer
+                    ffmpeg_filler(context, -1, NULL, 0);
+                    ffmpeg_start_fillerTHREAD(context);
+                }
+            }
+        }
     }
 #endif
 //for buffered io (end)
@@ -1575,7 +1581,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
                 } else if(stream->codec->codec_id == CODEC_ID_WMAV1
                     || stream->codec->codec_id == CODEC_ID_WMAV2
-                    || stream->codec->codec_id == 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
+                    || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
                 {
                     ffmpeg_printf(10,"Create WMA ExtraData\n");
                     track.aacbuflen = 104 + stream->codec->extradata_size;
@@ -1797,7 +1803,7 @@ static int container_ffmpeg_play(Context_t *context)
 
 static int container_ffmpeg_stop(Context_t *context) {
     int ret = cERR_CONTAINER_FFMPEG_NO_ERROR;
-		int wait_time = 100;
+    int wait_time = 100;
 
     ffmpeg_printf(10, "\n");
 
@@ -1807,26 +1813,25 @@ static int container_ffmpeg_stop(Context_t *context) {
         return cERR_CONTAINER_FFMPEG_ERR;
     }
 
-		//for buffered io
-		wait_time = 100;
-		if(hasfillerThreadStarted == 1)
-			hasfillerThreadStarted = 2; // should end
-		while ( (hasfillerThreadStarted != 0) && (--wait_time) > 0 ) {
-        ffmpeg_printf(10, "Waiting for ffmpeg filler thread to terminate itself, will try another %d times\n", wait_time);
+    //for buffered io
+    wait_time = 100;
+    if(hasfillerThreadStarted[hasfillerThreadStartedID] == 1)
+        hasfillerThreadStarted[hasfillerThreadStartedID] = 2; // should end
+    while ( (hasfillerThreadStarted[hasfillerThreadStartedID] != 0) && (--wait_time) > 0 ) {
+        ffmpeg_printf(10, "Waiting for ffmpeg filler thread to terminate itself, will try another %d times, ID=%d\n", wait_time, hasfillerThreadStartedID);
 
         usleep(100000);
     }
 
-		if (wait_time == 0) {
+    if (wait_time == 0) {
         ffmpeg_err( "Timeout waiting for filler thread!\n");
 
         ret = cERR_CONTAINER_FFMPEG_ERR;
     }
 
-		hasfillerThreadStarted = 0;
-		//for buffered io (end)
+    //for buffered io (end)
 
-		wait_time = 100;
+    wait_time = 100;
     while ( (hasPlayThreadStarted != 0) && (--wait_time) > 0 ) {
         ffmpeg_printf(10, "Waiting for ffmpeg thread to terminate itself, will try another %d times\n", wait_time);
 
@@ -1839,7 +1844,7 @@ static int container_ffmpeg_stop(Context_t *context) {
         ret = cERR_CONTAINER_FFMPEG_ERR;
     }
 
-		hasPlayThreadStarted = 0;
+    hasPlayThreadStarted = 0;
 
     getMutex(FILENAME, __FUNCTION__,__LINE__);
 
@@ -1848,14 +1853,14 @@ static int container_ffmpeg_stop(Context_t *context) {
         avContext = NULL;
     }
 
-		if(avio_opts != NULL) av_dict_free(&avio_opts);
-
-		//for buffered io
-		ffmpeg_buf_free();
-		//for buffered io (end)
+    if(avio_opts != NULL) av_dict_free(&avio_opts);
 
     isContainerRunning = 0;
     avformat_network_deinit();
+
+    //for buffered io
+    ffmpeg_buf_free();
+    //for buffered io (end)
 
     releaseMutex(FILENAME, __FUNCTION__,__LINE__);
 
