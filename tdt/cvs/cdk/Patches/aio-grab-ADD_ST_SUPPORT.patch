@@ -55,7 +55,7 @@
 -enum {UNKNOWN,PALLAS,VULCAN,XILLEON,BRCM7400,BRCM7401,BRCM7405,BRCM7335,BRCM7358};
 -char *stb_name[]={"unknown","Pallas","Vulcan","Xilleon","Brcm7400","Brcm7401","Brcm7405","Brcm7335","Brcm7358"};
 +enum {UNKNOWN,PALLAS,VULCAN,XILLEON,BRCM7400,BRCM7401,BRCM7405,BRCM7335,BRCM7358,ST};
-+char *stb_name[]={"unknown","Pallas","Vulcan","Xilleon","Brcm7400","Brcm7401","Brcm7405","Brcm7335","Brcm7358","ST","HL101"};
++char *stb_name[]={"unknown","Pallas","Vulcan","Xilleon","Brcm7400","Brcm7401","Brcm7405","Brcm7335","Brcm7358","ST"};
  int stb_type=UNKNOWN;
  
  // main program
