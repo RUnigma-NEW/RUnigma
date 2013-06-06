@@ -340,9 +340,9 @@ $(DEPDIR)/libpng12: bootstrap $(DEPENDS_libpng12)
 #
 BEGIN[[
 libpng
-  1.5.12
+  1.6.2
   {PN}-{PV}
-  extract:http://prdownloads.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.gz
+  extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.gz
   nothing:file://{PN}.diff
   patch:file://{PN}-{PV}-workaround_for_stmfb_alpha_error.patch
   make:install:prefix=PKDIR/usr
@@ -359,11 +359,11 @@ $(DEPDIR)/libpng: bootstrap $(DEPENDS_libpng)
 	$(start_build)
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	cd $(DIR_libpng) && \
-		./autogen.sh && \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
+			--enable-maintainer-mode \
 			--prefix=/usr && \
 		export ECHO="echo" && \
 		echo "Echo cmd =" $(ECHO) && \
