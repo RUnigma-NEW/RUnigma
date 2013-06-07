@@ -81,7 +81,7 @@
    modprobe smartcard debug=100
    #modprobe cec
 
-   #modprobe bpamem
+   modprobe bpamem
    echo "init oc"
    #modprobe cpu_frequ
    #300mhz
