@@ -342,7 +342,7 @@ BEGIN[[
 libpng
   1.6.2
   {PN}-{PV}
-  extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.gz
+  extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.xz
   nothing:file://{PN}.diff
   patch:file://{PN}-{PV}-workaround_for_stmfb_alpha_error.patch
   make:install:prefix=PKDIR/usr
@@ -416,7 +416,7 @@ $(DEPDIR)/libungif: bootstrap $(DEPENDS_libungif)
 #
 BEGIN[[
 libgif
-  4.2.0
+  5.0.4
   giflib-{PV}
   extract:http://heanet.dl.sourceforge.net/sourceforge/giflib/giflib-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
@@ -716,9 +716,9 @@ $(DEPDIR)/libffi: bootstrap libjpeg lcms $(DEPENDS_libffi)
 #
 BEGIN[[
 glib2
-  2.36.1
+  2.37.1
   glib-{PV}
-  extract:http://ftp.acc.umu.se/pub/GNOME/sources/glib/2.36/glib-2.36.1.tar.xz
+  extract:http://ftp.acc.umu.se/pub/GNOME/sources/glib/2.37/glib-2.37.1.tar.xz
   patch:file://glib-{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
@@ -4515,7 +4515,7 @@ $(DEPDIR)/e2_rtmpgw: bootstrap openssl openssl-dev libz $(DEPENDS_e2_rtmpgw)
 BEGIN[[
 libx264
   x264
-  {PV}-snapshot-20130427-2245
+  {PV}-snapshot-20130608-2245
   extract:ftp://ftp.videolan.org/pub/x264/snapshots/last_{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
 ;

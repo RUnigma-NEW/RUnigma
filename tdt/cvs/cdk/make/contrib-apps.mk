@@ -35,7 +35,7 @@ BEGIN[[
 module_init_tools
   3.16
   {PN}-{PV}
-  extract:http://ftp.be.debian.org/pub/linux/utils/kernel/{PN}/{PN}-{PV}.tar.bz2
+  extract:http://ftp.osuosl.org/pub/linux/utils/kernel/module-init-tools/{PN}-{PV}.tar.bz2
   patch:file://module-init-tools-no-man.patch
   make:INSTALL=install:install:sbin_PROGRAMS="depmod modinfo":bin_PROGRAMS=:mandir=/usr/share/man:DESTDIR=TARGETS
 ;

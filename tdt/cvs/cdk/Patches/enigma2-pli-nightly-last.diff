@@ -223,3 +223,14 @@ diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/dvb/pmt.cp
  #define gint int
  #define gint64 int64_t
  extern OutputHandler_t		OutputHandler;
+--- enigma2-nightly.org/lib/gdi/picload.cpp
++++ enigma2-nightly.patched/lib/gdi/picload.cpp
+@@ -532,7 +532,7 @@
+ 	int cmaps;
+ 	int extcode;
+ 
+-	gft = DGifOpenFileName(filepara->file);
++	gft = DGifOpenFileName(filepara->file, NULL);
+ 	if (gft == NULL)
+ 		return;
+ 	do
