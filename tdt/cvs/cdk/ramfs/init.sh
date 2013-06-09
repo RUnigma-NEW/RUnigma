@@ -26,8 +26,8 @@ root="/dev/sda1"
 rootfs="/dev/sda2"
 record="/dev/sda4"
 
-echo "Sleep 3 Second and wait of the /dev/sda1"
-sleep 3
+echo "Sleep 7 Second and wait of the /dev/sda1"
+sleep 7
 
 echo "INIT VFD"
 insmod /drvko/proton.ko
