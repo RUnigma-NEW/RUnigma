@@ -124,24 +124,24 @@ echo "---------------------------------------"
 echo "   Плэйер 191"
 PLAYER="--enable-player191"
 cd ../driver/include/
-if [ -L player2 ]; then
-   rm player2
-fi
+#if [ -L player2 ]; then
+#   rm player2
+#fi
 
 if [ -L stmfb ]; then
    rm stmfb
 fi
-ln -s player2_191 player2
+#ln -s player2_191 player2
 ln -s ../stgfb/stmfb-3.1_stm24_0104/include stmfb
 cd - > /dev/null 2>&1
 
-cd ../driver/
-if [ -L player2 ]; then
-   rm player2
-fi
-ln -s player2_191 player2
+#cd ../driver/
+#if [ -L player2 ]; then
+#   rm player2
+#fi
+#ln -s player2_191 player2
 echo "export CONFIG_PLAYER_191=y" >> .config
-cd - > /dev/null 2>&1
+#cd - > /dev/null 2>&1
 
 cd ../driver/stgfb
 if [ -L stmfb ]; then
