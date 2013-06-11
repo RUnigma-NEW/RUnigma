@@ -98,8 +98,6 @@
    #4097 = 432mhz
    rmmod cpu_frequ
 
-   swapon /media/hdd/swapfile
-   
    showiframe -p /boot/bootlogo.mvi &
    echo " e2 "
    /etc/init.d/auto_rb_st.sh &
