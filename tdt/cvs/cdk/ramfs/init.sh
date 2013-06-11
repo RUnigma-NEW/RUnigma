@@ -90,6 +90,7 @@ mount "${rootfs}" /rootfs
 
 # erst hier ist sda2 mounted
 if [ -e /fsck.log ]; then
+	mkdir /rootfs/var/config
 	cp /fsck.log /rootfs/var/config/fsck.log
 	rm /fsck.log
 fi
