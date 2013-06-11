@@ -97,8 +97,6 @@
    #36361 = 426mhz
    #4097 = 432mhz
    rmmod cpu_frequ
-
-   swapon /media/hdd/swapfile
    
    showiframe -p /boot/bootlogo.mvi &
    echo " e2 "
