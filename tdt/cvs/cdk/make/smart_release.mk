@@ -176,27 +176,7 @@ $(DEPDIR)/driver-encrypt:
 	mkdir -p $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/encrypt
 	$(toflash_build)
 	touch $@
-#
-# UDEV RULES
-#
-BEGIN[[
-udev_rules
-  0.2
-  {PN}-{PV}
-  pdircreate:{PN}-{PV}
-;
-]]END
 
-DESCRIPTION_udev_rules = custom udev rules
-RDEPENDS_udev_rules = udev
-
-$(DEPDIR)/udev-rules: $(DEPENDS_udev_rules) $(RDEPENDS_udev_rules)
-	$(PREPARE_udev_rules)
-	$(start_build)
-	cd $(DIR_udev_rules) && \
-	$(INSTALL_DIR) $(PKDIR)/etc/udev/rules.d/ && \
-	$(toflash_build)
-	touch $@
 #
 # boot-elf
 #

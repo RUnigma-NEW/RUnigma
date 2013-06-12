@@ -96,7 +96,6 @@ yaud-none: \
 		disk-utils \
 		driver \
 		udev \
-		udev-rules \
 		fp_control \
 		evremote2 \
 		devinit \
