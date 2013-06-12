@@ -5,9 +5,9 @@
 /sbin/mount -t sysfs sysfs /sys
 
 #Create all the symlinks to /bin/busybox
-echo "---------------- RAMFS Load ---------------------"
+echo "-------------- Загружаю RAMFS -------------------"
 echo "-------------------------------------------------"
-echo "Installing Busybox"
+echo "Устанавливаю Busybox"
 busybox --install -s
 
 #Create device nodes
@@ -26,10 +26,10 @@ root="/dev/sda1"
 rootfs="/dev/sda2"
 record="/dev/sda4"
 
-echo "Sleep 7 Second and wait of the /dev/sda1"
+echo "Подождем 7 секунд для инициации раздела /dev/sda1"
 sleep 7
 
-echo "INIT VFD"
+echo "Активирую дисплей"
 insmod /drvko/proton.ko
 
 #Process command line options
@@ -46,29 +46,29 @@ done
 if [ `tune2fs -l /dev/sda1 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
     echo "SDA1 OK"
 else
-    echo "FSCK SDA1 run" > /fsck.log
-    echo "FSCK SDA1 run" > /dev/vfd
-    fsck.ext2 -f -y "${root}" >> /fsck.log
+    echo "Проверяю раздел SDA1" > /fsck.log
+    echo "ПРОВЕРКА" > /dev/vfd
+    fsck.ext3 -f -y "${root}" >> /fsck.log
     tune2fs -l "${root}" | grep -i "Filesystem state" >> /fsck.log
 fi
 if [ `tune2fs -l /dev/sda2 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
     echo "SDA2 OK"
 else
-    echo "FSCK SDA2 run" > /fsck.log
-    echo "FSCK SDA2 run" > /dev/vfd
+    echo "Проверяю раздел SDA2" > /fsck.log
+    echo "ПРОВЕРКА" > /dev/vfd
     fsck.ext4 -f -y "${rootfs}" >> /fsck.log
     tune2fs -l "${rootfs}" | grep -i "Filesystem state" >> /fsck.log
 fi
 if [ `tune2fs -l /dev/sda4 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
     echo "SDA4 OK"
 else
-    echo "FSCK SDA4 run" > /fsck.log
-    echo "FSCK SDA4 run" > /dev/vfd
+    echo "Проверяю раздел SDA4" > /fsck.log
+    echo "ПРОВЕРКА" > /dev/vfd
     fsck.ext4 -f -y "${record}" >> /fsck.log
     tune2fs -l "${record}" | grep -i "Filesystem state" >> /fsck.log
 fi
 #Mount the root device
-echo "Mount rootfs /dev/sda1"
+echo "Монтирую загрузочный раздел /dev/sda1"
 mount "${root}" /rootfs
 
 # Check auf installing System Files
@@ -82,15 +82,15 @@ fi
 # Wenn kein install mounte rootfs to start
 # Switch from /dev/sda1 to /dev/sda2 (ROOTFS)
 if [ ! -e /rootfs/install ]; then
-echo "umount /dev/sda1"
+echo "Демонтирую /dev/sda1"
 umount "${root}"
 fi
-echo "mount /dev/sda2"
+echo "Монтирую /dev/sda2"
 mount "${rootfs}" /rootfs
 
 # erst hier ist sda2 mounted
 if [ -e /fsck.log ]; then
-	mkdir /rootfs/var/config
+    mkdir /rootfs/var/config 
 	cp /fsck.log /rootfs/var/config/fsck.log
 	rm /fsck.log
 fi
@@ -101,10 +101,10 @@ if [[ -x "/rootfs/${init}" ]] ; then
 	umount /sys /proc
 	
 	#Switch to the new root and execute init
-	echo "Switch and Load new RootFS"
+	echo "Перехожу в новый системный раздел и начинаю загрузку сборки"
 	exec switch_root /rootfs "${init}"
 fi
 
 #This will only be run if the exec above failed
-echo "Failed to switch_root, dropping to a shell"
+echo "Не могу переключиться в новый системный раздел"
 exec sh
