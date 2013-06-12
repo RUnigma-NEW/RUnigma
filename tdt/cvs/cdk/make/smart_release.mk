@@ -371,6 +371,7 @@ release_hl101:
 	cp -dp $(buildprefix)/root/release/auto_rb_st.sh $(prefix)/release/etc/init.d
 	cp -dp $(buildprefix)/root/etc/init.d/rdate.sh $(prefix)/release/etc/init.d
 	ln -sf /etc/init.d/rdate.sh $(prefix)/release/etc/rc.d/rcS.d/S99rdate.sh
+	rm $(prefix)/release/usr/share/meta
 
 
 # The main target depends on the model.
