@@ -340,7 +340,7 @@ $(DEPDIR)/libpng12: bootstrap $(DEPENDS_libpng12)
 #
 BEGIN[[
 libpng
-  1.6.2
+  1.5.16
   {PN}-{PV}
   extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.xz
   nothing:file://{PN}.diff
