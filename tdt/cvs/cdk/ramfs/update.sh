@@ -1,26 +1,25 @@
-echo "UPDATE..." > /dev/vfd
+echo "Обновляю" > /dev/vfd
 #mountet die ziel Partition nach /update, dadurch können die Updates größer 95MB sein
 mount /dev/sda2 /update
 # Kopiert das Update File auf die /dev/sda2 Partition um es Später zu installieren
-echo "Copy Update auf Ziel Partition"
-echo "Copy..." > /dev/vfd
+echo "Копирую обновления в системный раздел"
+echo "Копирую" > /dev/vfd
 cp /rootfs/*.tar.gz /update
-echo "done"
-echo "lösche Update vom SDA1"
+echo "Готово"
+echo "Удаляю обновления из загрузочного раздела"
 # Löscht das Update File von der Partition
 rm /rootfs/*.tar.gz
 rm /rootfs/update
-echo "Install Update"
-echo "Install..."
+echo "Загрузка"
 # Entpackt das Update und löscht es anschliessend
 cd /update
 tar -xf *.tar.gz
-echo "done"
-echo "Lösche tar.gz von SDA2"
+echo "Готово"
+echo "Удаляю tar.gz из системного раздела"
 rm /update/*.tar.gz
-echo "Update Komplett"
+echo "Обновление завершено..."
 cd /
-echo "Starte System"
+echo "Запускаю систему..."
 umount /dev/sda2
-echo "Ready..." > /dev/vfd
+echo "Готово" > /dev/vfd
 
