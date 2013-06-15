@@ -34,16 +34,12 @@ COMMONPATCHES_24 = \
 		linux-ftdi_sio.c_stm24$(PATCH_STR).patch \
 		linux-sh4-lzma-fix_stm24$(PATCH_STR).patch \
 		linux-tune_stm24.patch \
-		$(if $(P0209)$(P0210)$(P0211),linux-sh4-mmap_stm24.patch) \
-		$(if $(P0209)$(P0210)$(P0211),linux-sh4-remove_pcm_reader_stm24.patch) \
-		$(if $(P0209),linux-sh4-dwmac_stm24_0209.patch) \
+		$(if $(P0210)$(P0211),linux-sh4-mmap_stm24.patch) \
+		$(if $(P0210)$(P0211),linux-sh4-remove_pcm_reader_stm24.patch) \
 		$(if $(P0207),linux-sh4-sti7100_missing_clk_alias_stm24$(PATCH_STR).patch) \
-		$(if $(P0209)$(P0211),linux-sh4-directfb_stm24$(PATCH_STR).patch)
+		$(if $(P0211),linux-sh4-directfb_stm24$(PATCH_STR).patch)
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
-		stx7100_fdma_fix_stm24$(PATCH_STR).patch \
-		sata_32bit_fix_stm24$(PATCH_STR).patch \
-		sata_stx7100_B4Team_fix_stm24$(PATCH_STR).patch \
 		linux-sh4-hl101_setup_stm24$(PATCH_STR).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24$(PATCH_STR).patch \
