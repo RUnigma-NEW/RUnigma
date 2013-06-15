@@ -1359,6 +1359,7 @@ static struct class *vfd_class = 0;
 static int __init proton_init_module(void)
 {
 	int i;
+	int result;
 	dprintk(5, "%s >\n", __func__);
 	sema_init(&display_sem, 1);
 
@@ -1367,16 +1368,28 @@ static int __init proton_init_module(void)
 		return -1;
 	}
 
-	vfd_class = class_create(THIS_MODULE, "proton");
-	device_create(vfd_class, NULL, MKDEV(VFD_MAJOR, 0), NULL, "vfd");
-	cdev_init(&vfd_cdev, &vfd_fops);
-	cdev_add(&vfd_cdev, MKDEV(VFD_MAJOR, 0), 1);
-
 	if(button_dev_init() != 0)
 		return -1;
 
-	if (register_chrdev(VFD_MAJOR,"VFD",&vfd_fops))
-		printk("unable to get major %d for VFD\n",VFD_MAJOR);
+//	if (register_chrdev(VFD_MAJOR,"VFD",&vfd_fops))
+//		printk("unable to get major %d for VFD\n",VFD_MAJOR);
+	result = register_chrdev_region(MKDEV(VFD_MAJOR, 0), 2, "proton");
+	if (result < 0) {
+		printk( KERN_ALERT "VFD cannot register device (%d)\n", result);
+		return result;
+	}
+
+	cdev_init(&vfd_cdev, &vfd_fops);
+	vfd_cdev.owner = THIS_MODULE;
+	vfd_cdev.ops   = &vfd_fops;
+	if (cdev_add(&vfd_cdev, MKDEV(VFD_MAJOR, 0), 2) < 0) { 
+		printk("VFD couldn't register '%s' driver\n", "proton"); 
+		return -1; 
+	}
+
+	vfd_class = class_create(THIS_MODULE, "proton");
+	device_create(vfd_class, NULL, MKDEV(VFD_MAJOR, 0), NULL, "vfd", 0);
+	device_create(vfd_class, NULL, MKDEV(VFD_MAJOR, 1), NULL, "rc", 1);
 
 	sema_init(&write_sem, 1);
 	sema_init(&key_mutex, 1);
@@ -1386,9 +1399,9 @@ static int __init proton_init_module(void)
 
 	//time_thread=kthread_run(run_time_thread,NULL,"time thread",NULL,true);
 
-	dprintk(5, "%s <\n", __func__);
+	dprintk(5, "%s < %d\n", __func__, result);
 
-	return 0;
+	return result;
 }
 
 static void __exit proton_cleanup_module(void)
@@ -1410,8 +1423,9 @@ static void __exit proton_cleanup_module(void)
 		kthread_stop(time_thread);
 
 	cdev_del(&vfd_cdev);
-	unregister_chrdev(VFD_MAJOR,"VFD");
+	unregister_chrdev_region(MKDEV(VFD_MAJOR, 0), 2);
 	device_destroy(vfd_class, MKDEV(VFD_MAJOR, 0));
+	device_destroy(vfd_class, MKDEV(VFD_MAJOR, 1));
 	class_destroy(vfd_class);
 	printk("HL101 FrontPanel module unloading\n");
 }
