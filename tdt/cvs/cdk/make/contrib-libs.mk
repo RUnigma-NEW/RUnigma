@@ -2318,6 +2318,7 @@ python
   patch:file://{PN}_{PV}.diff
   patch:file://{PN}_{PV}-ctypes-libffi-fix-configure.diff
   patch:file://{PN}_{PV}-pgettext.diff
+  patch:file://{PN}_{PV}-build-module-zlib.patch
 ;
 ]]END
 
