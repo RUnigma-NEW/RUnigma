@@ -498,6 +498,7 @@ libfribidi
   0.19.5
   fribidi-{PV}
   extract:http://fribidi.org/download/fribidi-{PV}.tar.bz2
+  patch:file://glib.diff
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -518,7 +519,6 @@ $(DEPDIR)/libfribidi: bootstrap $(DEPENDS_libfribidi)
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--enable-memopt && \
 		$(MAKE) all && \
 		$(INSTALL_libfribidi)
 	$(tocdk_build)
