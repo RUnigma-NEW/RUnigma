@@ -48,4 +48,12 @@ diff -pruN Python-2.7.2.orig//Modules/_ctypes/libffi/Makefile.am Python-2.7.2/Mo
 -
  lib_LTLIBRARIES = libffi.la
  noinst_LTLIBRARIES = libffi_convenience.la
-
+ 
+--- Python-2.7.3-orig/Modules/_ctypes/libffi/fficonfig.py.in	2011-03-29 20:16:56.000000000 +0200
++++ Python-2.7.3/Modules/_ctypes/libffi/fficonfig.py.in	2011-03-29 20:16:41.000000000 +0200
+@@ -32,4 +32,4 @@ ffi_srcdir = '@srcdir@'
+ ffi_sources += ffi_platforms['@TARGET@']
+ ffi_sources = [os.path.join('@srcdir@', f) for f in ffi_sources]
+ 
+-ffi_cflags = '@CFLAGS@'
++ffi_cflags = '@CFLAGS@ -DPIC'
