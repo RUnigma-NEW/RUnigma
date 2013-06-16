@@ -98,6 +98,10 @@
    #4097 = 432mhz
    rmmod cpu_frequ
 
+   echo "1" > /proc/sys/kernel/printk
+   cat /etc/videomode > /proc/stb/video/videomode
    showiframe -p /boot/bootlogo.mvi &
+   stfbcontrol a 0
+
    echo " e2 "
    /etc/init.d/auto_rb_st.sh &
