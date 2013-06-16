@@ -76,12 +76,12 @@ sfdisk --re-read $HDD
 # Löscht die Festplatte/Stick und erstellt 4 Partitionen
 #  1: 256MB Linux Uboot ext3
 #  2:   1GB Linux System ext4
-#  3: 256MB Swap
+#  3: 64MB Swap
 #  4: rest freier Speicher LINUX ext4 (bei HDD record)
 sfdisk $HDD -uM << EOF
 ,256,L
 ,1024,L
-,256,S
+,64,S
 ,,L
 ;
 EOF
