@@ -1,16 +1,5 @@
 # /etc/fstab: static file system information.
 #
 # <file system> <mount point>   	<type>  <options>               				<dump>  <pass>
-# /dev/sda1 Загрузочный раздел
-/dev/sda1        /media/sda1		 ext2    defaults,errors=remount-ro,noatime,nodiratime    0	 0
-# /dev/sda2 Системный раздел для Энигмы2
-/dev/sda2        /media/sda2		 auto    defaults,errors=remount-ro,noatime,nodiratime    0	 0
-# /dev/sda3 Раздел подкачки
-#/dev/sda3         swap               swap    defaults                                         0  0 
-# /dev/sda4 Остальное место на флэшке для записей
-/dev/sda4        /media/sda4		 auto    defaults,errors=remount-ro,noatime,nodiratime    0	 0
-# /dev/sdb1 Вторая флэшка, подсоединенная в Хаб (опционно)
-/dev/sdb1        /media/sdb1    	 auto    defaults,errors=remount-ro,noatime,nodiratime	  0	 0
 proc          	 /proc          	 proc    defaults                        			      0	 0
 tmpfs         	 /tmp           	 tmpfs   defaults,size=60%,sync,mode=1777,noexec,nosuid   0	 0
-/root/usbfs	/proc/bus/usb/devices	 usbfs	 noauto							                  0	 0

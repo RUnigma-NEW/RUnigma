@@ -4,20 +4,24 @@ KERNEL!="sd[a-z][0-9]", GOTO="media_by_label_auto_mount_end"
 IMPORT{program}="/sbin/blkid -o udev -p %N"
 
 # Get a label if present, otherwise specify one
-ENV{ID_FS_LABEL}!="", ENV{ID_FS_LABEL}!="HDD|hdd", ENV{dir_name}="%E{ID_FS_LABEL}", ENV{dir_name1}="%k"
-ENV{ID_FS_LABEL}=="HDD|hdd", ENV{dir_name}="hdd"
+ENV{ID_FS_LABEL}!="", ENV{dir_name}="%E{ID_FS_LABEL}",ENV{dir_usb}="%k"
 ENV{ID_FS_LABEL}=="", ENV{dir_name}="usbhd-%k"
-
 
 # Mount the device
 ACTION=="add", ENV{ID_FS_TYPE}=="ntfs", RUN+="/bin/mkdir -p /media/%E{dir_name}", \
 RUN+="/bin/ntfs-3g -o rw,umask=0 /dev/%k  /media/%E{dir_name}"
 
-ACTION=="add", ENV{dir_name1}!="sda1",ENV{ID_FS_TYPE}!="ntfs|swap",RUN+="/bin/mkdir -p /media/%E{dir_name}", \
+ACTION=="add", ENV{dir_usb}!="sda1",ENV{dir_name}!="BOOTFS|ROOTFS",ENV{ID_FS_TYPE}!="ntfs|swap",RUN+="/bin/mkdir -p /media/%E{dir_name}", \
 RUN+="/bin/mount /dev/%k /media/%E{dir_name}"
 
+ACTION=="add", ENV{dir_name}=="BOOTFS",RUN+="/bin/mkdir -p /boot/%E{dir_name}", \
+RUN+="/bin/mount /dev/%k /boot/%E{dir_name}"
+
+ACTION=="add", ENV{ID_FS_TYPE}=="swap",RUN+="/sbin/swapon -p 10 /dev/%k"
+
 # Clean up after removal
-ACTION=="remove", ENV{dir_name}!="", RUN+="/bin/umount -l /media/%E{dir_name}", RUN+="/bin/rmdir /media/%E{dir_name}"
+ACTION=="remove", ENV{dir_name}!="", RUN+="/bin/umount -f /media/%E{dir_name}" 
+ACTION=="remove", ENV{dir_name}!="", ENV{dir_name}!="hdd", RUN+="/bin/rmdir /media/%E{dir_name}"
 
 # Exit
 LABEL="media_by_label_auto_mount_end"
