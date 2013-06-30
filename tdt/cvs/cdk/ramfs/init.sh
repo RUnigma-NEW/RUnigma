@@ -26,11 +26,17 @@ root="/dev/sda1"
 rootfs="/dev/sda2"
 record="/dev/sda4"
 
-echo "Подождем 7 секунд для инициации раздела /dev/sda1"
-sleep 7
-
 echo "Активирую дисплей"
 insmod /drvko/proton.ko
+
+while [ -e `fdisk -l | grep -i "Disk" | awk '{ print $1 }'` ]
+do
+	echo "Ожидание usb"  > /dev/vfd
+	echo "Ожидание usb"
+	sleep 1
+done
+echo "usb-ok"  > /dev/vfd
+echo "usb-ok"
 
 #Process command line options
 for i in $(cat /proc/cmdline); do
