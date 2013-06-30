@@ -48,30 +48,28 @@
  #define CLAMP(x)    ((x < 0) ? 0 : ((x > 255) ? 255 : x))
  #define SWAP(x,y)	{ x ^= y; y ^= x; x ^= y; }
  
-@@ -82,8 +120,8 @@
+@@ -82,7 +120,7 @@
  void (*resize)(const unsigned char *source, unsigned char *dest, int xsource, int ysource, int xdest, int ydest, int colors);
  void combine(unsigned char *output, const unsigned char *video, const unsigned char *osd, int vleft, int vtop, int vwidth, int vheight, int xres, int yres);
  
--enum {UNKNOWN,PALLAS,VULCAN,XILLEON,BRCM7400,BRCM7401,BRCM7405,BRCM7335,BRCM7358};
--char *stb_name[]={"unknown","Pallas","Vulcan","Xilleon","Brcm7400","Brcm7401","Brcm7405","Brcm7335","Brcm7358"};
-+enum {UNKNOWN,PALLAS,VULCAN,XILLEON,BRCM7400,BRCM7401,BRCM7405,BRCM7335,BRCM7358,ST};
-+char *stb_name[]={"unknown","Pallas","Vulcan","Xilleon","Brcm7400","Brcm7401","Brcm7405","Brcm7335","Brcm7358","ST"};
- int stb_type=UNKNOWN;
+-static enum {UNKNOWN, PALLAS, VULCAN, XILLEON, BRCM7400, BRCM7401, BRCM7405, BRCM7325, BRCM7335, BRCM7358, BRCM7356} stb_type = UNKNOWN;
++static enum {UNKNOWN, PALLAS, VULCAN, XILLEON, BRCM7400, BRCM7401, BRCM7405, BRCM7325, BRCM7335, BRCM7358, BRCM7356, ST} stb_type = UNKNOWN;
  
- // main program
-@@ -124,6 +162,7 @@
+ static int chr_luma_stride = 0x40;
+ static int chr_luma_register_offset = 0;
+@@ -127,6 +162,7 @@
+ 		if (strcasestr(buf,"VULCAN")) stb_type=VULCAN;
  		if (strcasestr(buf,"PALLAS")) stb_type=PALLAS;
  		if (strcasestr(buf,"XILLEON")) stb_type=XILLEON;
- 		if (strcasestr(buf,"BCM7401") || strcasestr(buf,"BCMFB")) stb_type=BRCM7401;
 +		if (strcasestr(buf,"STx7109c3-main")) stb_type=ST;
  	}
- 	pclose(pipe);
+ 	fclose(fp);
  
 @@ -645,7 +684,221 @@
  	char buf[256];
- 	FILE *pipe;
+ 	FILE *fp;
  
--	if (stb_type == BRCM7401 || stb_type == BRCM7400 || stb_type == BRCM7405 || stb_type == BRCM7335 || stb_type == BRCM7358)
+-	if (stb_type > XILLEON)
 +	if (stb_type == ST)
 +	{
 +		int yblock, xblock, iyblock, ixblock, yblockoffset, offset, layer_offset, OUTITER, OUTINC, OUTITERoffset;
@@ -84,7 +82,7 @@
 +		char bpa_mem_device[30];
 +		char *decode_surface;
 +	
-+		pipe = fopen("/proc/stb/vmpeg/0/xres","r");
++		FILE *pipe = fopen("/proc/stb/vmpeg/0/xres","r");
 +		if (pipe)
 +		{
 +			while (fgets(buf,sizeof(buf),pipe))
@@ -93,14 +91,14 @@
 +			}
 +			fclose(pipe);
 +		}
-+		pipe = fopen("/proc/stb/vmpeg/0/yres","r");
-+		if (pipe)
++		FILE *pipe1 = fopen("/proc/stb/vmpeg/0/yres","r");
++		if (pipe1)
 +		{
-+			while (fgets(buf,sizeof(buf),pipe))
++			while (fgets(buf,sizeof(buf),pipe1))
 +			{
 +				sscanf(buf,"%x",&res);
 +			}
-+			fclose(pipe);
++			fclose(pipe1);
 +		}
 +
 +		//if stride and res is zero than this is most probably a stillpicture
@@ -126,13 +124,13 @@
 +		bpa_data.phys_addr = 0x00000000;
 +		bpa_data.mem_size = 0;
 +
-+		pipe = fopen("/proc/bpa2","r");
-+		if (pipe)
++		FILE *pipe2 = fopen("/proc/bpa2","r");
++		if (pipe2)
 +		{
 +			unsigned char found_part = 0;
 +			unsigned long mem_size = 0;
 +			unsigned long phys_addr = 0;
-+			while (fgets(buf,sizeof(buf),pipe))
++			while (fgets(buf,sizeof(buf),pipe2))
 +			{
 +				if(found_part || strstr(buf, bpa_data.bpa_part) != NULL)
 +				{
@@ -147,7 +145,7 @@
 +					}
 +				}
 +			}
-+			fclose(pipe);
++			fclose(pipe2);
 +		}
 +
 +		printf("Using bpa2 part %s - 0x%lx %lu\n", bpa_data.bpa_part, bpa_data.phys_addr, bpa_data.mem_size);
@@ -286,10 +284,10 @@
 +
 +		close(fd_bpa);
 +	}
-+	else if (stb_type == BRCM7401 || stb_type == BRCM7400 || stb_type == BRCM7405 || stb_type == BRCM7335 || stb_type == BRCM7358)
++	else if (stb_type > XILLEON)
  	{
- 		// grab brcm7401 pic from decoder memory
- 		const unsigned char* data = (unsigned char*)mmap(0, 100, PROT_READ, MAP_SHARED, mem_fd, (stb_type == BRCM7358) ? 0x10600000 : 0x10100000);
+ 		// grab bcm pic from decoder memory
+ 		const unsigned char* data = (unsigned char*)mmap(0, 100, PROT_READ, MAP_SHARED, mem_fd, registeroffset);
 @@ -1059,12 +1312,14 @@
  			// now we do 4 pixels on each iteration this is more code but much faster
  			int Y=yuv2rgbtable_y[luma[pos]];

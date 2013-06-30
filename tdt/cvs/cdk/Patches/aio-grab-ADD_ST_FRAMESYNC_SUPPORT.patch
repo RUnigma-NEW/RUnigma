@@ -7,7 +7,7 @@
 -	
 +		int delay;
 +
- 		pipe = fopen("/proc/stb/vmpeg/0/xres","r");
+ 		FILE *pipe = fopen("/proc/stb/vmpeg/0/xres","r");
  		if (pipe)
  		{
 @@ -805,17 +806,31 @@
