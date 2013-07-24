@@ -1279,7 +1279,7 @@ $(DEPDIR)/libdvdread: bootstrap $(DEPENDS_libdvdread)
 #
 BEGIN[[
 ffmpeg
-  1.2.1
+  2.0
   {PN}-{PV}
   extract:http://{PN}.org/releases/{PN}-{PV}.tar.bz2
   patch:file://{PN}-{PV}.patch

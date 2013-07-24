@@ -5,11 +5,11 @@
  #include <stdarg.h>
  
 -#define IO_BUFFER_SIZE 32768
-+#define IO_BUFFER_SIZE (1024*1024)
++#define IO_BUFFER_SIZE 524288
  
  /**
   * Do seeks within this distance ahead of the current buffer by skipping
-@@ -701,6 +701,9 @@
+@@ -704,6 +704,9 @@
      } else {
          buffer_size = IO_BUFFER_SIZE;
      }
@@ -22,7 +22,7 @@
 
 --- a/libavformat/utils.c	2013-05-10 02:16:07.000000000 +0200
 +++ b/libavformat/utils.c.pached	2013-05-12 02:27:55.026366221 +0200
-@@ -2001,6 +2001,8 @@
+@@ -1930,6 +1930,8 @@
              if ((ret = avio_seek(s->pb, s->data_offset, SEEK_SET)) < 0)
                  return ret;
          }
@@ -31,7 +31,7 @@
          for (;;) {
              int read_status;
              do{
-@@ -2008,6 +2010,17 @@
+@@ -1937,6 +1939,17 @@
              } while (read_status == AVERROR(EAGAIN));
              if (read_status < 0)
                  break;
@@ -51,7 +51,7 @@
                  if(pkt.flags & AV_PKT_FLAG_KEY)
 --- a/cmdutils.c.orig	2013-05-10 02:16:03.000000000 +0200
 +++ b/cmdutils.c	2013-05-12 02:18:55.870388894 +0200
-@@ -1008,8 +1008,7 @@
+@@ -1060,8 +1060,7 @@
          av_log(NULL, level, " Copyright (c) %d-%d the FFmpeg developers",
                 program_birth_year, this_year);
      av_log(NULL, level, "\n");
@@ -63,7 +63,7 @@
  }
 --- a/ffprobe.c-orig	2013-02-25 20:27:01.214681641 +0100
 +++ b/ffprobe.c	2013-02-25 20:27:21.414681657 +0100
-@@ -1925,8 +1925,6 @@
+@@ -1972,8 +1972,6 @@
      print_str("version", FFMPEG_VERSION);
      print_fmt("copyright", "Copyright (c) %d-%d the FFmpeg developers",
                program_birth_year, this_year);
@@ -74,7 +74,7 @@
      writer_print_section_footer(w);
 --- a/libavformat/mpegts.c	2013-05-10 02:16:06.000000000 +0200
 +++ b/libavformat/mpegts.c	2013-05-12 02:18:55.870388894 +0200
-@@ -1362,11 +1362,24 @@
+@@ -1365,11 +1365,24 @@
          }
          break;
      case 0x56: /* DVB teletext descriptor */

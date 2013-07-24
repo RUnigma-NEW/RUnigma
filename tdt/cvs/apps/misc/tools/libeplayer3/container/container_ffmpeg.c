@@ -53,7 +53,7 @@
 /* ***************************** */
 
 //for buffered io
-#define FILLBUFSIZE 1048576
+#define FILLBUFSIZE 0
 #define FILLBUFDIFF 1048576
 #define FILLBUFPAKET 5120
 #define FILLBUFSEEKTIME 3 //sec
@@ -170,91 +170,91 @@ void releasefillerMutex(const char *filename, const const char *function, int li
 }
 //for buffered io (end)
 
-static char* Codec2Encoding(enum CodecID id, int* version)
+static char* Codec2Encoding(enum AVCodecID id, int* version)
 {
     switch (id)
     {
-    case CODEC_ID_MPEG1VIDEO:
+    case AV_CODEC_ID_MPEG1VIDEO:
         return "V_MPEG1";
-    case CODEC_ID_MPEG2VIDEO:
+    case AV_CODEC_ID_MPEG2VIDEO:
         return "V_MPEG1";
-    case CODEC_ID_H263:
-    case CODEC_ID_H263P:
-    case CODEC_ID_H263I:
+    case AV_CODEC_ID_H263:
+    case AV_CODEC_ID_H263P:
+    case AV_CODEC_ID_H263I:
         return "V_H263";
-    case CODEC_ID_FLV1:
+    case AV_CODEC_ID_FLV1:
         return "V_FLV";
-    case CODEC_ID_VP5:
-    case CODEC_ID_VP6:
-    case CODEC_ID_VP6F:
+    case AV_CODEC_ID_VP5:
+    case AV_CODEC_ID_VP6:
+    case AV_CODEC_ID_VP6F:
         return "V_VP6";
-    case CODEC_ID_RV10:
-    case CODEC_ID_RV20:
+    case AV_CODEC_ID_RV10:
+    case AV_CODEC_ID_RV20:
         return "V_RMV";
-    case CODEC_ID_MPEG4:
+    case AV_CODEC_ID_MPEG4:
 #if LIBAVCODEC_VERSION_MAJOR < 53
-    case CODEC_ID_XVID:
+    case AV_CODEC_ID_XVID:
 #endif
-    case CODEC_ID_MSMPEG4V1:
-    case CODEC_ID_MSMPEG4V2:
-    case CODEC_ID_MSMPEG4V3:
+    case AV_CODEC_ID_MSMPEG4V1:
+    case AV_CODEC_ID_MSMPEG4V2:
+    case AV_CODEC_ID_MSMPEG4V3:
         return "V_MSCOMP";
-    case CODEC_ID_WMV1:
+    case AV_CODEC_ID_WMV1:
         *version = 1;
         return "V_WMV";
-    case CODEC_ID_WMV2:
+    case AV_CODEC_ID_WMV2:
         *version = 2;
         return "V_WMV";
-    case CODEC_ID_WMV3:
+    case AV_CODEC_ID_WMV3:
         *version = 3;
         return "V_WMV";
-    case CODEC_ID_VC1:
+    case AV_CODEC_ID_VC1:
         return "V_VC1";
-    case CODEC_ID_H264:
+    case AV_CODEC_ID_H264:
 #if LIBAVCODEC_VERSION_MAJOR < 54
-    case CODEC_ID_FFH264:
+    case AV_CODEC_ID_FFH264:
 #endif
         return "V_MPEG4/ISO/AVC";
-    case CODEC_ID_AVS:
+    case AV_CODEC_ID_AVS:
         return "V_AVS";
-    case CODEC_ID_MP2:
+    case AV_CODEC_ID_MP2:
         return "A_MPEG/L3";
-    case CODEC_ID_MP3:
+    case AV_CODEC_ID_MP3:
         return "A_MP3";
-    case CODEC_ID_AAC:
+    case AV_CODEC_ID_AAC:
         return "A_AAC";
-    case CODEC_ID_AC3:
+    case AV_CODEC_ID_AC3:
         return "A_AC3";
-    case CODEC_ID_DTS:
+    case AV_CODEC_ID_DTS:
         return "A_DTS";
-    case CODEC_ID_WMAV1:
-    case CODEC_ID_WMAV2:
-    case 86056: //CODEC_ID_WMAPRO
+    case AV_CODEC_ID_WMAV1:
+    case AV_CODEC_ID_WMAV2:
+    case 86056: //AV_CODEC_ID_WMAPRO
         return "A_WMA";
-    case CODEC_ID_MLP:
+    case AV_CODEC_ID_MLP:
         return "A_MLP";
-    case CODEC_ID_RA_144:
+    case AV_CODEC_ID_RA_144:
         return "A_RMA";
-    case CODEC_ID_RA_288:
+    case AV_CODEC_ID_RA_288:
         return "A_RMA";
-    case CODEC_ID_VORBIS:
+    case AV_CODEC_ID_VORBIS:
         return "A_IPCM"; //return "A_VORBIS";
-    case CODEC_ID_FLAC: //86030
+    case AV_CODEC_ID_FLAC: //86030
         return "A_IPCM"; //return "A_FLAC";
     case AV_CODEC_ID_PCM_S16LE:
 	return "A_PCM";
 /* subtitle */
-    case CODEC_ID_SSA:
+    case AV_CODEC_ID_SSA:
         return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
-    case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
-    case CODEC_ID_DVD_SUBTITLE:
-    case CODEC_ID_DVB_SUBTITLE:
-    case CODEC_ID_XSUB:
-    case CODEC_ID_MOV_TEXT:
-    case CODEC_ID_HDMV_PGS_SUBTITLE:
-    case CODEC_ID_DVB_TELETEXT:
+    case AV_CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
+    case AV_CODEC_ID_DVD_SUBTITLE:
+    case AV_CODEC_ID_DVB_SUBTITLE:
+    case AV_CODEC_ID_XSUB:
+    case AV_CODEC_ID_MOV_TEXT:
+    case AV_CODEC_ID_HDMV_PGS_SUBTITLE:
+    case AV_CODEC_ID_DVB_TELETEXT:
         return "S_TEXT/SRT"; /* fixme */
-    case CODEC_ID_SRT:
+    case AV_CODEC_ID_SRT:
         return "S_TEXT/SRT"; /* fixme */
     default:
         ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",id);
@@ -621,7 +621,7 @@ if(!context->playback->BackWard && audioMute)
                     else if (audioTrack->inject_as_pcm == 1)
                     {
                         int      bytesDone = 0;
-                        unsigned int samples_size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+                        unsigned int samples_size = 192000;
                         AVPacket avpkt;
                         avpkt = packet;
 
@@ -737,7 +737,7 @@ if(!context->playback->BackWard && audioMute)
                         duration=((float)packet.duration)/1000.0;
                     else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
                         duration=((float)packet.convergence_duration)/1000.0;
-                    else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
+                    else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
                     {
                         /*Hellmaster1024 if the duration is not stored in packet.duration or
                           packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
@@ -790,7 +790,7 @@ if(!context->playback->BackWard && audioMute)
 
                         }
                         else
-                        if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
+                        if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
                         {
                             SubtitleData_t data;
 
@@ -1306,7 +1306,7 @@ int container_ffmpeg_init(Context_t *context, char * filename)
     if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) {
 #else
     av_dict_set(&avio_opts, "timeout", "20000000", 0); //20sec
-    if ((err = avformat_open_input(&avContext, filename, NULL, 0)) != 0) {
+    if ((err = avformat_open_input(&avContext, filename, NULL, &avio_opts)) != 0) {
 #endif
         char error[512];
 
@@ -1523,13 +1523,8 @@ int container_ffmpeg_init(Context_t *context, char * filename)
 
                         AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
 
-//( (AVStream*) audioTrack->stream)->codec->flags |= CODEC_FLAG_TRUNCATED;
-                        if(codec != NULL && !avcodec_open(stream->codec, codec))
-                           printf("AVCODEC__INIT__SUCCESS\n");
-                        else
-                           printf("AVCODEC__INIT__FAILED\n");
                 }
-                else if(stream->codec->codec_id == CODEC_ID_AAC) {
+                else if(stream->codec->codec_id == AV_CODEC_ID_AAC) {
                     ffmpeg_printf(10,"Create AAC ExtraData\n");
                     ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
                     Hexdump(stream->codec->extradata, stream->codec->extradata_size);
@@ -1579,9 +1574,9 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     Hexdump(track.aacbuf,7);
                     track.have_aacheader = 1;
 
-                } else if(stream->codec->codec_id == CODEC_ID_WMAV1
-                    || stream->codec->codec_id == CODEC_ID_WMAV2
-                    || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
+                } else if(stream->codec->codec_id == AV_CODEC_ID_WMAV1
+                    || stream->codec->codec_id == AV_CODEC_ID_WMAV2
+                    || stream->codec->codec_id == 86056 ) //AV_AV_CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
                 {
                     ffmpeg_printf(10,"Create WMA ExtraData\n");
                     track.aacbuflen = 104 + stream->codec->extradata_size;
@@ -1626,13 +1621,13 @@ int container_ffmpeg_init(Context_t *context, char * filename)
                     unsigned short codec_id = 0;
                     switch(stream->codec->codec_id) {
                         //TODO: What code for lossless ?
-                        case 86056/*CODEC_ID_WMAPRO*/:
+                        case 86056/*AV_AV_CODEC_ID_WMAPRO*/:
                             codec_id = WMA_VERSION_9_PRO;
                             break;
-                        case CODEC_ID_WMAV2:
+                        case AV_CODEC_ID_WMAV2:
                             codec_id = WMA_VERSION_2_9 ;
                             break;
-                        case CODEC_ID_WMAV1:
+                        case AV_CODEC_ID_WMAV1:
                         default:
                             codec_id = WMA_VERSION_1;
                             break;
