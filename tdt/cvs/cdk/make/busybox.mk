@@ -5,13 +5,9 @@
 PKGR_busybox = r2
 BEGIN[[
 busybox
-  1.21.0
+  1.21.1
   {PN}-{PV}
   extract:http://www.{PN}.net/downloads/{PN}-{PV}.tar.bz2
-  patch:file://{PN}-{PV}-mdev.patch
-  patch:file://{PN}-{PV}-platform.patch
-  patch:file://{PN}-{PV}-xz.patch
-  patch:file://{PN}-{PV}-ntfs.patch
   nothing:file://{PN}-{PV}.config
   pmove:{PN}-{PV}/{PN}-{PV}.config:{PN}-{PV}/.config
   make:install:CONFIG_PREFIX=PKDIR
