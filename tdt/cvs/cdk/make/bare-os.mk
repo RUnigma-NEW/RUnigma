@@ -5,7 +5,7 @@ GLIBC := glibc
 GLIBC_DEV := glibc-dev
 FILES_glibc = /lib
 FILES_glibc_dev = /lib /usr/lib
-GLIBC_VERSION := 2.10.2-42
+GLIBC_VERSION := 2.10.2-43
 GLIBC_RAWVERSION := $(firstword $(subst -, ,$(GLIBC_VERSION)))
 GLIBC_SPEC := stm-target-$(GLIBC).spec
 GLIBC_SPEC_PATCH :=
@@ -43,9 +43,11 @@ $(DEPDIR)/$(GLIBC_DEV): $(DEPDIR)/$(GLIBC) $(GLIBC_DEV_RPM)
 #
 BINUTILS := binutils
 FILES_binutils = \
-usr/lib/*.so
+usr/lib/*.so \
+usr/bin/ar
+
 BINUTILS_DEV := binutils-dev
-BINUTILS_VERSION := 2.23.2-73
+BINUTILS_VERSION := 2.23.2-74
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
 BINUTILS_SPEC_PATCH := $(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
 BINUTILS_PATCHES :=
@@ -237,7 +239,7 @@ FILES_libstdc++-dev = \
 
 LIBGCC := libgcc
 GCC := gcc
-GCC_VERSION := 4.7.3-125
+GCC_VERSION := 4.7.3-126
 GCC_SPEC := stm-target-$(GCC).spec
 GCC_SPEC_PATCH := $(GCC_SPEC).$(GCC_VERSION).diff
 GCC_PATCHES := stm-target-$(GCC).$(GCC_VERSION).diff
@@ -285,73 +287,6 @@ $(DEPDIR)/$(LIBGCC): $(LIBGCC_RPM)
 	touch $@
 
 # END OF BOOTSTRAP
-
-#
-# LIBFFI
-#
-#FILES_libffi = \
-#/usr/lib/*.so*
-
-#LIBFFI := libffi
-#LIBFFI_VERSION := 3.0.10-1
-#LIBFFI_SPEC := stm-target-$(LIBFFI).spec
-#LIBFFI_SPEC_PATCH :=
-#LIBFFI_PATCHES :=
-
-#LIBFFI_RPM := RPMS/sh4/$(STLINUX)-sh4-$(LIBFFI)-dev-$(LIBFFI_VERSION).sh4.rpm
-
-#$(LIBFFI_RPM): \
-#		$(addprefix Patches/,$(LIBFFI_SPEC_PATCH) $(LIBFFI_PATCH)) \
-#		$(if $(LIBFFI_PATCHES),$(LIBFFI_PATCHES:%=Patches/%)) \
-#		$(archivedir)/$(STLINUX)-target-$(LIBFFI)-$(LIBFFI_VERSION).src.rpm
-#	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
-#	$(if $(LIBFFI_SPEC_PATCH),( cd SPECS && patch -p1 $(LIBFFI_SPEC) < $(buildprefix)/Patches/$(LIBFFI_SPEC_PATCH) ) &&) \
-#	$(if $(LIBFFI_PATCHES),cp $(addprefix Patches/,$(LIBFFI_PATCHES)) SOURCES/ &&) \
-#	export PATH=$(hostprefix)/bin:$(PATH) && \
-#	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(LIBFFI_SPEC)
-
-#$(DEPDIR)/$(LIBFFI): $(LIBFFI_RPM)
-#	@rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^) && \
-#	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/libffi.la
-#	$(start_build)
-#	$(fromrpm_build)
-#	$(toflash_build)
-#	touch $@
-
-#
-# GLIB2
-#
-#GLIB2 := #glib2
-GLIB2_DEV := glib2-dev
-GLIB2_VERSION := 2.32.1-33
-GLIB2_SPEC := stm-target-$(GLIB2).spec
-GLIB2_SPEC_PATCH :=
-GLIB2_PATCHES :=
-
-#GLIB2_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIB2)-$(GLIB2_VERSION).sh4.rpm
-GLIB2_DEV_RPM := RPMS/sh4/$(STLINUX)-sh4-$(GLIB2_DEV)-$(GLIB2_VERSION).sh4.rpm
-
-$(GLIB2_RPM) $(GLIB2_DEV_RPM): \
-		$(addprefix Patches/,$(GLIB2_SPEC_PATCH) $(GLIB2_PATCHES)) \
-		$(archivedir)/$(STLINUX)-target-$(GLIB2)-$(GLIB2_VERSION).src.rpm
-	rpm $(DRPM) --nosignature -ihv $(lastword $^) && \
-	$(if $(GLIB2_SPEC_PATCH),( cd SPECS && patch -p1 $(GLIB2_SPEC) < $(buildprefix)/Patches/$(GLIB2_SPEC_PATCH) ) &&) \
-	$(if $(GLIB2_PATCHES),cp $(addprefix Patches/,$(GLIB2_PATCHES)) SOURCES/ &&) \
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(GLIB2_SPEC)
-
-#$(DEPDIR)/$(GLIB2): bootstrap $(HOST_GLIB2) $(GLIB2_RPM)
-	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	touch $@
-
-$(DEPDIR)/$(GLIB2_DEV): $(DEPDIR)/$(GLIB2) $(GLIB2_DEV_RPM)
-	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^) && \
-	sed -i "/^libdir/s|'/usr/lib'|'$(targetprefix)/usr/lib'|" $(targetprefix)/usr/lib/{libgio,libglib,libgmodule,libgobject,libgthread}-2.0.la; \
-	sed -i '/^dependency_libs=/{ s# /usr/lib# $(targetprefix)/usr/lib#g }' $(targetprefix)/usr/lib/{libgio,libglib,libgmodule,libgobject,libgthread}-2.0.la; \
-	sed -i '/^prefix=/{ s#/usr#$(targetprefix)/usr#g }' $(targetprefix)/usr/lib/pkgconfig/{gio,gio-unix,glib,gmodule,gmodule-export,gmodule-no-export,gobject}-2.0.pc
-	touch $@
 
 #
 # LIBTERMCAP
@@ -543,7 +478,7 @@ $(DEPDIR)/$(BASE_FILES): $(BASE_FILES_ADAPTED_ETC_FILES:%=root/etc/%) $(BASE_FIL
 #
 LIBATTR := libattr
 LIBATTR_DEV := libattr-dev
-LIBATTR_VERSION := 2.4.43-4
+LIBATTR_VERSION := 2.4.47-5
 LIBATTR_SPEC := stm-target-$(LIBATTR).spec
 LIBATTR_SPEC_PATCH :=
 LIBATTR_PATCHES :=

@@ -10,3 +10,13 @@
  BuildRequires: %{_stm_pkg_prefix}-host-rpmconfig
  
  Group: Development/Languages
+@@ -148,9 +145,6 @@
+ 
+ %make tooldir=%{_stm_target_prefix}
+ 
+-%if %target_cpu sh
+-(cd bfd ; make headers)
+-%endif
+ 
+ %install
+ %target_setup
