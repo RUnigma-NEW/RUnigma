@@ -1,5 +1,5 @@
-AC_INIT(tuxbox-apps-misc-tools,0.0.1,,tuxbox-misc-tools)
-AM_INIT_AUTOMAKE(tuxbox-misc-tools,0.0.1)
+AC_INIT(libmmeimage,1-0,,libmmeimage-1.0)
+AM_INIT_AUTOMAKE(libmmeimage,1.0)
 
 TUXBOX_APPS
 
