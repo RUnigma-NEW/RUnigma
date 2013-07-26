@@ -1,12 +1,12 @@
 TREE_ROOT?=$(DRIVER_TOPDIR)/player2
 CONFIG_STGFB_PATH?=$(DRIVER_TOPDIR)/stgfb/stmfb
 
-PART1=1
+ PART1=1
 
-ifndef PART1
-ifndef PART2
- PART3=1
-endif
+ifeq ($(CONFIG_MULTICOM324),y)
+CCFLAGSY+= -DMULTICOM324
+else ifeq ($(CONFIG_MULTICOM406),y)
+CCFLAGSY+= -DMULTICOM406
 endif
 
 ifdef PART1
@@ -53,12 +53,15 @@ ifdef CONFIG_CPU_SUBTYPE_STX7100
 CCFLAGSY+=-DCONFIG_CPU_SUBTYPE_STB7100
 endif
 
-CCFLAGSY+=-D__TDT__
 
 CCFLAGSY+=-I$(CONFIG_KERNEL_BUILD)/include2 \
 	-I$(CONFIG_KERNEL_BUILD)/include \
 	-include $(KERNEL_LOCATION)/include/linux/autoconf.h \
-	-I$(CONFIG_KERNEL_PATH)/include -D__KERNEL__
+	-I$(CONFIG_KERNEL_PATH)/include -D__KERNEL__ \
+	-I$(DRIVER_TOPDIR)/include \
+	-I$(DRIVER_TOPDIR)/include/stmfb \
+	-I$(DRIVER_TOPDIR)/include/player2 \
+	-I$(DRIVER_TOPDIR)/include/multicom
 
 CCFLAGSY+=-I$(TREE_ROOT)/linux/components/inline         \
 	-I$(TREE_ROOT)/components/include              \
@@ -116,13 +119,15 @@ CCFLAGSY += -I$(CONFIG_MODULES_PATH)/usr/include
 
 CCFLAGSY += -D__SH4__
 
+CCFLAGSY += -D__TDT__
+
 CCFLAGSY += -DREPORT
 
+# workaround for stlinux24
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
-else
-CFLAGS += $(CCFLAGSY)
 endif
+
 export CCFLAGSY
 
 ## Start and end must be in their respective places.

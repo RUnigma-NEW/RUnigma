@@ -59,7 +59,7 @@ int proc_vmpeg_0_dst_left_write(struct file *file, const char __user *buf, unsig
 		{
 			mutex_lock (&(pContext->DvbContext->Lock));
 
-			err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+			err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 			if (err != 0)
 				printk("failed to get output window %d\n", err);
 			else
@@ -111,7 +111,7 @@ int proc_vmpeg_0_dst_left_read (char *page, char **start, off_t off, int count, 
 	if (pContext != NULL)
 	{
 		mutex_lock (&(pContext->DvbContext->Lock));
-		err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+		err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 		mutex_unlock (&(pContext->DvbContext->Lock));
 		if (err != 0)
 			printk("failed to get output window %d\n", err);
@@ -166,7 +166,7 @@ int proc_vmpeg_0_dst_top_write(struct file *file, const char __user *buf, unsign
 			int l, t, w, h;
 			mutex_lock (&(pContext->DvbContext->Lock));
 
-			err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+			err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 			if (err != 0)
 				printk("failed to get output window %d\n", err);
 			else	
@@ -220,7 +220,7 @@ int proc_vmpeg_0_dst_top_read (char *page, char **start, off_t off, int count, i
 	{
 		mutex_lock (&(pContext->DvbContext->Lock));
 
-		err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+		err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 		mutex_unlock (&(pContext->DvbContext->Lock));
 		if (err != 0)
 			printk("failed to get output window %d\n", err);
@@ -276,7 +276,7 @@ int proc_vmpeg_0_dst_width_write(struct file *file, const char __user *buf, unsi
 			int l,t,w,h;
 			mutex_lock (&(pContext->DvbContext->Lock));
 
-			err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+			err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 			if (err != 0)
 				printk("failed to get output window %d\n", err);
 			else
@@ -328,7 +328,7 @@ int proc_vmpeg_0_dst_width_read (char *page, char **start, off_t off, int count,
 	if (pContext != NULL)
 	{
 		mutex_lock (&(pContext->DvbContext->Lock));
-		err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+		err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 		mutex_unlock (&(pContext->DvbContext->Lock));
 		if (err != 0)
 			printk("failed to get output window %d\n", err);
@@ -384,7 +384,7 @@ int proc_vmpeg_0_dst_height_write(struct file *file, const char __user *buf, uns
 			int l,t,w,h;
 			mutex_lock (&(pContext->DvbContext->Lock));
 
-			err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+			err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 			if (err != 0)
 				printk("failed to get output window %d\n", err);
 			else
@@ -435,7 +435,7 @@ int proc_vmpeg_0_dst_height_read (char *page, char **start, off_t off, int count
 	if (pContext != NULL)
 	{
 		mutex_lock (&(pContext->DvbContext->Lock));
-		err = StreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
+		err = DvbStreamGetOutputWindow(pContext->VideoStream, &l, &t, &w, &h);
 		mutex_unlock (&(pContext->DvbContext->Lock));
 		if (err != 0)
 			printk("failed to get output window %d\n", err);

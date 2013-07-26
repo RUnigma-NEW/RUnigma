@@ -35,10 +35,6 @@ Date        Modification                                    Name
 #ifndef H_OSDEV_DEVICE
 #define H_OSDEV_DEVICE
 
-#if defined(__TDT__)
-#include <linux/version.h>
-#endif
-
 /* --- Include the os specific headers we will need --- */
 
 #ifndef __cplusplus
@@ -47,6 +43,9 @@ Date        Modification                                    Name
 #undef min
 #undef max
 
+#if defined(__TDT__)
+#include <linux/version.h>
+#endif
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/delay.h>

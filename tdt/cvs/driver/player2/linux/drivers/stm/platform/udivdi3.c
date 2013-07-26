@@ -5,9 +5,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-#ifdef __TDT__
 #include <linux/version.h>
-#endif
 
 #include <asm/div64.h>
 
@@ -33,7 +31,7 @@ u64 __udivdi3(u64 n, u64 d) {
 }
 
 #if defined(__TDT__) && (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
-#warning This implementation of __umoddi3 may be redundant because __umoddi3 is available under stlinux24 which does not provide this symbol explicittly either.
+/*#warning This implementation of __umoddi3 may be redundant because __umoddi3 is available under stlinux24 which does not provide this symbol explicittly either.*/
 uint32_t __umoddi3(u64 xp, u32 y)
 {
         uint32_t rem;
