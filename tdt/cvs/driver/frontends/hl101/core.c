@@ -55,7 +55,7 @@ static struct core *core[MAX_DVB_ADAPTERS];
 
 static struct stb0899_config stb0899_config;
 static struct stb6100_config stb6100_config;
-
+#define OLD_CONFIG
 
 #ifdef OLD_CONFIG
 
@@ -113,7 +113,7 @@ static const struct stb0899_s1_reg stb0899_init_dev [] = {
 		{ STB0899_CS0CFG	, 0x82 },
 		{ STB0899_CS1CFG	, 0x82 },
 		{ STB0899_DISEQCOCFG	, 0x20 },
-		{ STB0899_NCOARSE	, 0x15 }, // 0x15 = 27 Mhz Clock, F/3 = 198MHz, F/6 = 108MHz
+		{ STB0899_NCOARSE	, 0x15 }, // 0x15 = 27 Mhz Clock, F/3 = 198MHz, F/6 = 99MHz
 		{ STB0899_SYNTCTRL	, 0x00 }, // 0x00 = CLK from CLKI, 0x02 = CLK from XTALI
 		{ STB0899_FILTCTRL	, 0x00 },
 		{ STB0899_SYSCTRL	, 0x00 },
@@ -137,7 +137,7 @@ static const struct stb0899_s2_reg stb0899_init_s2_demod[]  = {
 		{ STB0899_OFF0_DMD_CNTRL	, STB0899_BASE_DMD_CNTRL	, 0x0000000f },	/* DMDCNTRL	*/
 
 		{ STB0899_OFF0_IF_AGC_CNTRL	, STB0899_BASE_IF_AGC_CNTRL	, 0x03fb4a20 },	/* IFAGCCNTRL	*/
-		{ STB0899_OFF0_BB_AGC_CNTRL	, STB0899_BASE_BB_AGC_CNTRL	, 0x00200C17 },	/* BBAGCCNTRL	*/	
+		{ STB0899_OFF0_BB_AGC_CNTRL	, STB0899_BASE_BB_AGC_CNTRL	, 0x00200d17 },	/* BBAGCCNTRL	*/
 
 		{ STB0899_OFF0_CRL_CNTRL	, STB0899_BASE_CRL_CNTRL	, 0x00000016 },	/* CRLCNTRL	*/
 		{ STB0899_OFF0_CRL_PHS_INIT	, STB0899_BASE_CRL_PHS_INIT	, 0x00000000 },	/* CRLPHSINIT	*/
@@ -538,7 +538,7 @@ static const struct stb0899_s1_reg stb0899_init_dev [] = {
 	{0xF127, 0xFF},
 	{0xF128, 0x00},
 	{0xF129, 0x88},
-	{0xF12A, 0x48},//bylo 58 
+	{0xF12A, 0x48},//bylo 58
 //5c nie dziala
 //58 - 101 1 0 00
 //5c - 101 1 1 00
@@ -612,7 +612,7 @@ static const struct stb0899_s2_reg stb0899_init_s2_demod[]  = {
 	{0xF314,0x00000000,0x00000201},
 	{0xF31C,0x00000000,0x0000000F},
 	{0xF320,0x00000000,0x03FB4A20},
-	{0xF324,0x00000000,0x00200C17},// !!!!!!!!!!!!!
+	{0xF324,0x00000000,0x00200c17},// !!!!!!!!!!!!!
 	{0xF328,0x00000000,0x00000016},
 	{0xF32C,0x00000000,0x00000000},
 	{0xF330,0x00000000,0x00000000},

@@ -36,58 +36,26 @@ static unsigned int verbose = 0;
 
 /* C/N in dB/10, NIRM/NIRL */
 static const struct stb0899_tab stb0899_cn_tab[] = {
-	{   0, 8917 }, /*  0.0dB */
-	{   5, 8801 }, /*  0.5dB */
-	{  10, 8667 }, /*  1.0dB */
-	{  15, 8522 }, /*  1.5dB */
-	{  20, 8355 }, /*  2.0dB */
-	{  25, 8175 }, /*  2.5dB */
-	{  30, 7979 }, /*  3.0dB */
-	{  35, 7763 }, /*  3.5dB */
-	{  40, 7530 }, /*  4.0dB */
-	{  45, 7282 }, /*  4.5dB */
-	{  50, 7026 }, /*  5.0dB */
-	{  55, 6781 }, /*  5.5dB */
-	{  60, 6514 }, /*  6.0dB */
-	{  65, 6241 }, /*  6.5dB */
-	{  70, 5965 }, /*  7.0dB */
-	{  75, 5690 }, /*  7.5dB */
-	{  80, 5424 }, /*  8.0dB */
-	{  85, 5161 }, /*  8.5dB */
-	{  90, 4902 }, /*  9.0dB */
-	{  95, 4654 }, /*  9.5dB */
-	{ 100, 4417 }, /* 10.0dB */
-	{ 105, 4186 }, /* 10.5dB */
-	{ 110, 3968 }, /* 11.0dB */
-	{ 115, 3757 }, /* 11.5dB */
-	{ 120, 3558 }, /* 12.0dB */
-	{ 125, 3366 }, /* 12.5dB */
-	{ 130, 3185 }, /* 13.0dB */
-	{ 135, 3012 }, /* 13.5dB */
-	{ 140, 2850 }, /* 14.0dB */
-	{ 145, 2698 }, /* 14.5dB */
-	{ 150, 2550 }, /* 15.0dB */
-	{ 160, 2283 }, /* 16.0dB */
-	{ 170, 2042 }, /* 17.0dB */
-	{ 180, 1827 }, /* 18.0dB */
-	{ 190, 1636 }, /* 19.0dB */
-	{ 200, 1466 }, /* 20.0dB */
-	{ 210, 1315 }, /* 21.0dB */
-	{ 220, 1181 }, /* 22.0dB */
-	{ 230, 1064 }, /* 23.0dB */
-	{ 240,	960 }, /* 24.0dB */
-	{ 250,	869 }, /* 25.0dB */
-	{ 260,	792 }, /* 26.0dB */
-	{ 270,	724 }, /* 27.0dB */
-	{ 280,	665 }, /* 28.0dB */
-	{ 290,	616 }, /* 29.0dB */
-	{ 300,	573 }, /* 30.0dB */
-	{ 310,	537 }, /* 31.0dB */
-	{ 320,	507 }, /* 32.0dB */
-	{ 330,	483 }, /* 33.0dB */
-	{ 400,	398 }, /* 40.0dB */
-	{ 450,	381 }, /* 45.0dB */
-	{ 500,	377 }  /* 50.0dB */
+	{ 200,	2600 },
+	{ 190,	2700 },
+	{ 180,	2860 },
+	{ 170,	3020 },
+	{ 160,	3210 },
+	{ 150,	3440 },
+	{ 140,	3710 },
+	{ 130,	4010 },
+	{ 120,	4360 },
+	{ 110,	4740 },
+	{ 100,	5190 },
+	{ 90,	5670 },
+	{ 80,	6200 },
+	{ 70,	6770 },
+	{ 60,	7360 },
+	{ 50,	7970 },
+	{ 40,	8250 },
+	{ 30,	9000 },
+	{ 20,	9450 },
+	{ 15,	9600 },
 };
 
 /* DVB-S AGCIQ_VALUE vs. signal level in dBm/10.
@@ -131,84 +99,6 @@ static const struct stb0899_tab stb0899_dvbsrf_tab[] = {
 	{  500,	 127 }
 };
 
-
-/* DVBS2 C/N Lookup table */
-static const struct stb0899_tab stb0899_s2cn_tab[] = {
-	{ -30, 13348 }, /* -3.0dB */
-	{ -20, 12640 }, /* -2d.0B */
-	{ -10, 11883 }, /* -1.0dB */
-	{   0, 11101 }, /* -0.0dB */
-	{   5, 10718 }, /*  0.5dB */
-	{  10, 10339 }, /*  1.0dB */
-	{  15,  9947 }, /*  1.5dB */
-	{  20,  9552 }, /*  2.0dB */
-	{  25,  9183 }, /*  2.5dB */
-	{  30,  8799 }, /*  3.0dB */
-	{  35,  8422 }, /*  3.5dB */
-	{  40,  8062 }, /*  4.0dB */
-	{  45,  7707 }, /*  4.5dB */
-	{  50,  7353 }, /*  5.0dB */
-	{  55,  7025 }, /*  5.5dB */
-	{  60,  6684 }, /*  6.0dB */
-	{  65,  6331 }, /*  6.5dB */
-	{  70,  6036 }, /*  7.0dB */
-	{  75,  5727 }, /*  7.5dB */
-	{  80,  5437 }, /*  8.0dB */
-	{  85,  5164 }, /*  8.5dB */
-	{  90,  4902 }, /*  9.0dB */
-	{  95,  4653 }, /*  9.5dB */
-	{ 100,  4408 }, /* 10.0dB */
-	{ 105,  4187 }, /* 10.5dB */
-	{ 110,  3961 }, /* 11.0dB */
-	{ 115,  3751 }, /* 11.5dB */
-	{ 120,  3558 }, /* 12.0dB */
-	{ 125,  3368 }, /* 12.5dB */
-	{ 130,  3191 }, /* 13.0dB */
-	{ 135,  3017 }, /* 13.5dB */
-	{ 140,  2862 }, /* 14.0dB */
-	{ 145,  2710 }, /* 14.5dB */
-	{ 150,  2565 }, /* 15.0dB */
-	{ 160,  2300 }, /* 16.0dB */
-	{ 170,  2058 }, /* 17.0dB */
-	{ 180,  1849 }, /* 18.0dB */
-	{ 190,  1663 }, /* 19.0dB */
-	{ 200,  1495 }, /* 20.0dB */
-	{ 210,  1349 }, /* 21.0dB */
-	{ 220,  1222 }, /* 22.0dB */
-	{ 230,  1110 }, /* 23.0dB */
-	{ 240,  1011 }, /* 24.0dB */
-	{ 250,   925 }, /* 25.0dB */
-	{ 260,   853 }, /* 26.0dB */
-	{ 270,   789 }, /* 27.0dB */
-	{ 280,   734 }, /* 28.0dB */
-	{ 290,   690 }, /* 29.0dB */
-	{ 300,   650 }, /* 30.0dB */
-	{ 310,   619 }, /* 31.0dB */
-	{ 320,   593 }, /* 32.0dB */
-	{ 330,   571 }, /* 33.0dB */
-	{ 400,   498 }, /* 40.0dB */
-	{ 450,	 484 }, /* 45.0dB */
-	{ 500,	 481 }	/* 50.0dB */
-};
-
-/* RF level C/N lookup table */
-static const struct stb0899_tab stb0899_rf_tab[] = {
-	{  -50,  1962 }, /*  -5dBm */
-	{ -100,  4431 }, /* -10dBm */
-	{ -150,  8461 }, /* -15dBm */
-	{ -200, 11537 }, /* -20dBm */
-	{ -250, 14868 }, /* -25dBm */
-	{ -300, 22974 }, /* -30dBm */
-	{ -350, 33673 }, /* -35dBm */
-	{ -400, 39080 }, /* -40dBm */
-	{ -450, 41624 }, /* -45dBm */
-	{ -500, 44378 }, /* -50dBm */
-	{ -550, 46268 }, /* -55dBm */
-	{ -600, 47880 }, /* -60dBm */
-	{ -650, 49705 }, /* -65dBm */
-	{ -700, 57873 }  /* -70dBm */
-};
-
 /* DVB-S2 IF_AGC_GAIN vs. signal level in dBm/10.
  * As measured, connected to a modulator.
  * -8.0 to -50.1 dBm directly connected,
@@ -217,7 +107,7 @@ static const struct stb0899_tab stb0899_rf_tab[] = {
  * Crude linear extrapolation below -76.6dBm and above -8.0dBm.
  */
 static const struct stb0899_tab stb0899_dvbs2rf_tab[] = {
-	{    0,	    0 },
+	{  700,	    0 },
 	{  -80,	 3217 },
 	{ -150,	 3893 },
 	{ -190,	 4217 },
@@ -641,7 +531,7 @@ int stb0899_write_regs(struct stb0899_state *state, unsigned int reg, u8 *data, 
 	if (ret != 1) {
 		if (ret != -ERESTARTSYS)
 			dprintk(state->verbose, FE_ERROR, 1, "Reg=[0x%04x], Data=[0x%02x ...], Count=%u, Status=%d",
-				reg, data[0], count, ret);
+				reg, data[0], (u32)count, ret);
 		return ret < 0 ? ret : -EREMOTEIO;
 	}
 
@@ -1070,42 +960,6 @@ static int stb0899_table_lookup(const struct stb0899_tab *tab, int max, int val)
 	return res;
 }
 
-static int stb0899_table_lookup_2(const struct stb0899_tab *tab, int max, int val)
-{
-	int res = 0;
-	int min = 0, med;
-
-	if ((val >= tab[min].read && val < tab[max].read) ||
-	    (val >= tab[max].read && val < tab[min].read)) {
-		while ((max - min) > 1) {
-			med = (max + min) / 2;
-			if ((val >= tab[min].read && val < tab[med].read) ||
-			    (val >= tab[med].read && val < tab[min].read))
-				max = med;
-			else
-				min = med;
-		}
-		res = ((val - tab[min].read) *
-		       (tab[max].real - tab[min].real) /
-		       (tab[max].read - tab[min].read)) +
-			tab[min].real;
-	} else {
-		if (tab[min].read < tab[max].read) {
-			if (val < tab[min].read)
-				res = tab[min].real;
-			else if (val >= tab[max].read)
-				res = tab[max].real;
-		} else {
-			if (val >= tab[min].read)
-				res = tab[min].real;
-			else if (val < tab[max].read)
-				res = tab[max].real;
-		}
-	}
-
-	return res;
-}
-
 static int stb0899_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 {
 	struct stb0899_state *state		= fe->demodulator_priv;
@@ -1114,7 +968,7 @@ static int stb0899_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 	int val;
 	u32 reg;
 	*strength = 0;
-	
+
 	switch (state->delsys) {
 	case SYS_DVBS:
 	case SYS_DSS:
@@ -1124,15 +978,8 @@ static int stb0899_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 				reg = stb0899_read_reg(state, STB0899_AGCIQIN);
 				val = (s32)(s8)STB0899_GETFIELD(AGCIQVALUE, reg);
 				*strength = stb0899_table_lookup(stb0899_dvbsrf_tab, ARRAY_SIZE(stb0899_dvbsrf_tab) - 1, val);
-				*strength += 950;
-				const int MIN_STRENGTH_DVBS = 0;
-				const int MAX_STRENGTH_DVBS = 750;
-				if (*strength < MIN_STRENGTH_DVBS)
-					*strength = 0;
-				else if(*strength > MAX_STRENGTH_DVBS) 
-					*strength = 0xFFFF;
-				else
-					*strength = (*strength - MIN_STRENGTH_DVBS) * 0xFFFF / (MAX_STRENGTH_DVBS - MIN_STRENGTH_DVBS);
+				*strength += 750;
+				*strength = *strength * 0xFFFF / 680;
 				dprintk(state->verbose, FE_DEBUG, 1, "AGCIQVALUE = 0x%02x, C = %d * 0.1 dBm",
 					val & 0xff, *strength);
 			}
@@ -1140,21 +987,14 @@ static int stb0899_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 		break;
 	case SYS_DVBS2:
 		if (internal->lock) {
-			reg = STB0899_READ_S2REG(STB0899_S2DEMOD, IF_AGC_GAIN);
-			//reg = _stb0899_read_s2reg(state,0xf3fc,0x00000000,0xf30c); 
+//			reg = STB0899_READ_S2REG(STB0899_S2DEMOD, IF_AGC_GAIN);
+			reg = _stb0899_read_s2reg(state,0xf3fc,0x00000000,0xf30c);
 			val = STB0899_GETFIELD(IF_AGC_GAIN, reg);
-			*strength = stb0899_table_lookup(stb0899_rf_tab, ARRAY_SIZE(stb0899_rf_tab) - 1, val);
-			//*strength = stb0899_table_lookup_2(stb0899_dvbs2rf_tab, ARRAY_SIZE(stb0899_dvbs2rf_tab) - 1, val);
-			*strength += 100;
-			const int MIN_STRENGTH_DVBS2 = 0;
-			const int MAX_STRENGTH_DVBS2 = 100;
-			/*if (*strength > stb0899_rf_tab[0].read)
-				*strength = 0;
-			else if(*strength < stb0899_rf_tab[ARRAY_SIZE(stb0899_rf_tab) - 1].read) 
-				*strength = -100;*/
-			*strength = (*strength + MAX_STRENGTH_DVBS2) * 0xFFFF / (MAX_STRENGTH_DVBS2 - MIN_STRENGTH_DVBS2);
+			*strength = stb0899_table_lookup(stb0899_dvbs2rf_tab, ARRAY_SIZE(stb0899_dvbs2rf_tab) - 1, val);
+			*strength += 750;
+			*strength = *strength * 0xFFFF / 600;
 			dprintk(state->verbose, FE_DEBUG, 1, "IF_AGC_GAIN = 0x%04x, C = %d * 0.1 dBm",
-			val & 0x3fff, *strength);
+				val & 0x3fff, *strength);
 		}
 		break;
 	default:
@@ -1170,11 +1010,9 @@ static int stb0899_read_snr(struct dvb_frontend *fe, u16 *snr)
 	struct stb0899_state *state		= fe->demodulator_priv;
 	struct stb0899_internal *internal	= &state->internal;
 
-	unsigned int val, quant, quantn = -1, est, estn = -1;
+	unsigned int val = 0, quant, quantn = -1, est, estn = -1;
 	u8 buf[2];
-	u32 reg, i;
-	s32 div;
-	u32 last;
+	u32 reg;
 
 	*snr = 0;
 	reg  = stb0899_read_reg(state, STB0899_VSTATUS);
@@ -1184,20 +1022,11 @@ static int stb0899_read_snr(struct dvb_frontend *fe, u16 *snr)
 		if (internal->lock) {
 			if (STB0899_GETFIELD(VSTATUS_LOCKEDVIT, reg)) {
 				stb0899_read_regs(state, STB0899_NIRM, buf, 2);
-				val  = MAKEWORD16(buf[0], buf[1]);
-				//*snr = stb0899_table_lookup(stb0899_cn_tab, ARRAY_SIZE(stb0899_cn_tab) - 1, val);
-				/*const int MIN_SNR_DVBS = 0;
-				const int MAX_SNR_DVBS = 200;
-				if (*snr < MIN_SNR_DVBS)
-					*snr = 0;
-				else if(*snr > MAX_SNR_DVBS) 
-					*snr = 0xFFFF;
-				else
-					*snr = (*snr - MIN_SNR_DVBS) * 0xFFFF / (MAX_SNR_DVBS - MIN_SNR_DVBS);*/
-				val -= 8355;
-				last = ARRAY_SIZE(stb0899_cn_tab) - 1;
-				div  = stb0899_cn_tab[0].read - stb0899_cn_tab[last].read;
-				*snr =  0xFFFF - ((val * 0xFFFF) / div);
+				val = MAKEWORD16(buf[0], buf[1]);
+				val = stb0899_table_lookup(stb0899_cn_tab, ARRAY_SIZE(stb0899_cn_tab) - 1, val);
+				if (val < 0) val = 0; 
+				if (val > 200) val = 200;
+				*snr = val * 0xFFFF / 200;
 				dprintk(state->verbose, FE_DEBUG, 1, "NIR = 0x%02x%02x = %u, C/N = %d * 0.1 dBm\n",
 					buf[0], buf[1], val, *snr);
 			}
@@ -1205,38 +1034,25 @@ static int stb0899_read_snr(struct dvb_frontend *fe, u16 *snr)
 		break;
 	case SYS_DVBS2:
 		if (internal->lock) {
-			reg   = STB0899_READ_S2REG(STB0899_S2DEMOD, UWP_CNTRL1);
+			reg = STB0899_READ_S2REG(STB0899_S2DEMOD, UWP_CNTRL1);
 			quant = STB0899_GETFIELD(UWP_ESN0_QUANT, reg);
-			reg   = STB0899_READ_S2REG(STB0899_S2DEMOD, UWP_STAT2);
-			est   = STB0899_GETFIELD(ESN0_EST, reg);
-			val   = MAKEWORD16(quant, est);
-			val  -= 4408;
-			last  = ARRAY_SIZE(stb0899_s2cn_tab) - 1;
-			div   = stb0899_s2cn_tab[0].read - stb0899_s2cn_tab[last].read;
-			*snr  = 0xFFFF - ((val * 0xFFFF) / div);
-			//if (est == 1)
-			//	val = 301; /* C/N = 30.1 dB */
-			//else if (est == 2)
-			//	val = 270; /* C/N = 27.0 dB */
-			//else {
+			reg = STB0899_READ_S2REG(STB0899_S2DEMOD, UWP_STAT2);
+			est = STB0899_GETFIELD(ESN0_EST, reg);
+			if (est == 1)
+				val = 301; /* C/N = 30.1 dB */
+			else if (est == 2)
+				val = 270; /* C/N = 27.0 dB */
+			else {
 				/* quantn = 100 * log(quant^2) */
-			//	quantn = stb0899_table_lookup(stb0899_quant_tab, ARRAY_SIZE(stb0899_quant_tab) - 1, quant * 100);
+				quantn = stb0899_table_lookup(stb0899_quant_tab, ARRAY_SIZE(stb0899_quant_tab) - 1, quant * 100);
 				/* estn = 100 * log(est) */
-			//	estn = stb0899_table_lookup(stb0899_est_tab, ARRAY_SIZE(stb0899_est_tab) - 1, est);
+				estn = stb0899_table_lookup(stb0899_est_tab, ARRAY_SIZE(stb0899_est_tab) - 1, est);
 				/* snr(dBm/10) = -10*(log(est)-log(quant^2)) => snr(dBm/10) = (100*log(quant^2)-100*log(est))/10 */
-			//	val = (quantn - estn) / 10;
-			//}
-			/*snr = val;
-			const int MIN_SNR_DVBS2 = 69;
-			const int MAX_SNR_DVBS2 = 130;
-			
-			if (*snr < MIN_SNR_DVBS2)
-				*snr = 0;
-			else
-			if(*snr > MAX_SNR_DVBS2) 
-				*snr = 0xFFFF;
-			else
-				*snr = (*snr - MIN_SNR_DVBS2) * 0xFFFF / (MAX_SNR_DVBS2 - MIN_SNR_DVBS2);*/
+				val = (quantn - estn) / 10;
+			}
+			if (val < 0) val = 0; 
+			if (val > 130) val = 130;
+			*snr = (val - 79) * 0xFFFF / (130 - 79);
 			dprintk(state->verbose, FE_DEBUG, 1, "Es/N0 quant = %d (%d) estimate = %u (%d), C/N = %d * 0.1 dBm",
 				quant, quantn, est, estn, val);
 		}
@@ -1353,9 +1169,6 @@ static int stb0899_read_ber(struct dvb_frontend *fe, u32 *ber)
 			lsb = stb0899_read_reg(state, STB0899_ECNT1L);
 			msb = stb0899_read_reg(state, STB0899_ECNT1M);
 			*ber = MAKEWORD16(msb, lsb);
-			/* ber = ber * 10 ^ 7	*/
-			*ber *= 10000000;
-			*ber /= (-1 + (1 << (4 + 2 * STB0899_GETFIELD(NOE, internal->err_ctrl))));
 		}
 		break;
 	default:
@@ -1452,7 +1265,6 @@ err:
 	dprintk(state->verbose, FE_ERROR, 1, "I2C Repeater control failed");
 	return -EREMOTEIO;
 }
-
 
 static inline void CONVERT32(u32 x, char *str)
 {
@@ -1605,14 +1417,14 @@ static void stb0899_set_iterations(struct stb0899_state *state)
 	struct stb0899_config *config = state->config;
 
 	s32 iter_scale;
-	u32 reg;
+//	u32 reg;
 
 	iter_scale = 17 * (internal->master_clk / 1000);
 	iter_scale += 410000;
 //	iter_scale /= (internal->srate / 1000000);
 //	iter_scale /= 1000;
 	iter_scale /= (internal->srate / 1000);
-	
+
 	if (iter_scale > config->ldpc_max_iter)
 		iter_scale = config->ldpc_max_iter;
 
@@ -1683,7 +1495,9 @@ static enum dvbfe_search stb0899_search(struct dvb_frontend *fe)
 			state->config->tuner_set_rfsiggain(fe, gain);
 		}
 
-		if (i_params->srate <= 5000000)
+		if (i_params->srate <= 2500000)
+			stb0899_set_mclk(state, 45000000);
+		else if (i_params->srate <= 5000000)
 			stb0899_set_mclk(state, config->lo_clk);
 		else if (i_params->srate <= 29999999)
 			stb0899_set_mclk(state, config->hi_clk);
