@@ -1,14 +1,3 @@
-# Tuxbox drivers Makefile
-# there are only three targets
-#
-# make all     - builds all modules
-# make install - installs the modules
-# make clean   - deletes modules recursively
-#
-# note that "clean" only works in the current
-# directory while "all" and "install" will
-# execute from the top dir.
-
 ifeq ($(KERNELRELEASE),)
 DRIVER_TOPDIR:=$(shell pwd)
 include $(DRIVER_TOPDIR)/kernel.make
@@ -20,11 +9,8 @@ CONFIGFILE := $(DRIVER_TOPDIR)/.config
 include $(CONFIGFILE)
 
 CCFLAGSY += -DHL101
-ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
+
 ccflags-y += $(CCFLAGSY)
-else
-CFLAGS += $(CCFLAGSY)
-endif
 
 export CCFLAGSY
 
@@ -44,7 +30,6 @@ obj-y	+= bpamem/
 obj-y	+= cic/
 obj-y	+= smartcard/
 obj-y	+= cpu_frequ/
-obj-y	+= frontends/lnb/
 obj-y	+= cec/
 obj-y	+= dvbloopback/
 

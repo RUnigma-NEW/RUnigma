@@ -12,7 +12,7 @@
 #define MINOR_NUMBER    0
 
 #include "osdev_device.h"
-#if defined(MULTICOM406)
+#if !defined(MULTICOM324)
 #include "ics.h"
 #endif
 /* --- */
@@ -57,7 +57,7 @@ typedef struct AllocatorContext_s
     unsigned char	*CachedAddress;
     unsigned char	*UnCachedAddress;
     unsigned char       *PhysicalAddress;
-#if defined(MULTICOM406)
+#if !defined(MULTICOM324)
     ICS_REGION           CachedRegion;
     ICS_REGION           UnCachedRegion;
 #endif
@@ -183,7 +183,7 @@ AllocatorContext_t      *AllocatorContext;
         // Do what is necessary to free up any mapping here
         
 //        OSDEV_Print( "Freeing up bpa 2 partition - phys %p - C %p - UC %p\n", AllocatorContext->PhysicalAddress,AllocatorContext->CachedAddress,AllocatorContext->UnCachedAddress);
-#if defined(MULTICOM406)
+#if !defined(MULTICOM324)
         ICS_ERROR IcsErr;
 
         IcsErr = ICS_region_remove(AllocatorContext->CachedRegion, 0);
@@ -242,7 +242,7 @@ static OSDEV_Status_t AllocatorIoctlAllocateData( AllocatorContext_t    *Allocat
 						  unsigned int           ParameterAddress )
 {
 allocator_ioctl_allocate_t      params;
-#if defined(MULTICOM406)
+#if !defined(MULTICOM324)
 ICS_ERROR IcsErr;
 #endif
 
@@ -279,7 +279,7 @@ ICS_ERROR IcsErr;
     AllocatorContext->PhysicalAddress	= AllocatorContext->Memory ;
     AllocatorContext->UnCachedAddress	= (unsigned char *)OSDEV_IOReMap( (unsigned int)AllocatorContext->PhysicalAddress, AllocatorContext->Size );
 
-#if defined(MULTICOM406)
+#if !defined(MULTICOM324)
     IcsErr = ICS_region_add(AllocatorContext->CachedAddress, AllocatorContext->PhysicalAddress, AllocatorContext->Size,
                          ICS_CACHED, ics_cpu_mask(), &AllocatorContext->CachedRegion);
     if( IcsErr != ICS_SUCCESS )
