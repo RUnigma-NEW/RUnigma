@@ -222,7 +222,7 @@ case "$REPLY" in
 	fi
 
 	ln -s multicom-3.2.4 multicom
-	echo "export CONFIG_MULTICOM406=y" >> .config
+	echo "export CONFIG_MULTICOM324=y" >> .config
 	cd - > /dev/null 2>&1
 	;;
 esac
