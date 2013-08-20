@@ -1379,8 +1379,10 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 			--enable-decoder=png \
 			--enable-decoder=mjpeg \
 			--enable-decoder=vorbis \
+			--enable-demuxer=wav \
+			--enable-decoder=wmv3 \
+			--enable-decoder=pcm_s16le \
 			--enable-decoder=flac \
-			--enable-protocol=file \
 			--enable-parser=h264 \
 			--enable-parser=mjpeg \
 			--enable-demuxer=mjpeg \
