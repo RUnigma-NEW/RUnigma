@@ -2309,6 +2309,7 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 #
 # python
 #
+ifdef ENABLE_PY273
 BEGIN[[
 python
   2.7.3
@@ -2375,7 +2376,7 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 			--enable-unicode=ucs4 \
 			--with-signal-module \
 			--with-wctype-functions \
-			HOSTPYTHON=$(hostprefix)/bin/python \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			OPT="$(TARGET_CFLAGS)" && \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
@@ -2388,7 +2389,7 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 			CFLAGS="$(TARGET_CFLAGS) -fno-inline" \
 			LDFLAGS="$(TARGET_LDFLAGS)" \
 			LD="$(target)-gcc" \
-			HOSTPYTHON=$(hostprefix)/bin/python \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
 			all install DESTDIR=$(PKDIR)) && \
 	touch $@
@@ -2399,6 +2400,193 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 	$(toflash_build)
 	$(DISTCLEANUP_python)
 	touch $@
+endif
+ifdef ENABLE_PY275
+BEGIN[[
+python
+  2.7.5
+  {PN}-{PV}
+  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://python-{PV}/python_{PV}.diff
+;
+]]END
+
+PACKAGES_python = python python_ctypes
+
+DESCRIPTION_python = "A high-level scripting language"
+FILES_python = \
+/usr/bin/python* \
+/usr/lib/libpython$(PYTHON_VERSION).* \
+$(PYTHON_DIR)/*.py \
+$(PYTHON_DIR)/encodings \
+$(PYTHON_DIR)/hotshot \
+$(PYTHON_DIR)/email \
+$(PYTHON_DIR)/idlelib \
+$(PYTHON_DIR)/json \
+$(PYTHON_DIR)/config \
+$(PYTHON_DIR)/lib-dynload \
+$(PYTHON_DIR)/lib-tk \
+$(PYTHON_DIR)/lib2to3 \
+$(PYTHON_DIR)/logging \
+$(PYTHON_DIR)/multiprocessing \
+$(PYTHON_DIR)/plat-linux3 \
+$(PYTHON_DIR)/plat-linux2 \
+$(PYTHON_DIR)/sqlite3 \
+$(PYTHON_DIR)/wsgiref \
+/usr/include/python$(PYTHON_VERSION)/pyconfig.h \
+$(PYTHON_DIR)/xml
+
+DESCRIPTION_python_ctypes = python ctypes module
+FILES_python_ctypes = \
+$(PYTHON_DIR)/ctypes
+
+$(DEPDIR)/python: bootstrap host_python libffi libdb libgdbm openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+	$(PREPARE_python)
+	$(start_build)
+	( cd $(DIR_python) && \
+		CONFIG_SITE= \
+		autoreconf --verbose --install --force Modules/_ctypes/libffi && \
+		autoconf && \
+		$(BUILDENV) \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			--target=$(target) \
+			--prefix=/usr \
+			--sysconfdir=/etc \
+			--enable-shared \
+			--disable-ipv6 \
+			--without-cxx-main \
+			--with-threads \
+			--with-pymalloc \
+			--with-system-expat \
+			--with-system-ffi \
+			--enable-unicode=ucs4 \
+			--with-signal-module \
+			--with-wctype-functions \
+			ac_cv_have_chflags=no \
+			ac_cv_have_lchflags=no \
+			ac_cv_have_long_long_format=yes \
+			ac_cv_buggy_getaddrinfo=no \
+			ac_cv_file__dev_ptmx=yes \
+			ac_cv_file__dev_ptc=no \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
+			OPT="$(TARGET_CFLAGS)" && \
+		$(MAKE) $(MAKE_ARGS) \
+			TARGET_OS=$(target) \
+			PYTHON_MODULES_INCLUDE="$(prefix)/$*cdkroot/usr/include" \
+			PYTHON_MODULES_LIB="$(prefix)/$*cdkroot/usr/lib" \
+			LDFLAGS="$(TARGET_LDFLAGS) -L$(prefix)/$*cdkroot/usr/lib -L$(DIR_python)" \
+			CROSS_COMPILE_TARGET=yes \
+			CROSS_COMPILE=$(target) \
+			HOSTARCH=sh4-linux \
+			CFLAGS="$(TARGET_CFLAGS) -fno-inline" \
+			LD="$(target)-gcc" \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
+			HOSTPGEN=$(hostprefix)/bin/pgen \
+			all install DESTDIR=$(PKDIR)) && \
+	touch $@
+	$(LN_SF) ../../libpython$(PYTHON_VERSION).so.1.0 $(PKDIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION).so && \
+	$(LN_SF) $(PKDIR)$(PYTHON_INCLUDE_DIR) $(PKDIR)/usr/include/python
+	$(tocdk_build)
+	$(remove_pyo)
+	$(toflash_build)
+	$(DISTCLEANUP_python)
+	touch $@
+endif
+ifdef ENABLE_PY332
+BEGIN[[
+python
+  3.3.2
+  {PN}-{PV}
+  extract:http://www.{PN}.org/ftp/{PN}/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://python-{PV}/python_{PV}.diff
+;
+]]END
+
+PACKAGES_python = python python_ctypes
+
+DESCRIPTION_python = "A high-level scripting language"
+FILES_python = \
+/usr/bin/python* \
+/usr/lib/libpython$(PYTHON_VERSION).* \
+$(PYTHON_DIR)/*.py \
+$(PYTHON_DIR)/encodings \
+$(PYTHON_DIR)/hotshot \
+$(PYTHON_DIR)/email \
+$(PYTHON_DIR)/idlelib \
+$(PYTHON_DIR)/json \
+$(PYTHON_DIR)/config \
+$(PYTHON_DIR)/lib-dynload \
+$(PYTHON_DIR)/lib-tk \
+$(PYTHON_DIR)/lib2to3 \
+$(PYTHON_DIR)/logging \
+$(PYTHON_DIR)/multiprocessing \
+$(PYTHON_DIR)/plat-linux3 \
+$(PYTHON_DIR)/plat-linux2 \
+$(PYTHON_DIR)/sqlite3 \
+$(PYTHON_DIR)/wsgiref \
+/usr/include/python$(PYTHON_VERSION)/pyconfig.h \
+$(PYTHON_DIR)/xml
+
+DESCRIPTION_python_ctypes = python ctypes module
+FILES_python_ctypes = \
+$(PYTHON_DIR)/ctypes
+
+$(DEPDIR)/python: bootstrap host_python libffi libdb libgdbm openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+	$(PREPARE_python)
+	$(start_build)
+	( cd $(DIR_python) && \
+		CONFIG_SITE= \
+		autoreconf --verbose --install --force Modules/_ctypes/libffi && \
+		autoconf && \
+		$(BUILDENV) \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			--prefix=/usr \
+			--sysconfdir=/etc \
+			--enable-shared \
+			--disable-ipv6 \
+			--without-cxx-main \
+			--with-threads \
+			--with-pymalloc \
+			--with-system-expat \
+			--with-system-ffi \
+			--with-signal-module \
+			ac_cv_have_chflags=no \
+			ac_cv_have_lchflags=no \
+			ac_cv_have_long_long_format=yes \
+			ac_cv_buggy_getaddrinfo=no \
+			ac_cv_file__dev_ptmx=yes \
+			ac_cv_file__dev_ptc=no \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
+			OPT="$(TARGET_CFLAGS)" libpython3.so && \
+		$(MAKE) $(MAKE_ARGS) \
+			TARGET_OS=$(target) \
+			PYTHON_MODULES_INCLUDE="$(prefix)/$*cdkroot/usr/include" \
+			PYTHON_MODULES_LIB="$(prefix)/$*cdkroot/usr/lib $(DIR_python)" \
+			CPPFLAGS="-I$(prefix)/$*cdkroot/usr/include" \
+			CFLAGS="$(TARGET_CFLAGS) -fno-inline" \
+			LDFLAGS="$(TARGET_LDFLAGS) -L$(prefix)/$*cdkroot/usr/lib -L$(DIR_python)" \
+			CROSS_COMPILE_TARGET=yes \
+			CROSS_COMPILE=$(target)- \
+			LD="$(target)-gcc" \
+			HOSTARCH=sh4-linux \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
+			HOSTPGEN=$(hostprefix)/bin/pgen \
+			all install DESTDIR=$(PKDIR)) && \
+	touch $@
+	$(LN_SF) ../../libpython$(PYTHON_VERSION)m.so.1.0 $(PKDIR)$(PYTHON_DIR)/config-$(PYTHON_VERSION)m/libpython$(PYTHON_VERSION).so
+	$(LN_SF) $(PKDIR)$(PYTHON_INCLUDE_DIR) $(PKDIR)/usr/include/python
+	$(tocdk_build)
+	$(remove_pyo)
+	$(toflash_build)
+	$(DISTCLEANUP_python)
+	touch $@
+endif
 
 #
 # pythonwifi

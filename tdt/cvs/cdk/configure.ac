@@ -49,21 +49,29 @@ AC_ARG_ENABLE(stm24,
 	,[enable_stm24=no])
 TDT_CONDITIONAL(STM24,test "$enable_stm24" = "yes")
 
-AC_ARG_ENABLE(py27,
-	AS_HELP_STRING(--enable-py27,      enable Python 2.7 ),
+AC_ARG_ENABLE(py273,
+	AS_HELP_STRING(--enable-py273,      enable Python 2.7.3 ),
 	[case "${enableval}" in
-		yes) PY27=py27 ;;
-	esac],[enable_py27=no])
-TDT_CONDITIONAL(ENABLE_PY27,test "$enable_py27" = "yes")
-AC_SUBST(PY27)
+		yes) PY273=py273 ;;
+	esac],[enable_py273=no])
+TDT_CONDITIONAL(ENABLE_PY273,test "$enable_py273" = "yes")
+AC_SUBST(PY273)
 
-AC_ARG_ENABLE(py32,
-	AS_HELP_STRING(--enable-py32,      enable Python 3.2 ),
+AC_ARG_ENABLE(py275,
+	AS_HELP_STRING(--enable-py275,      enable Python 2.7.5 ),
 	[case "${enableval}" in
-		yes) PY32=py32 ;;
-	esac],[enable_py32=no])
-TDT_CONDITIONAL(ENABLE_PY32,test "$enable_py32" = "yes")
-AC_SUBST(PY32)
+		yes) PY275=py275 ;;
+	esac],[enable_py275=no])
+TDT_CONDITIONAL(ENABLE_PY275,test "$enable_py275" = "yes")
+AC_SUBST(PY275)
+
+AC_ARG_ENABLE(py332,
+	AS_HELP_STRING(--enable-py332,      enable Python 3.3.2 ),
+	[case "${enableval}" in
+		yes) PY332=py332 ;;
+	esac],[enable_py332=no])
+TDT_CONDITIONAL(ENABLE_PY332,test "$enable_py332" = "yes")
+AC_SUBST(PY332)
 
 AC_ARG_ENABLE(p0207,
 	AS_HELP_STRING(--enable-p0207,  set up the CDK to use the STLinux 2.4 with patchlevel 0207),
@@ -794,7 +802,9 @@ GraphicFw                   : $GRAPHICFW
 GraphicFw Dep               : $GRAPHICFW_DEP
 EXTERNALLCD                 : $enable_externallcd
 EXTERNALLCD_DEP             : $EXTERNALLCD_DEP
-PYTHON                      : 2.7.3
+PYTHON-2.7.3                : $enable_py273
+PYTHON-2.7.5                : $enable_py275
+PYTHON-3.3.2                : $enable_py332
 ccache support              : $enable_ccache
                               $ccacheinfo
 ])

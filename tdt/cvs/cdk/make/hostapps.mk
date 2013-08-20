@@ -135,6 +135,7 @@ $(crossprefix)/bin/opkg: $(DEPENDS_opkg_host)
 # PYTHON-HOST
 #
 BEGIN[[
+ifdef ENABLE_PY273
 host_python
   2.7.3
   {PN}-{PV}
@@ -143,7 +144,27 @@ host_python
   patch:file://python_{PV}.diff
   patch:file://python_{PV}-ctypes-libffi-fix-configure.diff
   patch:file://python_{PV}-pgettext.diff
+  patch:file://python_{PV}-build-module-zlib.patch
 ;
+endif
+ifdef ENABLE_PY275
+host_python
+  2.7.5
+  {PN}-{PV}
+  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://python-{PV}/python_{PV}.diff
+;
+endif
+ifdef ENABLE_PY332
+host_python
+  3.3.2
+  {PN}-{PV}
+  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
+  pmove:Python-{PV}:{PN}-{PV}
+  patch:file://python-{PV}/python_{PV}.diff
+;
+endif
 ]]END
 
 python := $(hostprefix)/bin/python
