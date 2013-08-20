@@ -1,0 +1,20 @@
+--- a/include/freetype/config/ftoption.h.org	2013-06-19 23:20:04.000000000 +0200
++++ b/include/freetype/config/ftoption.h	2013-07-12 14:46:54.504836678 +0200
+@@ -569,7 +569,7 @@
+   /*   Do not #undef this macro here, since the build system might         */
+   /*   define it for certain configurations only.                          */
+   /*                                                                       */
+-#define TT_CONFIG_OPTION_BYTECODE_INTERPRETER
++/* #define TT_CONFIG_OPTION_BYTECODE_INTERPRETER */
+ 
+ 
+   /*************************************************************************/
+@@ -641,7 +641,7 @@
+   /*     ...                                                               */
+   /*   }                                                                   */
+   /*                                                                       */
+-/* #define TT_CONFIG_OPTION_UNPATENTED_HINTING */
++#define TT_CONFIG_OPTION_UNPATENTED_HINTING
+ 
+ 
+   /*************************************************************************/

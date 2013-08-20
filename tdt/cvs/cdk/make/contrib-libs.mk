@@ -137,10 +137,10 @@ $(DEPDIR)/freetype-old: $(DEPDIR)/freetype-old.do_compile
 #
 BEGIN[[
 libfreetype
-  2.4.12
+  2.5.0.1
   freetype-{PV}
   extract:http://download.savannah.gnu.org/releases/freetype/freetype-{PV}.tar.bz2
-  patch:file://libfreetype-2.4.12.diff
+  patch:file://libfreetype-{PV}.patch
   make:install:prefix=/usr:DESTDIR=PKDIR
 ;
 ]]END
