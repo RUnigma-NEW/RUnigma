@@ -151,20 +151,22 @@ FILES_libfreetype = \
 /usr/lib/*.so* \
 /usr/bin/freetype-config
 
-$(DEPDIR)/libfreetype: bootstrap $(DEPENDS_libfreetype)
+$(DEPDIR)/libfreetype: bootstrap libpng12 $(DEPENDS_libfreetype)
 	$(PREPARE_libfreetype)
 	$(start_build)
 	cd $(DIR_libfreetype) && \
+		sed -i '/#define FT_CONFIG_OPTION_OLD_INTERNALS/d' include/freetype/config/ftoption.h; \
+		sed -i '/^FONT_MODULES += \(type1\|cid\|pfr\|type42\|pcf\|bdf\)/d' modules.cfg; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr && \
 		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < builds/unix/freetype-config > $(crossprefix)/bin/freetype-config && \
-		chmod 755 $(crossprefix)/bin/freetype-config && \
-		ln -sf $(crossprefix)/bin/freetype-config $(crossprefix)/bin/$(target)-freetype-config && \
-		ln -sf $(targetprefix)/usr/include/freetype2/freetype $(targetprefix)/usr/include/freetype && \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < builds/unix/freetype-config > $(crossprefix)/bin/freetype-config; \
+		chmod 755 $(crossprefix)/bin/freetype-config; \
+		ln -sf $(crossprefix)/bin/freetype-config $(crossprefix)/bin/$(target)-freetype-config; \
+		ln -sf $(targetprefix)/usr/include/freetype2/freetype $(targetprefix)/usr/include/freetype; \
 		$(INSTALL_libfreetype)
 		rm -f $(targetprefix)/usr/bin/freetype-config
 	$(tocdk_build)
