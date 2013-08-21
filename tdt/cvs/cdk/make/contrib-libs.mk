@@ -2445,7 +2445,7 @@ DESCRIPTION_python_ctypes = python ctypes module
 FILES_python_ctypes = \
 $(PYTHON_DIR)/ctypes
 
-$(DEPDIR)/python: bootstrap host_python libffi libdb libgdbm openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
 	$(PREPARE_python)
 	$(start_build)
 	( cd $(DIR_python) && \
@@ -2539,7 +2539,7 @@ DESCRIPTION_python_ctypes = python ctypes module
 FILES_python_ctypes = \
 $(PYTHON_DIR)/ctypes
 
-$(DEPDIR)/python: bootstrap host_python libffi libdb libgdbm openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
 	$(PREPARE_python)
 	$(start_build)
 	( cd $(DIR_python) && \
