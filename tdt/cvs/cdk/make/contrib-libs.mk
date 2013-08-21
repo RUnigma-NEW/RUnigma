@@ -1887,7 +1887,7 @@ $(DEPDIR)/elementtree: bootstrap $(DEPENDS_elementtree)
 	$(start_build)
 	cd $(DIR_elementtree) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(toflash_build)
@@ -2006,7 +2006,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 	cd $(DIR_lxml) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 			--with-xml2-config=$(crossprefix)/bin/xml2-config \
 			--with-xslt-config=$(crossprefix)/bin/xslt-config
 	$(tocdk_build)
@@ -2040,7 +2040,7 @@ $(DEPDIR)/setuptools: bootstrap $(DEPENDS_setuptools)
 	$(PREPARE_setuptools)
 	$(start_build)
 	cd $(DIR_setuptools) && \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(DISTCLEANUP_setuptools)
 	touch $@
@@ -2080,7 +2080,7 @@ $(DEPDIR)/gdata: bootstrap setuptools $(DEPENDS_gdata)
 	cd $(DIR_gdata) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(e2extra_build)
@@ -2120,7 +2120,7 @@ $(DEPDIR)/twisted: bootstrap setuptools $(DEPENDS_twisted)
 	cd $(DIR_twisted) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(toflash_build)
@@ -2152,7 +2152,7 @@ $(DEPDIR)/twistedweb2: bootstrap setuptools $(DEPENDS_twistedweb2)
 	cd $(DIR_twistedweb2) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_twistedweb2)
@@ -2182,7 +2182,7 @@ $(DEPDIR)/twistedmail: bootstrap setuptools $(DEPENDS_twistedmail)
 	cd $(DIR_twistedmail) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_twistedmail)
@@ -2214,7 +2214,7 @@ $(DEPDIR)/pilimaging: bootstrap python $(DEPENDS_pilimaging)
 		echo 'FREETYPE_ROOT = "$(PKDIR)/usr/lib", "$(PKDIR)/usr/include"' >> setup_site.py && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr && \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr && \
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pilimaging)
@@ -2241,7 +2241,7 @@ $(DEPDIR)/pyusb: bootstrap setuptools $(DEPENDS_pyusb)
 	cd $(DIR_pyusb) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pyusb)
@@ -2274,7 +2274,7 @@ $(DEPDIR)/pycrypto: bootstrap setuptools $(DEPENDS_pycrypto)
 			--prefix=/usr && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pycrypto)
@@ -2303,7 +2303,7 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 		CPPFLAGS="$(CPPFLAGS) -I$(targetprefix)/usr/include/python$(PYTHON_VERSION)" \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(toflash_build)
@@ -2613,7 +2613,7 @@ $(DEPDIR)/pythonwifi: bootstrap setuptools $(DEPENDS_pythonwifi)
 	cd $(DIR_pythonwifi) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pythonwifi)
@@ -2640,7 +2640,7 @@ $(DEPDIR)/pythoncheetah: bootstrap setuptools $(DEPENDS_pythoncheetah)
 	cd $(DIR_pythoncheetah) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pythoncheetah)
@@ -2667,7 +2667,7 @@ $(DEPDIR)/zope_interface: bootstrap python setuptools $(DEPENDS_zope_interface)
 	cd $(DIR_zope_interface) && \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(toflash_build)

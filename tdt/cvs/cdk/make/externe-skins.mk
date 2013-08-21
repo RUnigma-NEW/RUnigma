@@ -76,7 +76,7 @@ $(DEPDIR)/enigma2-skins-sh4: enigma2-skins-sh4.do_compile
 			except IOError: \n\
 				pass \n\
 	do_finish() \n\
-	" | $(hostprefix)/bin/python
+	" | $(hostprefix)/bin/python$(PYTHON_VERSION)
 
 	$(call do_build_pkg,none,extra)
 	touch $@

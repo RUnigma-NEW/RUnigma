@@ -69,7 +69,7 @@ $(appsdir)/enigma2-nightly/config.status: bootstrap libfreetype libexpat fontcon
 		libdvbsipp python libxml2 libxslt elementtree zope_interface twisted twistedweb2 pyopenssl lxml libxmlccwrap ncurses-dev libdreamdvd sdparm opkg-host ipkg-utils $(MEDIAFW_DEP) $(EXTERNALLCD_DEP)
 	cd $(DIR_enigma2) && \
 		./autogen.sh && \
-		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python|' -i po/xml2po.py && \
+		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python$(PYTHON_VERSION)|' -i po/xml2po.py && \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \

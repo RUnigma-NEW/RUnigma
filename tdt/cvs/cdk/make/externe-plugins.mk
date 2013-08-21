@@ -38,7 +38,7 @@ $(DEPDIR)/enigma2-plugins-sh4.do_prepare: $(DEPENDS_e2plugin)
 $(DIR_e2plugin)/config.status: enigma2-plugins-sh4.do_prepare
 	cd $(DIR_e2plugin) && \
 		./autogen.sh && \
-		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python|' -i xml2po.py && \
+		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python$(PYTHON_VERSION)|' -i xml2po.py && \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -82,7 +82,7 @@ $(DEPDIR)/enigma2-plugins-sh4: $(DIR_e2plugin)/config.status $(enigma2_plugins_n
 			except IOError: \n\
 				pass \n\
 	do_finish() \n\
-	" | $(hostprefix)/bin/python
+	" | $(hostprefix)/bin/python$(PYTHON_VERSION)
 
 	$(call do_build_pkg,none,extra)
 	touch $@
@@ -113,7 +113,7 @@ $(DEPDIR)/enigma2-plugins-sh4-%: $(DIR_e2plugin)/config.status
 		except IOError: \n\
 			pass \n\
 	do_finish() \n\
-	" | $(hostprefix)/bin/python
+	" | $(hostprefix)/bin/python$(PYTHON_VERSION)
 	
 	rm -r $(ipkgbuilddir)/e2plugin_meta
 	$(call do_build_pkg,none,extra)

@@ -167,7 +167,7 @@ host_python
 endif
 ]]END
 
-python := $(hostprefix)/bin/python
+python := $(hostprefix)/bin/python$(PYTHON_VERSION)
 
 $(DEPDIR)/host_python: $(DEPENDS_host_python)
 	$(PREPARE_host_python) && \

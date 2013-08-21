@@ -95,7 +95,7 @@ $(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fo
 	cd $(DIR_enigma2_pli) && \
 		$(BUILDENV) \
 		./autogen.sh && \
-		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python|' -i po/xml2po.py && \
+		sed -e 's|#!/usr/bin/python|#!$(hostprefix)/bin/python$(PYTHON_VERSION)|' -i po/xml2po.py && \
 		./configure \
 			--host=$(target) \
 			--with-libsdl=no \
