@@ -44,10 +44,11 @@ $(DEPDIR)/$(GLIBC_DEV): $(DEPDIR)/$(GLIBC) $(GLIBC_DEV_RPM)
 BINUTILS := binutils
 FILES_binutils = \
 usr/lib/*.so \
-usr/bin/ar
+usr/bin/ar \
+usr/bin/ld
 
 BINUTILS_DEV := binutils-dev
-BINUTILS_VERSION := 2.23.2-74
+BINUTILS_VERSION := 2.23.2-75
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
 BINUTILS_SPEC_PATCH := $(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
 BINUTILS_PATCHES :=
@@ -239,7 +240,7 @@ FILES_libstdc++-dev = \
 
 LIBGCC := libgcc
 GCC := gcc
-GCC_VERSION := 4.7.3-126
+GCC_VERSION := 4.7.3-128
 GCC_SPEC := stm-target-$(GCC).spec
 GCC_SPEC_PATCH := $(GCC_SPEC).$(GCC_VERSION).diff
 GCC_PATCHES := stm-target-$(GCC).$(GCC_VERSION).diff
