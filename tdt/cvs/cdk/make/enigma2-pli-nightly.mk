@@ -88,9 +88,10 @@ $(DEPDIR)/enigma2-pli-nightly.do_prepare: $(DEPENDS_enigma2_pli)
 	$(PREPARE_enigma2_pli)
 	touch $@
 
+ifdef ENABLE_PY332
 $(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fontconfig libpng libjpeg libgif libmme_host libmmeimage libfribidi libid3tag libmad libsigc libreadline font-valis-enigma \
 		enigma2-pli-nightly.do_prepare \
-		libdvbsipp python libxml2 libxslt elementtree zope_interface twisted twistedweb2 twistedmail pycrypto pyusb pilimaging pyopenssl pythonwifi lxml libxmlccwrap \
+		libdvbsipp python libxml2 libxslt elementtree zope_component zope_interface twisted pycrypto pyusb Pillow pyopenssl pythonwifi lxml libxmlccwrap \
 		ncurses-dev libdreamdvd2 tuxtxt32bpp sdparm hotplug_e2 $(MEDIAFW_DEP) $(EXTERNALLCD_DEP)
 	cd $(DIR_enigma2_pli) && \
 		$(BUILDENV) \
@@ -107,9 +108,33 @@ $(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fo
 			--with-boxtype=none \
 			STAGING_INCDIR=$(hostprefix)/usr/include \
 			STAGING_LIBDIR=$(hostprefix)/usr/lib \
+			PKG_CONFIG=$(hostprefix)/bin/pkg-config \
 			PY_PATH=$(targetprefix)/usr \
 			$(PLATFORM_CPPFLAGS) $(E_CONFIG_OPTS)
-
+else
+$(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fontconfig libpng libjpeg libgif libmme_host libmmeimage libfribidi libid3tag libmad libsigc libreadline font-valis-enigma \
+		enigma2-pli-nightly.do_prepare \
+		libdvbsipp python libxml2 libxslt elementtree zope_interface twisted twistedweb2 twistedweb twistedmail pycrypto pyusb Pillow pyopenssl pythonwifi lxml libxmlccwrap \
+		ncurses-dev libdreamdvd2 tuxtxt32bpp sdparm hotplug_e2 $(MEDIAFW_DEP) $(EXTERNALLCD_DEP)
+	cd $(DIR_enigma2_pli) && \
+		$(BUILDENV) \
+		./autogen.sh && \
+		sed -e 's|#!/usr/bin/python$(PYTHON_VERSION)|#!$(hostprefix)/bin/python$(PYTHON_VERSION)|' -i po/xml2po.py && \
+		./configure \
+			--host=$(target) \
+			--with-libsdl=no \
+			--datadir=/usr/share \
+			--libdir=/usr/lib \
+			--bindir=/usr/bin \
+			--prefix=/usr \
+			--sysconfdir=/etc \
+			--with-boxtype=none \
+			STAGING_INCDIR=$(hostprefix)/usr/include \
+			STAGING_LIBDIR=$(hostprefix)/usr/lib \
+			PKG_CONFIG=$(hostprefix)/bin/pkg-config \
+			PY_PATH=$(targetprefix)/usr \
+			$(PLATFORM_CPPFLAGS) $(E_CONFIG_OPTS)
+endif
 
 $(DEPDIR)/enigma2-pli-nightly.do_compile: $(DIR_enigma2_pli)/config.status
 	cd $(DIR_enigma2_pli) && \
