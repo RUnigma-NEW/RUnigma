@@ -3,9 +3,9 @@
 #
 BEGIN[[
 libboost
-  boost-1.53.0
-  boost_1_53_0
-  extract:http://sourceforge.net/projects/boost/files/boost/1.53.0/boost_1_53_0.tar.bz2
+  boost-1.54.0
+  boost_1_54_0
+  extract:http://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2
   patch:file://{PN}.diff
   remove:TARGETS/include/boost
   move:boost:TARGETS/usr/include/boost
@@ -14,7 +14,7 @@ libboost
 
 $(DEPDIR)/libboost: bootstrap $(DEPENDS_libboost)
 	$(PREPARE_libboost)
-	cd $(DIR_libboost) && \
+	cd $(DIR_libboost); \
 		$(INSTALL_libboost)
 	$(DISTCLEANUP_libboost)
 	touch $@
@@ -40,13 +40,13 @@ LIBZ_ORDER = binutils-dev
 $(DEPDIR)/libz: bootstrap $(DEPENDS_libz) $(if $(LIBZ_ORDER),| $(LIBZ_ORDER))
 	$(PREPARE_libz)
 	$(start_build)
-	cd $(DIR_libz) && \
-		ln -sf /bin/true ./ldconfig && \
+	cd $(DIR_libz); \
+		ln -sf /bin/true ./ldconfig; \
 		$(BUILDENV) \
 		./configure \
 			--prefix=/usr \
-			--shared && \
-		$(MAKE) all libz.a AR="$(target)-ar " CFLAGS="-fpic -O2" && \
+			--shared; \
+		$(MAKE) all libz.a AR="$(target)-ar " CFLAGS="-fpic -O2"; \
 		$(INSTALL_libz)
 	$(tocdk_build)
 	$(toflash_build)
@@ -61,6 +61,11 @@ libreadline
   6.2
   readline-{PV}
   extract:ftp://ftp.cwru.edu/pub/bash/readline-{PV}.tar.gz
+  #patch:file://readline62.patch
+  patch:file://readline62-001.patch
+  patch:file://readline62-002.patch
+  patch:file://readline62-003.patch
+  patch:file://readline62-004.patch
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -72,8 +77,8 @@ FILES_libreadline = \
 $(DEPDIR)/libreadline: bootstrap ncurses-dev $(DEPENDS_libreadline)
 	$(PREPARE_libreadline)
 	$(start_build)
-	cd $(DIR_libreadline) && \
-		autoconf && \
+	cd $(DIR_libreadline); \
+		autoconf; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -82,54 +87,12 @@ $(DEPDIR)/libreadline: bootstrap ncurses-dev $(DEPENDS_libreadline)
 			bash_cv_func_sigsetjmp=present \
 			bash_cv_func_strcoll_broken=no \
 			bash_cv_have_mbstate_t=yes \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr \
+		$(MAKE) all \
 		$(INSTALL_libreadline)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_libreadline)
-	touch $@
-
-#
-# FREETYPE_OLD
-#
-BEGIN[[
-freetype_old
-  2.1.4
-  freetype-{PV}
-  extract:file://freetype-{PV}.tar.bz2
-  patch:file://libfreetype.diff
-  make:install:DESTDIR=BUILD/freetype-{PV}/install_dir
-;
-]]END
-
-$(DEPDIR)/freetype-old: bootstrap $(DEPENDS_freetype_old)
-	$(PREPARE_freetype_old)
-	touch $@
-
-$(DEPDIR)/freetype-old.do_compile: $(DEPDIR)/freetype-old.do_prepare
-	cd $(DIR_freetype_old) && \
-		$(BUILDENV) \
-		./configure \
-			--build=$(build) \
-			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all
-	touch $@
-
-$(DEPDIR)/freetype-old: $(DEPDIR)/freetype-old.do_compile
-	cd $(DIR_freetype_old) && \
-		$(INSTALL_freetype_old)
-	cd freetype-2.1.4; \
-		$(INSTALL_DIR) $(crossprefix)/bin; \
-		cp install_dir/usr/bin/freetype-config $(crossprefix)/bin/freetype-old-config; \
-		$(INSTALL_DIR) $(targetprefix)/usr/include/freetype-old; \
-		$(CP_RD) install_dir/usr/include/* $(targetprefix)/usr/include/freetype-old/; \
-		$(INSTALL_DIR) $(targetprefix)/usr/lib/freetype-old; \
-		$(CP_RD) install_dir/usr/lib/libfreetype.{a,so*} $(targetprefix)/usr/lib/freetype-old/; \
-		sed 's,-I$${prefix}/include/freetype2,-I$(targetprefix)/usr/include/freetype-old -I$(targetprefix)/usr/include/freetype-old/freetype2,g' -i $(crossprefix)/bin/freetype-old-config; \
-		sed 's,/usr/include/freetype2/,$(targetprefix)/usr/include/freetype-old/freetype2/,g' -i $(crossprefix)/bin/freetype-old-config
-	$(DISTCLEANUP_freetype_old)
 	touch $@
 
 #
@@ -154,15 +117,15 @@ FILES_libfreetype = \
 $(DEPDIR)/libfreetype: bootstrap libpng12 $(DEPENDS_libfreetype)
 	$(PREPARE_libfreetype)
 	$(start_build)
-	cd $(DIR_libfreetype) && \
+	cd $(DIR_libfreetype); \
 		sed -i '/#define FT_CONFIG_OPTION_OLD_INTERNALS/d' include/freetype/config/ftoption.h; \
 		sed -i '/^FONT_MODULES += \(type1\|cid\|pfr\|type42\|pcf\|bdf\)/d' modules.cfg; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		sed -e "s,^prefix=,prefix=$(targetprefix)," < builds/unix/freetype-config > $(crossprefix)/bin/freetype-config; \
 		chmod 755 $(crossprefix)/bin/freetype-config; \
 		ln -sf $(crossprefix)/bin/freetype-config $(crossprefix)/bin/$(target)-freetype-config; \
@@ -197,7 +160,7 @@ FILES_lirc = \
 $(DEPDIR)/lirc: bootstrap $(DEPENDS_lirc)
 	$(PREPARE_lirc)
 	$(start_build)
-	cd $(DIR_lirc) && \
+	cd $(DIR_lirc); \
 		$(BUILDENV) \
 		ac_cv_path_LIBUSB_CONFIG= \
 		CFLAGS="$(TARGET_CFLAGS) -Os -D__KERNEL_STRICT_NAMES" \
@@ -215,8 +178,8 @@ $(DEPDIR)/lirc: bootstrap $(DEPENDS_lirc)
 			--with-driver=userspace \
 			--enable-debug \
 			--with-syslog=LOG_DAEMON \
-			--enable-sandboxed && \
-		$(MAKE) all && \
+			--enable-sandboxed; \
+		$(MAKE) all; \
 		$(INSTALL_lirc)
 	$(tocdk_build)
 	$(INSTALL_DIR) $(PKDIR)/etc
@@ -247,15 +210,15 @@ FILES_libjpeg = \
 $(DEPDIR)/libjpeg: bootstrap $(DEPENDS_libjpeg)
 	$(PREPARE_libjpeg)
 	$(start_build)
-	cd $(DIR_libjpeg) && \
+	cd $(DIR_libjpeg); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--enable-shared \
 			--enable-static \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libjpeg)
 	$(tocdk_build)
 	$(toflash_build)
@@ -263,38 +226,51 @@ $(DEPDIR)/libjpeg: bootstrap $(DEPENDS_libjpeg)
 	touch $@
 
 #
-# libjpeg-6b
+# libjpeg_turbo
 #
 BEGIN[[
-libjpeg6b
-  6b1
-  jpeg-{PV}
-  extract:http://ftp.de.debian.org/debian/pool/main/libj/libjpeg6b/{PN}_{PV}.orig.tar.gz
+libjpeg_turbo
+  1.2.1
+  libjpeg-turbo-{PV}
+  extract:http://sourceforge.net/projects/libjpeg-turbo/files/1.2.1/libjpeg-turbo-1.2.1.tar.gz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
 
-DESCRIPTION_libjpeg6b = "libjpeg6b"
+DESCRIPTION_libjpeg_turbo = "libjpeg_turbo"
 
-FILES_libjpeg6b = \
-/usr/lib/libjpeg.so.* 
+FILES_libjpeg_turbo = \
+/usr/lib/*.so* 
 
-$(DEPDIR)/libjpeg6b: bootstrap $(DEPENDS_libjpeg6b)
-	$(PREPARE_libjpeg6b)
+
+$(DEPDIR)/libjpeg_turbo: bootstrap $(DEPENDS_libjpeg_turbo)
+	$(PREPARE_libjpeg_turbo)
 	$(start_build)
-	cd $(DIR_libjpeg6b) && \
+	cd $(DIR_libjpeg_turbo); \
+		export CC=$(target)-gcc; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--enable-shared \
-			--enable-static \
-			--prefix=/usr && \
-		$(MAKE) all && \
-		$(INSTALL_libjpeg6b)
+			--disable-static \
+			--with-jpeg8 \
+			--prefix=/usr; \
+		$(MAKE); \
+		$(INSTALL_libjpeg_turbo)
+	cd $(DIR_libjpeg_turbo); \
+		make clean; \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			--enable-shared \
+			--disable-static \
+			--prefix=/usr; \
+		$(MAKE); \
+		$(INSTALL_libjpeg_turbo)
 	$(tocdk_build)
 	$(toflash_build)
-	$(DISTCLEANUP_libjpeg6b)
+	$(DISTCLEANUP_libjpeg_turbo)
 	touch $@
 
 #
@@ -317,19 +293,18 @@ FILES_libpng12 = \
 $(DEPDIR)/libpng12: bootstrap $(DEPENDS_libpng12)
 	$(PREPARE_libpng12)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libpng12) && \
-		./autogen.sh && \
+	cd $(DIR_libpng12); \
+		./autogen.sh; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		export ECHO="echo" && \
-		echo "Echo cmd =" $(ECHO) && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(PKDIR)," < libpng-config > $(crossprefix)/bin/libpng-config && \
-		chmod 755 $(crossprefix)/bin/libpng-config && \
+			--prefix=/usr; \
+		export ECHO="echo"; \
+		echo "Echo cmd =" $(ECHO); \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(PKDIR)," < libpng-config > $(crossprefix)/bin/libpng-config; \
+		chmod 755 $(crossprefix)/bin/libpng-config; \
 		$(INSTALL_libpng12)
 		rm -f $(PKDIR)/usr/bin/libpng*-config
 	$(tocdk_build)
@@ -359,19 +334,18 @@ FILES_libpng = \
 $(DEPDIR)/libpng: bootstrap $(DEPENDS_libpng)
 	$(PREPARE_libpng)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libpng) && \
+	cd $(DIR_libpng); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--enable-maintainer-mode \
-			--prefix=/usr && \
-		export ECHO="echo" && \
-		echo "Echo cmd =" $(ECHO) && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(PKDIR)," < libpng-config > $(crossprefix)/bin/libpng-config && \
-		chmod 755 $(crossprefix)/bin/libpng-config && \
+			--prefix=/usr; \
+		export ECHO="echo"; \
+		echo "Echo cmd =" $(ECHO); \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(PKDIR)," < libpng-config > $(crossprefix)/bin/libpng-config; \
+		chmod 755 $(crossprefix)/bin/libpng-config; \
 		$(INSTALL_libpng)
 		rm -f $(PKDIR)/usr/bin/libpng*-config
 	$(tocdk_build)
@@ -399,14 +373,14 @@ FILES_libungif = \
 $(DEPDIR)/libungif: bootstrap $(DEPENDS_libungif)
 	$(PREPARE_libungif)
 	$(start_build)
-	cd $(DIR_libungif) && \
+	cd $(DIR_libungif); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--without-x && \
-		$(MAKE) && \
+			--without-x; \
+		$(MAKE); \
 		$(INSTALL_libungif)
 	$(tocdk_build)
 	$(toflash_build)
@@ -433,14 +407,14 @@ FILES_libgif = \
 $(DEPDIR)/libgif: bootstrap $(DEPENDS_libgif)
 	$(PREPARE_libgif)
 	$(start_build)
-	cd $(DIR_libgif) && \
+	cd $(DIR_libgif); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--without-x && \
-		$(MAKE) && \
+			--without-x; \
+		$(MAKE); \
 		$(INSTALL_libgif)
 	$(tocdk_build)
 	$(toflash_build)
@@ -469,7 +443,7 @@ FILES_curl = \
 $(DEPDIR)/curl: bootstrap openssl rtmpdump $(DEPENDS_curl)
 	$(PREPARE_curl)
 	$(start_build)
-	cd $(DIR_curl) && \
+	cd $(DIR_curl); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -481,10 +455,10 @@ $(DEPDIR)/curl: bootstrap openssl rtmpdump $(DEPENDS_curl)
 			--disable-verbose \
 			--disable-manual \
 			--mandir=/usr/share/man \
-			--with-random && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < curl-config > $(crossprefix)/bin/curl-config && \
-		chmod 755 $(crossprefix)/bin/curl-config && \
+			--with-random; \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < curl-config > $(crossprefix)/bin/curl-config; \
+		chmod 755 $(crossprefix)/bin/curl-config; \
 		$(INSTALL_curl)
 		rm -f $(PKDIR)/usr/bin/curl-config
 	$(tocdk_build)
@@ -514,14 +488,14 @@ FILES_libfribidi = \
 $(DEPDIR)/libfribidi: bootstrap $(DEPENDS_libfribidi)
 	$(PREPARE_libfribidi)
 	$(start_build)
-	cd $(DIR_libfribidi) && \
+	cd $(DIR_libfribidi); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-		$(MAKE) all && \
+		$(MAKE) all; \
 		$(INSTALL_libfribidi)
 	$(tocdk_build)
 	$(toflash_build)
@@ -548,14 +522,14 @@ FILES_libsigc = \
 $(DEPDIR)/libsigc: bootstrap libstdc++-dev $(DEPENDS_libsigc)
 	$(PREPARE_libsigc)
 	$(start_build)
-	cd $(DIR_libsigc) && \
+	cd $(DIR_libsigc); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--disable-checks && \
-		$(MAKE) all && \
+			--disable-checks; \
+		$(MAKE) all; \
 		$(INSTALL_libsigc)
 	$(tocdk_build)
 	$(toflash_build)
@@ -583,13 +557,12 @@ FILES_libmad = \
 $(DEPDIR)/libmad: bootstrap $(DEPENDS_libmad)
 	$(PREPARE_libmad)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmad) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoconf && \
-		autoheader && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_libmad); \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoconf; \
+		autoheader; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -598,8 +571,8 @@ $(DEPDIR)/libmad: bootstrap $(DEPENDS_libmad)
 			--disable-debugging \
 			--enable-shared=yes \
 			--enable-speed \
-			--enable-sso && \
-		$(MAKE) all && \
+			--enable-sso; \
+		$(MAKE) all; \
 		$(INSTALL_libmad)
 	$(tocdk_build)
 	$(toflash_build)
@@ -627,15 +600,15 @@ FILES_libid3tag = \
 $(DEPDIR)/libid3tag: bootstrap $(DEPENDS_libid3tag)
 	$(PREPARE_libid3tag)
 	$(start_build)
-	cd $(DIR_libid3tag) && \
+	cd $(DIR_libid3tag); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--enable-shared=yes && \
-		$(MAKE) all && \
+			--enable-shared=yes; \
+		$(MAKE) all; \
 		$(INSTALL_libid3tag)
 	$(tocdk_build)
 	$(toflash_build)
@@ -662,13 +635,13 @@ FILES_libvorbisidec = \
 $(DEPDIR)/libvorbisidec: bootstrap $(DEPENDS_libvorbisidec)
 	$(PREPARE_libvorbisidec)
 	$(start_build)
-	cd $(DIR_libvorbisidec) && \
+	cd $(DIR_libvorbisidec); \
 		$(BUILDENV) \
 		./autogen.sh \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libvorbisidec)
 	$(tocdk_build)
 	$(toflash_build)
@@ -695,7 +668,7 @@ FILES_libffi = \
 $(DEPDIR)/libffi: bootstrap libjpeg lcms $(DEPENDS_libffi)
 	$(PREPARE_libffi)
 	$(start_build)
-	cd $(DIR_libffi) && \
+	cd $(DIR_libffi); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -704,8 +677,8 @@ $(DEPDIR)/libffi: bootstrap libjpeg lcms $(DEPENDS_libffi)
 			--target=$(target) \
 			--disable-static \
 			--enable-builddir=libffi \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libffi)
 	$(tocdk_build)
 	$(toflash_build)
@@ -746,7 +719,7 @@ $(DEPDIR)/glib2: bootstrap libffi $(DEPENDS_glib2)
 	echo "ac_cv_func_posix_getgrgid_r=yes" >> $(DIR_glib2)/config.cache
 	echo "glib_cv_stack_grows=no" >> $(DIR_glib2)/config.cache
 	echo "glib_cv_uscore=no" >> $(DIR_glib2)/config.cache
-	cd $(DIR_glib2) && \
+	cd $(DIR_glib2); \
 		$(BUILDENV) \
 		PKG_CONFIG=$(hostprefix)/bin/pkg-config \
 		./configure \
@@ -757,8 +730,8 @@ $(DEPDIR)/glib2: bootstrap libffi $(DEPENDS_glib2)
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--mandir=/usr/share/man && \
-		$(MAKE) all && \
+			--mandir=/usr/share/man; \
+		$(MAKE) all; \
 		$(INSTALL_glib2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -786,14 +759,14 @@ FILES_libiconv = \
 $(DEPDIR)/libiconv: bootstrap $(DEPENDS_libiconv)
 	$(PREPARE_libiconv)
 	$(start_build)
-	cd $(DIR_libiconv) && \
+	cd $(DIR_libiconv); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
-		cp ./srcm4/* $(hostprefix)/share/aclocal/ && \
+			--prefix=/usr; \
+		$(MAKE); \
+		cp ./srcm4/* $(hostprefix)/share/aclocal/; \
 		$(INSTALL_libiconv)
 	$(tocdk_build)
 	$(toflash_build)
@@ -820,9 +793,9 @@ FILES_libmng = \
 $(DEPDIR)/libmng: bootstrap libjpeg lcms $(DEPENDS_libmng)
 	$(PREPARE_libmng)
 	$(start_build)
-	cd $(DIR_libmng) && \
-		cat unmaintained/autogen.sh | tr -d \\r > autogen.sh && chmod 755 autogen.sh && \
-		[ ! -x ./configure ] && ./autogen.sh --help || true && \
+	cd $(DIR_libmng); \
+		cat unmaintained/autogen.sh | tr -d \\r > autogen.sh && chmod 755 autogen.sh; \
+		[ ! -x ./configure ] && ./autogen.sh --help || true; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -833,8 +806,8 @@ $(DEPDIR)/libmng: bootstrap libjpeg lcms $(DEPENDS_libmng)
 			--with-zlib \
 			--with-jpeg \
 			--with-gnu-ld \
-			--with-lcms && \
-		$(MAKE) && \
+			--with-lcms; \
+		$(MAKE); \
 		$(INSTALL_libmng)
 	$(tocdk_build)
 	$(toflash_build)
@@ -845,10 +818,10 @@ $(DEPDIR)/libmng: bootstrap libjpeg lcms $(DEPENDS_libmng)
 #
 BEGIN[[
 lcms
-  1.17
-  {PN}-{PV}
-  extract:http://dfn.dl.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.gz
-  patch:file://{PN}.diff
+  2.5
+  lcms2-{PV}
+  extract:http://sourceforge.net/projects/lcms/files/lcms/{PV}/lcms2-{PV}.tar.gz
+  patch:file://{PN}2.diff
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -861,15 +834,15 @@ FILES_lcms = \
 $(DEPDIR)/lcms: bootstrap libjpeg $(DEPENDS_lcms)
 	$(PREPARE_lcms)
 	$(start_build)
-	cd $(DIR_lcms) && \
+	cd $(DIR_lcms); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--enable-shared \
-			--enable-static && \
-		$(MAKE) && \
+			--enable-static; \
+		$(MAKE); \
 		$(INSTALL_lcms)
 	$(tocdk_build)
 	$(toflash_build)
@@ -905,12 +878,11 @@ FILES_directfb = \
 $(DEPDIR)/directfb: bootstrap libfreetype $(DEPENDS_directfb)
 	$(PREPARE_directfb)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_directfb) && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh . && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh .. && \
-		libtoolize -f -c && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_directfb); \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh .; \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh ..; \
+		libtoolize -f -c; \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -926,9 +898,9 @@ $(DEPDIR)/directfb: bootstrap libfreetype $(DEPENDS_directfb)
 			--without-software \
 			--enable-stmfbdev \
 			--disable-fbdev \
-			--enable-mme=yes && \
-			export top_builddir=`pwd` && \
-		$(MAKE) && \
+			--enable-mme=yes; \
+			export top_builddir=`pwd`; \
+		$(MAKE); \
 		$(INSTALL_directfb)
 	$(tocdk_build)
 	$(toflash_build)
@@ -954,13 +926,13 @@ FILES_dfbpp = \
 $(DEPDIR)/dfbpp: bootstrap libjpeg directfb $(DEPENDS_dfbpp)
 	$(PREPARE_dfbpp)
 	$(start_build)
-	cd $(DIR_dfbpp) && \
+	cd $(DIR_dfbpp); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_dfbpp)
 	$(tocdk_build)
 	$(toflash_build)
@@ -988,18 +960,17 @@ FILES_libstgles = \
 $(DEPDIR)/libstgles: bootstrap directfb $(DEPENDS_libstgles)
 	$(PREPARE_libstgles)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libstgles) && \
-		cp --remove-destination $(hostprefix)/share/libtool/config/ltmain.sh . && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoconf && \
-		automake --foreign --add-missing && \
-		libtoolize --force && \
+	cd $(DIR_libstgles); \
+		cp --remove-destination $(hostprefix)/share/libtool/config/ltmain.sh .; \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoconf; \
+		automake --foreign --add-missing; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) $(MAKE_OPTS) && \
+			--prefix=/usr; \
+		$(MAKE) $(MAKE_OPTS); \
 		$(INSTALL_libstgles)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1026,14 +997,12 @@ FILES_libexpat = \
 $(DEPDIR)/libexpat: bootstrap $(DEPENDS_libexpat)
 	$(PREPARE_libexpat)
 	$(start_build)
-	cd $(DIR_libexpat) && \
-		$(BUILDENV) \
-		CFLAGS="$(TARGET_CFLAGS) -Os" \
+	cd $(DIR_libexpat); \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libexpat)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1045,9 +1014,9 @@ $(DEPDIR)/libexpat: bootstrap $(DEPENDS_libexpat)
 #
 BEGIN[[
 fontconfig
-  2.10.2
+  2.10.93
   {PN}-{PV}
-  extract:http://{PN}.org/release/{PN}-{PV}.tar.gz
+  extract:http://{PN}.org/release/{PN}-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1060,11 +1029,8 @@ FILES_fontconfig = \
 $(DEPDIR)/fontconfig: bootstrap libexpat libfreetype $(DEPENDS_fontconfig)
 	$(PREPARE_fontconfig)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_fontconfig) && \
+	cd $(DIR_fontconfig); \
 		$(BUILDENV) \
-		libtoolize -f -c && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
@@ -1076,8 +1042,8 @@ $(DEPDIR)/fontconfig: bootstrap libexpat libfreetype $(DEPENDS_fontconfig)
 			--sysconfdir=/etc \
 			--localstatedir=/var \
 			--disable-docs \
-			--without-add-fonts && \
-		$(MAKE) && \
+			--without-add-fonts; \
+		$(MAKE); \
 		$(INSTALL_fontconfig)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1104,16 +1070,16 @@ FILES_libxmlccwrap = \
 $(DEPDIR)/libxmlccwrap: bootstrap libxslt $(DEPENDS_libxmlccwrap)
 	$(PREPARE_libxmlccwrap)
 	$(start_build)
-	cd $(DIR_libxmlccwrap) && \
+	cd $(DIR_libxmlccwrap); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--target=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
-		$(INSTALL_libxmlccwrap) && \
-		sed -e "/^dependency_libs/ s,-L/usr/lib,-L$(PKDIR)/usr/lib,g" -i $(PKDIR)/usr/lib/libxmlccwrap.la && \
+			--prefix=/usr; \
+		$(MAKE) all; \
+		$(INSTALL_libxmlccwrap); \
+		sed -e "/^dependency_libs/ s,-L/usr/lib,-L$(PKDIR)/usr/lib,g" -i $(PKDIR)/usr/lib/libxmlccwrap.la; \
 		sed -e "/^dependency_libs/ s, /usr/lib, $(PKDIR)/usr/lib,g" -i $(PKDIR)/usr/lib/libxmlccwrap.la
 	$(tocdk_build)
 	$(toflash_build)
@@ -1140,13 +1106,13 @@ FILES_a52dec = \
 $(DEPDIR)/a52dec: bootstrap $(DEPENDS_a52dec)
 	$(PREPARE_a52dec)
 	$(start_build)
-	cd $(DIR_a52dec) && \
+	cd $(DIR_a52dec); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_a52dec)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1173,14 +1139,14 @@ FILES_libdvdcss = \
 $(DEPDIR)/libdvdcss: bootstrap $(DEPENDS_libdvdcss)
 	$(PREPARE_libdvdcss)
 	$(start_build)
-	cd $(DIR_libdvdcss) && \
+	cd $(DIR_libdvdcss); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--disable-doc \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libdvdcss)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1209,21 +1175,20 @@ FILES_libdvdnav = \
 $(DEPDIR)/libdvdnav: bootstrap libdvdread $(DEPENDS_libdvdnav)
 	$(PREPARE_libdvdnav)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libdvdnav) && \
+	cd $(DIR_libdvdnav); \
 		$(BUILDENV) \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh . && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh .; \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--enable-static \
 			--enable-shared \
-			--with-dvdread-config=$(crossprefix)/bin/dvdread-config && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < misc/dvdnav-config > $(crossprefix)/bin/dvdnav-config && \
-		chmod 755 $(crossprefix)/bin/dvdnav-config && \
+			--with-dvdread-config=$(crossprefix)/bin/dvdread-config; \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < misc/dvdnav-config > $(crossprefix)/bin/dvdnav-config; \
+		chmod 755 $(crossprefix)/bin/dvdnav-config; \
 		$(INSTALL_libdvdnav)
 		rm -f $(targetprefix)/usr/bin/dvdnav-config
 	$(tocdk_build)
@@ -1253,11 +1218,10 @@ FILES_libdvdread = \
 $(DEPDIR)/libdvdread: bootstrap $(DEPENDS_libdvdread)
 	$(PREPARE_libdvdread)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libdvdread) && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh . && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh .. && \
-		autoreconf -f -i -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_libdvdread); \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh .; \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh ..; \
+		autoreconf -f -i -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -1265,10 +1229,10 @@ $(DEPDIR)/libdvdread: bootstrap $(DEPENDS_libdvdread)
 			--host=$(target) \
 			--enable-static \
 			--enable-shared \
-			--prefix=/usr && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < misc/dvdread-config > $(crossprefix)/bin/dvdread-config && \
-		chmod 755 $(crossprefix)/bin/dvdread-config && \
+			--prefix=/usr; \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < misc/dvdread-config > $(crossprefix)/bin/dvdread-config; \
+		chmod 755 $(crossprefix)/bin/dvdread-config; \
 		$(INSTALL_libdvdread)
 		rm -f $(targetprefix)/usr/bin/dvdread-config
 	$(tocdk_build)
@@ -1298,7 +1262,7 @@ FILES_ffmpeg = \
 $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS_ffmpeg)
 	$(PREPARE_ffmpeg)
 	$(start_build)
-	cd $(DIR_ffmpeg) && \
+	cd $(DIR_ffmpeg); \
 		PKG_CONFIG_PATH=$(targetprefix)/usr/lib/pkgconfig \
 		./configure \
 			--disable-vfp \
@@ -1401,8 +1365,8 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 			--arch=sh4 \
 			--extra-cflags="-fno-strict-aliasing" \
 			--enable-stripping \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_ffmpeg)
 	$(tocdk_build)
 	mv $(PKDIR)/usr/bin $(PKDIR)/sbin
@@ -1430,15 +1394,15 @@ FILES_libass = \
 $(DEPDIR)/libass: bootstrap libfreetype libfribidi $(DEPENDS_libass)
 	$(PREPARE_libass)
 	$(start_build)
-	cd $(DIR_libass) && \
+	cd $(DIR_libass); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
 			--disable-fontconfig \
 			--disable-enca \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libass)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1466,8 +1430,8 @@ FILES_webkitdfb = \
 $(DEPDIR)/webkitdfb: bootstrap glib2 icu4c libxml2 enchant lite curl fontconfig sqlite libsoup cairo libjpeg $(DEPENDS_webkitdfb)
 	$(PREPARE_webkitdfb)
 	$(start_build)
-	export PATH=$(buildprefix)/$(DIR_icu4c)/host/config:$(PATH) && \
-	cd $(DIR_webkitdfb) && \
+	export PATH=$(buildprefix)/$(DIR_icu4c)/host/config:$(PATH); \
+	cd $(DIR_webkitdfb); \
 		$(BUILDENV) \
 		./autogen.sh \
 			--with-target=directfb \
@@ -1493,8 +1457,8 @@ $(DEPDIR)/webkitdfb: bootstrap glib2 icu4c libxml2 enchant lite curl fontconfig 
 			--disable-geolocation \
 			--disable-workers \
 			--disable-web-sockets \
-			--with-networking-backend=soup && \
-		$(MAKE) && \
+			--with-networking-backend=soup; \
+		$(MAKE); \
 		$(INSTALL_webkitdfb)
 	$(tocdk_build)
 	$(e2extra_build)
@@ -1524,17 +1488,17 @@ FILES_icu4c = \
 $(DEPDIR)/icu4c: bootstrap $(DEPENDS_icu4c)
 	$(PREPARE_icu4c)
 	$(start_build)
-	cd $(DIR_icu4c) && \
+	cd $(DIR_icu4c); \
 		rm data/mappings/ucm*.mk; \
 		patch -p1 < $(buildprefix)/Patches/icu4c-4_4_1_locales.patch;
 		echo "Building host icu"
-		mkdir -p $(DIR_icu4c)/host && \
-		cd $(DIR_icu4c)/host && \
-		sh ../configure --disable-samples --disable-tests && \
-		unset TARGET && \
+		mkdir -p $(DIR_icu4c)/host; \
+		cd $(DIR_icu4c)/host; \
+		sh ../configure --disable-samples --disable-tests; \
+		unset TARGET; \
 		make
 		echo "Building cross icu"
-		cd $(DIR_icu4c) && \
+		cd $(DIR_icu4c); \
 		$(BUILDENV) \
 		./configure \
 			--with-cross-build=$(buildprefix)/$(DIR_icu4c)/host \
@@ -1543,8 +1507,8 @@ $(DEPDIR)/icu4c: bootstrap $(DEPENDS_icu4c)
 			--disable-extras \
 			--disable-layout \
 			--disable-tests \
-			--disable-samples && \
-		unset TARGET && \
+			--disable-samples; \
+		unset TARGET; \
 		$(INSTALL_icu4c)
 	$(tocdk_build)
 	$(e2extra_build)
@@ -1572,10 +1536,9 @@ FILES_enchant = \
 $(DEPDIR)/enchant: bootstrap $(DEPENDS_enchant)
 	$(PREPARE_enchant)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_enchant) && \
-		libtoolize -f -c && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_enchant); \
+		libtoolize -f -c; \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -1584,8 +1547,8 @@ $(DEPDIR)/enchant: bootstrap $(DEPENDS_enchant)
 			--disable-myspell \
 			--disable-zemberek \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) LD=$(target)-ld && \
+			--prefix=/usr; \
+		$(MAKE) LD=$(target)-ld; \
 		$(INSTALL_enchant)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1613,17 +1576,16 @@ FILES_lite = \
 $(DEPDIR)/lite: bootstrap directfb $(DEPENDS_lite)
 	$(PREPARE_lite)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_lite) && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh .. && \
-		libtoolize -f -c && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_lite); \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh ..; \
+		libtoolize -f -c; \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
 			--prefix=/usr \
-			--disable-debug && \
-		$(MAKE) && \
+			--disable-debug; \
+		$(MAKE); \
 		$(INSTALL_lite)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1635,9 +1597,9 @@ $(DEPDIR)/lite: bootstrap directfb $(DEPENDS_lite)
 #
 BEGIN[[
 sqlite
-  3.7.14
-  {PN}-autoconf-3071401
-  extract:http://www.{PN}.org/{PN}-autoconf-3071401.tar.gz
+  3.7.17
+  {PN}-autoconf-3071700
+  extract:http://www.sqlite.org/2013/sqlite-autoconf-3071700.tar.gz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1651,18 +1613,17 @@ FILES_sqlite = \
 $(DEPDIR)/sqlite: bootstrap $(DEPENDS_sqlite)
 	$(PREPARE_sqlite)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_sqlite) && \
+	cd $(DIR_sqlite); \
 		$(BUILDENV) \
-		libtoolize -f -c && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+		libtoolize -f -c; \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--disable-tcl \
 			--disable-debug \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_sqlite)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1674,9 +1635,9 @@ $(DEPDIR)/sqlite: bootstrap $(DEPENDS_sqlite)
 #
 BEGIN[[
 libsoup
-  2.33.90
+  2.43.90
   {PN}-{PV}
-  extract:http://download.gnome.org/sources/{PN}/2.33/{PN}-{PV}.tar.gz
+  extract:http://ftp.acc.umu.se/pub/GNOME/sources/libsoup/2.43/{PN}-{PV}.tar.xz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1689,16 +1650,15 @@ FILES_libsoup = \
 $(DEPDIR)/libsoup: bootstrap $(DEPENDS_libsoup)
 	$(PREPARE_libsoup)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libsoup) && \
+	cd $(DIR_libsoup); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--disable-more-warnings \
-			--without-gnome && \
-		$(MAKE) && \
+			--without-gnome; \
+		$(MAKE); \
 		$(INSTALL_libsoup)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1710,7 +1670,7 @@ $(DEPDIR)/libsoup: bootstrap $(DEPENDS_libsoup)
 #
 BEGIN[[
 pixman
-  0.26.2
+  0.30.2
   {PN}-{PV}
   extract:http://cairographics.org/releases/{PN}-{PV}.tar.gz
   make:install:DESTDIR=PKDIR
@@ -1725,14 +1685,13 @@ FILES_pixman = \
 $(DEPDIR)/pixman: bootstrap $(DEPENDS_pixman)
 	$(PREPARE_pixman)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_pixman) && \
+	cd $(DIR_pixman); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_pixman)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1744,9 +1703,9 @@ $(DEPDIR)/pixman: bootstrap $(DEPENDS_pixman)
 #
 BEGIN[[
 cairo
-  1.12.0
+  1.12.14
   {PN}-{PV}
-  extract:http://{PN}graphics.org/releases/{PN}-{PV}.tar.gz
+  extract:http://cairographics.org/releases/{PN}-{PV}.tar.xz
   patch:file://{PN}-{PV}.diff
   make:install:DESTDIR=PKDIR
 ;
@@ -1760,8 +1719,7 @@ FILES_cairo = \
 $(DEPDIR)/cairo: bootstrap libpng pixman $(DEPENDS_cairo)
 	$(PREPARE_cairo)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_cairo) && \
+	cd $(DIR_cairo); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -1776,8 +1734,8 @@ $(DEPDIR)/cairo: bootstrap libpng pixman $(DEPENDS_cairo)
 			--disable-xcb \
 			--disable-xlib \
 			--enable-directfb \
-			--program-suffix=-directfb && \
-		$(MAKE) && \
+			--program-suffix=-directfb; \
+		$(MAKE); \
 		$(INSTALL_cairo)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1789,9 +1747,9 @@ $(DEPDIR)/cairo: bootstrap libpng pixman $(DEPENDS_cairo)
 #
 BEGIN[[
 libogg
-  1.3.0
+  1.3.1
   {PN}-{PV}
-  extract:http://downloads.xiph.org/releases/ogg/{PN}-{PV}.tar.gz
+  extract:http://downloads.xiph.org/releases/ogg/{PN}-{PV}.tar.xz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1804,13 +1762,12 @@ FILES_libogg = \
 $(DEPDIR)/libogg: bootstrap $(DEPENDS_libogg)
 	$(PREPARE_libogg)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libogg) && \
+	cd $(DIR_libogg); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libogg)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1839,8 +1796,7 @@ FILES_libflac = \
 $(DEPDIR)/libflac: bootstrap $(DEPENDS_libflac)
 	$(PREPARE_libflac)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libflac) && \
+	cd $(DIR_libflac); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -1856,8 +1812,8 @@ $(DEPDIR)/libflac: bootstrap $(DEPENDS_libflac)
 			--without-libiconv-prefix \
 			--without-id3lib \
 			--with-ogg-includes=. \
-			--disable-cpplibs && \
-		$(MAKE) && \
+			--disable-cpplibs; \
+		$(MAKE); \
 		$(INSTALL_libflac)
 	$(tocdk_build)
 	$(toflash_build)
@@ -1875,6 +1831,7 @@ elementtree
   1.2.6-20050316
   {PN}-{PV}
   extract:http://effbot.org/media/downloads/{PN}-{PV}.tar.gz
+  patch:file://elementtree3.patch
 ;
 ]]END
 
@@ -1885,7 +1842,7 @@ $(PYTHON_DIR)
 $(DEPDIR)/elementtree: bootstrap $(DEPENDS_elementtree)
 	$(PREPARE_elementtree)
 	$(start_build)
-	cd $(DIR_elementtree) && \
+	cd $(DIR_elementtree); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
@@ -1899,7 +1856,7 @@ $(DEPDIR)/elementtree: bootstrap $(DEPENDS_elementtree)
 #
 BEGIN[[
 libxml2
-  2.9.0
+  2.9.1
   {PN}-{PV}
   extract:http://xmlsoft.org/sources/{PN}-{PV}.tar.gz
   patch:file://{PN}-{PV}.diff
@@ -1915,23 +1872,22 @@ $(PYTHON_DIR)/site-packages/*libxml2.py
 $(DEPDIR)/libxml2: bootstrap $(DEPENDS_libxml2)
 	$(PREPARE_libxml2)
 	$(start_build)
-	cd $(DIR_libxml2) && \
+	cd $(DIR_libxml2); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
-			--mandir=/usr/share/man \
 			--with-python=$(hostprefix) \
 			--without-c14n \
 			--without-debug \
-			--without-mem-debug && \
-		$(MAKE) all && \
-		$(INSTALL_libxml2) && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < xml2-config > $(crossprefix)/bin/xml2-config && \
+			--without-mem-debug; \
+		$(MAKE) all; \
+		$(INSTALL_libxml2); \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < xml2-config > $(crossprefix)/bin/xml2-config; \
 		chmod 755 $(crossprefix)/bin/xml2-config
 	$(tocdk_build_start)
-		sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(targetprefix)/usr/lib,g" -i $(ipkgbuilddir)/libxml2/usr/lib/xml2Conf.sh
+		sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(targetprefix)/usr/lib,g" -i $(ipkgbuilddir)/libxml2/usr/lib/xml2Conf.sh; \
 		sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(targetprefix)/usr/include,g" -i $(ipkgbuilddir)/libxml2/usr/lib/xml2Conf.sh
 	$(call do_build_pkg,install,cdk)
 	$(toflash_build)
@@ -1959,7 +1915,7 @@ $(PYTHON_DIR)/site-packages/libxslt.py
 $(DEPDIR)/libxslt: bootstrap libxml2 $(DEPENDS_libxslt)
 	$(PREPARE_libxslt)
 	$(start_build)
-	cd $(DIR_libxslt) && \
+	cd $(DIR_libxslt); \
 		$(BUILDENV) \
 		CPPFLAGS="$(CPPFLAGS) -I$(targetprefix)/usr/include/libxml2" \
 		./configure \
@@ -1972,13 +1928,14 @@ $(DEPDIR)/libxslt: bootstrap libxml2 $(DEPENDS_libxslt)
 			--with-python=$(hostprefix) \
 			--without-crypto \
 			--without-debug \
-			--without-mem-debug && \
-		$(MAKE) all && \
-		$(INSTALL_libxslt) && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < xslt-config > $(crossprefix)/bin/xslt-config && \
+			--without-mem-debug; \
+		$(MAKE) all; \
+		$(INSTALL_libxslt); \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < xslt-config > $(crossprefix)/bin/xslt-config; \
 		chmod 755 $(crossprefix)/bin/xslt-config
 	$(tocdk_build_start)
-	sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(targetprefix)/usr/lib,g" -i $(ipkgbuilddir)/libxslt/usr/lib/xsltConf.sh
+	sed -e "/^dependency_libs/ s,/usr/lib/libxslt.la,$(targetprefix)/usr/lib/libxslt.la,g" -i $(ipkgbuilddir)/usr/lib/libexslt.la; \
+	sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(targetprefix)/usr/lib,g" -i $(ipkgbuilddir)/libxslt/usr/lib/xsltConf.sh; \
 	sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(targetprefix)/usr/include,g" -i $(ipkgbuilddir)/libxslt/usr/lib/xsltConf.sh
 	$(call do_build_pkg,install,cdk)
 	$(toflash_build)
@@ -1990,9 +1947,9 @@ $(DEPDIR)/libxslt: bootstrap libxml2 $(DEPENDS_libxslt)
 #
 BEGIN[[
 lxml
-  2.2.8
+  3.2.3
   {PN}-{PV}
-  extract:http://launchpad.net/{PN}/2.2/{PV}/+download/{PN}-{PV}.tgz
+  extract:https://pypi.python.org/packages/source/l/lxml/lxml-3.2.3.tar.gz
 ;
 ]]END
 
@@ -2003,12 +1960,10 @@ $(PYTHON_DIR)
 $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 	$(PREPARE_lxml)
 	$(start_build)
-	cd $(DIR_lxml) && \
+	cd $(DIR_lxml); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
-			--with-xml2-config=$(crossprefix)/bin/xml2-config \
-			--with-xslt-config=$(crossprefix)/bin/xslt-config
 	$(tocdk_build)
 	$(remove_pyo)
 	$(extra_build)
@@ -2020,7 +1975,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 #
 BEGIN[[
 setuptools
-  0.6c11
+  0.9.8
   {PN}-{PV}
   extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
 ;
@@ -2039,7 +1994,7 @@ $(PYTHON_DIR)/site-packages/setuptools/command/*.pyo
 $(DEPDIR)/setuptools: bootstrap $(DEPENDS_setuptools)
 	$(PREPARE_setuptools)
 	$(start_build)
-	cd $(DIR_setuptools) && \
+	cd $(DIR_setuptools); \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(DISTCLEANUP_setuptools)
@@ -2050,7 +2005,7 @@ $(DEPDIR)/setuptools: bootstrap $(DEPENDS_setuptools)
 #
 BEGIN[[
 gdata
-  2.0.17
+  2.0.18
   gdata-{PV}
   extract:http://gdata-python-client.googlecode.com/files/gdata-{PV}.tar.gz
 ;
@@ -2077,10 +2032,10 @@ $(PYTHON_DIR)/site-packages/gdata/tlslite/*.pyo
 $(DEPDIR)/gdata: bootstrap setuptools $(DEPENDS_gdata)
 	$(PREPARE_gdata)
 	$(start_build)
-	cd $(DIR_gdata) && \
+	cd $(DIR_gdata); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; execfile('setup.py')" install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(e2extra_build)
@@ -2091,9 +2046,9 @@ $(DEPDIR)/gdata: bootstrap setuptools $(DEPENDS_gdata)
 #
 BEGIN[[
 twisted
-  13.0.0
+  13.1.0
   Twisted-{PV}
-  extract:http://twistedmatrix.com/Releases/Twisted/13.0/Twisted-{PV}.tar.bz2
+  extract:https://pypi.python.org/packages/source/T/Twisted/Twisted-{PV}.tar.bz2
 ;
 ]]END
 
@@ -2114,18 +2069,33 @@ $(PYTHON_DIR)/site-packages/twisted/_version.py \
 $(PYTHON_DIR)/site-packages/twisted/_version.pyo \
 $(PYTHON_DIR)/site-packages/twisted/web
 
+ifdef ENABLE_PY332
 $(DEPDIR)/twisted: bootstrap setuptools $(DEPENDS_twisted)
 	$(PREPARE_twisted)
 	$(start_build)
-	cd $(DIR_twisted) && \
+	cd $(DIR_twisted); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; exec(open('setup3.py').read())" install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(remove_pyo)
 	$(toflash_build)
 	$(DISTCLEANUP_twisted)
 	touch $@
+else
+$(DEPDIR)/twisted: bootstrap setuptools $(DEPENDS_twisted)
+	$(PREPARE_twisted)
+	$(start_build)
+	cd $(DIR_twisted); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; execfile('setup.py')" install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(remove_pyo)
+	$(toflash_build)
+	$(DISTCLEANUP_twisted)
+	touch $@
+endif
 
 #
 # twistedweb2
@@ -2146,26 +2116,71 @@ $(PYTHON_DIR)/site-packages/twisted/*.pyo \
 $(PYTHON_DIR)/site-packages/twisted/web2 \
 $(PYTHON_DIR)/site-packages/twisted/plugins
 
-$(DEPDIR)/twistedweb2: bootstrap setuptools $(DEPENDS_twistedweb2)
+$(DEPDIR)/twistedweb2: bootstrap setuptools twisted $(DEPENDS_twistedweb2)
 	$(PREPARE_twistedweb2)
 	$(start_build)
-	cd $(DIR_twistedweb2) && \
+	cd $(DIR_twistedweb2); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; execfile('setup.py')" install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_twistedweb2)
 	touch $@
 
 #
+# twistedweb
+#
+BEGIN[[
+twistedweb
+  13.1.0
+  TwistedWeb-{PV}
+  extract:http://twistedmatrix.com/Releases/Web/13.1/TwistedWeb-{PV}.tar.bz2
+;
+]]END
+
+DESCRIPTION_twistedweb = "twistedweb"
+
+FILES_twistedweb = \
+$(PYTHON_DIR)/site-packages/twisted/*.py \
+$(PYTHON_DIR)/site-packages/twisted/*.pyo \
+$(PYTHON_DIR)/site-packages/twisted/web \
+$(PYTHON_DIR)/site-packages/twisted/plugins
+
+ifdef ENABLE_PY332
+$(DEPDIR)/twistedweb: bootstrap setuptools $(DEPENDS_twistedweb)
+	$(PREPARE_twistedweb)
+	$(start_build)
+	cd $(DIR_twistedweb); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; exec(open('setup.py').read())" install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_twistedweb)
+	touch $@
+else
+$(DEPDIR)/twistedweb: bootstrap setuptools $(DEPENDS_twistedweb)
+	$(PREPARE_twistedweb)
+	$(start_build)
+	cd $(DIR_twistedweb); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; execfile('setup.py')" install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_twistedweb)
+	touch $@
+endif
+
+#
 # twistedmail
 #
 BEGIN[[
 twistedmail
-  13.0.0
+  13.1.0
   TwistedMail-{PV}
-  extract:http://twistedmatrix.com/Releases/Mail/13.0/TwistedMail-{PV}.tar.bz2
+  extract:http://twistedmatrix.com/Releases/Mail/13.1/TwistedMail-{PV}.tar.bz2
 ;
 ]]END
 DESCRIPTION_twistedmail = "twistedmail"
@@ -2174,15 +2189,15 @@ FILES_twistedmail = \
 $(PYTHON_DIR)/site-packages/twisted/*.py \
 $(PYTHON_DIR)/site-packages/twisted/*.pyo \
 $(PYTHON_DIR)/site-packages/twisted/mail/* \
-$(PYTHON_DIR)/site-packages/twisted/plugins/* 
+$(PYTHON_DIR)/site-packages/twisted/plugins/*
 
 $(DEPDIR)/twistedmail: bootstrap setuptools $(DEPENDS_twistedmail)
 	$(PREPARE_twistedmail)
 	$(start_build)
-	cd $(DIR_twistedmail) && \
+	cd $(DIR_twistedmail); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+		$(hostprefix)/bin/python$(PYTHON_VERSION) -c "import setuptools; execfile('setup.py')" install --root=$(PKDIR) --prefix=/usr
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_twistedmail)
@@ -2208,16 +2223,49 @@ $(PYTHON_DIR)/site-packages \
 $(DEPDIR)/pilimaging: bootstrap python $(DEPENDS_pilimaging)
 	$(PREPARE_pilimaging)
 	$(start_build)
-	cd $(DIR_pilimaging) && \
-		echo 'JPEG_ROOT = "$(PKDIR)/usr/lib", "$(PKDIR)/usr/include"' > setup_site.py && \
-		echo 'ZLIB_ROOT = "$(PKDIR)/usr/lib", "$(PKDIR)/usr/include"' >> setup_site.py && \
-		echo 'FREETYPE_ROOT = "$(PKDIR)/usr/lib", "$(PKDIR)/usr/include"' >> setup_site.py && \
+	cd $(DIR_pilimaging); \
+		echo 'JPEG_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' > setup_site.py; \
+		echo 'ZLIB_ROOT = "$(targetprefixIR)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
+		echo 'FREETYPE_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
-		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr && \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr; \
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_pilimaging)
+	touch $@
+
+#
+# Pillow
+#
+BEGIN[[
+Pillow
+  2.1.0
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/P/{PN}/{PN}-{PV}.zip
+  patch:file://Pillow-fix-search-paths.patch
+;
+]]END
+
+DESCRIPTION_Pillow = "Pillow"
+FILES_Pillow = \
+$(PYTHON_DIR)/site-packages \
+/usr/bin/*
+
+$(DEPDIR)/Pillow: bootstrap python $(DEPENDS_Pillow)
+	$(PREPARE_Pillow)
+	$(start_build)
+	cd $(DIR_Pillow); \
+		sed -ie "s|"darwin"|"darwinNot"|g" "setup.py"; \
+		echo 'JPEG_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' > setup_site.py; \
+		echo 'ZLIB_ROOT = "$(targetprefixIR)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
+		echo 'FREETYPE_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_Pillow)
 	touch $@
 
 #
@@ -2238,7 +2286,7 @@ $(PYTHON_DIR)/site-packages/usb/*
 $(DEPDIR)/pyusb: bootstrap setuptools $(DEPENDS_pyusb)
 	$(PREPARE_pyusb)
 	$(start_build)
-	cd $(DIR_pyusb) && \
+	cd $(DIR_pyusb); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2266,12 +2314,12 @@ $(PYTHON_DIR)/site-packages/Crypto/*
 $(DEPDIR)/pycrypto: bootstrap setuptools $(DEPENDS_pycrypto)
 	$(PREPARE_pycrypto)
 	$(start_build)
-	cd $(DIR_pycrypto) && \
+	cd $(DIR_pycrypto); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
+			--prefix=/usr; \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2299,7 +2347,7 @@ $(PYTHON_DIR)/site-packages/OpenSSL/*so
 $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 	$(PREPARE_pyopenssl)
 	$(start_build)
-	cd $(DIR_pyopenssl) && \
+	cd $(DIR_pyopenssl); \
 		CPPFLAGS="$(CPPFLAGS) -I$(targetprefix)/usr/include/python$(PYTHON_VERSION)" \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
@@ -2356,13 +2404,13 @@ DESCRIPTION_python_ctypes = python ctypes module
 FILES_python_ctypes = \
 $(PYTHON_DIR)/ctypes
 
-$(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 libexpat $(DEPENDS_python)
+$(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 libexpat libdb libgdbm $(DEPENDS_python)
 	$(PREPARE_python)
 	$(start_build)
-	( cd $(DIR_python) && \
+	( cd $(DIR_python); \
 		CONFIG_SITE= \
-		autoreconf --verbose --install --force Modules/_ctypes/libffi && \
-		autoconf && \
+		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
+		autoconf; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -2381,7 +2429,7 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 			--with-signal-module \
 			--with-wctype-functions \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
-			OPT="$(TARGET_CFLAGS)" && \
+			OPT="$(TARGET_CFLAGS)"; \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
 			PYTHON_DISABLE_MODULES="_tkinter" \
@@ -2395,9 +2443,9 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 			LD="$(target)-gcc" \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
-			all install DESTDIR=$(PKDIR)) && \
+			all install DESTDIR=$(PKDIR)); \
 	touch $@
-	$(LN_SF) ../../libpython$(PYTHON_VERSION).so.1.0 $(PKDIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION).so && \
+	$(LN_SF) ../../libpython$(PYTHON_VERSION).so.1.0 $(PKDIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION).so; \
 	$(LN_SF) $(PKDIR)$(PYTHON_INCLUDE_DIR) $(PKDIR)/usr/include/python
 	$(tocdk_build)
 	$(remove_pyo)
@@ -2445,13 +2493,13 @@ DESCRIPTION_python_ctypes = python ctypes module
 FILES_python_ctypes = \
 $(PYTHON_DIR)/ctypes
 
-$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat libdb libgdbm $(DEPENDS_python)
 	$(PREPARE_python)
 	$(start_build)
-	( cd $(DIR_python) && \
+	( cd $(DIR_python); \
 		CONFIG_SITE= \
-		autoreconf --verbose --install --force Modules/_ctypes/libffi && \
-		autoconf && \
+		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
+		autoconf; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -2476,7 +2524,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			ac_cv_file__dev_ptmx=yes \
 			ac_cv_file__dev_ptc=no \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
-			OPT="$(TARGET_CFLAGS)" && \
+			OPT="$(TARGET_CFLAGS)"; \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
 			PYTHON_MODULES_INCLUDE="$(prefix)/$*cdkroot/usr/include" \
@@ -2489,9 +2537,9 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			LD="$(target)-gcc" \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
-			all install DESTDIR=$(PKDIR)) && \
+			all install DESTDIR=$(PKDIR)); \
 	touch $@
-	$(LN_SF) ../../libpython$(PYTHON_VERSION).so.1.0 $(PKDIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION).so && \
+	$(LN_SF) ../../libpython$(PYTHON_VERSION).so.1.0 $(PKDIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION).so; \
 	$(LN_SF) $(PKDIR)$(PYTHON_INCLUDE_DIR) $(PKDIR)/usr/include/python
 	$(tocdk_build)
 	$(remove_pyo)
@@ -2539,13 +2587,13 @@ DESCRIPTION_python_ctypes = python ctypes module
 FILES_python_ctypes = \
 $(PYTHON_DIR)/ctypes
 
-$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat $(DEPENDS_python)
+$(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bzip2 libexpat libdb libgdbm $(DEPENDS_python)
 	$(PREPARE_python)
 	$(start_build)
-	( cd $(DIR_python) && \
+	( cd $(DIR_python); \
 		CONFIG_SITE= \
-		autoreconf --verbose --install --force Modules/_ctypes/libffi && \
-		autoconf && \
+		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
+		autoconf; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -2567,7 +2615,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			ac_cv_file__dev_ptmx=yes \
 			ac_cv_file__dev_ptc=no \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
-			OPT="$(TARGET_CFLAGS)" libpython3.so && \
+			OPT="$(TARGET_CFLAGS)" libpython3.so; \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
 			PYTHON_MODULES_INCLUDE="$(prefix)/$*cdkroot/usr/include" \
@@ -2581,7 +2629,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			HOSTARCH=sh4-linux \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
-			all install DESTDIR=$(PKDIR)) && \
+			all install DESTDIR=$(PKDIR)); \
 	touch $@
 	$(LN_SF) ../../libpython$(PYTHON_VERSION)m.so.1.0 $(PKDIR)$(PYTHON_DIR)/config-$(PYTHON_VERSION)m/libpython$(PYTHON_VERSION).so
 	$(LN_SF) $(PKDIR)$(PYTHON_INCLUDE_DIR) $(PKDIR)/usr/include/python
@@ -2592,25 +2640,89 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 	touch $@
 endif
 
+BEGIN[[
+libgdbm
+  1.10
+  gdbm-{PV}
+  extract:ftp://ftp.gnu.org/gnu/gdbm/gdbm-1.10.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+]]END
+
+DESCRIPTION_libgdbm = "libgdbm"
+
+FILES_libgdbm = \
+*
+
+$(DEPDIR)/libgdbm: bootstrap $(DEPENDS_libgdbm)
+	$(PREPARE_libgdbm)
+	$(start_build)
+	cd $(DIR_libgdbm); \
+		$(BUILDENV) \
+		./configure \
+			--build=$(build) \
+			--host=$(target) \
+			-enable-libgdbm-compat \
+			--prefix=/usr; \
+		$(MAKE); \
+		$(INSTALL_libgdbm)
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_libgdbm)
+	touch $@
+
+BEGIN[[
+libdb
+  5.3.21
+  db-{PV}
+  extract:http://download.oracle.com/berkeley-db/db-{PV}.tar.gz
+  make:install:DESTDIR=PKDIR
+;
+]]END
+
+DESCRIPTION_libdb = "libdb"
+
+FILES_libdb = \
+/usr/bin/* \
+/usr/lib/*
+
+$(DEPDIR)/libdb: bootstrap $(DEPENDS_libdb)
+	$(PREPARE_libdb)
+	$(start_build)
+	cd $(DIR_libdb); \
+		$(BUILDENV) \
+		./dist/configure \
+			--build=$(build) \
+			--host=$(target) \
+			--enable-o_direct --disable-cryptography --disable-queue --disable-replication --disable-verify --disable-compat185 --disable-sql \
+			--prefix=/usr; \
+		$(MAKE); \
+		$(INSTALL_libdb)
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_libdb)
+	touch $@
+
 #
 # pythonwifi
 #
 BEGIN[[
 pythonwifi
-  0.5.0
-  python-wifi-{PV}
-  extract:http://freefr.dl.sourceforge.net/project/{PN}.berlios/python-wifi-{PV}.tar.bz2
+  0.1.1
+  wifi-{PV}
+  https://pypi.python.org/packages/source/w/wifi/wifi-0.1.1.tar.gz
 ;
 ]]END
 
 DESCRIPTION_pythonwifi = "pythonwifi"
 FILES_pythonwifi =\
-$(PYTHON_DIR)/site-packages/pythonwifi
+/usr/bin/* \
+$(PYTHON_DIR)/site-packages/wifi
 
 $(DEPDIR)/pythonwifi: bootstrap setuptools $(DEPENDS_pythonwifi)
 	$(PREPARE_pythonwifi)
 	$(start_build)
-	cd $(DIR_pythonwifi) && \
+	cd $(DIR_pythonwifi); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2637,7 +2749,7 @@ $(PYTHON_DIR)/site-packages/Cheetah
 $(DEPDIR)/pythoncheetah: bootstrap setuptools $(DEPENDS_pythoncheetah)
 	$(PREPARE_pythoncheetah)
 	$(start_build)
-	cd $(DIR_pythoncheetah) && \
+	cd $(DIR_pythoncheetah); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2651,9 +2763,9 @@ $(DEPDIR)/pythoncheetah: bootstrap setuptools $(DEPENDS_pythoncheetah)
 #
 BEGIN[[
 zope_interface
-  4.0.3
+  4.0.5
   zope.interface-{PV}
-  extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.tar.gz
+  extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.zip
 ;
 ]]END
 
@@ -2664,7 +2776,7 @@ $(PYTHON_DIR)
 $(DEPDIR)/zope_interface: bootstrap python setuptools $(DEPENDS_zope_interface)
 	$(PREPARE_zope_interface)
 	$(start_build)
-	cd $(DIR_zope_interface) && \
+	cd $(DIR_zope_interface); \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2674,7 +2786,33 @@ $(DEPDIR)/zope_interface: bootstrap python setuptools $(DEPENDS_zope_interface)
 	$(DISTCLEANUP_zope_interface)
 	touch $@
 
+#
+# zope interface
+#
+BEGIN[[
+zope_component
+  4.1.0
+  zope.component-{PV}
+  extract:https://pypi.python.org/packages/source/z/zope.component/zope.component-4.1.0.zip
+;
+]]END
 
+DESCRIPTION_zope_component = "Zope Component for Python2"
+FILES_zope_component = \
+$(PYTHON_DIR)
+
+$(DEPDIR)/zope_component: bootstrap python setuptools $(DEPENDS_zope_component)
+	$(PREPARE_zope_component)
+	$(start_build)
+	cd $(DIR_zope_component); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(remove_pyo)
+	$(toflash_build)
+	$(DISTCLEANUP_zope_component)
+	touch $@
 
 ##############################   GSTREAMER + PLUGINS   #########################
 
@@ -2701,9 +2839,8 @@ FILES_gstreamer = \
 $(DEPDIR)/gstreamer: bootstrap glib2 libxml2 $(DEPENDS_gstreamer)
 	$(PREPARE_gstreamer)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gstreamer) && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_gstreamer); \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -2711,8 +2848,8 @@ $(DEPDIR)/gstreamer: bootstrap glib2 libxml2 $(DEPENDS_gstreamer)
 			--disable-docs-build \
 			--disable-dependency-tracking \
 			--disable-check \
-			ac_cv_func_register_printf_function=no && \
-		$(MAKE) && \
+			ac_cv_func_register_printf_function=no; \
+		$(MAKE); \
 		$(INSTALL_gstreamer)
 	$(tocdk_build)
 	sh4-linux-strip --strip-unneeded $(PKDIR)/usr/bin/gst-launch*
@@ -2750,9 +2887,8 @@ FILES_gst_plugins_base = \
 $(DEPDIR)/gst_plugins_base: bootstrap glib2 gstreamer libogg libalsa libvorbis $(DEPENDS_gst_plugins_base)
 	$(PREPARE_gst_plugins_base)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_base) && \
-		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_gst_plugins_base); \
+		autoreconf --verbose --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -2762,8 +2898,8 @@ $(DEPDIR)/gst_plugins_base: bootstrap glib2 gstreamer libogg libalsa libvorbis $
 			--disable-pango \
 			--disable-x \
 			--disable-examples \
-			--with-audioresample-format=int && \
-		$(MAKE) && \
+			--with-audioresample-format=int; \
+		$(MAKE); \
 		$(BUILDENV) \
 		$(INSTALL_gst_plugins_base)
 	$(tocdk_build)
@@ -2809,8 +2945,7 @@ FILES_gst_plugins_good = \
 $(DEPDIR)/gst_plugins_good: bootstrap gstreamer gst_plugins_base libsoup libflac $(DEPENDS_gst_plugins_good)
 	$(PREPARE_gst_plugins_good)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_good) && \
+	cd $(DIR_gst_plugins_good); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -2821,8 +2956,8 @@ $(DEPDIR)/gst_plugins_good: bootstrap gstreamer gst_plugins_base libsoup libflac
 			--disable-aalib \
 			--disable-shout2 \
 			--disable-shout2test \
-			--disable-x && \
-		$(MAKE)	$(start_build) && \
+			--disable-x; \
+		$(MAKE)	$(start_build); \
 		$(INSTALL_gst_plugins_good)
 	$(tocdk_build)
 	$(toflash_build)
@@ -2860,8 +2995,7 @@ FILES_gst_plugins_bad = \
 $(DEPDIR)/gst_plugins_bad: bootstrap gstreamer gst_plugins_base libmodplug $(DEPENDS_gst_plugins_bad)
 	$(PREPARE_gst_plugins_bad)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_bad) && \
+	cd $(DIR_gst_plugins_bad); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -2869,8 +3003,8 @@ $(DEPDIR)/gst_plugins_bad: bootstrap gstreamer gst_plugins_base libmodplug $(DEP
 			--with-check=no \
 			--disable-sdl \
 			--disable-modplug \
-			ac_cv_openssldir=no && \
-		$(MAKE) && \
+			ac_cv_openssldir=no; \
+		$(MAKE); \
 		$(INSTALL_gst_plugins_bad)
 	$(tocdk_build)
 	$(toflash_build)
@@ -2901,14 +3035,13 @@ FILES_gst_plugins_ugly = \
 $(DEPDIR)/gst_plugins_ugly: bootstrap gstreamer gst_plugins_base $(DEPENDS_gst_plugins_ugly)
 	$(PREPARE_gst_plugins_ugly)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_ugly) && \
+	cd $(DIR_gst_plugins_ugly); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
 			--prefix=/usr \
-			--disable-mpeg2dec && \
-		$(MAKE) && \
+			--disable-mpeg2dec; \
+		$(MAKE); \
 		$(INSTALL_gst_plugins_ugly)
 	$(tocdk_build)
 	$(toflash_build)
@@ -2938,8 +3071,7 @@ FILES_gst_ffmpeg = \
 $(DEPDIR)/gst_ffmpeg: bootstrap gstreamer gst_plugins_base $(DEPENDS_gst_ffmpeg)
 	$(PREPARE_gst_ffmpeg)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_ffmpeg) && \
+	cd $(DIR_gst_ffmpeg); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -3009,14 +3141,13 @@ FILES_gst_plugins_fluendo_mpegdemux = \
 $(DEPDIR)/gst_plugins_fluendo_mpegdemux: bootstrap gstreamer gst_plugins_base $(DEPENDS_gst_plugins_fluendo_mpegdemux)
 	$(PREPARE_gst_plugins_fluendo_mpegdemux)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_fluendo_mpegdemux) && \
+	cd $(DIR_gst_plugins_fluendo_mpegdemux); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
 			--prefix=/usr \
-			--with-check=no && \
-		$(MAKE) && \
+			--with-check=no; \
+		$(MAKE); \
 		$(INSTALL_gst_plugins_fluendo_mpegdemux)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3043,20 +3174,19 @@ FILES_gst_plugin_subsink = \
 $(DEPDIR)/gst_plugin_subsink: bootstrap gstreamer gst_ffmpeg gst_plugins_base gst_plugins_good gst_plugins_bad gst_plugins_ugly gst_plugins_fluendo_mpegdemux $(DEPENDS_gst_plugin_subsink)
 	$(PREPARE_gst_plugin_subsink)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugin_subsink) && \
-		touch NEWS README AUTHORS ChangeLog && \
-		aclocal -I $(hostprefix)/share/aclocal -I m4 && \
-		cp $(hostprefix)/share/libtool/config/ltmain.sh . && \
-		autoheader && \
-		autoconf && \
-		automake --add-missing && \
-		libtoolize --force && \
+	cd $(DIR_gst_plugin_subsink); \
+		touch NEWS README AUTHORS ChangeLog; \
+		aclocal -I $(hostprefix)/share/aclocal -I m4; \
+		cp $(hostprefix)/share/libtool/config/ltmain.sh .; \
+		autoheader; \
+		autoconf; \
+		automake --add-missing; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_gst_plugin_subsink)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3086,18 +3216,18 @@ $(DEPDIR)/gst_plugins_dvbmediasink: bootstrap gstreamer gst_plugins_base gst_plu
 	$(PREPARE_gst_plugins_dvbmediasink)
 	$(start_build)
 	$(get_git_version)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gst_plugins_dvbmediasink) && \
-		aclocal -I $(hostprefix)/share/aclocal -I m4 && \
-		autoheader && \
-		autoconf && \
-		automake --foreign --add-missing && \
-		libtoolize --force && \
+	export PATH=$(hostprefix)/bin:$(PATH); \
+	cd $(DIR_gst_plugins_dvbmediasink); \
+		aclocal -I $(hostprefix)/share/aclocal -I m4; \
+		autoheader; \
+		autoconf; \
+		automake --foreign --add-missing; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_gst_plugins_dvbmediasink)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3125,12 +3255,12 @@ FILES_libdca = \
 $(DEPDIR)/libdca: $(DEPENDS_libdca)
 	$(PREPARE_libdca)
 	$(start_build)
-	cd $(DIR_libdca) && \
+	cd $(DIR_libdca); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libdca)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3157,12 +3287,12 @@ FILES_liborc = \
 $(DEPDIR)/liborc: $(DEPENDS_liborc)
 	$(PREPARE_liborc)
 	$(start_build)
-	cd $(DIR_liborc) && \
+	cd $(DIR_liborc); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_liborc)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3185,14 +3315,13 @@ DESCRIPTION_libao = "libao"
 $(DEPDIR)/libao: bootstrap $(DEPENDS_libao)
 	$(PREPARE_libao)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libao) && \
+	cd $(DIR_libao); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libao)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3221,14 +3350,13 @@ FILES_libusb = \
 $(DEPDIR)/libusb: $(DEPENDS_libusb)
 	$(PREPARE_libusb)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libusb) && \
+	cd $(DIR_libusb); \
 	$(BUILDENV) \
 	./configure \
 		--host=$(target) \
 		--disable-build-docs \
-		--prefix=/usr && \
-		$(MAKE) all && \
+		--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libusb)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3260,9 +3388,9 @@ FILES_graphlcd = \
 $(DEPDIR)/graphlcd: bootstrap libusb $(DEPENDS_graphlcd)
 	$(PREPARE_graphlcd)
 	$(start_build)
-	cd $(DIR_graphlcd) && \
+	cd $(DIR_graphlcd); \
 	$(BUILDENV) \
-		$(MAKE) all && \
+		$(MAKE) all; \
 		install -d $(PKDIR)/etc
 		$(INSTALL_graphlcd)
 	$(tocdk_build)
@@ -3293,17 +3421,16 @@ FILES_libgd2 = \
 $(DEPDIR)/libgd2: bootstrap libpng libjpeg libiconv libfreetype $(DEPENDS_libgd2)
 	$(PREPARE_libgd2)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libgd2) && \
-		chmod +w configure && \
-		libtoolize -f -c && \
-		autoreconf --force --install -I$(hostprefix)/share/aclocal && \
+	cd $(DIR_libgd2); \
+		chmod +w configure; \
+		libtoolize -f -c; \
+		autoreconf --force --install -I$(hostprefix)/share/aclocal; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libgd2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3329,14 +3456,13 @@ FILES_libusb2 = \
 $(DEPDIR)/libusb2: bootstrap $(DEPENDS_libusb2)
 	$(PREPARE_libusb2)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libusb2) && \
+	cd $(DIR_libusb2); \
 	$(BUILDENV) \
 	./configure \
 		--build=$(build) \
 		--host=$(target) \
-		--prefix=/usr && \
-		$(MAKE) all && \
+		--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libusb2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3362,13 +3488,13 @@ FILES_libusbcompat = \
 $(DEPDIR)/libusbcompat: bootstrap libusb2 $(DEPENDS_libusbcompat)
 	$(PREPARE_libusbcompat)
 	$(start_build)
-	cd $(DIR_libusbcompat) && \
+	cd $(DIR_libusbcompat); \
 	$(BUILDENV) \
 	./configure \
 		--build=$(build) \
 		--host=$(target) \
-		--prefix=/usr && \
-		$(MAKE) && \
+		--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libusbcompat)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3400,23 +3526,22 @@ FILES_evebrowser = \
 $(DEPDIR)/evebrowser: bootstrap $(DEPENDS_evebrowser)
 	$(PREPARE_evebrowser)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_evebrowser) && \
-		aclocal -I $(hostprefix)/share/aclocal -I m4 && \
-		autoheader && \
-		autoconf && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_evebrowser); \
+		aclocal -I $(hostprefix)/share/aclocal -I m4; \
+		autoheader; \
+		autoconf; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
-		mkdir -p $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/ && \
-		$(INSTALL_evebrowser) && \
-		cp -ar enigma2/HbbTv $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/ && \
-		rm -r $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/HbbTv/bin/hbbtvscan-mipsel && \
-		rm -r $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/HbbTv/bin/hbbtvscan-powerpc && \
+			--prefix=/usr; \
+		$(MAKE) all; \
+		mkdir -p $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/; \
+		$(INSTALL_evebrowser); \
+		cp -ar enigma2/HbbTv $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/; \
+		rm -r $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/HbbTv/bin/hbbtvscan-mipsel; \
+		rm -r $(PKDIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/HbbTv/bin/hbbtvscan-powerpc; \
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_evebrowser)
@@ -3441,16 +3566,15 @@ FILES_brofs = \
 $(DEPDIR)/brofs: bootstrap $(DEPENDS_brofs)
 	$(PREPARE_brofs)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_brofs) && \
+	cd $(DIR_brofs); \
 		$(BUILDENV) \
-		$(MAKE) all && \
+		$(MAKE) all; \
 		$(INSTALL_brofs)
-		mv -b $(PKDIR)/BroFS $(PKDIR)/usr/bin/ && \
-		mv -b $(PKDIR)/BroFSCommand $(PKDIR)/usr/bin/ && \
-		rm -r $(PKDIR)/BroFSd && \
-		cd $(PKDIR)/usr/bin/ && \
-		ln -sf BroFS BroFSd && \
+		mv -b $(PKDIR)/BroFS $(PKDIR)/usr/bin/; \
+		mv -b $(PKDIR)/BroFSCommand $(PKDIR)/usr/bin/; \
+		rm -r $(PKDIR)/BroFSd; \
+		cd $(PKDIR)/usr/bin/; \
+		ln -sf BroFS BroFSd; \
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_brofs)
@@ -3475,8 +3599,7 @@ FILES_libcap = \
 $(DEPDIR)/libcap: bootstrap $(DEPENDS_libcap)
 	$(PREPARE_libcap)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libcap) && \
+	cd $(DIR_libcap); \
 		$(MAKE) \
 		DESTDIR=$(PKDIR) \
 		PREFIX=$(PKDIR)/usr \
@@ -3514,13 +3637,12 @@ FILES_libalsa = \
 $(DEPDIR)/libalsa: bootstrap $(DEPENDS_libalsa)
 	$(PREPARE_libalsa)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libalsa) && \
-		aclocal -I $(hostprefix)/share/aclocal -I m4 && \
-		autoheader && \
-		autoconf && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_libalsa); \
+		aclocal -I $(hostprefix)/share/aclocal -I m4; \
+		autoheader; \
+		autoconf; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -3528,8 +3650,8 @@ $(DEPDIR)/libalsa: bootstrap $(DEPENDS_libalsa)
 			--with-debug=no \
 			--enable-shared=no \
 			--enable-static \
-			--disable-python && \
-		$(MAKE) all && \
+			--disable-python; \
+		$(MAKE) all; \
 		$(INSTALL_libalsa)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3558,12 +3680,11 @@ FILES_rtmpdump = \
 $(DEPDIR)/rtmpdump: bootstrap openssl openssl-dev $(DEPENDS_rtmpdump)
 	$(PREPARE_rtmpdump)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_rtmpdump) && \
-	cp $(hostprefix)/share/libtool/config/ltmain.sh .. && \
-		libtoolize -f -c && \
+	cd $(DIR_rtmpdump); \
+	cp $(hostprefix)/share/libtool/config/ltmain.sh ..; \
+		libtoolize -f -c; \
 		$(BUILDENV) \
-			make CROSS_COMPILE=$(target)- && \
+			make CROSS_COMPILE=$(target)-; \
 		$(INSTALL_rtmpdump)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3592,18 +3713,17 @@ FILES_libdvbsipp = \
 $(DEPDIR)/libdvbsipp: bootstrap $(DEPENDS_libdvbsipp)
 	$(PREPARE_libdvbsipp)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libdvbsipp) && \
-		aclocal -I $(hostprefix)/share/aclocal -I m4 && \
-		autoheader && \
-		autoconf && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_libdvbsipp); \
+		aclocal -I $(hostprefix)/share/aclocal -I m4; \
+		autoheader; \
+		autoconf; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libdvbsipp)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3631,13 +3751,12 @@ FILES_tuxtxtlib = \
 $(DEPDIR)/tuxtxtlib: bootstrap $(DEPENDS_tuxtxtlib)
 	$(PREPARE_tuxtxtlib)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_tuxtxtlib) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoheader && \
-		autoconf && \
-		libtoolize --force && \
-		automake --foreign --add-missing && \
+	cd $(DIR_tuxtxtlib); \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoheader; \
+		autoconf; \
+		libtoolize --force; \
+		automake --foreign --add-missing; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -3645,8 +3764,8 @@ $(DEPDIR)/tuxtxtlib: bootstrap $(DEPENDS_tuxtxtlib)
 			--with-boxtype=generic \
 			--with-configdir=/etc \
 			--with-datadir=/usr/share/tuxtxt \
-			--with-fontdir=/usr/share/fonts && \
-		$(MAKE) all && \
+			--with-fontdir=/usr/share/fonts; \
+		$(MAKE) all; \
 		$(INSTALL_tuxtxtlib)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3678,13 +3797,12 @@ FILES_tuxtxt32bpp = \
 $(DEPDIR)/tuxtxt32bpp: tuxtxtlib $(DEPENDS_tuxtxt32bpp)
 	$(PREPARE_tuxtxt32bpp)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_tuxtxt32bpp) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoheader && \
-		autoconf && \
-		libtoolize --force && \
-		automake --foreign --add-missing && \
+	cd $(DIR_tuxtxt32bpp); \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoheader; \
+		autoconf; \
+		libtoolize --force; \
+		automake --foreign --add-missing; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
@@ -3692,8 +3810,8 @@ $(DEPDIR)/tuxtxt32bpp: tuxtxtlib $(DEPENDS_tuxtxt32bpp)
 			--with-boxtype=generic \
 			--with-configdir=/etc \
 			--with-datadir=/usr/share/tuxtxt \
-			--with-fontdir=/usr/share/fonts && \
-		$(MAKE) all && \
+			--with-fontdir=/usr/share/fonts; \
+		$(MAKE) all; \
 		$(INSTALL_tuxtxt32bpp)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3722,18 +3840,17 @@ SRC_URI_libdreamdvd = "libdreamdvd"
 $(DEPDIR)/libdreamdvd: bootstrap $(DEPENDS_libdreamdvd)
 	$(PREPARE_libdreamdvd)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libdreamdvd) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoheader && \
-		autoconf && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_libdreamdvd); \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoheader; \
+		autoconf; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libdreamdvd)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3760,14 +3877,13 @@ FILES_libdreamdvd2 = \
 $(DEPDIR)/libdreamdvd2: bootstrap libdvdnav $(DEPENDS_libdreamdvd2)
 	$(PREPARE_libdreamdvd2)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libdreamdvd2) && \
-		autoreconf -i && \
+	cd $(DIR_libdreamdvd2); \
+		autoreconf -i; \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libdreamdvd2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3796,15 +3912,14 @@ FILES_libmpeg2 = \
 $(DEPDIR)/libmpeg2: bootstrap $(DEPENDS_libmpeg2)
 	$(PREPARE_libmpeg2)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmpeg2) && \
+	cd $(DIR_libmpeg2); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--disable-sdl \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libmpeg2)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3832,13 +3947,12 @@ FILES_libsamplerate = \
 $(DEPDIR)/libsamplerate: bootstrap $(DEPENDS_libsamplerate)
 	$(PREPARE_libsamplerate)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libsamplerate) && \
+	cd $(DIR_libsamplerate); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libsamplerate)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3864,13 +3978,12 @@ FILES_libvorbis = \
 $(DEPDIR)/libvorbis: bootstrap $(DEPENDS_libvorbis)
 	$(PREPARE_libvorbis)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libvorbis) && \
+	cd $(DIR_libvorbis); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libvorbis)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3897,13 +4010,12 @@ FILES_libmodplug = \
 $(DEPDIR)/libmodplug: bootstrap $(DEPENDS_libmodplug)
 	$(PREPARE_libmodplug)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmodplug) && \
+	cd $(DIR_libmodplug); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libmodplug)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3931,13 +4043,12 @@ FILES_tiff = \
 $(DEPDIR)/tiff: bootstrap $(DEPENDS_tiff)
 	$(PREPARE_tiff)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_tiff) && \
+	cd $(DIR_tiff); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_tiff)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3964,13 +4075,12 @@ FILES_lzo = \
 $(DEPDIR)/lzo: $(DEPENDS_lzo)
 	$(PREPARE_lzo)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_lzo) && \
+	cd $(DIR_lzo); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_lzo)
 	$(tocdk_build)
 	$(toflash_build)
@@ -3998,13 +4108,12 @@ FILES_yajl = \
 $(DEPDIR)/yajl: bootstrap $(DEPENDS_yajl)
 	$(PREPARE_yajl)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_yajl) && \
+	cd $(DIR_yajl); \
 		$(BUILDENV) \
 		./configure \
-			--prefix=/usr && \
-		sed -i "s/install: all/install: distro/g" Makefile && \
-		$(MAKE) distro && \
+			--prefix=/usr; \
+		sed -i "s/install: all/install: distro/g" Makefile; \
+		$(MAKE) distro; \
 		$(INSTALL_yajl)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4032,17 +4141,17 @@ FILES_libpcre = \
 $(DEPDIR)/libpcre: bootstrap $(DEPENDS_libpcre)
 	$(PREPARE_libpcre)
 	$(start_build)
-	cd $(DIR_libpcre) && \
+	cd $(DIR_libpcre); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--prefix=/usr \
 			--enable-utf8 \
-			--enable-unicode-properties && \
-		$(MAKE) all && \
-		sed -e "s,^prefix=,prefix=$(targetprefix)," < pcre-config > $(crossprefix)/bin/pcre-config && \
-		chmod 755 $(crossprefix)/bin/pcre-config && \
+			--enable-unicode-properties; \
+		$(MAKE) all; \
+		sed -e "s,^prefix=,prefix=$(targetprefix)," < pcre-config > $(crossprefix)/bin/pcre-config; \
+		chmod 755 $(crossprefix)/bin/pcre-config; \
 		$(INSTALL_libpcre)
 		rm -f $(targetprefix)/usr/bin/pcre-config
 	$(tocdk_build)
@@ -4071,13 +4180,12 @@ FILES_libcdio = \
 $(DEPDIR)/libcdio: bootstrap $(DEPENDS_libcdio)
 	$(PREPARE_libcdio)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libcdio) && \
+	cd $(DIR_libcdio); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libcdio)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4107,13 +4215,12 @@ FILES_jasper = \
 $(DEPDIR)/jasper: bootstrap $(DEPENDS_jasper)
 	$(PREPARE_jasper)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_jasper@/@DIR_jasper) && \
+	cd $(DIR_jasper@/@DIR_jasper); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_jasper)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4140,13 +4247,12 @@ FILES_mysql = \
 $(DEPDIR)/mysql: bootstrap $(DEPENDS_mysql)
 	$(PREPARE_mysql)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_mysql) && \
+	cd $(DIR_mysql); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--with-atomic-ops=up --with-embedded-server --prefix=/usr --sysconfdir=/etc/mysql --localstatedir=/var/mysql --disable-dependency-tracking --without-raid --without-debug --with-low-memory --without-query-cache --without-man --without-docs --without-innodb && \
-		$(MAKE) all && \
+			--with-atomic-ops=up --with-embedded-server --prefix=/usr --sysconfdir=/etc/mysql --localstatedir=/var/mysql --disable-dependency-tracking --without-raid --without-debug --with-low-memory --without-query-cache --without-man --without-docs --without-innodb; \
+		$(MAKE) all; \
 		$(INSTALL_mysql)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4174,9 +4280,9 @@ FILES_xupnpd = \
 $(DEPDIR)/xupnpd: bootstrap $(DEPENDS_xupnpd)
 	$(PREPARE_xupnpd)
 	$(start_build)
-	cd $(DIR_xupnpd) && \
+	cd $(DIR_xupnpd); \
 		$(BUILDENV) \
-	$(MAKE) embedded && \
+	$(MAKE) embedded; \
 	  install -d 0644  $(PKDIR)/{etc,usr/bin}; \
 	  install -m 0755 xupnpd- $(PKDIR)/usr/bin/xupnpd; \
 	  install -d 0644  $(PKDIR)/usr/share/xupnpd/{ui,www,plugins,config,playlists}; \
@@ -4212,13 +4318,12 @@ FILES_libmicrohttpd = \
 $(DEPDIR)/libmicrohttpd: bootstrap $(DEPENDS_libmicrohttpd)
 	$(PREPARE_libmicrohttpd)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libmicrohttpd) && \
+	cd $(DIR_libmicrohttpd); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libmicrohttpd)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4245,13 +4350,12 @@ FILES_libexif = \
 $(DEPDIR)/libexif: bootstrap $(DEPENDS_libexif)
 	$(PREPARE_libexif)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_libexif) && \
+	cd $(DIR_libexif); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libexif)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4279,9 +4383,8 @@ FILES_minidlna = \
 $(DEPDIR)/minidlna: bootstrap ffmpeg libflac libogg libvorbis libid3tag sqlite libexif libjpeg $(DEPENDS_minidlna)
 	$(PREPARE_minidlna)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_minidlna) && \
-		libtoolize -f -c && \
+	cd $(DIR_minidlna); \
+		libtoolize -f -c; \
 		$(BUILDENV) \
 		DESTDIR=$(prefix)/cdkroot \
 		$(MAKE) \
@@ -4290,7 +4393,7 @@ $(DEPDIR)/minidlna: bootstrap ffmpeg libflac libogg libvorbis libid3tag sqlite l
 		SBINDIR=$(prefix)/cdkroot/usr/sbin \
 		INCDIR=$(prefix)/cdkroot/usr/include \
 		PAM_CAP=no \
-		LIBATTR=no && \
+		LIBATTR=no; \
 		$(INSTALL_minidlna)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4338,7 +4441,7 @@ FILES_vlc = \
 $(DEPDIR)/vlc: bootstrap libstdc++-dev libfribidi ffmpeg $(DEPENDS_vlc)
 	$(PREPARE_vlc)
 	$(start_build)
-	cd $(DIR_vlc) && \
+	cd $(DIR_vlc); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -4360,8 +4463,8 @@ $(DEPDIR)/vlc: bootstrap libstdc++-dev libfribidi ffmpeg $(DEPENDS_vlc)
 			--disable-mozilla \
 			--disable-dbus \
 			--disable-sdl \
-			--enable-run-as-root && \
-		$(MAKE) && \
+			--enable-run-as-root; \
+		$(MAKE); \
 		$(INSTALL_vlc)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4389,13 +4492,13 @@ FILES_djmount = \
 $(DEPDIR)/djmount: bootstrap fuse $(DEPENDS_djmount)
 	$(PREPARE_djmount)
 	$(start_build)
-	cd $(DIR_djmount) && \
+	cd $(DIR_djmount); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_djmount)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4422,13 +4525,13 @@ FILES_libupnp = \
 $(DEPDIR)/libupnp: bootstrap $(DEPENDS_libupnp)
 	$(PREPARE_libupnp)
 	$(start_build)
-	cd $(DIR_libupnp) && \
+	cd $(DIR_libupnp); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libupnp)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4456,17 +4559,16 @@ FILES_rarfs = \
 $(DEPDIR)/rarfs: bootstrap libstdc++-dev fuse $(DEPENDS_rarfs)
 	$(PREPARE_rarfs)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_rarfs) && \
-		export PKG_CONFIG_PATH=$(targetprefix)/usr/lib/pkgconfig && \
+	cd $(DIR_rarfs); \
+		export PKG_CONFIG_PATH=$(targetprefix)/usr/lib/pkgconfig; \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os -D_FILE_OFFSET_BITS=64" \
 		./configure \
 			--host=$(target) \
 			--disable-option-checking \
 			--includedir=/usr/include/fuse \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_rarfs)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4488,14 +4590,13 @@ sshfs
 $(DEPDIR)/sshfs: bootstrap fuse $(DEPENDS_sshfs)
 	$(PREPARE_sshfs)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_sshfs) && \
+	cd $(DIR_sshfs); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_sshfs)
 	$(DISTCLEANUP_sshfs)
 	touch $@
@@ -4516,15 +4617,14 @@ gmediarender
 $(DEPDIR)/gmediarender: bootstrap libstdc++-dev gst_plugins_dvbmediasink libupnp $(DEPENDS_gmediarender)
 	$(PREPARE_gmediarender)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_gmediarender) && \
+	cd $(DIR_gmediarender); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
 			--prefix=/usr \
-			--with-libupnp=$(targetprefix)/usr && \
-		$(MAKE) all && \
+			--with-libupnp=$(targetprefix)/usr; \
+		$(MAKE) all; \
 		$(INSTALL_gmediarender)
 	$(DISTCLEANUP_gmediarender)
 	touch $@
@@ -4550,8 +4650,7 @@ FILES_mediatomb = \
 $(DEPDIR)/mediatomb: bootstrap libstdc++-dev ffmpeg curl sqlite libexpat $(DEPENDS_mediatomb)
 	$(PREPARE_mediatomb)
 	$(start_build)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(DIR_mediatomb) && \
+	cd $(DIR_mediatomb); \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
@@ -4567,8 +4666,8 @@ $(DEPDIR)/mediatomb: bootstrap libstdc++-dev ffmpeg curl sqlite libexpat $(DEPEN
 			--disable-inotify \
 			--with-avformat-h=$(targetprefix)/usr/include \
 			--disable-rpl-malloc \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_mediatomb)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4596,10 +4695,10 @@ FILES_tinyxml = \
 $(DEPDIR)/tinyxml: $(DEPENDS_tinyxml)
 	$(PREPARE_tinyxml)
 	$(start_build)
-	cd $(DIR_tinyxml) && \
-		libtoolize -f -c && \
+	cd $(DIR_tinyxml); \
+		libtoolize -f -c; \
 		$(BUILDENV) \
-		$(MAKE) && \
+		$(MAKE); \
 		$(INSTALL_tinyxml)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4626,18 +4725,18 @@ FILES_libnfs = \
 $(DEPDIR)/libnfs: bootstrap $(DEPENDS_libnfs)
 	$(PREPARE_libnfs)
 	$(start_build)
-	cd $(DIR_libnfs) && \
-		aclocal -I $(hostprefix)/share/aclocal && \
-		autoheader && \
-		autoconf && \
-		automake --foreign && \
-		libtoolize --force && \
+	cd $(DIR_libnfs); \
+		aclocal -I $(hostprefix)/share/aclocal; \
+		autoheader; \
+		autoconf; \
+		automake --foreign; \
+		libtoolize --force; \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
 			--host=$(target) \
-			--prefix=/usr && \
-		$(MAKE) all && \
+			--prefix=/usr; \
+		$(MAKE) all; \
 		$(INSTALL_libnfs)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4663,10 +4762,10 @@ FILES_taglib = \
 $(DEPDIR)/taglib: bootstrap $(DEPENDS_taglib)
 	$(PREPARE_taglib)
 	$(start_build)
-	cd $(DIR_taglib) && \
+	cd $(DIR_taglib); \
 		$(BUILDENV) \
-		cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_RELEASE_TYPE=Release . && \
-		$(MAKE) all && \
+		cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_RELEASE_TYPE=Release .; \
+		$(MAKE) all; \
 		$(INSTALL_taglib)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4693,9 +4792,9 @@ FILES_e2_rtmpgw = \
 $(DEPDIR)/e2_rtmpgw: bootstrap openssl openssl-dev libz $(DEPENDS_e2_rtmpgw)
 	$(PREPARE_e2_rtmpgw)
 	$(start_build)
-	cd $(DIR_e2_rtmpgw) && \
+	cd $(DIR_e2_rtmpgw); \
 		$(BUILDENV) \
-		$(MAKE) all && \
+		$(MAKE) all; \
 		$(INSTALL_e2_rtmpgw)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4723,14 +4822,14 @@ FILES_libx264 = \
 $(DEPDIR)/libx264: bootstrap $(DEPENDS_libx264)
 	$(PREPARE_libx264)
 	$(start_build)
-	cd $(DIR_libx264) && \
+	cd $(DIR_libx264); \
 		$(BUILDENV) \
 		./configure \
 			--host=$(target) \
 			--system-libx264 \
 			--enable-shared \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libx264)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4757,8 +4856,8 @@ FILES_libaacplus = \
 $(DEPDIR)/libaacplus: bootstrap $(DEPENDS_libaacplus)
 	$(PREPARE_libaacplus)
 	$(start_build)
-	cd $(DIR_libaacplus) && \
-		./autogen.sh && \
+	cd $(DIR_libaacplus); \
+		./autogen.sh; \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
@@ -4767,8 +4866,8 @@ $(DEPDIR)/libaacplus: bootstrap $(DEPENDS_libaacplus)
 			--disable-shared \
 			--enable-static \
 			--without-fftw3 \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libaacplus)
 	$(tocdk_build)
 	$(toflash_build)
@@ -4796,14 +4895,14 @@ FILES_libfaac = \
 $(DEPDIR)/libfaac: bootstrap $(DEPENDS_libfaac)
 	$(PREPARE_libfaac)
 	$(start_build)
-	cd $(DIR_libfaac) && \
+	cd $(DIR_libfaac); \
 		$(BUILDENV) \
 		./configure \
 			--build=$(build) \
 			--host=$(target) \
 			--without-mp4v2 \
-			--prefix=/usr && \
-		$(MAKE) && \
+			--prefix=/usr; \
+		$(MAKE); \
 		$(INSTALL_libfaac)
 	$(tocdk_build)
 	$(toflash_build)
