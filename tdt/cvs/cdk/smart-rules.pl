@@ -303,7 +303,7 @@ sub process_prepare ($)
       }
       elsif ( $_[1] =~ m#\.zip$# )
       {
-        $output .= "unzip -d $dir " . $f;
+        $output .= "unzip -P $dir " . $f;
       }
       elsif ( $_[1] =~ m#\.src\.rpm$# )
       {
