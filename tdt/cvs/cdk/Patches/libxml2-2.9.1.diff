@@ -1,0 +1,11 @@
+--- libxml2-2.9.1.org/configure.in
++++ libxml2-2.9.1/configure.in
+@@ -821,7 +821,7 @@
+ 	fi
+     fi
+     pythondir='$(PYTHON_SITE_PACKAGES)'
+-    PYTHON_LIBS=`python$PYTHON_VERSION-config --ldflags`
++    PYTHON_LIBS=''
+ else
+     PYTHON=
+ fi

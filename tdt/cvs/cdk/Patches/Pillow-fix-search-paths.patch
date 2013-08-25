@@ -1,0 +1,25 @@
+Index: Pillow-2.1.0/setup.py
+===================================================================
+--- Pillow-2.1.0.orig/Pillow-2.1.0/setup.py
++++ Pillow-2.1.0/Pillow-2.1.0/setup.py
+@@ -193,7 +193,6 @@
+             # work ;-)
+             self.add_multiarch_paths()
+ 
+-        _add_directory(library_dirs, "/usr/local/lib")
+         # FIXME: check /opt/stuff directories here?
+ 
+         prefix = sysconfig.get_config_var("prefix")
+@@ -207,12 +206,6 @@
+             if os.path.isfile(os.path.join(tcl_dir, "tk.h")):
+                 _add_directory(include_dirs, tcl_dir)
+ 
+-        # standard locations
+-        _add_directory(library_dirs, "/usr/local/lib")
+-        _add_directory(include_dirs, "/usr/local/include")
+-
+-        _add_directory(library_dirs, "/usr/lib")
+-        _add_directory(include_dirs, "/usr/include")
+ 
+         #
+         # insert new dirs *before* default libs, to avoid conflicts

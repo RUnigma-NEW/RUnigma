@@ -1,0 +1,43 @@
+--- a/elementtree/TidyTools.py.org
++++ b/elementtree/TidyTools.py
+@@ -53,7 +53,7 @@
+         tree = ElementTree()
+         tree.parse(file + ".out")
+     except:
+-        print "*** %s:%s" % sys.exc_info()[:2]
++        print ("*** %s:%s" % sys.exc_info()[:2])
+         print ("*** %s is not valid XML "
+                "(check %s.err for info)" % (file, file))
+         tree = None
+@@ -81,8 +81,8 @@
+         tree = apply(tidy, (file,), options)
+         if tree is None:
+             return
+-    except IOError, v:
+-        print "***", v
++    except IOError as v:
++        print ("***", v)
+         return None
+ 
+     NS = NS_XHTML
+@@ -125,4 +125,4 @@
+     import sys
+     for arg in sys.argv[1:]:
+         for file in glob.glob(arg):
+-            print file, "...", tidy(file)
++            print (file, "...", tidy(file))
+--- a/elementtree/SimpleXMLTreeBuilder.py.org
++++ b/elementtree/SimpleXMLTreeBuilder.py
+@@ -136,9 +136,9 @@
+         status.append("default namespace applied to unqualified attribute")
+     # report bugs
+     if status:
+-        print "xmllib doesn't work properly in this Python version:"
++        print ("xmllib doesn't work properly in this Python version:")
+         for bug in status:
+-            print "-", bug
++            print ("-", bug)
+     else:
+-        print "congratulations; no problems found in xmllib"
++        print ("congratulations; no problems found in xmllib")
+ 
