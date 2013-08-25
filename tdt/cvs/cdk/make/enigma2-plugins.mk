@@ -89,7 +89,7 @@ $(DEPDIR)/%-openpli:
 	$(start_build)
 	$(get_git_version)
 	cd $(DIR_$*_openpli) && \
-		$(python) setup.py install --root=$(PKDIR) --install-lib=/usr/lib/enigma2/python/Plugins
+		$(hostprefix)/bin/python$(PYTHON_VERSION) setup.py install --root=$(PKDIR) --install-lib=/usr/lib/enigma2/python/Plugins
 	$(remove_pyc)
 	$(e2extra_build)
 	$(DISTCLEANUP_enigma2_networkbrowser)
