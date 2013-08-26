@@ -1,7 +1,7 @@
 Index: Pillow-2.1.0/setup.py
 ===================================================================
---- Pillow-2.1.0.orig/Pillow-2.1.0/setup.py
-+++ Pillow-2.1.0/Pillow-2.1.0/setup.py
+--- Pillow-2.1.0.orig/setup.py
++++ Pillow-2.1.0/setup.py
 @@ -193,7 +193,6 @@
              # work ;-)
              self.add_multiarch_paths()
