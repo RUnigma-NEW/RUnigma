@@ -1975,7 +1975,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 #
 BEGIN[[
 setuptools
-  0.9.8
+  0.9.7
   {PN}-{PV}
   extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
 ;
