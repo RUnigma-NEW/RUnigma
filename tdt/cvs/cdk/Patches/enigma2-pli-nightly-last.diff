@@ -234,104 +234,44 @@ diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/dvb/pmt.cp
  	if (gft == NULL)
  		return;
  	do
+--- enigma2-nightly.org/lib/gdi/picload.cpp
++++ enigma2-nightly.patched/lib/gdi/picload.cpp
+@@ -532,7 +532,7 @@
+ 	int cmaps;
+ 	int extcode;
+ 
+-	gft = DGifOpenFileName(filepara->file);
++	gft = DGifOpenFileName(filepara->file, NULL);
+ 	if (gft == NULL)
+ 		return;
+ 	do
 --- enigma2-nightly.org/m4/ax_python_devel.m4
 +++ enigma2-nightly.patched/m4/ax_python_devel.m4
-@@ -153,8 +153,14 @@
- 	if test -z "$PYTHON_CPPFLAGS"; then
+@@ -146,6 +146,9 @@
+ 		PYTHON_VERSION=""
+ 	fi
+ 
++	if test "$PYTHON_VERSION" != "2.7"; then
++	   m=m
++	fi
+ 	#
+ 	# Check for Python include path
+ 	#
+@@ -154,7 +154,7 @@
  		python_path=`$PYTHON -c "import distutils.sysconfig; \
  			print (distutils.sysconfig.get_python_inc ());"`
-+		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
-+			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
  		if test -n "${python_path}"; then
 -			python_path="-I$PY_PATH/include/python$PYTHON_VERSION"
-+			if test "${plat_python_path}" != "${python_path}"; then
-+				python_path="-I$python_path -I$plat_python_path"
-+			else
-+				python_path="-I$python_path"
-+			fi
++			python_path="-I$PY_PATH/include/python$PYTHON_VERSION$m"
  		fi
  		PYTHON_CPPFLAGS=$python_path
  	fi
-@@ -173,11 +179,9 @@
- # join all versioning strings, on some systems
- # major/minor numbers could be in different list elements
- from distutils.sysconfig import *
--ret = ''
--for e in get_config_vars ('VERSION'):
--	if (e != None):
--		ret += e
--print (ret)
-+e = get_config_var('VERSION')
-+if e is not None:
-+	print(e)
- EOD`
- 
- 		if test -z "$ac_python_version"; then
-@@ -198,33 +202,26 @@
- 
- # There should be only one
- import distutils.sysconfig
--for e in distutils.sysconfig.get_config_vars ('LIBDIR'):
--	if e != None:
--		print (e)
--		break
-+e = distutils.sysconfig.get_config_var('LIBDIR')
-+if e is not None:
-+	print (e)
- EOD`
--
--		# Before checking for libpythonX.Y, we need to know
--		# the extension the OS we're on uses for libraries
--		# (we take the first one, if there's more than one fix me!):
--		ac_python_soext=`$PYTHON -c \
--		  "import distutils.sysconfig; \
--		  print (distutils.sysconfig.get_config_vars('SO')[[0]])"`
--
- 		# Now, for the library:
--		ac_python_soname=`$PYTHON -c \
--		  "import distutils.sysconfig; \
--		  print (distutils.sysconfig.get_config_vars('LDLIBRARY')[[0]])"`
-+		ac_python_library=`cat<<EOD | $PYTHON -
- 
--		# Strip away extension from the end to canonicalize its name:
--		ac_python_library=`echo "$ac_python_soname" | sed "s/${ac_python_soext}$//"`
-+import distutils.sysconfig
-+c = distutils.sysconfig.get_config_vars()
-+if 'LDVERSION' in c:
-+	print ('python'+c[['LDVERSION']])
-+else:
-+	print ('python'+c[['VERSION']])
-+EOD`
- 
- 		# This small piece shamelessly adapted from PostgreSQL python macro;
- 		# credits goes to momjian, I think. I'd like to put the right name
- 		# in the credits, if someone can point me in the right direction... ?
- 		#
--		if test -n "$ac_python_libdir" -a -n "$ac_python_library" \
--			-a x"$ac_python_library" != x"$ac_python_soname"
-+		if test -n "$ac_python_libdir" -a -n "$ac_python_library"
- 		then
- 			# use the official shared library
- 			ac_python_library=`echo "$ac_python_library" | sed "s/^lib//"`
-@@ -235,8 +233,7 @@
+@@ -235,7 +235,7 @@
  			  "from distutils.sysconfig import get_python_lib as f; \
  			  import os; \
  			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
 -			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VERSION -lpython$ac_python_version"
--#			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
-+			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
++			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VERSION$m -lpython$ac_python_version$m"
+ #			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
  		fi
  
- 		if test -z "PYTHON_LDFLAGS"; then
-@@ -254,9 +251,8 @@
- 	#
- 	AC_MSG_CHECKING([for Python site-packages path])
- 	if test -z "$PYTHON_SITE_PKG"; then
--		PYTHON_SITE_PKG="$PY_PATH/lib/python$PYTHON_VERSION/site-packages"
--#		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
--#			print (distutils.sysconfig.get_python_lib(0,0));"`
-+		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
-+			print (distutils.sysconfig.get_python_lib(0,0));"`
- 	fi
- 	AC_MSG_RESULT([$PYTHON_SITE_PKG])
- 	AC_SUBST([PYTHON_SITE_PKG])
