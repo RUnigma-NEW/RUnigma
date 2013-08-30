@@ -1974,11 +1974,19 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 # setuptools
 #
 BEGIN[[
+ifdef ENABLE_PY332
 setuptools
-  0.9.7
+  1.1
   {PN}-{PV}
   extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
 ;
+else
+setuptools
+  0.6c11
+  {PN}-{PV}
+  extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
+;
+endif
 ]]END
 
 DESCRIPTION_setuptools = "setuptools"
