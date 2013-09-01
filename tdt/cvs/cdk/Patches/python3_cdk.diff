@@ -1,0 +1,614 @@
+--- a/bb.py
++++ b/bb.py
+@@ -136,7 +136,7 @@
+     try:
+         os.makedirs(dir)
+         debug(2, "created " + dir)
+-    except OSError, e:
++    except OSError as e:
+         if e.errno != 17: raise e
+ 
+ 
+@@ -155,8 +155,8 @@
+     try:
+         if not sstat:
+             sstat=os.lstat(src)
+-    except Exception, e:
+-        print "movefile: Stating source file failed...", e
++    except Exception as e:
++        print("movefile: Stating source file failed...", e)
+         return None
+ 
+     destexists=1
+@@ -171,7 +171,7 @@
+             try:
+                 os.unlink(dest)
+                 destexists=0
+-            except Exception, e:
++            except Exception as e:
+                 pass
+ 
+     if stat.S_ISLNK(sstat[stat.ST_MODE]):
+@@ -183,8 +183,8 @@
+             #os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+             os.unlink(src)
+             return os.lstat(dest)
+-        except Exception, e:
+-            print "movefile: failed to properly create symlink:", dest, "->", target, e
++        except Exception as e:
++            print("movefile: failed to properly create symlink:", dest, "->", target, e)
+             return None
+ 
+     renamefailed=1
+@@ -192,11 +192,11 @@
+         try:
+             ret=os.rename(src,dest)
+             renamefailed=0
+-        except Exception, e:
++        except Exception as e:
+             import errno
+             if e[0]!=errno.EXDEV:
+                 # Some random error.
+-                print "movefile: Failed to move", src, "to", dest, e
++                print("movefile: Failed to move", src, "to", dest, e)
+                 return None
+             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
+ 
+@@ -207,22 +207,22 @@
+                 shutil.copyfile(src,dest+"#new")
+                 os.rename(dest+"#new",dest)
+                 didcopy=1
+-            except Exception, e:
+-                print 'movefile: copy', src, '->', dest, 'failed.', e
++            except Exception as e:
++                print('movefile: copy', src, '->', dest, 'failed.', e)
+                 return None
+         else:
+             #we don't yet handle special, so we need to fall back to /bin/mv
+             a=getstatusoutput("/bin/mv -f "+"'"+src+"' '"+dest+"'")
+             if a[0]!=0:
+-                print "movefile: Failed to move special file:" + src + "' to '" + dest + "'", a
++                print("movefile: Failed to move special file:" + src + "' to '" + dest + "'", a)
+                 return None # failure
+         try:
+             if didcopy:
+                 missingos.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+                 os.chmod(dest, stat.S_IMODE(sstat[stat.ST_MODE])) # Sticky is reset on chown
+                 os.unlink(src)
+-        except Exception, e:
+-            print "movefile: Failed to chown/chmod/unlink", dest, e
++        except Exception as e:
++            print("movefile: Failed to chown/chmod/unlink", dest, e)
+             return None
+ 
+     if newmtime:
+@@ -244,8 +244,8 @@
+     try:
+         if not sstat:
+             sstat=os.lstat(src)
+-    except Exception, e:
+-        print "copyfile: Stating source file failed...", e
++    except Exception as e:
++        print("copyfile: Stating source file failed...", e)
+         return False
+ 
+     destexists=1
+@@ -260,7 +260,7 @@
+             try:
+                 os.unlink(dest)
+                 destexists=0
+-            except Exception, e:
++            except Exception as e:
+                 pass
+ 
+     if stat.S_ISLNK(sstat[stat.ST_MODE]):
+@@ -271,28 +271,28 @@
+             os.symlink(target,dest)
+             #os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+             return os.lstat(dest)
+-        except Exception, e:
+-            print "copyfile: failed to properly create symlink:", dest, "->", target, e
++        except Exception as e:
++            print("copyfile: failed to properly create symlink:", dest, "->", target, e)
+             return False
+ 
+     if stat.S_ISREG(sstat[stat.ST_MODE]):
+             try: # For safety copy then move it over.
+                 shutil.copyfile(src,dest+"#new")
+                 os.rename(dest+"#new",dest)
+-            except Exception, e:
+-                print 'copyfile: copy', src, '->', dest, 'failed.', e
++            except Exception as e:
++                print('copyfile: copy', src, '->', dest, 'failed.', e)
+                 return False
+     else:
+             #we don't yet handle special, so we need to fall back to /bin/mv
+             a=getstatusoutput("/bin/cp -f "+"'"+src+"' '"+dest+"'")
+             if a[0]!=0:
+-                print "copyfile: Failed to copy special file:" + src + "' to '" + dest + "'", a
++                print("copyfile: Failed to copy special file:" + src + "' to '" + dest + "'", a)
+                 return False # failure
+     try:
+         os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+         os.chmod(dest, stat.S_IMODE(sstat[stat.ST_MODE])) # Sticky is reset on chown
+-    except Exception, e:
+-        print "copyfile: Failed to chown/chmod/unlink", dest, e
++    except Exception as e:
++        print("copyfile: Failed to chown/chmod/unlink", dest, e)
+         return False
+ 
+     if newmtime:
+@@ -404,7 +404,7 @@
+         url += "%s" % host
+     url += "%s" % path
+     if p:
+-        for parm in p.keys():
++        for parm in list(p.keys()):
+             url += ";%s=%s" % (parm, p[parm])
+ 
+     return url
+@@ -477,7 +477,7 @@
+                 curlist.append(accum)
+                 accum=""
+             if level==0:
+-                print "!!! tokenizer: Unmatched left parenthesis in:\n'"+mystring+"'"
++                print("!!! tokenizer: Unmatched left parenthesis in:\n'"+mystring+"'")
+                 return None
+             newlist=curlist
+             curlist=prevlists.pop()
+@@ -492,7 +492,7 @@
+     if accum:
+         curlist.append(accum)
+     if (level!=0):
+-        print "!!! tokenizer: Exiting with unterminated parenthesis in:\n'"+mystring+"'"
++        print("!!! tokenizer: Exiting with unterminated parenthesis in:\n'"+mystring+"'")
+         return None
+     return newtokens
+ 
+@@ -527,7 +527,7 @@
+     mytokens = tokens + []        # this copies the list
+     pos = 0
+     while pos < len(mytokens):
+-        if type(mytokens[pos]) == types.ListType:
++        if type(mytokens[pos]) == list:
+             evaluate(mytokens[pos], mydefines)
+             if not len(mytokens[pos]):
+                 del mytokens[pos]
+@@ -563,7 +563,7 @@
+ 
+     newlist=[]
+     for x in mytokens:
+-        if type(x)==types.ListType:
++        if type(x)==list:
+             newlist.extend(flatten(x))
+         else:
+             newlist.append(x)
+@@ -840,7 +840,7 @@
+     elif ververify(myparts[-1],silent):
+         if len(myparts)==1:
+             if not silent:
+-                print "!!! Name error in",mypkg+": missing name part."
++                print("!!! Name error in",mypkg+": missing name part.")
+             __pkgsplit_cache__[mypkg]=None
+             return None
+         else:
+@@ -1055,19 +1055,19 @@
+     mypos   = 0
+     newsplit = []
+     while mypos < len(mysplit):
+-        if type(mysplit[mypos]) == types.ListType:
++        if type(mysplit[mypos]) == list:
+             newsplit.append(dep_opconvert(mysplit[mypos],myuse))
+             mypos += 1
+         elif mysplit[mypos] == ")":
+             # mismatched paren, error
+             return None
+         elif mysplit[mypos]=="||":
+-            if ((mypos+1)>=len(mysplit)) or (type(mysplit[mypos+1])!=types.ListType):
++            if ((mypos+1)>=len(mysplit)) or (type(mysplit[mypos+1])!=list):
+                 # || must be followed by paren'd list
+                 return None
+             try:
+                 mynew = dep_opconvert(mysplit[mypos+1],myuse)
+-            except Exception, e:
++            except Exception as e:
+                 error("unable to satisfy OR dependancy: " + string.join(mysplit," || "))
+                 raise e
+             mynew[0:0] = ["||"]
+@@ -1103,13 +1103,13 @@
+                 # colon mode
+                 if enabled:
+                     # choose the first option
+-                    if type(mysplit[mypos+1]) == types.ListType:
++                    if type(mysplit[mypos+1]) == list:
+                         newsplit.append(dep_opconvert(mysplit[mypos+1],myuse))
+                     else:
+                         newsplit.append(mysplit[mypos+1])
+                 else:
+                     # choose the alternate option
+-                    if type(mysplit[mypos+1]) == types.ListType:
++                    if type(mysplit[mypos+1]) == list:
+                         newsplit.append(dep_opconvert(mysplit[mypos+3],myuse))
+                     else:
+                         newsplit.append(mysplit[mypos+3])
+@@ -1117,7 +1117,7 @@
+             else:
+                 # normal use mode
+                 if enabled:
+-                    if type(mysplit[mypos+1]) == types.ListType:
++                    if type(mysplit[mypos+1]) == list:
+                         newsplit.append(dep_opconvert(mysplit[mypos+1],myuse))
+                     else:
+                         newsplit.append(mysplit[mypos+1])
+--- a/dep-graph.py
++++ b/dep-graph.py
+@@ -76,7 +76,7 @@
+ 		continue
+ 	if line.startswith("#") or line.startswith("\t"):
+ 		continue
+-	print "line: " + line.strip()
++	print("line: " + line.strip())
+ 	l = line.split(":")
+ 	if len(l) < 2:
+ 		continue
+@@ -93,9 +93,9 @@
+ 			continue
+ 		d += [deps[i]]
+ 	deps = uniq(d)
+-	print "adding %s: %s" % (name, ' '.join(deps))
++	print("adding %s: %s" % (name, ' '.join(deps)))
+ 	if name in targ:
+-		print "ERROR: %s duplicate" % name
++		print("ERROR: %s duplicate" % name)
+ 	targ[name] = deps
+ 
+ targ2 = {}
+@@ -105,11 +105,11 @@
+ 	if x.endswith(suffix):
+ 		k = x.replace(suffix,'')
+ 		try:
+-			print "s", k, targ[k]
++			print("s", k, targ[k])
+ 		except:
+ 			pass
+ 		if not k in targ:
+-			print "ERROR: unite of %s failed" % k
++			print("ERROR: unite of %s failed" % k)
+ 			return False
+ 		targ[k] += targ[x]
+ 		c = k + '.do_compile'
+@@ -120,7 +120,7 @@
+ 			targ[k].remove(c)
+ 		targ2[k] = uniq(targ[k])
+ 		targ[k] = uniq(targ[k])
+-		print "a", k, targ[k]
++		print("a", k, targ[k])
+ 		return True
+ 	return False
+ 
+@@ -129,7 +129,7 @@
+ 		continue
+ 	if unite('.do_compile',x):
+ 		continue
+-	print "o", x, targ[x]
++	print("o", x, targ[x])
+ 	l = targ[x]
+ 	for i in range(len(l)):
+ 		if l[i].endswith('.do_prepare'):
+@@ -137,7 +137,7 @@
+ 		elif l[i].endswith('.do_compile'):
+ 			l[i] = l[i].replace('.do_compile', '')
+ 		elif l[i].find('.version_') > -1:
+-			print 'VERSION', l[i][:l[i].find('.version_')]
++			print('VERSION', l[i][:l[i].find('.version_')])
+ 			l[i] = l[i][:l[i].find('.version_')]
+ 	targ[x] = l
+ 	targ2[x] = targ[x]
+@@ -187,7 +187,7 @@
+ 			# go next
+ 			ne = child[idx]
+ 			if ne in walk:
+-				print "ERROR: broke loop at", ne
++				print("ERROR: broke loop at", ne)
+ 				targ[curr].remove(ne)
+ 				continue
+ 			last[curr] = ne
+@@ -208,8 +208,8 @@
+ fdot.write("}")
+ fdot.close()
+ 
+-print "Drawing graph...."
++print("Drawing graph....")
+ cmd = "cat dep.dot |grep -v '.version_' |tred |dot -Tsvg -o dot.svg"
+-print "exec:", cmd
++print("exec:", cmd)
+ os.system(cmd)
+-print "output is in dot.svg"
++print("output is in dot.svg")
+--- a/mv.py
++++ b/mv.py
+@@ -23,7 +23,7 @@
+ 	if not lm or lm.startswith('#') or lm.startswith('>>'): continue
+ 	rm = lm.split(';')
+ 	if not rm: continue
+-	print "Processing", rm
++	print("Processing", rm)
+ 	pn = rm[0]
+ 	ret += "%s\n" % pn
+ 	pv = rm[1]
+@@ -31,21 +31,21 @@
+ 	pdir = rm[2]
+ 	add2ret(pdir)
+ 	if len(rm) < 4:
+-		print "Empty", pn
++		print("Empty", pn)
+ 		rm += ['']
+ 	pdeps = rm[3].split(':')
+ 	ptasks = rm[4:]
+-	print "  tasks are\n   ", '\n    '.join(ptasks)
+-	print ptasks
++	print("  tasks are\n   ", '\n    '.join(ptasks))
++	print(ptasks)
+ 	for tsk in ptasks:
+ 		if tsk == '': continue
+ 		dep = tsk.split(':')[1]
+ 		if dep in pdeps:
+ 			pdeps.remove(dep)
+ 		else:
+-			print "Warning: extra dep", dep
++			print("Warning: extra dep", dep)
+ 	if pdeps and pdeps[0]:
+-		print "Warning: left", pdeps
++		print("Warning: left", pdeps)
+ 		for dep in pdeps:
+ 				ptasks += ["nothing:"+dep]
+ 	for tsk in ptasks:
+@@ -53,7 +53,7 @@
+ 		dep = tsk.split(':')[1]
+ 		rule = tsk.split(':')[0]
+ 		if dep.endswith('.git') or dep.find('.git/') > -1:
+-			print 'marked as git', dep
++			print('marked as git', dep)
+ 			if rule == 'nothing': continue
+ 			rule = 'nothing'
+ 			githack = dep.split('/')
+@@ -96,9 +96,9 @@
+ 			add2ret("%s" % rulei)
+ 	ret += ";\n"
+ 	
+-print ""
+-print ""
+-print "============================SMART========================="
+-print ""
++print("")
++print("")
++print("============================SMART=========================")
++print("")
+ sys.stdout = real_stdout
+-print ret
++print(ret)
+--- a/pkg2.py
++++ b/pkg2.py
+@@ -6,7 +6,7 @@
+ 
+ pkg = sys.argv[1]
+ 
+-print "install '%s' through telnet" % pkg
++print("install '%s' through telnet" % pkg)
+ 
+ HOST = sys.argv[2]
+ user = '' #'admin'
+@@ -19,19 +19,19 @@
+ fname = pkg.split('/')[-1]
+ import os
+ cmd = 'wput -u -nc %s ftp://%s:%s@%s/../tmp/%s' % (pkg, ftpuser, ftppass, HOST, fname)
+-print "executing", cmd
++print("executing", cmd)
+ os.system(cmd)
+ 
+-print "connecting to", HOST,
++print("connecting to", HOST, end=' ')
+ tn = telnetlib.Telnet(HOST)
+-print "ok"
++print("ok")
+ 
+ if user:
+-    print "waiting for login"
++    print("waiting for login")
+     tn.read_until("login: ")
+     tn.write(user + "\n")
+ if password:
+-    print "waiting for password"
++    print("waiting for password")
+     tn.read_until("Password: ")
+     tn.write(password + "\n")
+ 
+@@ -43,9 +43,9 @@
+ 			break
+ 
+ tn.read_until(prompt)
+-print "start commands"
++print("start commands")
+ tn.write("ipkg install --force-downgrade /tmp/%s\n" % fname)
+ read()
+ tn.write("exit\n")
+ 
+-print tn.read_all()
++print(tn.read_all())
+--- a/pkg.py
++++ b/pkg.py
+@@ -5,7 +5,7 @@
+ 
+ pkg = sys.argv[1]
+ 
+-print "reinstall '%s' through telnet" % pkg
++print("reinstall '%s' through telnet" % pkg)
+ 
+ HOST = sys.argv[2]
+ user = '' #'admin'
+@@ -13,16 +13,16 @@
+ 
+ prompt = ":~# "
+ 
+-print "connecting to", HOST,
++print("connecting to", HOST, end=' ')
+ tn = telnetlib.Telnet(HOST)
+-print "ok"
++print("ok")
+ 
+ if user:
+-    print "waiting for login"
++    print("waiting for login")
+     tn.read_until("login: ")
+     tn.write(user + "\n")
+ if password:
+-    print "waiting for password"
++    print("waiting for password")
+     tn.read_until("Password: ")
+     tn.write(password + "\n")
+ 
+@@ -34,7 +34,7 @@
+ 			break
+ 
+ tn.read_until(prompt)
+-print "start commands"
++print("start commands")
+ tn.write("ipkg update\n")
+ read()
+ tn.write("ipkg remove --force-depends %s\n" % pkg)
+@@ -43,4 +43,4 @@
+ read()
+ tn.write("exit\n")
+ 
+-print tn.read_all()
++print(tn.read_all())
+--- a/split_packages.py
++++ b/split_packages.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python
+ 
+ import os
++import collections
+ 
+ #######################################################################
+ #Main functions and constants
+@@ -10,7 +11,7 @@
+ 
+ def str_check(s):
+ 	if not isinstance(s, str):
+-		raise("bb_data got non str " + s)
++		raise "bb_data got non str "
+ 
+ def bb_set(var, val, *args):
+ 	str_check(var)
+@@ -25,7 +26,7 @@
+ 
+ def bb_checkset(var, val):
+ 	str_check(var)
+-	if not bb_data.has_key(var):
++	if var not in bb_data:
+ 		bb_set(var, val)
+ 
+ DATAS_STR = 'PKGV PKGR DESCRIPTION SECTION PRIORITY MAINTAINER LICENSE PACKAGE_ARCH HOMEPAGE RDEPENDS RREPLACES RCONFLICTS SRC_URI FILES NAME preinst postinst prerm postrm conffiles'
+@@ -58,9 +59,9 @@
+ 
+ global work_dir
+ work_dir = os.getcwd()
+-print "Building in", work_dir
+-
+-if os.environ.has_key('PACKAGES_' + parent_pkg):
++print("Building in", work_dir)
++
++if 'PACKAGES_' + parent_pkg in os.environ:
+ 	pkg_list = os.environ['PACKAGES_' + parent_pkg]
+ else:
+ 	pkg_list = parent_pkg
+@@ -70,11 +71,11 @@
+ bb_set('PACKAGES_' + parent_pkg, pkg_list)
+ import re
+ 
+-extdatas = map("^{0}_.*".format, DATAS)
++extdatas = list(map("^{0}_.*".format, DATAS))
+ regexp = '|'.join(extdatas)
+ reg = re.compile(regexp)
+ 
+-for x in os.environ.keys():
++for x in list(os.environ.keys()):
+ 	if reg.match(x):
+ 		bb_set(x, os.environ[x])
+ 
+@@ -83,12 +84,12 @@
+ #install DEST_DIR
+ global pkgs_dir
+ pkgs_dir = os.environ['packagingtmpdir']
+-print "searching for files in", pkgs_dir
++print("searching for files in", pkgs_dir)
+ 
+ #where this script will build packages
+ global build_dir
+ build_dir = os.environ['IPKGBUILDDIR']
+-print "temporary files goes in", build_dir
++print("temporary files goes in", build_dir)
+ 
+ 
+ 
+@@ -138,7 +139,7 @@
+ 		bb.mkdirhier(dpath)
+ 		ret = bb.copyfile(file, fpath)
+ 		if ret is False:
+-			raise("File population failed when copying %s to %s" % (file, fpath))
++			raise "File population failed when copying %s to %s"
+ 
+ def legitimize_package_name(s):
+ 	"""
+@@ -233,10 +234,10 @@
+ 		else:			
+ 			oldfiles = bb_get('FILES_' + pkg, d, True)			
+ 			if not oldfiles:
+-				raise("Package '%s' exists but has no files" % pkg)
++				raise "Package '%s' exists but has no files"
+ 			bb_set('FILES_' + pkg, oldfiles + " " + os.path.join(root, o), d)
+ 		
+-		if callable(hook):
++		if isinstance(hook, collections.Callable):
+ 			hook(f, pkg, file_regex, output_pattern, m.group(1))
+ 
+ 	bb_set('PACKAGES', ' '.join(packages), d)
+@@ -251,7 +251,7 @@
+ #But keep packaging simple
+ 
+ def read_control_file(fname):
+-	src = open(fname).read()
++	src = open(fname, encoding='cp1251').read()
+ 	for line in src.split("\n"):
+ 		if line.startswith('Package: '):
+ 			full_package = line[9:].replace('-', '_')
+@@ -319,7 +320,7 @@
+ 		if not var: continue
+ 		var = l[0] % var
+ 		s += var
+-	print 'Write control file to', fname
++	print('Write control file to', fname)
+ 	open(fname, 'w').write(s)
+ 	
+ 	scr = ['preinst', 'postinst', 'prerm', 'postrm', 'conffiles']
+@@ -330,7 +331,7 @@
+ 			fd.write(script)
+ 			fd.close()
+ 			if s != 'conffiles':
+-				os.chmod(pjoin(fdir, s), 0755)
++				os.chmod(pjoin(fdir, s), 0o755)
+ 
+ def pjoin(*args):
+ 	#TODO: make it more clean. remove '/' dublicates. Do it with re, it would be faster..
+@@ -345,8 +346,8 @@
+ 
+ 	for p in bb_get('PACKAGES').split():
+ 		pname = bb_get('NAME_%s' % p)
+-		print "Package: %s (%s)" % (p, pname)
+-		print "Description: ", bb_data['DESCRIPTION_'+p]
++		print("Package: %s (%s)" % (p, pname))
++		print("Description: ", bb_data['DESCRIPTION_'+p])
+ 		files = bb_data['FILES_'+p].split(" ")
+ 		
+ 		pack_dir = pjoin(build_dir,p)
