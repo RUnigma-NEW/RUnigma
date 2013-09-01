@@ -1,0 +1,30 @@
+--- enigma2-nightly.org/m4/ax_python_devel.m4
++++ enigma2-nightly.patched/m4/ax_python_devel.m4
+@@ -146,6 +146,9 @@
+ 		PYTHON_VERSION=""
+ 	fi
+ 
++	if test "$PYTHON_VERSION" != "2.7"; then
++	   m=m
++	fi
+ 	#
+ 	# Check for Python include path
+ 	#
+@@ -154,7 +154,7 @@
+ 		python_path=`$PYTHON -c "import distutils.sysconfig; \
+ 			print (distutils.sysconfig.get_python_inc ());"`
+ 		if test -n "${python_path}"; then
+-			python_path="-I$PY_PATH/include/python$PYTHON_VERSION"
++			python_path="-I$PY_PATH/include/python$PYTHON_VERSION$m"
+ 		fi
+ 		PYTHON_CPPFLAGS=$python_path
+ 	fi
+@@ -235,7 +235,7 @@
+ 			  "from distutils.sysconfig import get_python_lib as f; \
+ 			  import os; \
+ 			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
+-			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VERSION -lpython$ac_python_version"
++			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VERSION$m -lpython$ac_python_version$m"
+ #			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
+ 		fi
+ 

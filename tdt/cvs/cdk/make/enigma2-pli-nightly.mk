@@ -45,6 +45,7 @@ endif
 ifdef ENABLE_E2PD7
   git://github.com/technic/amiko-e2-pli.git:b=last
   patch:file://enigma2-pli-nightly-last.diff
+  patch:file://python_m4.diff
 endif
 
 ifdef ENABLE_E2PD8
