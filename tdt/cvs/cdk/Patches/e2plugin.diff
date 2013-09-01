@@ -1,0 +1,231 @@
+--- a/libgisclubskin/src/bitratecalc/bitratecalc.cpp
++++ b/libgisclubskin/src/bitratecalc/bitratecalc.cpp
+@@ -155,7 +155,11 @@
+ eBitrateCalculatorPy_dealloc(eBitrateCalculatorPy* self)
+ {
+ 	eBitrateCalculatorPy_clear(self);
++#if PY_MAJOR_VERSION >= 3
++	Py_TYPE(self)->tp_free((PyObject*)self);
++#else
+ 	self->ob_type->tp_free((PyObject*)self);
++#endif
+ }
+ 
+ static PyObject *
+@@ -185,8 +185,12 @@
+ };
+ 
+ static PyTypeObject eBitrateCalculatorPyType = {
++#if PY_MAJOR_VERSION >= 3
++	PyVarObject_HEAD_INIT(NULL, 0)
++#else
+ 	PyObject_HEAD_INIT(NULL)
+ 	0, /*ob_size*/
++#endif
+ 	"eBitrateImpl.eBitrateCalculator", /*tp_name*/
+ 	sizeof(eBitrateCalculatorPy), /*tp_basicsize*/
+ 	0, /*tp_itemsize*/
+@@ -230,13 +230,35 @@
+ 	{NULL}  /* Sentinel */
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"bitratecalc",                                   /* m_name */
++	"Module that implements bitrate calculations.",  /* m_doc */
++	-1,                                              /* m_size */
++	module_methods,                                  /* m_methods */
++	NULL,                                            /* m_reload */
++	NULL,                                            /* m_traverse */
++	NULL,                                            /* m_clear */
++	NULL,                                            /* m_free */
++};
++#endif
++
+ PyMODINIT_FUNC
+ initbitratecalc(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyObject* m = PyModule_Create(&moduledef);
++#else
+ 	PyObject* m = Py_InitModule3("bitratecalc", module_methods,
+ 		"Module that implements bitrate calculations.");
++#endif
+ 	if (m == NULL)
++#if PY_MAJOR_VERSION >= 3
++		return NULL;
++#else
+ 		return;
++#endif
+ 	if (!PyType_Ready(&eBitrateCalculatorPyType))
+ 	{
+ 		Org_Py_INCREF((PyObject*)&eBitrateCalculatorPyType);
+--- a/bitrateviewer/src/bitratecalc/bitratecalc.cpp
++++ b/bitrateviewer/src/bitratecalc/bitratecalc.cpp
+@@ -307,7 +307,11 @@
+ eBitrateCalculatorPy_dealloc(eBitrateCalculatorPy* self)
+ {
+ 	eBitrateCalculatorPy_clear(self);
++#if PY_MAJOR_VERSION >= 3
++	Py_TYPE(self)->tp_free((PyObject*)self);
++#else
+ 	self->ob_type->tp_free((PyObject*)self);
++#endif
+ }
+ 
+ static PyObject *
+@@ -337,8 +341,12 @@
+ };
+ 
+ static PyTypeObject eBitrateCalculatorPyType = {
++#if PY_MAJOR_VERSION >= 3
++	PyVarObject_HEAD_INIT(NULL, 0)
++#else
+ 	PyObject_HEAD_INIT(NULL)
+ 	0, /*ob_size*/
++#endif
+ 	"eBitrateImpl.eBitrateCalculator", /*tp_name*/
+ 	sizeof(eBitrateCalculatorPy), /*tp_basicsize*/
+ 	0, /*tp_itemsize*/
+@@ -382,18 +390,44 @@
+ 	{NULL}  /* Sentinel */
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"bitratecalc",                                   /* m_name */
++	"Module that implements bitrate calculations.",  /* m_doc */
++	-1,                                              /* m_size */
++	module_methods,                                  /* m_methods */
++	NULL,                                            /* m_reload */
++	NULL,                                            /* m_traverse */
++	NULL,                                            /* m_clear */
++	NULL,                                            /* m_free */
++};
++#endif
++
+ PyMODINIT_FUNC
+ initbitratecalc(void)
+ {
+ 	bool init = signature();
++#if PY_MAJOR_VERSION >= 3
++	PyObject* m = PyModule_Create(&moduledef);
++#else
+ 	PyObject* m = Py_InitModule3("bitratecalc", module_methods,
+ 		"Module that implements bitrate calculations.");
++#endif
+ 	if (m == NULL)
++#if PY_MAJOR_VERSION >= 3
++		return NULL;
++#else
+ 		return;
++#endif
+ 	if (!init)
+ 	{
+ 		PyErr_SetString(PyExc_TypeError, "TPM challenge failed");
++#if PY_MAJOR_VERSION >= 3
++		return NULL;
++#else
+ 		return; 
++#endif
+ 	}
+ 	if (!PyType_Ready(&eBitrateCalculatorPyType))
+ 	{
+--- a/partnerbox/src/servicewebts/servicewebts.cpp
++++ b/partnerbox/src/servicewebts/servicewebts.cpp
+@@ -763,11 +763,29 @@
+ 	m_running = false;
+ }
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++    PyModuleDef_HEAD_INIT,
++    "servicewebts",
++    NULL,
++    -1,
++    NULL,                       // methods
++    NULL,                       // m_reload
++    NULL,                       // traverse
++    NULL,                       // clear
++    NULL                        // free
++};
++
++#endif
+ eAutoInitPtr<eServiceFactoryWebTS> init_eServiceFactoryWebTS(eAutoInitNumbers::service+1, "eServiceFactoryWebTS");
+ 
+ PyMODINIT_FUNC
+ initservicewebts(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyModule_Create(&moduledef);
++#else
+ 	Py_InitModule("servicewebts", NULL);
++#endif
+ }
+ 
+--- a/permanenttimeshift/src/eitsave/eitsave.cpp
++++ b/permanenttimeshift/src/eitsave/eitsave.cpp
+@@ -78,11 +78,29 @@
+ 	{NULL, NULL, 0, NULL} 
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"eitsave",                          /* m_name */
++	"EIT Saver",                        /* m_doc */
++	-1,                                 /* m_size */
++	module_methods,                     /* m_methods */
++	NULL,                               /* m_reload */
++	NULL,                               /* m_traverse */
++	NULL,                               /* m_clear */
++	NULL,                               /* m_free */
++};
++
++#endif
+ PyMODINIT_FUNC
+ initeitsave(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyModule_Create(&moduledef);
++#else
+ 	Py_InitModule3("eitsave", module_methods,
+ 		"EIT Saver");
++#endif
+ }
+ };
+ 
+--- a/vlcplayer/src/servicets/servicets.cpp
++++ b/vlcplayer/src/servicets/servicets.cpp
+@@ -712,11 +712,29 @@
+ 	m_running = false;
+ }
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++    PyModuleDef_HEAD_INIT,
++    "servicets",
++    NULL,
++    -1,
++    NULL,                       // methods
++    NULL,                       // m_reload
++    NULL,                       // traverse
++    NULL,                       // clear
++    NULL                        // free
++};
++
++#endif
+ eAutoInitPtr<eServiceFactoryTS> init_eServiceFactoryTS(eAutoInitNumbers::service+1, "eServiceFactoryTS");
+ 
+ PyMODINIT_FUNC
+ initservicets(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyModule_Create(&moduledef);
++#else
+ 	Py_InitModule("servicets", NULL);
++#endif
+ }
+ 

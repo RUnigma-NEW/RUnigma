@@ -43,14 +43,11 @@ ifdef ENABLE_E2PD6
 endif
 
 ifdef ENABLE_E2PD7
-ifdef ENABLE_PY332
   git://github.com/technic/amiko-e2-pli.git:b=last
+  patch:file://enigma2-pli-nightly-last.diff
   patch:file://python_m4.diff
-  patch:file://enigma2-pli-nightly-last.diff
+ifdef ENABLE_PY332
   patch:file://enigma2-pli-nightly-last-python3.diff
-else
-  git://github.com/technic/amiko-e2-pli.git:b=last
-  patch:file://enigma2-pli-nightly-last.diff
 endif
 endif
 

@@ -7,7 +7,11 @@ e2plugin
   git
   {PN}
   git://github.com/schpuntik/enigma2-plugins-sh4.git
+ifdef ENABLE_PY332
   patch:file://python_m4.diff
+  patch:file://e2plugin.diff
+  patch:file://e2plugin-python3.diff
+endif
 ;
 ]]END
 
@@ -107,7 +111,7 @@ $(DEPDIR)/enigma2-plugins-sh4-%: $(DIR_e2plugin)/config.status
 		bb_set('PACKAGES', bb_get('PACKAGES') + ' ' + package) \n\
 		bb_set('FILES_' + package, '/') \n\
 	except IOError: \n\
-		print('skipping', pk) \n\
+		print ('skipping', pk) \n\
 	for s in ['preinst', 'postinst', 'prerm', 'postrm', 'conffiles']: \n\
 		try: \n\
 			bb_set(s + '_' + package, open('$(DIR_e2plugin)/' + pk + '/CONTROL/' + s).read()) \n\
