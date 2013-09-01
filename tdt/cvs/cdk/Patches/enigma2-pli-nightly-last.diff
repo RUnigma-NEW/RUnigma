@@ -234,14 +234,1710 @@ diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/dvb/pmt.cp
  	if (gft == NULL)
  		return;
  	do
+--- enigma2-nightly.org/lib/python/python.h
++++ enigma2-nightly.patched/lib/python/python.h
+@@ -27,7 +27,11 @@
+ 	inline ePyObject(PyDictObject *ob);
+ 	inline ePyObject(PyTupleObject *ob);
+ 	inline ePyObject(PyListObject *ob);
++#if PY_MAJOR_VERSION >= 3
++	inline ePyObject(PyUnicodeObject *ob);
++#else
+ 	inline ePyObject(PyStringObject *ob);
++#endif
+ 	operator bool() const { return !!m_ob; }
+ 	operator bool() { return !!m_ob; }
+ 	ePyObject &operator=(const ePyObject &);
+@@ -36,12 +40,20 @@
+ 	ePyObject &operator=(PyDictObject *ob) { return operator=((PyObject*)ob); }
+ 	ePyObject &operator=(PyTupleObject *ob) { return operator=((PyObject*)ob); }
+ 	ePyObject &operator=(PyListObject *ob) { return operator=((PyObject*)ob); }
++#if PY_MAJOR_VERSION >= 3
++	ePyObject &operator=(PyUnicodeObject *ob) { return operator=((PyObject*)ob); }
++#else
+ 	ePyObject &operator=(PyStringObject *ob) { return operator=((PyObject*)ob); }
++#endif
+ 	operator PyObject*();
+ 	operator PyVarObject*() { return (PyVarObject*)operator PyVarObject*(); }
+ 	operator PyTupleObject*() { return (PyTupleObject*)operator PyObject*(); }
+ 	operator PyListObject*() { return (PyListObject*)operator PyObject*(); }
++#if PY_MAJOR_VERSION >= 3
++	operator PyUnicodeObject*() { return (PyUnicodeObject*)operator PyObject*(); }
++#else
+ 	operator PyStringObject*() { return (PyStringObject*)operator PyObject*(); }
++#endif
+ 	operator PyDictObject*() { return (PyDictObject*)operator PyObject*(); }
+ 	PyObject *operator->() { return operator PyObject*(); }
+ #ifdef PYTHON_REFCOUNT_DEBUG
+@@ -118,7 +118,11 @@
+ {
+ }
+ 
++#if PY_MAJOR_VERSION >= 3
++inline ePyObject::ePyObject(PyUnicodeObject *ob)
++#else
+ inline ePyObject::ePyObject(PyStringObject *ob)
++#endif
+ 	:m_ob((PyObject*)ob)
+ #ifdef PYTHON_REFCOUNT_DEBUG
+ 	,m_file(0), m_line(0), m_from(0), m_to(0), m_erased(false)
+@@ -235,21 +251,33 @@
+ 
+ inline ePyObject Impl_PyString_FromString(const char* file, int line, const char *str)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return ePyObject(PyUnicode_InternFromString(str), file, line);
++#else
+ 	return ePyObject(PyString_FromString(str), file, line);
++#endif
+ }
+ 
+ inline ePyObject Impl_PyString_FromFormat(const char* file, int line, const char *fmt, ...)
+ {
+ 	va_list ap;
+ 	va_start(ap, fmt);
++#if PY_MAJOR_VERSION >= 3
++	PyObject *ob = PyUnicode_FromFormatV(fmt, ap);
++#else
+ 	PyObject *ob = PyString_FromFormatV(fmt, ap);
++#endif
+ 	va_end(ap);
+ 	return ePyObject(ob, file, line);
+ }
+ 
+ inline ePyObject Impl_PyInt_FromLong(const char* file, int line, long val)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return ePyObject(PyLong_FromLong(val), file, line);
++#else
+ 	return ePyObject(PyInt_FromLong(val), file, line);
++#endif
+ }
+ 
+ inline ePyObject Impl_PyLong_FromLong(const char* file, int line, long val)
+@@ -316,21 +344,33 @@
+ 
+ inline ePyObject Impl_PyString_FromString(const char *str)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return PyUnicode_InternFromString(str);
++#else
+ 	return PyString_FromString(str);
++#endif
+ }
+ 
+ inline ePyObject Impl_PyString_FromFormat(const char *fmt, ...)
+ {
+ 	va_list ap;
+ 	va_start(ap, fmt);
++#if PY_MAJOR_VERSION >= 3
++	PyObject *ob = PyUnicode_FromFormatV(fmt, ap);
++#else
+ 	PyObject *ob = PyString_FromFormatV(fmt, ap);
++#endif
+ 	va_end(ap);
+ 	return ePyObject(ob);
+ }
+ 
+ inline ePyObject Impl_PyInt_FromLong(long val)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return PyLong_FromLong(val);
++#else
+ 	return PyInt_FromLong(val);
++#endif
+ }
+ 
+ inline ePyObject Impl_PyLong_FromLong(long val)
+--- enigma2-nightly.org/lib/python/connections.h
++++ enigma2-nightly.patched/lib/python/connections.h
+@@ -21,12 +21,20 @@
+ 
+ inline PyObject *PyFrom(int v)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return PyLong_FromLong(v);
++#else
+ 	return PyInt_FromLong(v);
++#endif
+ }
+ 
+ inline PyObject *PyFrom(const char *c)
+ {
++#if PY_MAJOR_VERSION >= 3
++	return PyUnicode_InternFromString(c);
++#else
+ 	return PyString_FromString(c);
++#endif
+ }
+ 
+ template <class R>
+--- enigma2-nightly.org/lib/python/Plugins/Extensions/SocketMMI/src/socket_mmi.cpp
++++ enigma2-nightly.patched/lib/python/Plugins/Extensions/SocketMMI/src/socket_mmi.cpp
+@@ -470,10 +470,28 @@
+ 	{NULL, NULL, 0, NULL}   /* Sentinel */
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"socketmmi",                                          /* m_name */
++	"Module that implements mmi via unix domain socket",  /* m_doc */
++	-1,                                                   /* m_size */
++	module_methods,                                       /* m_methods */
++	NULL,                                                 /* m_reload */
++	NULL,                                                 /* m_traverse */
++	NULL,                                                 /* m_clear */
++	NULL,                                                 /* m_free */
++};
++#endif
++
+ PyMODINIT_FUNC
+ initsocketmmi(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyModule_Create(&moduledef);
++#else
+ 	Py_InitModule3("socketmmi", module_methods,
+ 		"Module that implements mmi via unix domain socket.");
++#endif
+ }
+ };
+--- enigma2-nightly.org/lib/actions/action.h
++++ enigma2-nightly.patched/lib/actions/action.h
+@@ -6,6 +6,9 @@
+ #include <lib/python/python.h>
+ #include <string>
+ #include <map>
++#if PY_MAJOR_VERSION >= 3
++#include <lib/gui/ewidget.h>
++#endif
+ 
+ class eWidget;
+ 
+--- enigma2-nightly.org/lib/actions/action.cpp
++++ enigma2-nightly.patched/lib/actions/action.cpp
+@@ -77,7 +77,11 @@
+ {
+ 	for (std::multimap<int, eActionBinding>::iterator i(m_bindings.begin()); i != m_bindings.end(); ++i)
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		if (i->second.m_fnc && (PyObject_RichCompareBool(i->second.m_fnc, function, NULL) == 0))
++#else
+ 		if (i->second.m_fnc && (PyObject_Compare(i->second.m_fnc, function) == 0))
++#endif
+ 		{
+ 			Py_DECREF(i->second.m_fnc);
+ 			m_bindings.erase(i);
+--- enigma2-nightly.org/lib/base/console.cpp
++++ enigma2-nightly.patched/lib/base/console.cpp
+@@ -452,7 +452,11 @@
+ 		PyObject_ClearWeakRefs((PyObject *) self);
+ 	eConsolePy_clear(self);
+ 	self->cont->Release();
++#if PY_MAJOR_VERSION >= 3
++	Py_TYPE(self)->tp_free((PyObject*)self);
++#else
+ 	self->ob_type->tp_free((PyObject*)self);
++#endif
+ }
+ 
+ static PyObject *
+@@ -485,7 +485,11 @@
+ 		while(argpos < argc)
+ 		{
+ 			PyObject *arg = PyTuple_GET_ITEM(argt, argpos);
++#if PY_MAJOR_VERSION >= 3
++			if (!PyBytes_Check(arg))
++#else
+ 			if (!PyString_Check(arg))
++#endif
+ 			{
+ 				char err[255];
+ 				if (argpos)
+@@ -495,7 +495,11 @@
+ 				PyErr_SetString(PyExc_TypeError, err);
+ 				return NULL;
+ 			}
++#if PY_MAJOR_VERSION >= 3
++			argv[argpos++] = _PyUnicode_AsString(arg);
++#else
+ 			argv[argpos++] = PyString_AsString(arg);
++#endif
+ 		}
+ 		argv[argpos] = 0;
+ 		return PyInt_FromLong(self->cont->execute(argv[0], argv+1));
+@@ -650,8 +658,12 @@
+ };
+ 
+ static PyTypeObject eConsolePyType = {
++#if PY_MAJOR_VERSION >= 3
++	PyVarObject_HEAD_INIT(NULL, 0)
++#else
+ 	PyObject_HEAD_INIT(NULL)
+ 	0, /*ob_size*/
++#endif
+ 	"eConsoleImpl.eConsoleAppContainer", /*tp_name*/
+ 	sizeof(eConsolePy), /*tp_basicsize*/
+ 	0, /*tp_itemsize*/
+@@ -695,10 +703,28 @@
+ 	{NULL}  /* Sentinel */
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"eConsoleImpl",                                                                         /* m_name */
++	"Module that implements eConsoleAppContainer with working cyclic garbage collection.",  /* m_doc */
++	-1,                                                                                     /* m_size */
++	module_methods,                                                                         /* m_methods */
++	NULL,                                                                                   /* m_reload */
++	NULL,                                                                                   /* m_traverse */
++	NULL,                                                                                   /* m_clear */
++	NULL,                                                                                   /* m_free */
++};
++#endif
++
+ void eConsoleInit(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyObject* m = PyModule_Create(&moduledef);
++#else
+ 	PyObject* m = Py_InitModule3("eConsoleImpl", module_methods,
+ 		"Module that implements eConsoleAppContainer with working cyclic garbage collection.");
++#endif
+ 
+ 	if (m == NULL)
+ 		return;
+--- enigma2-nightly.org/lib/base/ebase.cpp
++++ enigma2-nightly.patched/lib/base/ebase.cpp
+@@ -245,7 +245,11 @@
+ 		Py_ssize_t pos=0;
+ 		while (PyDict_Next(additional, &pos, &key, &val)) {
+ 			pfd[i].fd = PyObject_AsFileDescriptor(key);
++#if PY_MAJOR_VERSION >= 3
++			pfd[i++].events = PyLong_AsLong(val);
++#else
+ 			pfd[i++].events = PyInt_AsLong(val);
++#endif
+ 		}
+ 	}
+ 
+@@ -383,7 +383,11 @@
+ 	if (app_quit_now)
+ 		Py_RETURN_NONE;
+ 
++#if PY_MAJOR_VERSION >= 3
++	int twisted_timeout = (timeout == Py_None) ? 0 : PyLong_AsLong(timeout);
++#else
+ 	int twisted_timeout = (timeout == Py_None) ? 0 : PyInt_AsLong(timeout);
++#endif
+ 
+ 	iterate(twisted_timeout, &res, dict);
+ 	if (res)
+@@ -444,7 +444,11 @@
+ 		PyObject_ClearWeakRefs((PyObject *) self);
+ 	eTimerPy_clear(self);
+ 	self->tm->Release();
++#if PY_MAJOR_VERSION >= 3
++	Py_TYPE(self)->tp_free((PyObject*)self);
++#else
+ 	self->ob_type->tp_free((PyObject*)self);
++#endif
+ }
+ 
+ static PyObject *
+@@ -576,8 +576,12 @@
+ };
+ 
+ static PyTypeObject eTimerPyType = {
++#if PY_MAJOR_VERSION >= 3
++	PyVarObject_HEAD_INIT(NULL, 0)
++#else
+ 	PyObject_HEAD_INIT(NULL)
+ 	0, /*ob_size*/
++#endif
+ 	"eBaseImpl.eTimer", /*tp_name*/
+ 	sizeof(eTimerPy), /*tp_basicsize*/
+ 	0, /*tp_itemsize*/
+@@ -651,7 +667,11 @@
+ 		PyObject_ClearWeakRefs((PyObject *) self);
+ 	eSocketNotifierPy_clear(self);
+ 	self->sn->Release();
++#if PY_MAJOR_VERSION >= 3
++	Py_TYPE(self)->tp_free((PyObject*)self);
++#else
+ 	self->ob_type->tp_free((PyObject*)self);
++#endif
+ }
+ 
+ static PyObject *
+@@ -761,8 +761,12 @@
+ };
+ 
+ static PyTypeObject eSocketNotifierPyType = {
++#if PY_MAJOR_VERSION >= 3
++	PyVarObject_HEAD_INIT(NULL, 0)
++#else
+ 	PyObject_HEAD_INIT(NULL)
+ 	0, /*ob_size*/
++#endif
+ 	"eBaseImpl.eSocketNotifier", /*tp_name*/
+ 	sizeof(eSocketNotifierPy), /*tp_basicsize*/
+ 	0, /*tp_itemsize*/
+@@ -806,10 +806,28 @@
+ 	{NULL}  /* Sentinel */
+ };
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++	PyModuleDef_HEAD_INIT,
++	"eBaseImpl",                                                                           /* m_name */
++	"Module that implements some enigma classes with working cyclic garbage collection.",  /* m_doc */
++	-1,                                                                                    /* m_size */
++	module_methods,                                                                        /* m_methods */
++	NULL,                                                                                  /* m_reload */
++	NULL,                                                                                  /* m_traverse */
++	NULL,                                                                                  /* m_clear */
++	NULL,                                                                                  /* m_free */
++};
++#endif
++
+ void eBaseInit(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyObject* m = PyModule_Create(&moduledef);
++#else
+ 	PyObject* m = Py_InitModule3("eBaseImpl", module_methods,
+ 		"Module that implements some enigma classes with working cyclic garbage collection.");
++#endif
+ 
+ 	if (m == NULL)
+ 		return;
+--- enigma2-nightly.org/lib/base/nconfig.cpp
++++ enigma2-nightly.patched/lib/base/nconfig.cpp
+@@ -22,9 +22,17 @@
+ 		Py_DECREF(pArgs);
+ 		if (pRet)
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			if (PyUnicode_Check(pRet))
++#else
+ 			if (PyString_Check(pRet))
++#endif
+ 			{
++#if PY_MAJOR_VERSION >= 3
++				value.assign(_PyUnicode_AsString(pRet));
++#else
+ 				value.assign(PyString_AS_STRING(pRet));
++#endif
+ 				Py_DECREF(pRet);
+ 				return 0;
+ 			}
+--- enigma2-nightly.org/lib/dvb/db.cpp
++++ enigma2-nightly.patched/lib/dvb/db.cpp
+@@ -887,7 +887,11 @@
+ PyObject *eDVBDB::readSatellites(ePyObject sat_list, ePyObject sat_dict, ePyObject tp_dict)
+ {
+ 	if (!PyDict_Check(tp_dict)) {
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 2 is not a python dict");
+ 		return NULL;
+@@ -894,7 +898,11 @@
+ 	}
+ 	else if (!PyDict_Check(sat_dict))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 1 is not a python dict");
+ 		return NULL;
+@@ -901,7 +901,11 @@
+ 	}
+ 	else if (!PyList_Check(sat_list))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 0 is not a python list");
+ 		return NULL;
+@@ -1053,7 +1053,11 @@
+ PyObject *eDVBDB::readCables(ePyObject cab_list, ePyObject tp_dict)
+ {
+ 	if (!PyDict_Check(tp_dict)) {
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 1 is not a python dict");
+ 		return NULL;
+@@ -1060,7 +1060,11 @@
+ 	}
+ 	else if (!PyList_Check(cab_list))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 0 is not a python list");
+ 		return NULL;
+@@ -1173,7 +1173,11 @@
+ PyObject *eDVBDB::readTerrestrials(ePyObject ter_list, ePyObject tp_dict)
+ {
+ 	if (!PyDict_Check(tp_dict)) {
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 1 is not a python dict");
+ 		return NULL;
+@@ -1180,7 +1180,11 @@
+ 	}
+ 	else if (!PyList_Check(ter_list))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 			eDebug("arg 0 is not a python list");
+ 		return NULL;
+--- enigma2-nightly.org/lib/dvb/dvb.cpp
++++ enigma2-nightly.patched/lib/dvb/dvb.cpp
+@@ -772,7 +772,11 @@
+ {
+ 	if (!PyList_Check(list))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, "eDVBResourceManager::setFrontendSlotInformations argument should be a python list");
++#else
+ 		PyErr_SetString(PyExc_StandardError, "eDVBResourceManager::setFrontendSlotInformations argument should be a python list");
++#endif
+ 		return NULL;
+ 	}
+ 	unsigned int assigned=0;
+--- enigma2-nightly.org/lib/dvb/epgcache.cpp
++++ enigma2-nightly.patched/lib/dvb/epgcache.cpp
+@@ -2378,7 +2378,11 @@
+ 				Py_DECREF(nowTime);
+ 			Py_DECREF(convertFuncArgs);
+ 			Py_DECREF(dest_list);
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError,
++#else
+ 			PyErr_SetString(PyExc_StandardError,
++#endif
+ 				"error in convertFunc execute");
+ 			eDebug("error in convertFunc execute");
+ 			return -1;
+@@ -2433,7 +2433,11 @@
+ 	const char *argstring=NULL;
+ 	if (!PyList_Check(list))
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 		eDebug("no list");
+ 		return NULL;
+@@ -2442,7 +2442,11 @@
+ 	int listSize=PyList_Size(list);
+ 	if (!listSize)
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"not params given");
+ 		eDebug("not params given");
+ 		return NULL;
+@@ -2450,9 +2450,17 @@
+ 	else 
+ 	{
+ 		ePyObject argv=PyList_GET_ITEM(list, 0); // borrowed reference!
++#if PY_MAJOR_VERSION >= 3
++		if (PyUnicode_Check(argv))
++#else
+ 		if (PyString_Check(argv))
++#endif
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			argstring = _PyUnicode_AsString(argv);
++#else
+ 			argstring = PyString_AS_STRING(argv);
++#endif
+ 			++listIt;
+ 		}
+ 		else
+@@ -2469,7 +2469,11 @@
+ 	{
+ 		if (!PyCallable_Check(convertFunc))
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError,
++#else
+ 			PyErr_SetString(PyExc_StandardError,
++#endif
+ 				"convertFunc must be callable");
+ 			eDebug("convertFunc is not callable");
+ 			return NULL;
+@@ -2529,7 +2529,11 @@
+ 				{
+ 					case 0:
+ 					{
++#if PY_MAJOR_VERSION >= 3
++						if (!PyUnicode_Check(entry))
++#else
+ 						if (!PyString_Check(entry))
++#endif
+ 						{
+ 							eDebug("tuple entry 0 is no a string");
+ 							goto skip_entry;
+@@ -2538,7 +2538,11 @@
+ 						break;
+ 					}
+ 					case 1:
++#if PY_MAJOR_VERSION >= 3
++						type=PyLong_AsLong(entry);
++#else
+ 						type=PyInt_AsLong(entry);
++#endif
+ 						if (type < -1 || type > 2)
+ 						{
+ 							eDebug("unknown type %d", type);
+@@ -2554,10 +2554,18 @@
+ 						}
+ 						break;
+ 					case 2:
++#if PY_MAJOR_VERSION >= 3
++						event_id=PyLong_AsLong(entry);
++#else
+ 						event_id=stime=PyInt_AsLong(entry);
++#endif
+ 						break;
+ 					case 3:
++#if PY_MAJOR_VERSION >= 3
++						minutes=PyLong_AsLong(entry);
++#else
+ 						minutes=PyInt_AsLong(entry);
++#endif
+ 						break;
+ 					default:
+ 						eDebug("unneeded extra argument");
+@@ -2560,7 +2560,11 @@
+ 			if (minutes && stime == -1)
+ 				stime = ::time(0);
+ 
++#if PY_MAJOR_VERSION >= 3
++			eServiceReference ref(handleGroup(eServiceReference(_PyUnicode_AsString(service))));
++#else
+ 			eServiceReference ref(handleGroup(eServiceReference(PyString_AS_STRING(service))));
++#endif
+ 			if (ref.type != eServiceReference::idDVB)
+ 			{
+ 				eDebug("service reference for epg query is not valid");
+@@ -2866,9 +2866,15 @@
+ static const char* getStringFromPython(ePyObject obj)
+ {
+ 	char *result = 0;
++#if PY_MAJOR_VERSION >= 3
++	if (PyUnicode_Check(obj))
++	{
++		result = _PyUnicode_AsString(obj);
++#else
+ 	if (PyString_Check(obj))
+ 	{
+ 		result = PyString_AS_STRING(obj);
++#endif
+ 	}
+ 	return result;
+ }
+@@ -2890,10 +2890,18 @@
+ {
+ 	std::vector<eServiceReferenceDVB> refs;
+ 	
++#if PY_MAJOR_VERSION >= 3
++	if (PyUnicode_Check(serviceReferences))
++#else
+ 	if (PyString_Check(serviceReferences))
++#endif
+ 	{
+ 		char *refstr;
++#if PY_MAJOR_VERSION >= 3
++		refstr = _PyUnicode_AsString(serviceReferences);
++#else
+ 		refstr = PyString_AS_STRING(serviceReferences);
++#endif
+ 	        if (!refstr)
+ 	        {
+         	        eDebug("[EPG:import] serviceReference string is 0, aborting");
+@@ -2908,7 +2908,11 @@
+ 		{
+ 			PyObject* item = PyList_GET_ITEM(serviceReferences, i);
+ 			char *refstr;
++#if PY_MAJOR_VERSION >= 3
++					refstr = _PyUnicode_AsString(item);
++#else
+ 	                refstr = PyString_AS_STRING(item);
++#endif
+ 	                if (!refstr)
+         	        {
+                 	        eDebug("[EPG:import] a serviceref item is not a string");
+@@ -2981,11 +2981,19 @@
+ 		}
+ 		
+ 		long start = PyLong_AsLong(PyTuple_GET_ITEM(singleEvent, 0));
++#if PY_MAJOR_VERSION >= 3
++		long duration = PyLong_AsLong(PyTuple_GET_ITEM(singleEvent, 1));
++#else
+ 		long duration = PyInt_AsLong(PyTuple_GET_ITEM(singleEvent, 1));
++#endif
+ 		const char *title = getStringFromPython(PyTuple_GET_ITEM(singleEvent, 2));
+ 		const char *short_summary = getStringFromPython(PyTuple_GET_ITEM(singleEvent, 3));
+ 		const char *long_description = getStringFromPython(PyTuple_GET_ITEM(singleEvent, 4));
++#if PY_MAJOR_VERSION >= 3
++		char event_type = (char) PyLong_AsLong(PyTuple_GET_ITEM(singleEvent, 5));
++#else
+ 		char event_type = (char) PyInt_AsLong(PyTuple_GET_ITEM(singleEvent, 5));
++#endif
+ 
+ 		submitEventData(refs, start, duration, title, short_summary, long_description, event_type);
+ 	}
+@@ -3053,14 +3053,26 @@
+ 		if (tuplesize > 0)
+ 		{
+ 			ePyObject obj = PyTuple_GET_ITEM(arg,0);
++#if PY_MAJOR_VERSION >= 3
++			if (PyUnicode_Check(obj))
++#else
+ 			if (PyString_Check(obj))
++#endif
+ 			{
+ #if PY_VERSION_HEX < 0x02060000
+ 				argcount = PyString_GET_SIZE(obj);
+ #else
++#if PY_MAJOR_VERSION >= 3
++				argcount = PyBytes_Size(obj);
++#else
+ 				argcount = PyString_Size(obj);
++#endif
+ #endif
++#if PY_MAJOR_VERSION >= 3
++				argstring = _PyUnicode_AsString(obj);
++#else
+ 				argstring = PyString_AS_STRING(obj);
++#endif
+ 				for (int i=0; i < argcount; ++i)
+ 					switch(argstring[i])
+ 					{
+@@ -3086,7 +3086,11 @@
+ 			}
+ 			else
+ 			{
++#if PY_MAJOR_VERSION >= 3
++				PyErr_SetString(PyExc_TypeError,
++#else
+ 				PyErr_SetString(PyExc_StandardError,
++#endif
+ 					"type error");
+ 				eDebug("tuple arg 0 is not a string");
+ 				return NULL;
+@@ -3100,9 +3100,15 @@
+ 			if (tuplesize > 4 && querytype == 0)
+ 			{
+ 				ePyObject obj = PyTuple_GET_ITEM(arg, 3);
++#if PY_MAJOR_VERSION >= 3
++				if (PyUnicode_Check(obj))
++				{
++					refstr = _PyUnicode_AsString(obj);
++#else
+ 				if (PyString_Check(obj))
+ 				{
+ 					refstr = PyString_AS_STRING(obj);
++#endif
+ 					eServiceReferenceDVB ref(refstr);
+ 					if (ref.valid())
+ 					{
+@@ -3151,7 +3151,11 @@
+ 					}
+ 					else
+ 					{
++#if PY_MAJOR_VERSION >= 3
++						PyErr_SetString(PyExc_TypeError, "type error");
++#else
+ 						PyErr_SetString(PyExc_StandardError, "type error");
++#endif
+ 						eDebug("tuple arg 4 is not a valid service reference string");
+ 						return NULL;
+ 					}
+@@ -3158,7 +3188,11 @@
+ 				}
+ 				else
+ 				{
++#if PY_MAJOR_VERSION >= 3
++					PyErr_SetString(PyExc_TypeError, "type error");
++#else
+ 					PyErr_SetString(PyExc_StandardError, "type error");
++#endif
+ 					eDebug("tuple arg 4 is not a string");
+ 					return NULL;
+ 				}
+@@ -3166,14 +3200,26 @@
+ 			else if (tuplesize > 4 && (querytype > 0) )
+ 			{
+ 				ePyObject obj = PyTuple_GET_ITEM(arg, 3);
++#if PY_MAJOR_VERSION >= 3
++				if (PyUnicode_Check(obj))
++#else
+ 				if (PyString_Check(obj))
++#endif
+ 				{
+ 					int casetype = PyLong_AsLong(PyTuple_GET_ITEM(arg, 4));
++#if PY_MAJOR_VERSION >= 3
++					const char *str = _PyUnicode_AsString(obj);
++#else
+ 					const char *str = PyString_AS_STRING(obj);
++#endif
+ #if PY_VERSION_HEX < 0x02060000
+ 					int textlen = PyString_GET_SIZE(obj);
+ #else
++#if PY_MAJOR_VERSION >= 3
++					int textlen = PyBytes_Size(obj);
++#else
+ 					int textlen = PyString_Size(obj);
++#endif
+ #endif
+ 					switch (querytype)
+ 					{
+@@ -3295,7 +3295,11 @@
+ 				}
+ 				else
+ 				{
++#if PY_MAJOR_VERSION >= 3
++					PyErr_SetString(PyExc_TypeError,
++#else
+ 					PyErr_SetString(PyExc_StandardError,
++#endif
+ 						"type error");
+ 					eDebug("tuple arg 4 is not a string");
+ 					return NULL;
+@@ -3303,7 +3303,11 @@
+ 			}
+ 			else
+ 			{
++#if PY_MAJOR_VERSION >= 3
++				PyErr_SetString(PyExc_TypeError,
++#else
+ 				PyErr_SetString(PyExc_StandardError,
++#endif
+ 					"type error");
+ 				eDebug("tuple arg 3(%d) is not a known querytype(0..3)", querytype);
+ 				return NULL;
+@@ -3319,7 +3319,11 @@
+ 		}
+ 		else
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError,
++#else
+ 			PyErr_SetString(PyExc_StandardError,
++#endif
+ 				"type error");
+ 			eDebug("not enough args in tuple");
+ 			return NULL;
+@@ -3331,7 +3331,11 @@
+ 	}
+ 	else
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError,
++#else
+ 		PyErr_SetString(PyExc_StandardError,
++#endif
+ 			"type error");
+ 		eDebug("arg 0 is not a tuple");
+ 		return NULL;
+--- enigma2-nightly.org/lib/dvb/frontend.cpp
++++ enigma2-nightly.patched/lib/dvb/frontend.cpp
+@@ -2916,11 +2916,19 @@
+ 	Enabled = PyTuple_GET_ITEM(obj, 2);
+ 	IsDVBS2 = PyTuple_GET_ITEM(obj, 3);
+ 	frontendId = PyTuple_GET_ITEM(obj, 4);
++#if PY_MAJOR_VERSION >= 3
++	m_slotid = PyLong_AsLong(Id);
++	if (!PyLong_Check(Id) || !PyUnicode_Check(Descr) || !PyBool_Check(Enabled) || !PyBool_Check(IsDVBS2) || !PyLong_Check(frontendId))
++		goto arg_error;
++	strcpy(m_description, _PyUnicode_AsString(Descr));
++	if (PyLong_AsLong(frontendId) == -1 || PyLong_AsLong(frontendId) != m_dvbid) {
++#else
+ 	m_slotid = PyInt_AsLong(Id);
+ 	if (!PyInt_Check(Id) || !PyString_Check(Descr) || !PyBool_Check(Enabled) || !PyBool_Check(IsDVBS2) || !PyInt_Check(frontendId))
+ 		goto arg_error;
+ 	strcpy(m_description, PyString_AS_STRING(Descr));
+ 	if (PyInt_AsLong(frontendId) == -1 || PyInt_AsLong(frontendId) != m_dvbid) {
++#endif
+ //		eDebugNoSimulate("skip slotinfo for slotid %d, descr %s",
+ //			m_slotid, m_description);
+ 		return false;
+@@ -2940,7 +2940,11 @@
+ 		m_dvbid, m_slotid, m_description, m_need_rotor_workaround ? "Yes" : "No", m_enabled ? "Yes" : "No", (IsDVBS2 == Py_True) ? "Yes" : "No" );
+ 	return true;
+ arg_error:
++#if PY_MAJOR_VERSION >= 3
++	PyErr_SetString(PyExc_TypeError,
++#else
+ 	PyErr_SetString(PyExc_StandardError,
++#endif
+ 		"eDVBFrontend::setSlotInfo must get a tuple with first param slotid, second param slot description and third param enabled boolean");
+ 	return false;
+ }
+--- enigma2-nightly.org/lib/dvb/scan.cpp
++++ enigma2-nightly.patched/lib/dvb/scan.cpp
+@@ -138,7 +138,11 @@
+ 		PutToDict(dict, "orbpos", orbital_position);
+ 		PutToDict(dict, "tsid", tsid.get());
+ 		PutToDict(dict, "onid", onid.get());
++#if PY_MAJOR_VERSION >= 3
++		ePyObject r = PyEval_EvalCode((PyObject*)(PyObject*)m_additional_tsid_onid_check_func, dict, dict);
++#else
+ 		ePyObject r = PyEval_EvalCode((PyCodeObject*)(PyObject*)m_additional_tsid_onid_check_func, dict, dict);
++#endif
+ 		if (r)
+ 		{
+ 			ePyObject o = PyDict_GetItemString(dict, "ret");
+@@ -144,9 +144,15 @@
+ 			ePyObject o = PyDict_GetItemString(dict, "ret");
+ 			if (o)
+ 			{
++#if PY_MAJOR_VERSION >= 3
++				if (PyLong_Check(o))
++				{
++					ret = PyLong_AsLong(o);
++#else
+ 				if (PyInt_Check(o))
+ 				{
+ 					ret = PyInt_AsLong(o);
++#endif
+ 					failed = false;
+ 				}
+ 			}
+@@ -1100,7 +1100,11 @@
+ 			{
+ 				eDVBFrontendParameters *p = (eDVBFrontendParameters*)&(*ch->second);
+ 				eDVBFrontendParametersTerrestrial parm;
++#if PY_MAJOR_VERSION >= 3
++				int freq = PyLong_AsLong(PyDict_GetItemString(it->second, "frequency"));
++#else
+ 				int freq = PyInt_AsLong(PyDict_GetItemString(it->second, "frequency"));
++#endif
+ 				p->getDVBT(parm);
+ //				eDebug("corrected freq for tsid %04x, onid %04x, ns %08x is %d, old was %d",
+ //					ch->first.transport_stream_id.get(), ch->first.original_network_id.get(),
+--- enigma2-nightly.org/lib/dvb_ci/dvbci.cpp
++++ enigma2-nightly.patched/lib/dvb_ci/dvbci.cpp
+@@ -970,7 +970,11 @@
+ 	{
+ 		char tmp[255];
+ 		snprintf(tmp, 255, "eDVBCIInterfaces::getDescrambleRules try to get rules for CI Slot %d... but just %zd slots are available", slotid, m_slots.size());
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, tmp);
++#else
+ 		PyErr_SetString(PyExc_StandardError, tmp);
++#endif
+ 		return 0;
+ 	}
+ 	ePyObject tuple = PyTuple_New(3);
+@@ -1022,7 +1022,11 @@
+ 	{
+ 		char tmp[255];
+ 		snprintf(tmp, 255, "eDVBCIInterfaces::setDescrambleRules try to set rules for CI Slot %d... but just %zd slots are available", slotid, m_slots.size());
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, tmp);
++#else
+ 		PyErr_SetString(PyExc_StandardError, tmp);
++#endif
+ 		return -1;
+ 	}
+ 	if (!PyTuple_Check(obj))
+@@ -1029,7 +1029,11 @@
+ 	{
+ 		char tmp[255];
+ 		snprintf(tmp, 255, "2nd argument of setDescrambleRules is not a tuple.. it is a '%s'!!", PyObject_TypeStr(obj));
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, tmp);
++#else
+ 		PyErr_SetString(PyExc_StandardError, tmp);
++#endif
+ 		return -1;
+ 	}
+ 	if (PyTuple_Size(obj) != 3)
+@@ -1038,7 +1038,11 @@
+ 			"first argument should be a pythonlist with possible services\n"
+ 			"second argument should be a pythonlist with possible providers/dvbnamespace tuples\n"
+ 			"third argument should be a pythonlist with possible caids";
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, errstr);
++#else
+ 		PyErr_SetString(PyExc_StandardError, errstr);
++#endif
+ 		return -1;
+ 	}
+ 	ePyObject service_list = PyTuple_GET_ITEM(obj, 0);
+@@ -1052,7 +1052,11 @@
+ 			"second argument(%s) should be a pythonlist with possible providers (providername strings)\n"
+ 			"third argument(%s) should be a pythonlist with possible caids (ints)",
+ 			PyObject_TypeStr(service_list), PyObject_TypeStr(provider_list), PyObject_TypeStr(caid_list));
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, errstr);
++#else
+ 		PyErr_SetString(PyExc_StandardError, errstr);
++#endif
+ 		return -1;
+ 	}
+ 	slot->possible_caids.clear();
+@@ -1063,14 +1063,26 @@
+ 	{
+ 		--size;
+ 		ePyObject refstr = PyList_GET_ITEM(service_list, size);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyUnicode_Check(refstr))
++#else
+ 		if (!PyString_Check(refstr))
++#endif
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules entry in service list is not a string.. it is '%s'!!", PyObject_TypeStr(refstr));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
++#if PY_MAJOR_VERSION >= 3
++		char *tmpstr = _PyUnicode_AsString(refstr);
++#else
+ 		char *tmpstr = PyString_AS_STRING(refstr);
++#endif
+ 		eServiceReference ref(tmpstr);
+ 		if (ref.valid())
+ 			slot->possible_services.insert(ref);
+@@ -1086,7 +1086,11 @@
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules entry in provider list is not a tuple it is '%s'!!", PyObject_TypeStr(tuple));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
+ 		if (PyTuple_Size(tuple) != 2)
+@@ -1093,14 +1093,26 @@
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules provider tuple has %zd instead of 2 entries!!", PyTuple_Size(tuple));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
++#if PY_MAJOR_VERSION >= 3
++		if (!PyUnicode_Check(PyTuple_GET_ITEM(tuple, 0)))
++#else
+ 		if (!PyString_Check(PyTuple_GET_ITEM(tuple, 0)))
++#endif
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules 1st entry in provider tuple is not a string it is '%s'", PyObject_TypeStr(PyTuple_GET_ITEM(tuple, 0)));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
+ 		if (!PyLong_Check(PyTuple_GET_ITEM(tuple, 1)))
+@@ -1107,10 +1107,18 @@
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules 2nd entry in provider tuple is not a long it is '%s'", PyObject_TypeStr(PyTuple_GET_ITEM(tuple, 1)));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
++#if PY_MAJOR_VERSION >= 3
++		char *tmpstr = _PyUnicode_AsString(PyTuple_GET_ITEM(tuple, 0));
++#else
+ 		char *tmpstr = PyString_AS_STRING(PyTuple_GET_ITEM(tuple, 0));
++#endif
+ 		uint32_t orbpos = PyLong_AsUnsignedLong(PyTuple_GET_ITEM(tuple, 1));
+ 		if (strlen(tmpstr))
+ 			slot->possible_providers.insert(std::pair<std::string, uint32_t>(tmpstr, orbpos));
+@@ -1126,7 +1126,11 @@
+ 		{
+ 			char buf[255];
+ 			snprintf(buf, 255, "eDVBCIInterfaces::setDescrambleRules entry in caid list is not a long it is '%s'!!", PyObject_TypeStr(caid));
++#if PY_MAJOR_VERSION >= 3
++			PyErr_SetString(PyExc_TypeError, buf);
++#else
+ 			PyErr_SetString(PyExc_StandardError, buf);
++#endif
+ 			return -1;
+ 		}
+ 		int tmpcaid = PyLong_AsLong(caid);
+@@ -1145,7 +1145,11 @@
+ 	{
+ 		char tmp[255];
+ 		snprintf(tmp, 255, "eDVBCIInterfaces::readCICaIds try to get CAIds for CI Slot %d... but just %zd slots are available", slotid, m_slots.size());
++#if PY_MAJOR_VERSION >= 3
++		PyErr_SetString(PyExc_TypeError, tmp);
++#else
+ 		PyErr_SetString(PyExc_StandardError, tmp);
++#endif
+ 	}
+ 	else
+ 	{
 --- enigma2-nightly.org/lib/gdi/picload.cpp
 +++ enigma2-nightly.patched/lib/gdi/picload.cpp
-@@ -532,7 +532,7 @@
- 	int cmaps;
- 	int extcode;
+@@ -1242,13 +1242,23 @@
+ 	else {
+ 		int as;
+ 		ePyObject fast		= PySequence_Fast(val, "");
++#if PY_MAJOR_VERSION >= 3
++		m_conf.max_x		= PyLong_AsLong( PySequence_Fast_GET_ITEM(fast, 0));
++		m_conf.max_y		= PyLong_AsLong( PySequence_Fast_GET_ITEM(fast, 1));
++		as			= PyLong_AsLong(PySequence_Fast_GET_ITEM(fast, 3));
++		m_conf.aspect_ratio	= as == 0 ? 0.0 : (double)PyLong_AsLong( PySequence_Fast_GET_ITEM(fast, 2)) / as;
++		m_conf.usecache		= PyLong_AsLong( PySequence_Fast_GET_ITEM(fast, 4));
++		m_conf.resizetype	= PyLong_AsLong( PySequence_Fast_GET_ITEM(fast, 5));
++		const char *bg_str	= _PyUnicode_AsString( PySequence_Fast_GET_ITEM(fast, 6));
++#else
+ 		m_conf.max_x		= PyInt_AsLong( PySequence_Fast_GET_ITEM(fast, 0));
+ 		m_conf.max_y		= PyInt_AsLong( PySequence_Fast_GET_ITEM(fast, 1));
+ 		as			= PyInt_AsLong(PySequence_Fast_GET_ITEM(fast, 3));
+ 		m_conf.aspect_ratio	= as == 0 ? 0.0 : (double)PyInt_AsLong( PySequence_Fast_GET_ITEM(fast, 2)) / as;
+ 		m_conf.usecache		= PyInt_AsLong( PySequence_Fast_GET_ITEM(fast, 4));
+ 		m_conf.resizetype	= PyInt_AsLong( PySequence_Fast_GET_ITEM(fast, 5));
+ 		const char *bg_str	= PyString_AsString( PySequence_Fast_GET_ITEM(fast, 6));
++#endif
  
--	gft = DGifOpenFileName(filepara->file);
-+	gft = DGifOpenFileName(filepara->file, NULL);
- 	if (gft == NULL)
- 		return;
- 	do
+ 		if(bg_str[0] == '#' && strlen(bg_str)==9)
+ 			m_conf.background = strtoul(bg_str+1, NULL, 16);
+--- enigma2-nightly.org/lib/service/servicedvb.cpp
++++ enigma2-nightly.patched/lib/service/servicedvb.cpp
+@@ -2429,13 +2429,25 @@
+ 			continue;
+ 		}
+ 		ePyObject ppts = PyTuple_GET_ITEM(tuple, 0), ptype = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++		if (!(PyLong_Check(ppts) && PyLong_Check(ptype)))
++#else
+ 		if (!(PyLong_Check(ppts) && PyInt_Check(ptype)))
++#endif
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			eDebug("cutlist entries need to be (pts, type)-tuples (%d %d)", PyLong_Check(ppts), PyLong_Check(ptype));
++#else
+ 			eDebug("cutlist entries need to be (pts, type)-tuples (%d %d)", PyLong_Check(ppts), PyInt_Check(ptype));
++#endif
+ 			continue;
+ 		}
+ 		pts_t pts = PyLong_AsLongLong(ppts);
++#if PY_MAJOR_VERSION >= 3
++		int type = PyLong_AsLong(ptype);
++#else
+ 		int type = PyInt_AsLong(ptype);
++#endif
+ 		m_cue_entries.insert(cueEntry(pts, type));
+ 		eDebug("adding %08llx, %d", pts, type);
+ 	}
+@@ -2764,10 +2764,17 @@
+ 				ePyObject subs = getCachedSubtitle();
+ 				if (subs != Py_None)
+ 				{
++#if PY_MAJOR_VERSION >= 3
++					int type = PyLong_AsLong(PyTuple_GET_ITEM(subs, 0)),
++							pid = PyLong_AsLong(PyTuple_GET_ITEM(subs, 1)),
++							comp_page = PyLong_AsLong(PyTuple_GET_ITEM(subs, 2)), // ttx page
++							anc_page = PyLong_AsLong(PyTuple_GET_ITEM(subs, 3)); // ttx magazine
++#else
+ 					int type = PyInt_AsLong(PyTuple_GET_ITEM(subs, 0)),
+ 							pid = PyInt_AsLong(PyTuple_GET_ITEM(subs, 1)),
+ 							comp_page = PyInt_AsLong(PyTuple_GET_ITEM(subs, 2)), // ttx page
+ 							anc_page = PyInt_AsLong(PyTuple_GET_ITEM(subs, 3)); // ttx magazine
++#endif
+ 					if (type == 0) // dvb
+ 						m_subtitle_parser->start(pid, comp_page, anc_page);
+ 					else if (type == 1) // ttx
+@@ -2947,10 +2947,18 @@
+ 
+ 	entry = PyTuple_GET_ITEM(tuple, 0);
+ 
++#if PY_MAJOR_VERSION >= 3
++	if (!PyLong_Check(entry))
++#else
+ 	if (!PyInt_Check(entry))
++#endif
+ 		goto error_out;
+ 
++#if PY_MAJOR_VERSION >= 3
++	type = PyLong_AsLong(entry);
++#else
+ 	type = PyInt_AsLong(entry);
++#endif
+ 
+ 	if (type == 1)  // teletext subtitles
+ 	{
+@@ -2968,19 +2968,43 @@
+ 		}
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyLong_Check(entry))
++#else
+ 		if (!PyInt_Check(entry))
++#endif
+ 			goto error_out;
++#if PY_MAJOR_VERSION >= 3
++		pid = PyLong_AsLong(entry);
++#else
+ 		pid = PyInt_AsLong(entry);
++#endif
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 2);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyLong_Check(entry))
++#else
+ 		if (!PyInt_Check(entry))
++#endif
+ 			goto error_out;
++#if PY_MAJOR_VERSION >= 3
++		page = PyLong_AsLong(entry);
++#else
+ 		page = PyInt_AsLong(entry);
++#endif
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 3);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyLong_Check(entry))
++#else
+ 		if (!PyInt_Check(entry))
++#endif
+ 			goto error_out;
++#if PY_MAJOR_VERSION >= 3
++		magazine = PyLong_AsLong(entry);
++#else
+ 		magazine = PyInt_AsLong(entry);
++#endif
+ 
+ 		m_subtitle_widget = new eSubtitleWidget(parent);
+ 		m_subtitle_widget->resize(parent->size()); /* full size */
+@@ -2997,19 +2997,35 @@
+ 			goto error_out;
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyLong_Check(entry))
++			goto error_out;
++		pid = PyLong_AsLong(entry);
++
++		entry = PyTuple_GET_ITEM(tuple, 2);
++		if (!PyLong_Check(entry))
++			goto error_out;
++		composition_page_id = PyLong_AsLong(entry);
++
++		entry = PyTuple_GET_ITEM(tuple, 3);
++		if (!PyLong_Check(entry))
++			goto error_out;
++		ancillary_page_id = PyLong_AsLong(entry);
++#else
+ 		if (!PyInt_Check(entry))
+ 			goto error_out;
+ 		pid = PyInt_AsLong(entry);
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 2);
+ 		if (!PyInt_Check(entry))
+ 			goto error_out;
+ 		composition_page_id = PyInt_AsLong(entry);
+ 
+ 		entry = PyTuple_GET_ITEM(tuple, 3);
+ 		if (!PyInt_Check(entry))
+ 			goto error_out;
+ 		ancillary_page_id = PyInt_AsLong(entry);
++#endif
+ 
+ 		m_subtitle_widget = new eSubtitleWidget(parent);
+ 		m_subtitle_widget->resize(parent->size()); /* full size */
+--- enigma2-nightly.org/lib/service/servicemp3.cpp
++++ enigma2-nightly.patched/lib/service/servicemp3.cpp
+@@ -2609,9 +2609,15 @@
+ 	if (tuplesize < 1)
+ 		goto error_out;
+ 	entry = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++	if (!PyLong_Check(entry))
++		goto error_out;
++	pid = PyLong_AsLong(entry);
++#else
+ 	if (!PyInt_Check(entry))
+ 		goto error_out;
+ 	pid = PyInt_AsLong(entry);
++#endif
+ 
+ 	if (m_currentSubtitleStream != pid)
+ 	{
+--- enigma2-nightly.org/lib/service/servicedvd.cpp
++++ enigma2-nightly.patched/lib/service/servicedvd.cpp
+@@ -677,9 +677,15 @@
+ 		if (tuplesize < 1)
+ 			goto error_out;
+ 		entry = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++		if (!PyLong_Check(entry))
++			goto error_out;
++		pid = PyLong_AsLong(entry)-1;
++#else
+ 		if (!PyInt_Check(entry))
+ 			goto error_out;
+ 		pid = PyInt_AsLong(entry)-1;
++#endif
+ 
+ 		ddvd_set_spu(m_ddvdconfig, pid);
+ 		m_event(this, evUser+7);
+@@ -1031,10 +1031,28 @@
+ 	}
+ }
+ 
++#if PY_MAJOR_VERSION >= 3
++static struct PyModuleDef moduledef = {
++    PyModuleDef_HEAD_INIT,
++    "servicedvd",
++    NULL,
++    -1,
++    NULL,                       // methods
++    NULL,                       // m_reload
++    NULL,                       // traverse
++    NULL,                       // clear
++    NULL                        // free
++};
++
++#endif
+ eAutoInitPtr<eServiceFactoryDVD> init_eServiceFactoryDVD(eAutoInitNumbers::service+1, "eServiceFactoryDVD");
+ 
+ PyMODINIT_FUNC
+ initservicedvd(void)
+ {
++#if PY_MAJOR_VERSION >= 3
++	PyModule_Create(&moduledef);
++#else
+ 	Py_InitModule("servicedvd", NULL);
++#endif
+ }
+--- enigma2-nightly.org/lib/gui/elistboxcontent.cpp
++++ enigma2-nightly.patched/lib/gui/elistboxcontent.cpp
+@@ -217,7 +217,11 @@
+ 			painter.fill(eRect(offset.x() + half_height, offset.y() + half_height - 2, m_itemsize.width() - m_itemsize.height(), 4));
+ 		} else
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			const char *string = PyUnicode_Check(item) ? _PyUnicode_AsString(item) : "<not-a-string>";
++#else
+ 			const char *string = PyString_Check(item) ? PyString_AsString(item) : "<not-a-string>";
++#endif
+ 			ePoint text_offset = offset;
+ 			if (gray)
+ 				painter.setForegroundColor(gRGB(0x808080));
+@@ -385,7 +385,11 @@
+ 				/* handle left part. get item from tuple, convert to string, display. */
+ 			text = PyTuple_GET_ITEM(item, 0);
+ 			text = PyObject_Str(text); /* creates a new object - old object was borrowed! */
++#if PY_MAJOR_VERSION >= 3
++			const char *string = (text && PyUnicode_Check(text)) ? _PyUnicode_AsString(text) : "<not-a-string>";
++#else
+ 			const char *string = (text && PyString_Check(text)) ? PyString_AsString(text) : "<not-a-string>";
++#endif
+ 			painter.renderText(eRect(offset, m_itemsize), string, gPainter::RT_HALIGN_LEFT);
+ 			Py_XDECREF(text);
+ 
+@@ -425,7 +425,11 @@
+ 			{
+ 					/* convert type to string */
+ 				ePyObject type = PyTuple_GET_ITEM(value, 0);
++#if PY_MAJOR_VERSION >= 3
++				const char *atype = (text && PyUnicode_Check(text)) ? _PyUnicode_AsString(type) : 0;
++#else
+ 				const char *atype = (type && PyString_Check(type)) ? PyString_AsString(type) : 0;
++#endif
+ 
+ 				if (atype)
+ 				{
+@@ -430,7 +436,11 @@
+ 					if (!strcmp(atype, "text"))
+ 					{
+ 						ePyObject pvalue = PyTuple_GET_ITEM(value, 1);
++#if PY_MAJOR_VERSION >= 3
++						const char *value = (pvalue && PyUnicode_Check(pvalue)) ? _PyUnicode_AsString(pvalue) : "<not-a-string>";
++#else
+ 						const char *value = (pvalue && PyString_Check(pvalue)) ? PyString_AsString(pvalue) : "<not-a-string>";
++#endif
+ 						painter.setFont(fnt2);
+ 						painter.renderText(eRect(offset, m_itemsize), value, value_alignment_left ? gPainter::RT_HALIGN_LEFT : gPainter::RT_HALIGN_RIGHT);
+ 
+@@ -435,8 +437,13 @@
+ 						ePyObject psize = PyTuple_GET_ITEM(value, 2);
+ 
+ 							/* convert value to Long. fallback to -1 on error. */
++#if PY_MAJOR_VERSION >= 3
++						int value = (pvalue && PyLong_Check(pvalue)) ? PyLong_AsLong(pvalue) : -1;
++						int size = (pvalue && PyLong_Check(psize)) ? PyLong_AsLong(psize) : 100;
++#else
+ 						int value = (pvalue && PyInt_Check(pvalue)) ? PyInt_AsLong(pvalue) : -1;
+ 						int size = (pvalue && PyInt_Check(psize)) ? PyInt_AsLong(psize) : 100;
++#endif
+ 
+ 							/* calc. slider length */
+ 						int width = (m_itemsize.width() - m_seperation) * value / size;
+@@ -469,7 +469,11 @@
+ 					} else if (!strcmp(atype, "mtext"))
+ 					{
+ 						ePyObject pvalue = PyTuple_GET_ITEM(value, 1);
++#if PY_MAJOR_VERSION >= 3
++						const char *text = (pvalue && PyUnicode_Check(pvalue)) ? _PyUnicode_AsString(pvalue) : "<not-a-string>";
++#else
+ 						const char *text = (pvalue && PyString_Check(pvalue)) ? PyString_AsString(pvalue) : "<not-a-string>";
++#endif
+ 						ePtr<eTextPara> para = new eTextPara(eRect(offset, m_itemsize));
+ 						para->setFont(fnt2);
+ 						para->renderString(text, 0);
+@@ -474,7 +474,11 @@
+ 						for (int i = 0; i < entries; ++i)
+ 						{
+ 							ePyObject entry = PyList_GET_ITEM(plist, i);
++#if PY_MAJOR_VERSION >= 3
++							int num = PyLong_Check(entry) ? PyLong_AsLong(entry) : -1;
++#else
+ 							int num = PyInt_Check(entry) ? PyInt_AsLong(entry) : -1;
++#endif
+ 
+ 							if ((num < 0) || (num >= glyphs))
+ 								eWarning("glyph index %d in PythonConfigList out of bounds!", num);
+@@ -555,7 +555,11 @@
+ {
+ 	if (pbackColor)
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		unsigned int color = PyLong_AsUnsignedLongMask(pbackColor);
++#else
+ 		unsigned int color = PyInt_AsUnsignedLongMask(pbackColor);
++#endif
+ 		painter.setBackgroundColor(gRGB(color));
+ 	}
+ 	else if (local_style)
+@@ -581,7 +581,11 @@
+ {
+ 	if (pbackColorSelected)
+ 	{
++#if PY_MAJOR_VERSION >= 3
++		unsigned int color = PyLong_AsUnsignedLongMask(pbackColorSelected);
++#else
+ 		unsigned int color = PyInt_AsUnsignedLongMask(pbackColorSelected);
++#endif
+ 		painter.setBackgroundColor(gRGB(color));
+ 	}
+ 	else if (local_style)
+@@ -641,7 +641,11 @@
+ 	{
+ 		if (pforeColorSelected)
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			unsigned int color = PyLong_AsUnsignedLongMask(pforeColorSelected);
++#else
+ 			unsigned int color = PyInt_AsUnsignedLongMask(pforeColorSelected);
++#endif
+ 			painter.setForegroundColor(gRGB(color));
+ 		}
+ 		/* if we have a local foreground color set, use that. */
+@@ -652,7 +652,11 @@
+ 	{
+ 		if (pforeColor)
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			unsigned int color = PyLong_AsUnsignedLongMask(pforeColor);
++#else
+ 			unsigned int color = PyInt_AsUnsignedLongMask(pforeColor);
++#endif
+ 			painter.setForegroundColor(gRGB(color));
+ 		}
+ 		/* if we have a local foreground color set, use that. */
+@@ -669,7 +669,11 @@
+ 	if ((!color) && (!data))
+ 		return color;
+ 
++#if PY_MAJOR_VERSION >= 3
++	unsigned int icolor = PyLong_AsUnsignedLongMask(color);
++#else
+ 	unsigned int icolor = PyInt_AsUnsignedLongMask(color);
++#endif
+ 
+ 		/* check if we have the "magic" template color */
+ 	if ((icolor & 0xFF000000) == 0xFF000000)
+@@ -786,7 +786,11 @@
+ 				goto error_out;
+ 			}
+ 
++#if PY_MAJOR_VERSION >= 3
++			int type = PyLong_AsLong(PyTuple_GET_ITEM(item, 0));
++#else
+ 			int type = PyInt_AsLong(PyTuple_GET_ITEM(item, 0));
++#endif
+ 
+ 			switch (type)
+ 			{
+@@ -831,21 +831,37 @@
+ 				if (size > 13)
+ 					pborderColor = lookupColor(PyTuple_GET_ITEM(item, 13), data);
+ 
++#if PY_MAJOR_VERSION >= 3
++				if (PyLong_Check(pstring) && data) /* if the string is in fact a number, it refers to the 'data' list. */
++					pstring = PyTuple_GetItem(data, PyLong_AsLong(pstring));
++#else
+ 				if (PyInt_Check(pstring) && data) /* if the string is in fact a number, it refers to the 'data' list. */
+ 					pstring = PyTuple_GetItem(data, PyInt_AsLong(pstring));
++#endif
+ 
+ 							/* don't do anything if we have 'None' as string */
+ 				if (pstring == Py_None)
+ 					continue;
+ 
++#if PY_MAJOR_VERSION >= 3
++				const char *string = (PyUnicode_Check(pstring)) ? _PyUnicode_AsString(pstring) : "<not-a-string>";
++				int x = PyLong_AsLong(px) + offset.x();
++				int y = PyLong_AsLong(py) + offset.y();
++				int width = PyLong_AsLong(pwidth);
++				int height = PyLong_AsLong(pheight);
++				int flags = PyLong_AsLong(pflags);
++				int fnt = PyLong_AsLong(pfnt);
++				int bwidth = pborderWidth ? PyLong_AsLong(pborderWidth) : 0;
++#else
+ 				const char *string = (PyString_Check(pstring)) ? PyString_AsString(pstring) : "<not-a-string>";
+ 				int x = PyInt_AsLong(px) + offset.x();
+ 				int y = PyInt_AsLong(py) + offset.y();
+ 				int width = PyInt_AsLong(pwidth);
+ 				int height = PyInt_AsLong(pheight);
+ 				int flags = PyInt_AsLong(pflags);
+ 				int fnt = PyInt_AsLong(pfnt);
+ 				int bwidth = pborderWidth ? PyInt_AsLong(pborderWidth) : 0;
++#endif
+ 
+ 				if (m_font.find(fnt) == m_font.end())
+ 				{
+@@ -873,7 +873,11 @@
+ 					painter.clip(rect);
+ 					if (pborderColor)
+ 					{
++#if PY_MAJOR_VERSION >= 3
++						unsigned int color = PyLong_AsUnsignedLongMask(pborderColor);
++#else
+ 						unsigned int color = PyInt_AsUnsignedLongMask(pborderColor);
++#endif
+ 						painter.setForegroundColor(gRGB(color));
+ 					}
+ 
+@@ -1000,14 +1021,25 @@
+ 						pbackColorSelected=ePyObject();
+ 				}
+ 
++#if PY_MAJOR_VERSION >= 3
++				int x = PyLong_AsLong(px) + offset.x();
++				int y = PyLong_AsLong(py) + offset.y();
++				int width = PyLong_AsLong(pwidth);
++				int height = PyLong_AsLong(pheight);
++				int filled = PyLong_AsLong(pfilled_perc);
++
++				if ((filled < 0) && data) /* if the string is in a negative number, it refers to the 'data' list. */
++					filled = PyLong_AsLong(PyTuple_GetItem(data, -filled));
++#else
+ 				int x = PyInt_AsLong(px) + offset.x();
+ 				int y = PyInt_AsLong(py) + offset.y();
+ 				int width = PyInt_AsLong(pwidth);
+ 				int height = PyInt_AsLong(pheight);
+ 				int filled = PyInt_AsLong(pfilled_perc);
+ 
+ 				if ((filled < 0) && data) /* if the string is in a negative number, it refers to the 'data' list. */
+ 					filled = PyInt_AsLong(PyTuple_GetItem(data, -filled));
++#endif
+ 					
+ 							/* don't do anything if percent out of range */
+ 				if ((filled < 0) || (filled > 100))
+@@ -1003,7 +1049,11 @@
+ 				if ((filled < 0) || (filled > 100))
+ 					continue;
+ 
++#if PY_MAJOR_VERSION >= 3
++				int bwidth = pborderWidth ? PyLong_AsLong(pborderWidth) : 2;
++#else
+ 				int bwidth = pborderWidth ? PyInt_AsLong(pborderWidth) : 2;
++#endif
+ 
+ 				eRect rect(x, y, width, height);
+ 				painter.clip(rect);
+@@ -1005,8 +1005,13 @@
+ 				if (ppixmap)
+ 				{
+ 					ePtr<gPixmap> pixmap;
++#if PY_MAJOR_VERSION >= 3
++					if (PyLong_Check(ppixmap) && data) /* if the pixmap is in fact a number, it refers to the data list */
++						ppixmap = PyTuple_GetItem(data, PyLong_AsLong(ppixmap));
++#else
+ 					if (PyInt_Check(ppixmap) && data) /* if the pixmap is in fact a number, it refers to the data list */
+ 						ppixmap = PyTuple_GetItem(data, PyInt_AsLong(ppixmap));
++#endif
+ 
+ 					if (SwigFromPython(pixmap, ppixmap))
+ 					{
+@@ -1043,17 +1043,31 @@
+ 					goto error_out;
+ 				}
+ 
++#if PY_MAJOR_VERSION >= 3
++				if (PyLong_Check(ppixmap) && data) /* if the pixemap is in fact a number, it refers to the 'data' list. */
++					ppixmap = PyTuple_GetItem(data, PyLong_AsLong(ppixmap));
++
++							/* don't do anything if we have 'None' as pixmap */
++				if (ppixmap == Py_None)
++					continue;
++
++				int x = PyLong_AsLong(px) + offset.x();
++				int y = PyLong_AsLong(py) + offset.y();
++				int width = PyLong_AsLong(pwidth);
++				int height = PyLong_AsLong(pheight);
++#else
+ 				if (PyInt_Check(ppixmap) && data) /* if the pixemap is in fact a number, it refers to the 'data' list. */
+ 					ppixmap = PyTuple_GetItem(data, PyInt_AsLong(ppixmap));
+ 
+ 							/* don't do anything if we have 'None' as pixmap */
+ 				if (ppixmap == Py_None)
+ 					continue;
+ 
+ 				int x = PyInt_AsLong(px) + offset.x();
+ 				int y = PyInt_AsLong(py) + offset.y();
+ 				int width = PyInt_AsLong(pwidth);
+ 				int height = PyInt_AsLong(pheight);
++#endif
+ 				ePtr<gPixmap> pixmap;
+ 				if (SwigFromPython(pixmap, ppixmap))
+ 				{
+--- enigma2-nightly.org/lib/gui/epositiongauge.cpp
++++ enigma2-nightly.patched/lib/gui/epositiongauge.cpp
+@@ -83,11 +83,19 @@
+ 			continue;
+ 
+ 		ePyObject ppts = PyTuple_GET_ITEM(tuple, 0), ptype = PyTuple_GET_ITEM(tuple, 1);
++#if PY_MAJOR_VERSION >= 3
++		if (!(PyLong_Check(ppts) && PyLong_Check(ptype)))
++			continue;
++
++		pts_t pts = PyLong_AsLongLong(ppts);
++		int type = PyLong_AsLong(ptype);
++#else
+ 		if (!(PyLong_Check(ppts) && PyInt_Check(ptype)))
+ 			continue;
+ 
+ 		pts_t pts = PyLong_AsLongLong(ppts);
+ 		int type = PyInt_AsLong(ptype);
++#endif
+ 		m_cue_entries.insert(cueEntry(pts, type));
+ 	}
+ 	invalidate();
+--- enigma2-nightly.org/lib/python/python.cpp
++++ enigma2-nightly.patched/lib/python/python.cpp
+@@ -2,7 +2,11 @@
+                 /* avoid warnigs :) */
+ #undef _POSIX_C_SOURCE
+ #define _POSIX_C_SOURCE 200112L
++#if PY_MAJOR_VERSION >= 3
++extern "C" void PyInit__enigma();
++#else
+ extern "C" void init_enigma();
++#endif
+ extern "C" void eBaseInit(void);
+ extern "C" void eConsoleInit(void);
+ extern void bsodFatal(const char *component);
+@@ -124,7 +124,11 @@
+ 	Py_Initialize();
+ 	PyEval_InitThreads();
+ 
++#if PY_MAJOR_VERSION >= 3
++	PyInit__enigma();
++#else
+ 	init_enigma();
++#endif
+ 	eBaseInit();
+ 	eConsoleInit();
+ }
+@@ -169,7 +173,11 @@
+ 			Py_DECREF(pArgs);
+ 			if (pValue)
+ 			{
++#if PY_MAJOR_VERSION >= 3
++				printf("Result of call: %ld\n", PyLong_AsLong(pValue));
++#else
+ 				printf("Result of call: %ld\n", PyInt_AsLong(pValue));
++#endif
+ 				Py_DECREF(pValue);
+ 			} else
+ 			{
+@@ -196,8 +196,13 @@
+ 		pValue = PyObject_CallObject(pFunc, pArgs);
+  		if (pValue)
+ 		{
++#if PY_MAJOR_VERSION >= 3
++			if (PyLong_Check(pValue))
++				res = PyLong_AsLong(pValue);
++#else
+ 			if (PyInt_Check(pValue))
+ 				res = PyInt_AsLong(pValue);
++#endif
+ 			else
+ 				res = 0;
+ 			Py_DECREF(pValue);
+@@ -206,7 +206,11 @@
+ 		 	PyErr_Print();
+ 			ePyObject FuncStr = PyObject_Str(pFunc);
+ 			ePyObject ArgStr = PyObject_Str(pArgs);
++#if PY_MAJOR_VERSION >= 3
++		 	eDebug("(PyObject_CallObject(%s,%s) failed)", _PyUnicode_AsString(FuncStr), _PyUnicode_AsString(ArgStr));
++#else
+ 		 	eDebug("(PyObject_CallObject(%s,%s) failed)", PyString_AS_STRING(FuncStr), PyString_AS_STRING(ArgStr));
++#endif
+ 			Py_DECREF(FuncStr);
+ 			Py_DECREF(ArgStr);
+ 			/* immediately show BSOD, so we have the actual error at the bottom */
