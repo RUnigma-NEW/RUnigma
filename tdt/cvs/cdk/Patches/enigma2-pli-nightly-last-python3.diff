@@ -1,3 +1,13 @@
+--- enigma2-nightly.org/tools/genmetaindex.py
++++ enigma2-nightly.patched/tools/genmetaindex.py
+@@ -47,4 +47,4 @@
+ 
+ indent(root)
+ 
+-ElementTree(root).write(sys.stdout)
++ElementTree(root).write(sys.stdout.buffer)
+ 
+\
 --- enigma2-nightly.org/e2reactor.py
 +++ enigma2-nightly.patched/e2reactor.py
 @@ -55,12 +55,12 @@

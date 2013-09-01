@@ -1,3 +1,13 @@
+--- a/genmetaindex.py
++++ b/genmetaindex.py
+@@ -51,4 +51,4 @@
+ 
+ indent(root)
+ 
+-ElementTree(root).write(sys.stdout)
++ElementTree(root).write(sys.stdout.buffer)
+ 
+\
 --- a/alternativesoftcammanager/src/Manager.py
 +++ b/alternativesoftcammanager/src/Manager.py
 @@ -1,5 +1,5 @@
