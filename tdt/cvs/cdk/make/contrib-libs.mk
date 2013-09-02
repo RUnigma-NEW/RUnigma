@@ -2716,16 +2716,12 @@ $(DEPDIR)/libdb: bootstrap $(DEPENDS_libdb)
 # pythonwifi
 #
 BEGIN[[
-ifdef ENABLE_PY332
-pythonwifi
-  0.1.1
-  wifi-{PV}
-  https://pypi.python.org/packages/source/w/wifi/wifi-0.1.1.tar.gz
-else
 pythonwifi
   0.5.0
   python-wifi-{PV}
   extract:http://freefr.dl.sourceforge.net/project/{PN}.berlios/python-wifi-{PV}.tar.bz2
+ifdef ENABLE_PY332
+  patch:file://pythonwifi3.diff
 endif
 ;
 ]]END
@@ -2733,7 +2729,7 @@ endif
 DESCRIPTION_pythonwifi = "pythonwifi"
 FILES_pythonwifi =\
 /usr/bin/* \
-$(PYTHON_DIR)/site-packages/wifi
+$(PYTHON_DIR)/site-packages/pythonwifi
 
 $(DEPDIR)/pythonwifi: bootstrap setuptools $(DEPENDS_pythonwifi)
 	$(PREPARE_pythonwifi)

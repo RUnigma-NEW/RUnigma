@@ -1,0 +1,986 @@
+--- a/setup.py
++++ b/setup.py
+@@ -6,7 +6,7 @@
+ setup(
+     name = "python-wifi",
+     version = "0.5.0",
+-    author = "Róman Joost",
++    author = "Roman Joost",
+     author_email = "roman@bromeco.de",
+     maintainer = "Sean Robinson",
+     maintainer_email = "pythonwifi-dev@lists.berlios.de",
+--- a/examples/iwconfig.py
++++ b/examples/iwconfig.py
+@@ -29,7 +29,8 @@
+     """ Return formatted string with Bit Rate info. """
+     try:
+         bitrate = wifi.wireless_info.getBitrate()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme:
++        (errno, strerror) = xxx_todo_changeme.args
+         return None
+     else:
+         if bitrate.fixed:
+@@ -42,7 +43,8 @@
+     """ Return formatted string with TXPower info. """
+     try:
+         txpower = wifi.wireless_info.getTXPower()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme1:
++        (errno, strerror) = xxx_todo_changeme1.args
+         return None
+     else:
+         if txpower.fixed:
+@@ -55,7 +57,8 @@
+     """ Return formatted string with Sensitivity info. """
+     try:
+         sensitivity = wifi.wireless_info.getSensitivity()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme2:
++        (errno, strerror) = xxx_todo_changeme2.args
+         return None
+     else:
+         if sensitivity.fixed:
+@@ -70,7 +73,8 @@
+     """ Return formatted string with Retry info. """
+     try:
+         retry = wifi.wireless_info.getRetry()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme3:
++        (errno, strerror) = xxx_todo_changeme3.args
+         return None
+     else:
+         modifier = ""
+@@ -91,7 +95,8 @@
+     """ Return formatted string with RTS info. """
+     try:
+         rts = wifi.wireless_info.getRTS()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme4:
++        (errno, strerror) = xxx_todo_changeme4.args
+         return None
+     else:
+         if rts.disabled:
+@@ -106,7 +111,8 @@
+     """ Return formatted string with Fragmentation info. """
+     try:
+         frag = wifi.wireless_info.getFragmentation()
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme5:
++        (errno, strerror) = xxx_todo_changeme5.args
+         return None
+     else:
+         if frag.disabled:
+@@ -154,11 +160,11 @@
+ def iwconfig(interface):
+     """ Get wireless information from the device driver. """
+     if interface not in getWNICnames():
+-        print "%-8.16s  no wireless extensions." % (interface, )
++        print("%-8.16s  no wireless extensions." % (interface, ))
+     else:
+         wifi = Wireless(interface)
+-        print """%-8.16s  %s  ESSID:"%s" """ % (interface,
+-            wifi.getWirelessName(), wifi.getEssid())
++        print("""%-8.16s  %s  ESSID:"%s" """ % (interface,
++            wifi.getWirelessName(), wifi.getEssid()))
+         if (wifi.wireless_info.getMode() == pythonwifi.flags.IW_MODE_ADHOC):
+             ap_type = "Cell"
+         else:
+@@ -166,8 +172,8 @@
+         ap_addr = wifi.getAPaddr()
+         if (ap_addr == "00:00:00:00:00:00"):
+             ap_addr = "Not-Associated"
+-        print """          Mode:%s  Frequency:%s  %s: %s""" % (
+-            wifi.getMode(), wifi.getFrequency(), ap_type, ap_addr)
++        print("""          Mode:%s  Frequency:%s  %s: %s""" % (
++            wifi.getMode(), wifi.getFrequency(), ap_type, ap_addr))
+ 
+         # Bit Rate, TXPower, and Sensitivity line
+         line = "          "
+@@ -180,7 +186,7 @@
+         sensitivity = getSensitivity(wifi)
+         if sensitivity:
+             line = line + sensitivity
+-        print line
++        print(line)
+ 
+         # Retry, RTS, and Fragmentation line
+         line = "          "
+@@ -193,17 +199,17 @@
+         fragment = getFragmentation(wifi)
+         if fragment:
+             line = line + fragment
+-        print line
++        print(line)
+ 
+         # Encryption line
+         line = "          "
+         line = line + getEncryption(wifi)
+-        print line
++        print(line)
+ 
+         # Power Management line
+         line = "          "
+         line = line + getPowerManagement(wifi)
+-        print line
++        print(line)
+ 
+         stat, qual, discard, missed_beacon = wifi.getStatistics()
+ 
+@@ -212,27 +218,27 @@
+         line = line + "Link Quality:%s/100  " % (qual.quality, )
+         line = line + "Signal level:%sdBm  " % (qual.signallevel, )
+         line = line + "Noise level:%sdBm" % (qual.noiselevel, )
+-        print line
++        print(line)
+ 
+         # Rx line
+         line = "          "
+         line = line + "Rx invalid nwid:%s  " % (discard['nwid'], )
+         line = line + "Rx invalid crypt:%s  " % (discard['code'], )
+         line = line + "Rx invalid frag:%s" % (discard['fragment'], )
+-        print line
++        print(line)
+ 
+         # Tx line
+         line = "          "
+         line = line + "Tx excessive retries:%s  " % (discard['retries'], )
+         line = line + "Invalid misc:%s   " % (discard['misc'], )
+         line = line + "Missed beacon:%s" % (missed_beacon, )
+-        print line
+-
+-    print
++        print(line)
++
++    print()
+ 
+ def usage():
+     """ Print info about using iwconfig.py. """
+-    print """Usage: iwconfig.py [interface]
++    print("""Usage: iwconfig.py [interface]
+                 interface essid {NNN|any|on|off}
+                 interface mode {managed|ad-hoc|master|...}
+                 interface freq N.NNN[k|M|G]
+@@ -252,7 +258,7 @@
+                 interface frag {N|auto|fixed|off}
+                 interface modulation {11g|11a|CCK|OFDMg|...}
+                 interface commit 
+-       Check man pages for more details."""
++       Check man pages for more details.""")
+ 
+ def version_info():
+     """ Print version info for iwconfig.py, Wireless Extensions compatibility,
+@@ -264,7 +270,7 @@
+ def main():
+     try:
+         opts, args = getopt.getopt(sys.argv[1:], "hv", ["help", "version"])
+-    except getopt.GetoptError, error_str:
++    except getopt.GetoptError as error_str:
+         # invalid options will be taken to be interface name
+         pass
+     else:
+--- a/examples/iwlist.py
++++ b/examples/iwlist.py
+@@ -32,7 +32,8 @@
+     # "Check if the interface could support scanning"
+     try:
+         iwrange = Iwrange(wifi.ifname)
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme2:
++        (error_number, error_string) = xxx_todo_changeme2.args
+         sys.stderr.write("%-8.16s  Interface doesn't support scanning.\n\n" % (
+                             wifi.ifname))
+     else:
+@@ -41,26 +42,27 @@
+         # "Initiate Scanning"
+         try:
+             results = wifi.scan()
+-        except IOError, (error_number, error_string):
++        except IOError as xxx_todo_changeme:
++            (error_number, error_string) = xxx_todo_changeme.args
+             if error_number != errno.EPERM:
+                 sys.stderr.write(
+                     "%-8.16s  Interface doesn't support scanning : %s\n\n" %
+                     (wifi.ifname, error_string))
+         else:
+             if (len(results) == 0):
+-                print "%-8.16s  No scan results" % (wifi.ifname, )
++                print("%-8.16s  No scan results" % (wifi.ifname, ))
+             else:
+                 (num_channels, frequencies) = wifi.getChannelInfo()
+-                print "%-8.16s  Scan completed :" % (wifi.ifname, )
++                print("%-8.16s  Scan completed :" % (wifi.ifname, ))
+                 index = 1
+                 for ap in results:
+-                    print "          Cell %02d - Address: %s" % (index, ap.bssid)
+-                    print "                    ESSID:\"%s\"" % (ap.essid, )
+-                    print "                    Mode:%s" % (ap.mode, )
+-                    print "                    Frequency:%s (Channel %d)" % \
++                    print("          Cell %02d - Address: %s" % (index, ap.bssid))
++                    print("                    ESSID:\"%s\"" % (ap.essid, ))
++                    print("                    Mode:%s" % (ap.mode, ))
++                    print("                    Frequency:%s (Channel %d)" % \
+                         (wifi._formatFrequency(ap.frequency.getFrequency()),
+                         frequencies.index(wifi._formatFrequency(
+-                            ap.frequency.getFrequency())) + 1)
++                            ap.frequency.getFrequency())) + 1))
+                     if (ap.quality.updated & \
+                                 pythonwifi.flags.IW_QUAL_QUAL_UPDATED):
+                         quality_updated = "="
+@@ -76,7 +78,7 @@
+                         noise_updated = "="
+                     else:
+                         noise_updated = ":"
+-                    print "                    " + \
++                    print("                    " + \
+                         "Quality%c%s/%s  Signal level%c%s/%s  Noise level%c%s/%s" % \
+                         (quality_updated,
+                         ap.quality.quality,
+@@ -86,7 +88,7 @@
+                         "100",
+                         noise_updated,
+                         ap.quality.getNoiselevel(),
+-                        "100")
++                        "100"))
+                     # This code on encryption keys is very fragile
+                     if (ap.encode.flags & pythonwifi.flags.IW_ENCODE_DISABLED):
+                         key_status = "off"
+@@ -94,7 +96,7 @@
+                         if (ap.encode.flags & pythonwifi.flags.IW_ENCODE_NOKEY):
+                             if (ap.encode.length <= 0):
+                                 key_status = "on"
+-                    print "                    Encryption key:%s" % (key_status, )
++                    print("                    Encryption key:%s" % (key_status, ))
+                     if len(ap.rate) > 0:
+                         for rate_list in ap.rate:
+                             # calc how many full lines of bitrates
+@@ -113,18 +115,18 @@
+                                     tuple(wifi._formatBitrate(x) for x in
+                                         rate_list[line * 5:(line * 5) + 5])
+                                 line = line + 1
+-                                print rate_line
++                                print(rate_line)
+                             if line > 0:
+                                 # non-first lines should start *very* indented
+                                 rate_line = "                              "
+                             # print non-full line
+-                            print rate_line + "%s; "*(rate_remainder - 1) % \
++                            print(rate_line + "%s; "*(rate_remainder - 1) % \
+                                 tuple(wifi._formatBitrate(x) for x in
+                                     rate_list[line * 5:line * 5 + rate_remainder - 1]) + \
+                                 "%s" % (wifi._formatBitrate(
+-                                        rate_list[line * 5 + rate_remainder - 1]))
++                                        rate_list[line * 5 + rate_remainder - 1])))
+                     index = index + 1
+-            print
++            print()
+ 
+ def print_channels(wifi, args=None):
+     """ Print all frequencies/channels available on the card.
+@@ -133,7 +135,9 @@
+     try:
+         (num_frequencies, channels) = wifi.getChannelInfo()
+         current_freq = wifi.getFrequency()
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme3:
++        # Channel/frequency info not available
++        (error_number, error_string) = xxx_todo_changeme3.args
+         # Channel/frequency info not available
+         if (error_number == errno.EOPNOTSUPP) or \
+            (error_number == errno.EINVAL) or \
+@@ -144,11 +148,11 @@
+             report_error("channel", wifi.ifname, error_number, error_string)
+     else:
+         # Channel/frequency info available
+-        print "%-8.16s  %02d channels in total; available frequencies :" % \
+-                    (wifi.ifname, num_frequencies)
++        print("%-8.16s  %02d channels in total; available frequencies :" % \
++                    (wifi.ifname, num_frequencies))
+         for channel in channels:
+-            print "          Channel %02d : %s" % \
+-                    (channels.index(channel)+1, channel)
++            print("          Channel %02d : %s" % \
++                    (channels.index(channel)+1, channel))
+         # Do some low-level comparisons on frequency info
+         iwfreq = wifi.wireless_info.getFrequency()
+         # XXX - this is not the same flags value as iwlist.c
+@@ -162,8 +166,8 @@
+             return_type = "Frequency"
+         # Output current channel/frequency
+         current_freq = wifi.getFrequency()
+-        print "          Current %s%c%s (Channel %d)\n" % \
+-                    (return_type, fixed, current_freq, channels.index(current_freq) + 1 )
++        print("          Current %s%c%s (Channel %d)\n" % \
++                    (return_type, fixed, current_freq, channels.index(current_freq) + 1 ))
+ 
+ def print_bitrates(wifi, args=None):
+     """ Print all bitrates available on the card.
+@@ -171,7 +175,8 @@
+     """
+     try:
+         num_bitrates, bitrates = wifi.getBitrates()
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme4:
++        (error_number, error_string) = xxx_todo_changeme4.args
+         if (error_number == errno.EOPNOTSUPP) or \
+            (error_number == errno.EINVAL) or \
+            (error_number == errno.ENODEV):
+@@ -184,17 +189,19 @@
+         if (num_bitrates > 0) and \
+            (num_bitrates <= pythonwifi.flags.IW_MAX_BITRATES):
+             # wireless device with bit rate info, so list 'em
+-            print "%-8.16s  %02d available bit-rates :" % \
+-                    (wifi.ifname, num_bitrates)
++            print("%-8.16s  %02d available bit-rates :" % \
++                    (wifi.ifname, num_bitrates))
+             for rate in bitrates:
+-                print "\t  %s" % rate
++                print("\t  %s" % rate)
+         else:
+             # wireless device, but no bit rate info available
+-            print "%-8.16s  unknown bit-rate information." % (wifi.ifname, )
++            print("%-8.16s  unknown bit-rate information." % (wifi.ifname, ))
+     # current bit rate
+     try:
+         bitrate = wifi.wireless_info.getBitrate()
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme5:
++        # no bit rate info is okay, error was given above
++        (error_number, error_string) = xxx_todo_changeme5.args
+         # no bit rate info is okay, error was given above
+         pass
+     else:
+@@ -202,10 +209,10 @@
+             fixed = "="
+         else:
+             fixed = ":"
+-        print "          Current Bit Rate%c%s" % (fixed, wifi.getBitrate())
++        print("          Current Bit Rate%c%s" % (fixed, wifi.getBitrate()))
+         # broadcast bit rate
+         # XXX add broadcast bit rate
+-        print
++        print()
+ 
+ def print_encryption(wifi, args=None):
+     """ Print encryption keys on the card.
+@@ -213,7 +220,8 @@
+     """
+     try:
+         keys = wifi.getKeys()
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme6:
++        (error_number, error_string) = xxx_todo_changeme6.args
+         if (error_number == errno.EOPNOTSUPP) or \
+            (error_number == errno.EINVAL) or \
+            (error_number == errno.ENODEV):
+@@ -230,18 +238,18 @@
+         key_sizes = key_sizes + \
+                     repr(range_info.encoding_size[range_info.num_encoding_sizes - 1] * 8) + \
+                     "bits"
+-        print "%-8.16s  %d key sizes : %s" % \
+-                (wifi.ifname, range_info.num_encoding_sizes, key_sizes)
+-        print "          %d keys available :" % (len(keys), )
++        print("%-8.16s  %d key sizes : %s" % \
++                (wifi.ifname, range_info.num_encoding_sizes, key_sizes))
++        print("          %d keys available :" % (len(keys), ))
+         for key in keys:
+-            print "\t\t[%d]: %s" % (key[0], key[1])
+-        print "          Current Transmit Key: [%s]" % \
+-                (wifi.wireless_info.getKey().flags & pythonwifi.flags.IW_ENCODE_INDEX, )
++            print("\t\t[%d]: %s" % (key[0], key[1]))
++        print("          Current Transmit Key: [%s]" % \
++                (wifi.wireless_info.getKey().flags & pythonwifi.flags.IW_ENCODE_INDEX, ))
+         if wifi.wireless_info.getKey().flags & pythonwifi.flags.IW_ENCODE_RESTRICTED:
+-            print "          Security mode:restricted"
++            print("          Security mode:restricted")
+         if wifi.wireless_info.getKey().flags & pythonwifi.flags.IW_ENCODE_OPEN:
+-            print "          Security mode:open"
+-        print "\n"
++            print("          Security mode:open")
++        print("\n")
+ 
+ def format_pm_value(value, args=None):
+     """ Return formatted PM value.
+@@ -263,73 +271,74 @@
+     try:
+         (pm_capa, power_period, power_timeout, power_saving, power_params) = \
+             wifi.getPowermanagement()
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme7:
++        (error_number, error_string) = xxx_todo_changeme7.args
+         if (error_number == errno.ENODEV):
+             sys.stderr.write("%-8.16s  no power management information.\n\n" % (
+                             wifi.ifname, ))
+     else:
+-        print "%-8.16s " % (wifi.ifname, ),
++        print("%-8.16s " % (wifi.ifname, ), end=' ')
+         if (pm_capa & pythonwifi.flags.IW_POWER_MODE):
+-            print "Supported modes :"
++            print("Supported modes :")
+             if pm_capa & (pythonwifi.flags.IW_POWER_UNICAST_R |
+                         pythonwifi.flags.IW_POWER_MULTICAST_R):
+-                print "\t\t\to Receive all packets (unicast & multicast)"
+-                print "\t ",
++                print("\t\t\to Receive all packets (unicast & multicast)")
++                print("\t ", end=' ')
+             if pm_capa & pythonwifi.flags.IW_POWER_UNICAST_R:
+-                print "\t\to Receive Unicast only (discard multicast)"
+-                print "\t ",
++                print("\t\to Receive Unicast only (discard multicast)")
++                print("\t ", end=' ')
+             if pm_capa & pythonwifi.flags.IW_POWER_MULTICAST_R:
+-                print "\t\to Receive Multicast only (discard unicast)"
+-                print "\t ",
++                print("\t\to Receive Multicast only (discard unicast)")
++                print("\t ", end=' ')
+             if pm_capa & pythonwifi.flags.IW_POWER_FORCE_S:
+-                print "\t\to Force sending using Power Management"
+-                print "\t ",
++                print("\t\to Force sending using Power Management")
++                print("\t ", end=' ')
+             if pm_capa & pythonwifi.flags.IW_POWER_REPEATER:
+-                print "\t\to Repeat multicast"
+-                print "\t ",
++                print("\t\to Repeat multicast")
++                print("\t ", end=' ')
+         if (power_period[0] & pythonwifi.flags.IW_POWER_PERIOD):
+             if (power_period[0] & pythonwifi.flags.IW_POWER_MIN):
+-                print "Auto  period  ; ",
+-            else:
+-                print "Fixed period  ; ",
+-            print "min period:%s\n\t\t\t  " % \
+-                    (format_pm_value(power_period[1]), ),
+-            print "max period:%s\n\t " % (format_pm_value(power_period[2]), ),
++                print("Auto  period  ; ", end=' ')
++            else:
++                print("Fixed period  ; ", end=' ')
++            print("min period:%s\n\t\t\t  " % \
++                    (format_pm_value(power_period[1]), ), end=' ')
++            print("max period:%s\n\t " % (format_pm_value(power_period[2]), ), end=' ')
+         if (power_timeout[0] & pythonwifi.flags.IW_POWER_TIMEOUT):
+             if (power_timeout[0] & pythonwifi.flags.IW_POWER_MIN):
+-                print "Auto  timeout ; ",
+-            else:
+-                print "Fixed timeout ; ",
+-            print "min period:%s\n\t\t\t  " % \
+-                    (format_pm_value(power_timeout[1]), ),
+-            print "max period:%s\n\t " % (format_pm_value(power_timeout[2]), ),
++                print("Auto  timeout ; ", end=' ')
++            else:
++                print("Fixed timeout ; ", end=' ')
++            print("min period:%s\n\t\t\t  " % \
++                    (format_pm_value(power_timeout[1]), ), end=' ')
++            print("max period:%s\n\t " % (format_pm_value(power_timeout[2]), ), end=' ')
+         if (power_saving[0] & pythonwifi.flags.IW_POWER_SAVING):
+             if (power_saving[0] & pythonwifi.flags.IW_POWER_MIN):
+-                print "Auto  saving  ; ",
+-            else:
+-                print "Fixed saving  ; ",
+-            print "min period:%s\n\t\t\t  " % \
+-                    (format_pm_value(power_saving[1]), ),
+-            print "max period:%s\n\t " % (format_pm_value(power_saving[2]), ),
++                print("Auto  saving  ; ", end=' ')
++            else:
++                print("Fixed saving  ; ", end=' ')
++            print("min period:%s\n\t\t\t  " % \
++                    (format_pm_value(power_saving[1]), ), end=' ')
++            print("max period:%s\n\t " % (format_pm_value(power_saving[2]), ), end=' ')
+         if power_params.disabled:
+-            print "Current mode:off"
++            print("Current mode:off")
+         else:
+             if (power_params.flags & pythonwifi.flags.IW_POWER_MODE == \
+                         pythonwifi.flags.IW_POWER_UNICAST_R):
+-                print "Current mode:Unicast only received"
++                print("Current mode:Unicast only received")
+             elif (power_params.flags & pythonwifi.flags.IW_POWER_MODE == \
+                         pythonwifi.flags.IW_POWER_MULTICAST_R):
+-                print "Current mode:Multicast only received"
++                print("Current mode:Multicast only received")
+             elif (power_params.flags & pythonwifi.flags.IW_POWER_MODE == \
+                         pythonwifi.flags.IW_POWER_ALL_R):
+-                print "Current mode:All packets received"
++                print("Current mode:All packets received")
+             elif (power_params.flags & pythonwifi.flags.IW_POWER_MODE == \
+                         pythonwifi.flags.IW_POWER_FORCE_S):
+-                print "Current mode:Force sending"
++                print("Current mode:Force sending")
+             elif (power_params.flags & pythonwifi.flags.IW_POWER_MODE == \
+                         pythonwifi.flags.IW_POWER_REPEATER):
+-                print "Current mode:Repeat multicasts"
+-        print
++                print("Current mode:Repeat multicasts")
++        print()
+ 
+ def print_txpower(wifi, args=None):
+     """ Print transmit power info for the card.
+@@ -340,7 +349,8 @@
+ def print_retry(wifi, args=None):
+     try:
+         range_info = Iwrange(wifi.ifname)
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme8:
++        (error_number, error_string) = xxx_todo_changeme8.args
+         if (error_number == errno.EOPNOTSUPP) or \
+            (error_number == errno.EINVAL) or \
+            (error_number == errno.ENODEV):
+@@ -355,10 +365,10 @@
+             else:
+                 limit = "Fixed limit    ;  min limit:%d" % (
+                     range_info.min_retry, )
+-            print ifname + limit
++            print(ifname + limit)
+             ifname = None
+-            print "                            max limit:%d" % (
+-                range_info.max_retry, )
++            print("                            max limit:%d" % (
++                range_info.max_retry, ))
+         if (range_info.r_time_flags & pythonwifi.flags.IW_RETRY_LIFETIME):
+             if (range_info.r_time_flags & pythonwifi.flags.IW_RETRY_MIN):
+                 lifetime = "Auto  lifetime ;  min lifetime:%d" % (
+@@ -367,17 +377,17 @@
+                 lifetime = "Fixed lifetime ;  min lifetime:%d" % (
+                     range_info.min_r_time, )
+             if ifname:
+-                print ifname + lifetime
++                print(ifname + lifetime)
+                 ifname = None
+             else:
+-                print "          " + lifetime
+-            print "                            max lifetime:%d" % (
+-                range_info.max_r_time, )
++                print("          " + lifetime)
++            print("                            max lifetime:%d" % (
++                range_info.max_r_time, ))
+         iwparam = wifi.wireless_info.getRetry()
+         if iwparam.disabled:
+-            print "          Current mode:off"
+-        else:
+-            print "          Current mode:on"
++            print("          Current mode:off")
++        else:
++            print("          Current mode:on")
+             if (iwparam.flags & pythonwifi.flags.IW_RETRY_TYPE):
+                 if (iwparam.flags & pythonwifi.flags.IW_RETRY_LIFETIME):
+                     mode_type = "lifetime"
+@@ -392,7 +402,7 @@
+                     mode = mode + " short %s:%d" % (mode_type, iwparam.value)
+                 if (iwparam.flags & pythonwifi.flags.IW_RETRY_LONG):
+                     mode = mode + " long %s:%d" % (mode_type, iwparam.value)
+-                print mode
++                print(mode)
+ 
+ def print_aps(wifi, args=None):
+     """ Print the access points detected nearby.
+@@ -404,7 +414,8 @@
+     # "Check if the interface could support scanning"
+     try:
+         iwrange = Iwrange(wifi.ifname)
+-    except IOError, (error_number, error_string):
++    except IOError as xxx_todo_changeme9:
++        (error_number, error_string) = xxx_todo_changeme9.args
+         sys.stderr.write("%-8.16s  Interface doesn't support scanning.\n\n" % (
+                             wifi.ifname))
+     else:
+@@ -413,17 +424,18 @@
+         # "Initiate Scanning"
+         try:
+             results = wifi.scan()
+-        except IOError, (error_number, error_string):
++        except IOError as xxx_todo_changeme1:
++            (error_number, error_string) = xxx_todo_changeme1.args
+             if error_number != errno.EPERM:
+                 sys.stderr.write(
+                     "%-8.16s  Interface doesn't support scanning : %s\n\n" %
+                     (wifi.ifname, error_string))
+         else:
+             if (len(results) == 0):
+-                print "%-8.16s  Interface doesn't have " % (wifi.ifname, ) + \
+-                      "a list of Peers/Access-Points"
+-            else:
+-                print "%-8.16s  Peers/Access-Points in range:"% (wifi.ifname, )
++                print("%-8.16s  Interface doesn't have " % (wifi.ifname, ) + \
++                      "a list of Peers/Access-Points")
++            else:
++                print("%-8.16s  Peers/Access-Points in range:"% (wifi.ifname, ))
+                 for ap in results:
+                     if (ap.quality.quality):
+                         if (ap.quality.updated & \
+@@ -441,7 +453,7 @@
+                             noise_updated = "="
+                         else:
+                             noise_updated = ":"
+-                        print "    %s : Quality%c%s/%s  Signal level%c%s/%s  Noise level%c%s/%s" % \
++                        print("    %s : Quality%c%s/%s  Signal level%c%s/%s  Noise level%c%s/%s" % \
+                             (ap.bssid,
+                             quality_updated,
+                             ap.quality.quality,
+@@ -451,22 +463,22 @@
+                             "100",
+                             noise_updated,
+                             ap.quality.getNoiselevel(),
+-                            "100")
++                            "100"))
+                     else:
+-                        print "    %s" % (ap.bssid, )
+-                print
++                        print("    %s" % (ap.bssid, ))
++                print()
+ 
+ 
+ def report_error(function, interface, error_number, error_string):
+     """ Print error to user. """
+-    print """Uncaught error condition.  Please report this to the \
++    print("""Uncaught error condition.  Please report this to the \
+ developers' mailing list (informaion available at \
+ http://lists.berlios.de/mailman/listinfo/pythonwifi-dev).  While attempting to \
+ print %s informaion for %s, the error "%d - %s" occurred.""" % \
+-(function, interface, error_number, error_string)
++(function, interface, error_number, error_string))
+ 
+ def usage():
+-    print """\
++    print("""\
+ Usage: iwlist.py [interface] scanning [essid NNN] [last]
+                  [interface] frequency
+                  [interface] channel
+@@ -478,7 +490,7 @@
+                  [interface] retry
+                  [interface] ap
+                  [interface] accesspoints
+-                 [interface] peers"""
++                 [interface] peers""")
+ 
+ def get_matching_command(option):
+     """ Return a function for the command.
+@@ -510,7 +522,7 @@
+                  }
+ 
+     function = None
+-    for command in iwcommands.keys():
++    for command in list(iwcommands.keys()):
+         if option.startswith(command):
+             if iwcommands[command][0].startswith(option):
+                 function = iwcommands[command][1]
+@@ -532,8 +544,8 @@
+                 wifi = Wireless(ifname)
+                 list_command(wifi)
+         else:
+-            print "iwlist.py: unknown command `%s' " \
+-                  "(check 'iwlist.py --help')." % (option, )
++            print("iwlist.py: unknown command `%s' " \
++                  "(check 'iwlist.py --help')." % (option, ))
+ 
+     # if program name and more than one argument are given
+     if len(sys.argv) > 2:
+@@ -546,8 +558,8 @@
+             wifi = Wireless(ifname)
+             list_command(wifi, sys.argv[3:])
+         else:
+-            print "iwlist.py: unknown command `%s' " \
+-                   "(check 'iwlist.py --help')." % (option, )
++            print("iwlist.py: unknown command `%s' " \
++                   "(check 'iwlist.py --help')." % (option, ))
+ 
+ 
+ if __name__ == "__main__":
+--- a/pythonwifi/iwlibs.py
++++ b/pythonwifi/iwlibs.py
+@@ -110,7 +110,9 @@
+             wifi = Wireless(ifname)
+             try:
+                 result = wifi.getAPaddr()
+-            except IOError, (errno, strerror):
++            except IOError as xxx_todo_changeme:
++                # don't stop on an individual error
++                (errno, strerror) = xxx_todo_changeme.args
+                 # don't stop on an individual error
+                 pass
+             if result[0] == 0:
+@@ -397,7 +399,7 @@
+             >>> wifi.setKey()
+ 
+         """
+-        if index not in range(1, pythonwifi.flags.IW_ENCODE_INDEX):
++        if index not in list(range(1, pythonwifi.flags.IW_ENCODE_INDEX)):
+             raise IndexError
+ 
+         if key:
+@@ -406,7 +408,7 @@
+                 cooked_key = cooked_key + chr(hex2int(key[i:i+2]))
+         else:
+             raw_key = self.getKey(index, False)
+-            cooked_key = map(chr, raw_key)
++            cooked_key = list(map(chr, raw_key))
+ 
+         iwpoint = Iwpoint(cooked_key,
+                     index + pythonwifi.flags.IW_ENCODE_ENABLED)
+@@ -1204,7 +1206,7 @@
+ 
+     def __init__(self, data=None, flags=0):
+         if data is None:
+-            raise ValueError, "data must be passed to Iwpoint"
++            raise ValueError("data must be passed to Iwpoint")
+         # P pointer to data, H length, H flags
+         self.fmt = 'PHH'
+         self.flags = flags
+@@ -1390,7 +1392,7 @@
+     def __len__(self):
+         return len(self.aplist)
+ 
+-    def next(self):
++    def __next__(self):
+         self.index = self.index + 1
+         if self.index > len(self.aplist) - 1:
+             raise StopIteration
+@@ -1410,7 +1412,8 @@
+                 status, result = iwstruct.iw_get_ext(self.ifname,
+                                                 pythonwifi.flags.SIOCGIWSCAN,
+                                                 data=datastr)
+-            except IOError, (error_number, error_string):
++            except IOError as xxx_todo_changeme1:
++                (error_number, error_string) = xxx_todo_changeme1.args
+                 if error_number == errno.E2BIG:
+                     # Keep resizing the buffer until it's
+                     #   large enough to hold the scan
+@@ -1476,7 +1479,7 @@
+             if scanresult.bssid != "00:00:00:00:00:00":
+                 aplist.append(scanresult)
+             else:
+-                raise RuntimeError, 'Attempting to add an AP without a bssid'
++                raise RuntimeError('Attempting to add an AP without a bssid')
+         return aplist
+ 
+ 
+@@ -1558,18 +1561,18 @@
+                               This command is not allowed.")
+ 
+     def display(self):
+-        print "ESSID:", self.essid
+-        print "Access point:", self.bssid
+-        print "Mode:", self.mode
++        print("ESSID:", self.essid)
++        print("Access point:", self.bssid)
++        print("Mode:", self.mode)
+         if len(self.rate) > 0:
+-            print "Highest Bitrate:", self.rate[len(self.rate)-1]
+-        print "Quality: Quality ", self.quality.quality,
+-        print "Signal ", self.quality.getSignallevel(),
+-        print " Noise ", self.quality.getNoiselevel()
+-        print "Encryption:", map(lambda x: hex(ord(x)), self.encode)
++            print("Highest Bitrate:", self.rate[len(self.rate)-1])
++        print("Quality: Quality ", self.quality.quality, end=' ')
++        print("Signal ", self.quality.getSignallevel(), end=' ')
++        print(" Noise ", self.quality.getNoiselevel())
++        print("Encryption:", [hex(ord(x)) for x in self.encode])
+         # XXX
+         # print "Frequency:", self.frequency.getFrequency(), "(Channel", self.frequency.getChannel(self.range), ")"
+         for custom in self.custom:
+-            print "Custom:", custom
+-        print ""
+-
++            print("Custom:", custom)
++        print("")
++
+--- a/tests/test_wireless.py
++++ b/tests/test_wireless.py
+@@ -84,11 +84,11 @@
+ 
+         try:
+             old_key = self.wifi.getKey()
+-        except ValueError, msg:
++        except ValueError as msg:
+             old_key = None
+         self.wifi.setKey('ABCDEF1234', 1)
+         self.assert_(self.wifi.getKey() == 'ABCD-EF12-34')
+-        self.assert_(map(hex, self.wifi.getKey(formatted=False)) \
++        self.assert_(list(map(hex, self.wifi.getKey(formatted=False))) \
+                         == ['0xab', '0xcd', '0xef', '0x12', '0x34'])
+         if old_key:
+             self.wifi.setKey(old_key, 1)
+@@ -120,37 +120,44 @@
+         for m in methods:
+             try:
+                 result = getattr(self.wifi, m)()
+-            except IOError, (error, msg):
++            except IOError as xxx_todo_changeme:
++                (error, msg) = xxx_todo_changeme.args
+                 self.assertEquals(error, errno.EINVAL)
+ 
+         try:
+             result = self.wifi.getStatistics()
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme2:
++            (error, msg) = xxx_todo_changeme2.args
+             self.assertEquals(error, errno.EOPNOTSUPP)
+ 
+         try:
+             result = self.wifi.setMode('Monitor')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme3:
++            (error, msg) = xxx_todo_changeme3.args
+             self.assertEquals(error, errno.EINVAL)
+ 
+         try:
+             result = self.wifi.setEssid('Joost')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme4:
++            (error, msg) = xxx_todo_changeme4.args
+             self.assertEquals(error, errno.EINVAL)
+ 
+         try:
+             result = self.wifi.setFrequency('2.462GHz')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme5:
++            (error, msg) = xxx_todo_changeme5.args
+             self.assertEquals(error, errno.EINVAL)
+ 
+         try:
+             result = self.wifi.setEncryption('restricted')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme6:
++            (error, msg) = xxx_todo_changeme6.args
+             self.assertEquals(error, errno.EINVAL)
+ 
+         try:
+             result = self.wifi.setKey('ABCDEF1234', 1)
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme7:
++            (error, msg) = xxx_todo_changeme7.args
+             self.assertEquals(error, errno.EINVAL)
+ 
+ 
+@@ -178,32 +185,38 @@
+         for m in methods:
+             try:
+                 result = getattr(self.wifi, m)()
+-            except IOError, (error, msg):
++            except IOError as xxx_todo_changeme1:
++                (error, msg) = xxx_todo_changeme1.args
+                 self.assertEquals(error, errno.ENODEV)
+ 
+         try:
+             result = self.wifi.setMode('Monitor')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme8:
++            (error, msg) = xxx_todo_changeme8.args
+             self.assertEquals(error, errno.ENODEV)
+ 
+         try:
+             result = self.wifi.setEssid('Joost')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme9:
++            (error, msg) = xxx_todo_changeme9.args
+             self.assertEquals(error, errno.ENODEV)
+ 
+         try:
+             result = self.wifi.setFrequency('2.462GHz')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme10:
++            (error, msg) = xxx_todo_changeme10.args
+             self.assertEquals(error, errno.ENODEV)
+ 
+         try:
+             result = self.wifi.setEncryption('restricted')
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme11:
++            (error, msg) = xxx_todo_changeme11.args
+             self.assertEquals(error, errno.ENODEV)
+ 
+         try:
+             result = self.wifi.setKey('ABCDEF1234', 1)
+-        except IOError, (error, msg):
++        except IOError as xxx_todo_changeme12:
++            (error, msg) = xxx_todo_changeme12.args
+             self.assertEquals(error, errno.ENODEV)
+ 
+ 
+--- a/ez_setup.py
++++ b/ez_setup.py
+@@ -35,10 +35,10 @@
+         from md5 import md5
+         digest = md5(data).hexdigest()
+         if digest != md5_data[egg_name]:
+-            print >>sys.stderr, (
++            print((
+                 "md5 validation of %s failed!  (Possible download problem?)"
+                 % egg_name
+-            )
++            ), file=sys.stderr)
+             sys.exit(2)
+     return data
+ 
+@@ -61,10 +61,10 @@
+     try:
+         import setuptools
+         if setuptools.__version__ == '0.0.1':
+-            print >>sys.stderr, (
++            print((
+             "You have an obsolete version of setuptools installed.  Please\n"
+             "remove it from your system entirely before rerunning this script."
+-            )
++            ), file=sys.stderr)
+             sys.exit(2)
+     except ImportError:
+         egg = download_setuptools(version, download_base, to_dir, download_delay)
+@@ -77,11 +77,11 @@
+ 
+     except pkg_resources.VersionConflict:
+         # XXX could we install in a subprocess here?
+-        print >>sys.stderr, (
++        print((
+             "The required version of setuptools (>=%s) is not available, and\n"
+             "can't be installed while this script is running. Please install\n"
+             " a more recent version first."
+-        ) % version
++        ) % version, file=sys.stderr)
+         sys.exit(2)
+ 
+ def download_setuptools(
+@@ -95,7 +95,7 @@
+     with a '/'). `to_dir` is the directory where the egg will be downloaded.
+     `delay` is the number of seconds to pause before an actual download attempt.
+     """
+-    import urllib2, shutil
++    import urllib.request, urllib.error, urllib.parse, shutil
+     egg_name = "setuptools-%s-py%s.egg" % (version,sys.version[:3])
+     url = download_base + egg_name
+     saveto = os.path.join(to_dir, egg_name)
+@@ -121,7 +121,7 @@
+                     version, download_base, delay, url
+                 ); from time import sleep; sleep(delay)
+             log.warn("Downloading %s", url)
+-            src = urllib2.urlopen(url)
++            src = urllib.request.urlopen(url)
+             # Read/write all in one block, so we don't create a corrupt file
+             # if the download is interrupted.
+             data = _validate_md5(egg_name, src.read())
+@@ -167,8 +167,8 @@
+             from setuptools.command.easy_install import main
+             main(argv)
+         else:
+-            print "Setuptools version",version,"or greater has been installed."
+-            print '(Run "ez_setup.py -U setuptools" to reinstall or upgrade.)'
++            print("Setuptools version",version,"or greater has been installed.")
++            print('(Run "ez_setup.py -U setuptools" to reinstall or upgrade.)')
+ 
+ 
+ 
+@@ -184,7 +184,7 @@
+         md5_data[base] = md5(f.read()).hexdigest()
+         f.close()
+ 
+-    data = ["    %r: %r,\n" % it for it in md5_data.items()]
++    data = ["    %r: %r,\n" % it for it in list(md5_data.items())]
+     data.sort()
+     repl = "".join(data)
+ 
+@@ -194,7 +194,7 @@
+ 
+     match = re.search("\nmd5_data = {\n([^}]+)}", src)
+     if not match:
+-        print >>sys.stderr, "Internal error!"
++        print("Internal error!", file=sys.stderr)
+         sys.exit(2)
+ 
+     src = src[:match.start(1)] + repl + src[match.end(1):]
