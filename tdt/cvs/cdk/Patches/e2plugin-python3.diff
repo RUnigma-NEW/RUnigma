@@ -23319,7 +23319,7 @@
  
  				except:
 -					print "error parsing fmtstring:",fmtstring
-+					(print "error parsing fmtstring:",fmtstring)
++					print("error parsing fmtstring:",fmtstring)
  
                          else:
  				(fmtid,fmturl) = fmtstring.split('|')
@@ -25656,4 +25656,21 @@
  		t = gettext.gettext(txt)
  	return t
  
-
+diff -u /home/teslanet/Archive/enigma2-plugins-sh4.git/elektro/src/ping.py /home/teslanet/ENIGMA2_3/ACC/tdt/tufsbox/work/e2plugin/elektro/src/ping.py
+--- a/elektro/src/ping.py
++++ b/elektro/src/ping.py
+@@ -120,12 +120,12 @@
+ 
+ def main():
+   if len(sys.argv)<2:
+-    print "Usage: %s hostname" % os.path.basename(sys.argv[0])
++    print("Usage: %s hostname" % os.path.basename(sys.argv[0]))
+     sys.exit(1)
+ 
+   dest=gethostbyname(sys.argv[1])
+   delay=doOne(dest)
+-  print delay
++  print(delay)
+   return None
+ 
+ if __name__=='__main__':
