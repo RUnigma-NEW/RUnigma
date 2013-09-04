@@ -164,6 +164,7 @@ host_python
   extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
   pmove:Python-{PV}:{PN}-{PV}
   patch:file://python-{PV}/python_{PV}.diff
+  patch:file://python-{PV}/python-{PV}-pgettext.diff
 ;
 endif
 ]]END

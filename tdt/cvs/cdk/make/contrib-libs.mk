@@ -2564,6 +2564,7 @@ python
   extract:http://www.{PN}.org/ftp/{PN}/{PV}/Python-{PV}.tar.bz2
   pmove:Python-{PV}:{PN}-{PV}
   patch:file://python-{PV}/python_{PV}.diff
+  patch:file://python-{PV}/{PN}-{PV}-pgettext.diff
 ;
 ]]END
 
