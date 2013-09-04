@@ -2751,6 +2751,9 @@ pythoncheetah
   2.4.4
   Cheetah-{PV}
   extract:http://pypi.python.org/packages/source/C/Cheetah/Cheetah-{PV}.tar.gz
+ifdef ENABLE_PY332
+  patch:file://Cheetah3.patch
+endif
 ;
 ]]END
 

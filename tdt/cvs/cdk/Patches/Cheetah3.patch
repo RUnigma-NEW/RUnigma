@@ -1,0 +1,1603 @@
+--- a/cheetah/CacheRegion.py
++++ b/cheetah/CacheRegion.py
+@@ -113,7 +113,7 @@
+         
+     def clear(self):
+         " drop all the caches stored in this cache region "
+-        for cacheItemId in self._cacheItems.keys():
++        for cacheItemId in list(self._cacheItems.keys()):
+             cacheItem = self._cacheItems[cacheItemId]
+             cacheItem.clear()
+             del self._cacheItems[cacheItemId]
+--- a/cheetah/CheetahWrapper.py
++++ b/cheetah/CheetahWrapper.py
+@@ -16,7 +16,7 @@
+ __revision__ = "$Revision: 1.26 $"[11:-2]
+ 
+ import getopt, glob, os, pprint, re, shutil, sys
+-import cPickle as pickle
++import pickle as pickle
+ from optparse import OptionParser
+ 
+ from Cheetah.Version import Version
+@@ -202,7 +202,7 @@
+             listing.sort(key=lambda l: l[0][0].lower())
+ 
+             for l in listing:
+-                print('\t%s (default: "%s")\t%s' % l)
++                print(('\t%s (default: "%s")\t%s' % l))
+             sys.exit(0)
+ 
+         #cleanup trailing path separators
+@@ -545,8 +545,8 @@
+                           +"  %s: %s"%sys.exc_info()[:2] 
+                           )
+ 
+-            validKeys = DEFAULT_COMPILER_SETTINGS.keys()
+-            if [k for k in settings.keys() if k not in validKeys]:
++            validKeys = list(DEFAULT_COMPILER_SETTINGS.keys())
++            if [k for k in list(settings.keys()) if k not in validKeys]:
+                 self.error(
+                     'The --setting "%s" is not a valid compiler setting name.'%k)
+             
+--- a/cheetah/Compiler.py
++++ b/cheetah/Compiler.py
+@@ -1529,7 +1529,7 @@
+         
+         if source and file:
+             raise TypeError("Cannot compile from a source string AND file.")
+-        elif isinstance(file, basestring): # it's a filename.
++        elif isinstance(file, str): # it's a filename.
+             f = open(file) # Raises IOError.
+             source = f.read()
+             f.close()
+@@ -1544,8 +1544,8 @@
+             self._fileDirName, self._fileBaseName = os.path.split(self._filePath)
+             self._fileBaseNameRoot, self._fileBaseNameExt = os.path.splitext(self._fileBaseName)
+ 
+-        if not isinstance(source, basestring):
+-            source = unicode(source)
++        if not isinstance(source, str):
++            source = str(source)
+             # by converting to string here we allow objects such as other Templates
+             # to be passed in
+ 
+@@ -1565,14 +1565,14 @@
+                 source = unicodeDirectiveRE.sub('', source)
+                 if isinstance(source, str):
+                     encoding = unicodeMatch.group(1) or 'ascii'
+-                    source = unicode(source, encoding)
++                    source = str(source, encoding)
+             elif encodingMatch:
+                 encodings = encodingMatch.groups()
+                 if len(encodings):
+                     encoding = encodings[0]
+                     source = source.decode(encoding)
+             else:
+-                source = unicode(source)
++                source = str(source)
+ 
+         if source.find('#indent') != -1: #@@TR: undocumented hack
+             source = indentize(source)
+--- a/cheetah/DirectiveAnalyzer.py
++++ b/cheetah/DirectiveAnalyzer.py
+@@ -37,7 +37,7 @@
+ def main_file(f):
+     fd = open(f, 'r')
+     try:
+-        print u'>>> Analyzing %s' % f
++        print('>>> Analyzing %s' % f)
+         calls = analyze(fd.read())
+         return calls
+     finally:
+@@ -61,7 +61,7 @@
+     for series in results:
+         if not series:
+             continue
+-        for k, v in series.iteritems():
++        for k, v in series.items():
+             try:
+                 totals[k] += v
+             except KeyError:
+--- a/cheetah/DummyTransaction.py
++++ b/cheetah/DummyTransaction.py
+@@ -30,8 +30,8 @@
+         # Exceptionally gross, but the safest way
+         # I've found to ensure I get a legit unicode object
+         if not chunk:
+-            return u''
+-        if isinstance(chunk, unicode):
++            return ''
++        if isinstance(chunk, str):
+             return chunk
+         try:
+             return chunk.decode('utf-8', 'strict')
+@@ -41,7 +41,7 @@
+             except UnicodeDecodeError:
+                 return chunk.decode('ascii', 'ignore')
+         except AttributeError:
+-            return unicode(chunk, errors='ignore')
++            return str(chunk, errors='ignore')
+         return chunk
+ 
+     def write(self, value):
+@@ -54,8 +54,8 @@
+     def getvalue(self, outputChunks=None):
+         chunks = outputChunks or self._outputChunks
+         try:
+-            return u''.join(chunks)
+-        except UnicodeDecodeError, ex:
++            return ''.join(chunks)
++        except UnicodeDecodeError as ex:
+             logging.debug('Trying to work around a UnicodeDecodeError in getvalue()')
+             logging.debug('...perhaps you could fix "%s" while you\'re debugging')
+             return ''.join((self.safeConvert(c) for c in chunks))
+--- a/cheetah/FileUtils.py
++++ b/cheetah/FileUtils.py
+@@ -222,11 +222,11 @@
+                  recordResults=True):
+ 
+         
+-        if isinstance(patternOrRE, basestring):
++        if isinstance(patternOrRE, str):
+             self._regex = re.compile(patternOrRE)
+         else:
+             self._regex = patternOrRE
+-        if isinstance(replacement, basestring):
++        if isinstance(replacement, str):
+             self._subber = _GenSubberFunc(replacement).subberFunc()
+         else:
+             self._subber = replacement
+@@ -315,7 +315,7 @@
+         blankLines = 0
+         commentLines = 0
+         totalLines = 0
+-        for fileStats in self.rawStats().values():
++        for fileStats in list(self.rawStats().values()):
+             codeLines += fileStats['codeLines']
+             blankLines += fileStats['blankLines']
+             commentLines += fileStats['commentLines']
+--- a/cheetah/Filters.py
++++ b/cheetah/Filters.py
+@@ -27,13 +27,13 @@
+             Pass Unicode strings through unmolested, unless an encoding is specified.
+         '''
+         if val is None:
+-            return u''
+-        if isinstance(val, unicode):
++            return ''
++        if isinstance(val, str):
+             # ignore the encoding and return the unicode object
+             return val
+         else:
+             try:
+-                return unicode(val)
++                return str(val)
+             except UnicodeDecodeError:
+                 # we could put more fallbacks here, but we'll just pass the str
+                 # on and let DummyTransaction worry about it
+@@ -96,8 +96,8 @@
+             from pygments import highlight
+             from pygments import lexers
+             from pygments import formatters
+-        except ImportError, ex:
+-            print('<%s> - Failed to import pygments! (%s)' % (self.__class__.__name__, ex))
++        except ImportError as ex:
++            print(('<%s> - Failed to import pygments! (%s)' % (self.__class__.__name__, ex)))
+             print('-- You may need to install it from: http://pygments.org')
+             return encoded
+ 
+@@ -196,15 +196,15 @@
+ def test():
+     s1 = "abc <=> &"
+     s2 = "   asdf  \n\t  1  2    3\n"
+-    print("WebSafe INPUT:", repr(s1))
+-    print("      WebSafe:", repr(WebSafe().filter(s1)))
++    print(("WebSafe INPUT:", repr(s1)))
++    print(("      WebSafe:", repr(WebSafe().filter(s1))))
+     
+     print()
+-    print(" Strip INPUT:", repr(s2))
+-    print("       Strip:", repr(Strip().filter(s2)))
+-    print("StripSqueeze:", repr(StripSqueeze().filter(s2)))
+-
+-    print("Unicode:", repr(EncodeUnicode().filter(u'aoeu12345\u1234')))
++    print((" Strip INPUT:", repr(s2)))
++    print(("       Strip:", repr(Strip().filter(s2))))
++    print(("StripSqueeze:", repr(StripSqueeze().filter(s2))))
++
++    print(("Unicode:", repr(EncodeUnicode().filter('aoeu12345\u1234'))))
+     
+ if __name__ == "__main__":  
+     test()
+--- a/cheetah/ImportHooks.py
++++ b/cheetah/ImportHooks.py
+@@ -12,7 +12,7 @@
+ import sys
+ import os.path
+ import types
+-import __builtin__
++import builtins
+ import imp
+ from threading import RLock
+ import string
+@@ -104,10 +104,10 @@
+     global _installed
+     if not _installed:
+         CheetahDirOwner.templateFileExtensions = templateFileExtensions
+-        import __builtin__
+-        if isinstance(__builtin__.__import__, types.BuiltinFunctionType):
++        import builtins
++        if isinstance(builtins.__import__, types.BuiltinFunctionType):
+             global __oldimport__
+-            __oldimport__ = __builtin__.__import__
++            __oldimport__ = builtins.__import__
+             ImportManager._globalOwnerTypes.insert(0, CheetahDirOwner)
+             #ImportManager._globalOwnerTypes.append(CheetahDirOwner)            
+             global _manager
+@@ -119,9 +119,9 @@
+     """Uninstall the Cheetah Import Hooks"""    
+     global _installed
+     if not _installed:
+-        import __builtin__
+-        if isinstance(__builtin__.__import__, types.MethodType):
+-            __builtin__.__import__ = __oldimport__
++        import builtins
++        if isinstance(builtins.__import__, types.MethodType):
++            builtins.__import__ = __oldimport__
+             global _manager
+             del _manager
+ 
+--- a/cheetah/ImportManager.py
++++ b/cheetah/ImportManager.py
+@@ -125,7 +125,7 @@
+         s = _os_stat(pathname)
+     except OSError:
+         return None
+-    return (s[0] & 0170000) == 0040000
++    return (s[0] & 0o170000) == 0o040000
+ 
+ def getDescr(fnm):
+     ext = getPathExt(fnm)
+@@ -198,9 +198,9 @@
+                 try:
+                     co = compile(open(py[0], 'r').read()+'\n', py[0], 'exec')
+                     break
+-                except SyntaxError, e:
+-                    print("Invalid syntax in %s" % py[0])
+-                    print(e.args)
++                except SyntaxError as e:
++                    print(("Invalid syntax in %s" % py[0]))
++                    print((e.args))
+                     raise
+             elif pyc:
+                 stuff = open(pyc[0], 'rb').read()
+@@ -321,7 +321,7 @@
+     def getmod(self, nm):
+         mod = None
+         for thing in self.path:
+-            if isinstance(thing, basestring):
++            if isinstance(thing, str):
+                 owner = self._shadowPath.get(thing, -1)
+                 if owner == -1:
+                     owner = self._shadowPath[thing] = self._makeOwner(thing)
+@@ -378,9 +378,9 @@
+             self._get_ident = thread.get_ident
+             
+     def install(self):
+-        import __builtin__
+-        __builtin__.__import__ = self.importHook
+-        __builtin__.reload = self.reloadHook
++        import builtins
++        builtins.__import__ = self.importHook
++        builtins.reload = self.reloadHook
+         
+     def importHook(self, name, globals=None, locals=None, fromlist=None, level=-1):
+         '''
+--- a/cheetah/NameMapper.py
++++ b/cheetah/NameMapper.py
+@@ -234,7 +234,7 @@
+ def valueForName(obj, name, executeCallables=False):
+     try:
+         return _valueForName(obj, name, executeCallables)
+-    except NotFound, e:
++    except NotFound as e:
+         _wrapNotFoundException(e, fullName=name, namespace=obj)
+ 
+ def valueFromSearchList(searchList, name, executeCallables=False):
+@@ -258,7 +258,7 @@
+     def __valueForName():
+         try:
+             return _valueForName(namespace, name, executeCallables=executeCallables)
+-        except NotFound, e:
++        except NotFound as e:
+             _wrapNotFoundException(e, fullName=name, namespace=searchList)
+     try:
+         if not frame:
+@@ -351,13 +351,13 @@
+         }
+     b = 'this is local b'
+ 
+-    print(valueForKey(a.dic, 'subDict'))
+-    print(valueForName(a, 'dic.item'))
+-    print(valueForName(vars(), 'b'))
+-    print(valueForName(__builtins__, 'dir')())
+-    print(valueForName(vars(), 'a.classVar'))
+-    print(valueForName(vars(), 'a.dic.func', executeCallables=True))
+-    print(valueForName(vars(), 'a.method2.item1', executeCallables=True))
++    print((valueForKey(a.dic, 'subDict')))
++    print((valueForName(a, 'dic.item')))
++    print((valueForName(vars(), 'b')))
++    print((valueForName(__builtins__, 'dir')()))
++    print((valueForName(vars(), 'a.classVar')))
++    print((valueForName(vars(), 'a.dic.func', executeCallables=True)))
++    print((valueForName(vars(), 'a.method2.item1', executeCallables=True)))
+ 
+ if __name__ == '__main__':
+     example()
+--- a/cheetah/Parser.py
++++ b/cheetah/Parser.py
+@@ -125,7 +125,7 @@
+     end = escapeRegexChars(end)
+     return re.compile(r'(?:' + start + r').*?' + r'(?:' + end + r')', re.DOTALL)
+ 
+-for start, end in tripleQuotedStringPairs.items():
++for start, end in list(tripleQuotedStringPairs.items()):
+     tripleQuotedStringREs[start] = makeTripleQuoteRe(start, end)
+ 
+ WS = r'[ \f\t]*'  
+@@ -332,7 +332,7 @@
+         self.arguments.append(name)
+         self.defaults.append(None)
+ 
+-    def next(self):
++    def __next__(self):
+         self.count += 1
+ 
+     def add_default(self, token):
+@@ -342,7 +342,7 @@
+         self.defaults[count] += token
+     
+     def merge(self):
+-        defaults = (isinstance(d, basestring) and d.strip() or None for d in self.defaults)
++        defaults = (isinstance(d, str) and d.strip() or None for d in self.defaults)
+         return list(map(None, (a.strip() for a in self.arguments), defaults))
+     
+     def __str__(self):
+@@ -705,7 +705,7 @@
+ 
+     def matchDirectiveName(self, directiveNameChars=identchars+'0123456789-@'):
+         startPos = self.pos()
+-        possibleMatches = self._directiveNamesAndParsers.keys()
++        possibleMatches = list(self._directiveNamesAndParsers.keys())
+         name = ''
+         match = None
+ 
+@@ -1053,7 +1053,7 @@
+                 onDefVal = True
+                 self.advance()
+             elif c == ",":
+-                argList.next()
++                next(argList)
+                 onDefVal = False
+                 self.advance()
+             elif self.startswith(self.cheetahVarStartToken) and not onDefVal:
+@@ -1352,7 +1352,7 @@
+         """Cleanup to remove any possible reference cycles
+         """
+         self._macros.clear()
+-        for macroname, macroDetails in self._macroDetails.items():
++        for macroname, macroDetails in list(self._macroDetails.items()):
+             macroDetails.template.shutdown()
+             del macroDetails.template
+         self._macroDetails.clear()
+@@ -1363,7 +1363,7 @@
+     
+     def _initDirectives(self):
+         def normalizeParserVal(val):
+-            if isinstance(val, (str, unicode)):
++            if isinstance(val, str):
+                 handler = getattr(self, val)
+             elif isinstance(val, type):
+                 handler = val(self)
+@@ -1386,13 +1386,13 @@
+         _endDirectiveNamesAndHandlers.update(customNamesAndHandlers)        
+         
+         self._directiveNamesAndParsers = {}
+-        for name, val in _directiveNamesAndParsers.items():
++        for name, val in list(_directiveNamesAndParsers.items()):
+             if val in (False, 0):
+                 continue
+             self._directiveNamesAndParsers[name] = normalizeParserVal(val)
+ 
+         self._endDirectiveNamesAndHandlers = {}        
+-        for name, val in _endDirectiveNamesAndHandlers.items():
++        for name, val in list(_endDirectiveNamesAndHandlers.items()):
+             if val in (False, 0):
+                 continue
+             self._endDirectiveNamesAndHandlers[name] = normalizeHandlerVal(val)
+@@ -1415,7 +1415,7 @@
+         macroDirectives['i18n'] = I18n
+ 
+ 
+-        for macroName, callback in macroDirectives.items():
++        for macroName, callback in list(macroDirectives.items()):
+             if isinstance(callback, type):
+                 callback = callback(parser=self)
+             assert callback                
+@@ -1750,7 +1750,7 @@
+         self.getWhiteSpace()
+         pos = self.pos()
+         directiveName = False
+-        for key in self._endDirectiveNamesAndHandlers.keys():
++        for key in list(self._endDirectiveNamesAndHandlers.keys()):
+             if self.find(key, pos) == pos:
+                 directiveName = key
+                 break
+@@ -2352,12 +2352,12 @@
+         kwArgs['src'] = srcBlock
+ 
+         if isinstance(macro, types.MethodType):
+-            co = macro.im_func.func_code
++            co = macro.__func__.__code__
+         elif (hasattr(macro, '__call__')
+               and hasattr(macro.__call__, 'im_func')):
+-            co = macro.__call__.im_func.func_code
+-        else:
+-            co = macro.func_code
++            co = macro.__call__.__func__.__code__
++        else:
++            co = macro.__code__
+         availableKwArgs = inspect.getargs(co)[0]
+         
+         if 'parser' in availableKwArgs:
+--- a/cheetah/SettingsManager.py
++++ b/cheetah/SettingsManager.py
+@@ -1,12 +1,12 @@
+ import sys
+ import os.path
+ import copy as copyModule
+-from ConfigParser import ConfigParser 
++from configparser import ConfigParser 
+ import re
+ from tokenize import Intnumber, Floatnumber, Number
+ import types
+ import time
+-from StringIO import StringIO # not cStringIO because of unicode support
++from io import StringIO # not cStringIO because of unicode support
+ import imp                 # used by SettingsManager.updateSettingsFromPySrcFile()
+ 
+ 
+@@ -28,7 +28,7 @@
+     elif deepcopy:
+         dict1 = copyModule.deepcopy(dict1)
+         
+-    for key, val in dict2.iteritems():
++    for key, val in dict2.items():
+         if key in dict1 and isinstance(val, dict) and isinstance(dict1[key], dict):
+             dict1[key] = mergeNestedDictionaries(dict1[key], val)
+         else:
+@@ -88,7 +88,7 @@
+         """
+         S = {}
+         attrs = vars(mod)
+-        for k, v in attrs.iteritems():
++        for k, v in attrs.items():
+             if (ignoreUnderscored and k.startswith('_')):
+                 continue
+             else:
+@@ -153,8 +153,8 @@
+         ## loop through new settings -> deal with global settings, numbers,
+         ## booleans and None ++ also deal with 'importSettings' commands
+ 
+-        for sect, subDict in newSettings.items():
+-            for key, val in subDict.items():
++        for sect, subDict in list(newSettings.items()):
++            for key, val in list(subDict.items()):
+                 if convert:
+                     if val.lower().startswith('python:'):
+                         subDict[key] = eval(val[7:], {}, {})
+--- a/cheetah/SourceReader.py
++++ b/cheetah/SourceReader.py
+@@ -232,7 +232,7 @@
+         return BOL == pos or src[BOL:pos].isspace()
+ 
+     def matches(self, strOrRE):
+-        if isinstance(strOrRE, (str, unicode)):
++        if isinstance(strOrRE, str):
+             return self.startswith(strOrRE, pos=self.pos())
+         else: # assume an re object
+             return strOrRE.match(self.src(), self.pos())
+--- a/cheetah/Template.py
++++ b/cheetah/Template.py
+@@ -15,7 +15,7 @@
+ from random import randrange
+ import imp
+ import inspect
+-import StringIO
++import io
+ import traceback
+ import pprint
+ import cgi                # Used by .webInput() if the template is a CGI script.
+@@ -145,7 +145,7 @@
+         """
+         settings = self._settings
+         if not source: # @@TR: this needs improving
+-            if isinstance(file, (str, unicode)): # it's a filename.
++            if isinstance(file, str): # it's a filename.
+                 f = open(file)
+                 source = f.read()
+                 f.close()
+@@ -156,7 +156,7 @@
+         templateAPIClass = settings.templateAPIClass
+         possibleKwArgs = [
+             arg for arg in
+-            inspect.getargs(templateAPIClass.compile.im_func.func_code)[0]
++            inspect.getargs(templateAPIClass.compile.__func__.__code__)[0]
+             if arg not in ('klass', 'source', 'file',)]
+ 
+         compileKwArgs = {}
+@@ -586,10 +586,10 @@
+         """
+         errmsg = "arg '%s' must be %s"
+ 
+-        if not isinstance(source, (types.NoneType, basestring)):
++        if not isinstance(source, (type(None), str)):
+             raise TypeError(errmsg % ('source', 'string or None'))
+ 
+-        if not isinstance(file, (types.NoneType, basestring, filetype)):
++        if not isinstance(file, (type(None), str, filetype)):
+             raise TypeError(errmsg %
+                             ('file', 'string, file-like object, or None'))
+ 
+@@ -598,7 +598,7 @@
+         if isinstance(baseclass, Template):
+             baseclass = baseclass.__class__
+ 
+-        if not isinstance(baseclass, (types.NoneType, basestring, type)):
++        if not isinstance(baseclass, (type(None), str, type)):
+             raise TypeError(errmsg % ('baseclass', 'string, class or None'))
+ 
+         if cacheCompilationResults is Unspecified:
+@@ -629,11 +629,11 @@
+         if not isinstance(keepRefToGeneratedCode, (int, bool)):
+             raise TypeError(errmsg % ('keepReftoGeneratedCode', 'boolean'))
+ 
+-        if not isinstance(moduleName, (types.NoneType, basestring)):
++        if not isinstance(moduleName, (type(None), str)):
+             raise TypeError(errmsg % ('moduleName', 'string or None'))
+         __orig_file__ = None
+         if not moduleName:
+-            if file and isinstance(file, basestring):
++            if file and isinstance(file, str):
+                 moduleName = convertTmplPathToModuleName(file)
+                 __orig_file__ = file
+             else:
+@@ -642,14 +642,14 @@
+         if className is Unspecified:
+             className = klass._CHEETAH_defaultClassNameForTemplates
+ 
+-        if not isinstance(className, (types.NoneType, basestring)):
++        if not isinstance(className, (type(None), str)):
+             raise TypeError(errmsg % ('className', 'string or None'))
+         className = re.sub(r'^_+','', className or moduleName)
+ 
+         if mainMethodName is Unspecified:
+             mainMethodName = klass._CHEETAH_defaultMainMethodNameForTemplates
+ 
+-        if not isinstance(mainMethodName, (types.NoneType, basestring)):
++        if not isinstance(mainMethodName, (type(None), str)):
+             raise TypeError(errmsg % ('mainMethodName', 'string or None'))
+ 
+         if moduleGlobals is Unspecified:
+@@ -665,7 +665,7 @@
+         if cacheDirForModuleFiles is Unspecified:
+             cacheDirForModuleFiles = klass._CHEETAH_cacheDirForModuleFiles
+ 
+-        if not isinstance(cacheDirForModuleFiles, (types.NoneType, basestring)):
++        if not isinstance(cacheDirForModuleFiles, (type(None), str)):
+             raise TypeError(errmsg %
+                             ('cacheDirForModuleFiles', 'string or None'))
+ 
+@@ -680,7 +680,7 @@
+         baseclassValue = None
+         baseclassName = None
+         if baseclass:
+-            if isinstance(baseclass, basestring):
++            if isinstance(baseclass, str):
+                 baseclassName = baseclass
+             elif isinstance(baseclass, type):
+                 # @@TR: should soft-code this
+@@ -690,7 +690,7 @@
+ 
+         cacheHash = None
+         cacheItem = None
+-        if source or isinstance(file, basestring):
++        if source or isinstance(file, str):
+             compilerSettingsHash = None
+             if compilerSettings:
+                 compilerSettingsHash = hashDict(compilerSettings)
+@@ -773,7 +773,7 @@
+ 
+                 mod = types.ModuleType(str(uniqueModuleName))
+                 if moduleGlobals:
+-                    for k, v in moduleGlobals.items():
++                    for k, v in list(moduleGlobals.items()):
+                         setattr(mod, k, v)
+                 mod.__file__ = __file__
+                 if __orig_file__ and os.path.exists(__orig_file__):
+@@ -786,7 +786,7 @@
+                 try:
+                     co = compile(generatedModuleCode, __file__, 'exec')
+                     exec(co, mod.__dict__)
+-                except SyntaxError, e:
++                except SyntaxError as e:
+                     try:
+                         parseError = genParserErrorFromPythonException(
+                             source, file, generatedModuleCode, exception=e)
+@@ -796,7 +796,7 @@
+                         raise e
+                     else:
+                         raise parseError
+-                except Exception, e:
++                except Exception as e:
+                     updateLinecache(__file__, generatedModuleCode)
+                     e.generatedModuleCode = generatedModuleCode
+                     raise
+@@ -881,7 +881,7 @@
+             if isinstance(arg, str) or isinstance(arg, (list, tuple)):
+                 settings.tokens = arg
+             elif isinstance(arg, dict):
+-                for k, v in arg.items():
++                for k, v in list(arg.items()):
+                     setattr(settings, k, v)   
+             else:
+                 settings = arg
+@@ -930,7 +930,7 @@
+             normalizeSearchList(settings.templateInitArgs['searchList']))
+             
+         if not hasattr(settings, 'outputTransformer'):
+-            settings.outputTransformer = unicode
++            settings.outputTransformer = str
+ 
+         if not hasattr(settings, 'templateAPIClass'):
+             class PreprocessTemplateAPIClass(klass): pass
+@@ -981,13 +981,13 @@
+         for methodname in klass._CHEETAH_requiredCheetahMethods:
+             if not hasattr(concreteTemplateClass, methodname):
+                 method = getattr(Template, methodname)
+-                newMethod = createMethod(method.im_func, concreteTemplateClass)
++                newMethod = createMethod(method.__func__, concreteTemplateClass)
+                 setattr(concreteTemplateClass, methodname, newMethod)
+ 
+         for classMethName in klass._CHEETAH_requiredCheetahClassMethods:
+             if not hasattr(concreteTemplateClass, classMethName):
+                 meth = getattr(klass, classMethName)
+-                setattr(concreteTemplateClass, classMethName, classmethod(meth.im_func))
++                setattr(concreteTemplateClass, classMethName, classmethod(meth.__func__))
+             
+         for attrname in klass._CHEETAH_requiredCheetahClassAttributes:
+             attrname = '_CHEETAH_'+attrname
+@@ -1003,7 +1003,7 @@
+             if mainMethName:
+                 def __str__(self): 
+                     rc = getattr(self, mainMethName)()
+-                    if isinstance(rc, unicode):
++                    if isinstance(rc, str):
+                         return rc.encode('utf-8')
+                     return rc
+                 def __unicode__(self):
+@@ -1012,7 +1012,7 @@
+                   and concreteTemplateClass.respond!=Servlet.respond):
+                 def __str__(self):
+                     rc = self.respond()
+-                    if isinstance(rc, unicode):
++                    if isinstance(rc, str):
+                         return rc.encode('utf-8')
+                     return rc
+                 def __unicode__(self):
+@@ -1026,7 +1026,7 @@
+                         rc = self.respond()
+                     else:
+                         rc = super(self.__class__, self).__str__()
+-                    if isinstance(rc, unicode):
++                    if isinstance(rc, str):
+                         return rc.encode('utf-8')
+                     return rc
+                 def __unicode__(self):
+@@ -1168,26 +1168,26 @@
+         errmsg = "arg '%s' must be %s"
+         errmsgextra = errmsg + "\n%s"
+ 
+-        if not isinstance(source, (types.NoneType, basestring)):
++        if not isinstance(source, (type(None), str)):
+             raise TypeError(errmsg % ('source', 'string or None'))
+ 
+-        if not isinstance(source, (types.NoneType, basestring, filetype)):
++        if not isinstance(source, (type(None), str, filetype)):
+             raise TypeError(errmsg %
+                             ('file', 'string, file open for reading, or None'))
+ 
+-        if not isinstance(filter, (basestring, types.TypeType)) and not \
++        if not isinstance(filter, (str, type)) and not \
+                 (isinstance(filter, type) and issubclass(filter, Filters.Filter)):
+             raise TypeError(errmsgextra %
+                             ('filter', 'string or class',
+                              '(if class, must be subclass of Cheetah.Filters.Filter)'))
+-        if not isinstance(filtersLib, (basestring, types.ModuleType)):
++        if not isinstance(filtersLib, (str, types.ModuleType)):
+             raise TypeError(errmsgextra %
+                             ('filtersLib', 'string or module',
+                              '(if module, must contain subclasses of Cheetah.Filters.Filter)'))
+ 
+         if not errorCatcher is None:
+             err = True
+-            if isinstance(errorCatcher, (basestring, types.TypeType)):
++            if isinstance(errorCatcher, (str, type)):
+                 err = False
+             if isinstance(errorCatcher, type) and \
+                     issubclass(errorCatcher, ErrorCatchers.ErrorCatcher): 
+@@ -1197,7 +1197,7 @@
+                             ('errorCatcher', 'string, class or None',
+                              '(if class, must be subclass of Cheetah.ErrorCatchers.ErrorCatcher)'))
+         if compilerSettings is not Unspecified:
+-            if not isinstance(compilerSettings, types.DictType):
++            if not isinstance(compilerSettings, dict):
+                 raise TypeError(errmsg %
+                                 ('compilerSettings', 'dictionary'))
+         
+@@ -1329,7 +1329,7 @@
+         """
+         
+         if not cacheRegionId:
+-            for cacheRegion in self.getCacheRegions().itervalues():
++            for cacheRegion in self.getCacheRegions().values():
+                 cacheRegion.clear()
+         else:
+             cregion = self._CHEETAH__cacheRegions.get(cacheRegionId)
+@@ -1435,7 +1435,7 @@
+         Type 'python yourtemplate.py --help to see what it's capabable of.
+         """
+ 
+-        from TemplateCmdLineIface import CmdLineIface
++        from .TemplateCmdLineIface import CmdLineIface
+         CmdLineIface(templateObj=self).run()
+         
+     ##################################################
+@@ -1494,7 +1494,7 @@
+         # @@TR: consider allowing simple callables as the filter argument
+         self._CHEETAH__filtersLib = filtersLib
+         self._CHEETAH__filters = {}
+-        if isinstance(filter, basestring):
++        if isinstance(filter, str):
+             filterName = filter
+             klass = getattr(self._CHEETAH__filtersLib, filterName)
+         else:
+@@ -1505,7 +1505,7 @@
+ 
+         self._CHEETAH__errorCatchers = {}
+         if errorCatcher:
+-            if isinstance(errorCatcher, basestring):
++            if isinstance(errorCatcher, str):
+                 errorCatcherClass = getattr(ErrorCatchers, errorCatcher)
+             elif isinstance(errorCatcher, type):
+                 errorCatcherClass = errorCatcher
+@@ -1541,7 +1541,7 @@
+         self._fileMtime = None
+         self._fileDirName = None
+         self._fileBaseName = None
+-        if file and isinstance(file, basestring):
++        if file and isinstance(file, str):
+             file = self.serverSidePath(file)
+             self._fileMtime = os.path.getmtime(file)
+             self._fileDirName, self._fileBaseName = os.path.split(file)
+@@ -1555,7 +1555,7 @@
+         if not self.__class__ == Template:
+             # Only propogate attributes if we're in a subclass of 
+             # Template
+-            for k, v in self.__class__.__dict__.iteritems():
++            for k, v in self.__class__.__dict__.items():
+                 if not v or k.startswith('__'):
+                     continue
+                 ## Propogate the class attributes to the instance 
+@@ -1580,7 +1580,7 @@
+             if not raw:
+                 if includeFrom == 'file':
+                     source = None
+-                    if isinstance(srcArg, basestring):
++                    if isinstance(srcArg, str):
+                         if hasattr(self, 'serverSidePath'):
+                             file = path = self.serverSidePath(srcArg)
+                         else:
+@@ -1854,7 +1854,7 @@
+         # 'dic = super(ThisClass, self).webInput(names, namesMulti, ...)'
+         # and then the code below.
+         if debug:
+-           print("<PRE>\n" + pprint.pformat(dic) + "\n</PRE>\n\n")
++           print(("<PRE>\n" + pprint.pformat(dic) + "\n</PRE>\n\n"))
+         self.searchList().insert(0, dic)
+         return dic
+ 
+@@ -1865,9 +1865,9 @@
+ 
+     #print dir(exception)
+     
+-    filename = isinstance(file, (str, unicode)) and file or None
+-
+-    sio = StringIO.StringIO()
++    filename = isinstance(file, str) and file or None
++
++    sio = io.StringIO()
+     traceback.print_exc(1, sio)
+     formatedExc = sio.getvalue()
+     
+--- a/cheetah/TemplateCmdLineIface.py
++++ b/cheetah/TemplateCmdLineIface.py
+@@ -17,7 +17,7 @@
+ import getopt
+ import os.path
+ try:
+-    from cPickle import load
++    from pickle import load
+ except ImportError:
+     from pickle import load
+ 
+@@ -41,7 +41,7 @@
+         """The main program controller."""
+         
+         self._processCmdLineArgs()
+-        print(self._template)
++        print((self._template))
+         
+     def _processCmdLineArgs(self):
+         try:
+@@ -51,15 +51,15 @@
+                                             'pickle=',
+                                             ])
+ 
+-        except getopt.GetoptError, v:
++        except getopt.GetoptError as v:
+             # print help information and exit:
+             print(v)
+-            print(self.usage())
++            print((self.usage()))
+             sys.exit(2)
+         
+         for o, a in self._opts:
+             if o in ('-h', '--help'):
+-                print(self.usage())
++                print((self.usage()))
+                 sys.exit()
+             if o == '--env':
+                 self._template.searchList().insert(0, os.environ)
+--- a/cheetah/Version.py
++++ b/cheetah/Version.py
+@@ -32,11 +32,11 @@
+ 
+ if __name__ == '__main__':
+     c = convertVersionStringToTuple
+-    print(c('2.0a1'))
+-    print(c('2.0b1'))
+-    print(c('2.0rc1'))
+-    print(c('2.0'))
+-    print(c('2.0.2'))
++    print((c('2.0a1')))
++    print((c('2.0b1')))
++    print((c('2.0rc1')))
++    print((c('2.0')))
++    print((c('2.0.2')))
+ 
+ 
+     assert c('0.9.19b1') < c('0.9.19')
+--- a/cheetah/__init__.py
++++ b/cheetah/__init__.py
+@@ -17,4 +17,4 @@
+     http://lists.sourceforge.net/lists/listinfo/cheetahtemplate-discuss
+ '''
+ 
+-from Version import *
++from .Version import *
+--- a/cheetah/Templates/SkeletonPage.py
++++ b/cheetah/Templates/SkeletonPage.py
+@@ -12,7 +12,7 @@
+ from os.path import getmtime, exists
+ import time
+ import types
+-import __builtin__
++import builtins
+ from Cheetah.Version import MinCompatibleVersion as RequiredCheetahVersion
+ from Cheetah.Version import MinCompatibleVersionTuple as RequiredCheetahVersionTuple
+ from Cheetah.Template import Template
+@@ -62,7 +62,7 @@
+         if not self._CHEETAH__instanceInitialized:
+             cheetahKWArgs = {}
+             allowedKWs = 'searchList namespaces filter filtersLib errorCatcher'.split()
+-            for k, v in KWs.items():
++            for k, v in list(KWs.items()):
+                 if k in allowedKWs: cheetahKWArgs[k] = v
+             self._initCheetahInstance(**cheetahKWArgs)
+         
+--- a/cheetah/Templates/_SkeletonPage.py
++++ b/cheetah/Templates/_SkeletonPage.py
+@@ -77,7 +77,7 @@
+         the correct order."""
+         
+         stylesheetTagsTxt = ''
+-        for title, src in self._stylesheetLibs.items():
++        for title, src in list(self._stylesheetLibs.items()):
+             stylesheetTagsTxt += '<link rel="stylesheet" type="text/css" href="' + str(src) + '" />\n'
+ 
+         if not self._stylesheetsOrder:
+@@ -95,7 +95,7 @@
+             attribsDict = self._stylesheets[identifier]
+             cssCode = ''
+             attribCode = ''
+-            for k, v in attribsDict.items():
++            for k, v in list(attribsDict.items()):
+                 attribCode += str(k) + ': ' + str(v) + '; '
+             attribCode = attribCode[:-2] # get rid of the last semicolon
+                 
+@@ -115,7 +115,7 @@
+         SRC filename rather than a code string."""
+         
+         javascriptTagsTxt = []
+-        for key, details in self._javascriptTags.iteritems():
++        for key, details in self._javascriptTags.items():
+             if not isinstance(details, (list, tuple)):
+                 details = ['', details]
+                 
+@@ -124,7 +124,7 @@
+                                   str(details[0]), '\n//--></script>\n']
+ 
+ 
+-        for key, details in self._javascriptLibs.iteritems():
++        for key, details in self._javascriptLibs.items():
+             if not isinstance(details, (list, tuple)):
+                 details = ['', details]
+ 
+@@ -194,7 +194,7 @@
+     def formHTMLTag(self, tagName, attributes={}):
+         """returns a string containing an HTML <tag> """
+         tagTxt = ['<', tagName.lower()]
+-        for name, val in attributes.items():
++        for name, val in list(attributes.items()):
+             tagTxt += [' ', name.lower(), '="', str(val), '"']
+         tagTxt.append('>')
+         return ''.join(tagTxt)
+@@ -203,12 +203,12 @@
+         """format a dict of metaTag definitions into an HTML version"""
+         metaTagsTxt = []
+         if 'HTTP-EQUIV' in metaTags:
+-            for http_equiv, contents in metaTags['HTTP-EQUIV'].items():
++            for http_equiv, contents in list(metaTags['HTTP-EQUIV'].items()):
+                 metaTagsTxt += ['<meta http-equiv="', str(http_equiv), '" content="',
+                                 str(contents), '" />\n']
+                 
+         if 'NAME' in metaTags:
+-            for name, contents in metaTags['NAME'].items():
++            for name, contents in list(metaTags['NAME'].items()):
+                 metaTagsTxt += ['<meta name="', str(name), '" content="', str(contents),
+                                 '" />\n']
+         return ''.join(metaTagsTxt)
+--- a/cheetah/Tools/MondoReport.py
++++ b/cheetah/Tools/MondoReport.py
+@@ -250,7 +250,7 @@
+             start = self._index - length
+             return PrevNextPage(self._origList, length, start)
+ 
+-    def next(self):
++    def __next__(self):
+         if self._index + self.length() == self.length():
+             return None
+         else:
+--- a/cheetah/Tools/RecursiveNull.py
++++ b/cheetah/Tools/RecursiveNull.py
+@@ -17,7 +17,7 @@
+         return ''
+     def __repr__(self):
+         return ''
+-    def __nonzero__(self):
++    def __bool__(self):
+         return 0
+     def __eq__(self, x):
+         if x:
+--- a/cheetah/Tools/SiteHierarchy.py
++++ b/cheetah/Tools/SiteHierarchy.py
+@@ -18,9 +18,9 @@
+ ## DEPENDENCIES
+ import string
+ try:
+-    from cStringIO import StringIO
++    from io import StringIO
+ except ImportError:
+-    from StringIO import StringIO
++    from io import StringIO
+ 
+ ##################################################
+ ## CLASSES
+@@ -85,8 +85,8 @@
+                 break
+         if len(path) == 1:
+             return self.emptyCrumb()
+-        return string.join(map(lambda x, self=self: self.crumbLink(x[0], x[1]),
+-                               path), self.crumbSeperator()) + \
++        return string.join(list(map(lambda x, self=self: self.crumbLink(x[0], x[1]),
++                               path)), self.crumbSeperator()) + \
+                                self.crumbTerminator()
+ 
+     ## Methods to control the Aesthetics
+@@ -157,10 +157,10 @@
+             ]
+ 
+     for url in ['/', '/services', '/services/products/widget', '/contact']:
+-        print('<p>', '='*50)
+-        print('<br> %s: <br>\n' % url)
++        print(('<p>', '='*50))
++        print(('<br> %s: <br>\n' % url))
+         n = Hierarchy(hierarchy, url, menuCSSClass='menu', crumbCSSClass='crumb',
+                   prefix='/here')
+-        print(n.menuList())
+-        print('<p>', '-'*50)
+-        print(n.crumbs())
++        print((n.menuList()))
++        print(('<p>', '-'*50))
++        print((n.crumbs()))
+--- a/cheetah/Utils/Misc.py
++++ b/cheetah/Utils/Misc.py
+@@ -33,7 +33,7 @@
+     called by: Cheetah.Template.__init__()
+     """
+     # XXX legalKeywords could be a set when sets get added to Python.
+-    for k in dic.keys(): # Can be dic.iterkeys() if Python >= 2.2.
++    for k in list(dic.keys()): # Can be dic.iterkeys() if Python >= 2.2.
+         if k not in legalKeywords: 
+             raise TypeError("'%s' is not a valid %s" % (k, what))
+ 
+--- a/cheetah/Utils/statprof.py
++++ b/cheetah/Utils/statprof.py
+@@ -212,7 +212,7 @@
+     while frame:
+         code_seen[frame.f_code] = True
+         frame = frame.f_back
+-    for code in code_seen.iterkeys():
++    for code in code_seen.keys():
+         get_call_data(code).cum_sample_count += 1
+ 
+ def profile_signal_handler(signum, frame):
+@@ -277,10 +277,10 @@
+         self.cum_secs_per_call = None
+ 
+     def display(self):
+-        print('%6.2f %9.2f %9.2f  %s' % (self.pcnt_time_in_proc,
++        print(('%6.2f %9.2f %9.2f  %s' % (self.pcnt_time_in_proc,
+                                          self.cum_secs_in_proc,
+                                          self.self_secs_in_proc,
+-                                         self.name))
++                                         self.name)))
+ 
+ 
+ def display():
+@@ -288,17 +288,17 @@
+         print('No samples recorded.')
+         return
+ 
+-    l = [CallStats(x) for x in call_data.itervalues()]
++    l = [CallStats(x) for x in call_data.values()]
+     l = [(x.self_secs_in_proc, x.cum_secs_in_proc, x) for x in l]
+     l.sort(reverse=True)
+     l = [x[2] for x in l]
+ 
+-    print('%5.5s %10.10s   %7.7s  %-8.8s' % ('%  ', 'cumulative', 'self', ''))
+-    print('%5.5s  %9.9s  %8.8s  %-8.8s' % ("time", "seconds", "seconds", "name"))
++    print(('%5.5s %10.10s   %7.7s  %-8.8s' % ('%  ', 'cumulative', 'self', '')))
++    print(('%5.5s  %9.9s  %8.8s  %-8.8s' % ("time", "seconds", "seconds", "name")))
+ 
+     for x in l:
+         x.display()
+ 
+     print('---')
+-    print('Sample count: %d' % state.sample_count)
+-    print('Total time: %f seconds' % state.accumulated_time)
++    print(('Sample count: %d' % state.sample_count))
++    print(('Total time: %f seconds' % state.accumulated_time))
+--- a/SetupTools.py
++++ b/SetupTools.py
+@@ -47,13 +47,13 @@
+     def run(self):
+         try:
+             build_ext.run(self)
+-        except DistutilsPlatformError, x:
++        except DistutilsPlatformError as x:
+             raise BuildFailed(x)
+ 
+     def build_extension(self, ext):
+         try:
+             build_ext.build_extension(self, ext)
+-        except ext_errors, x:
++        except ext_errors as x:
+             raise BuildFailed(x)
+ 
+    
+@@ -77,7 +77,7 @@
+         data_files = self.get_inputs()
+         
+         for entry in data_files:
+-            if not isinstance(entry, basestring):
++            if not isinstance(entry, str):
+                 raise ValueError('The entries in "data_files" must be strings')
+             
+             entry = string.join(string.split(entry, '/'), os.sep)
+@@ -80,7 +80,7 @@
+             if not isinstance(entry, str):
+                 raise ValueError('The entries in "data_files" must be strings')
+             
+-            entry = string.join(string.split(entry, '/'), os.sep)
++            entry = os.sep.join(entry.split('/'))
+             # entry is a filename or glob pattern
+             if entry.startswith('recursive:'):
+                 entry = entry[len('recursive:'):]
+@@ -100,7 +100,7 @@
+                 package_dirDict = self.distribution.package_dir
+                 if package_dirDict:
+                     packageDir = topDir
+-                    for key, val in package_dirDict.items():
++                    for key, val in list(package_dirDict.items()):
+                         if val == topDir:
+                             packageDir = key
+                             break
+@@ -137,10 +137,10 @@
+     newkws = {}
+     for configuration in configurations:
+         kws.update(vars(configuration))
+-    for name, value in kws.items():
++    for name, value in list(kws.items()):
+         if name[:1] == '_':
+             continue
+-        if not isinstance(value, (basestring, list, tuple, dict, int)):
++        if not isinstance(value, (str, list, tuple, dict, int)):
+             continue
+         newkws[name] = value
+     kws = newkws
+@@ -156,9 +156,9 @@
+     # Invoke distutils setup
+     try:
+         setup(**kws)
+-    except BuildFailed, x:
++    except BuildFailed as x:
+         print("One or more C extensions failed to build.")
+-        print("Details: %s" % x)
++        print(("Details: %s" % x))
+         if os.environ.get('CHEETAH_C_EXTENSIONS_REQUIRED'):
+             raise x
+         print("Retrying without C extensions enabled.")
+--- a/cheetah/Tests/CheetahWrapper.py
++++ b/cheetah/Tests/CheetahWrapper.py
+@@ -543,7 +543,7 @@
+             break
+         m = rx.search(lin)
+         if m:
+-            print(m.group(1))
++            print((m.group(1)))
+     f.close()
+ 
+ def main():
+--- a/cheetah/Tests/Cheps.py
++++ b/cheetah/Tests/Cheps.py
+@@ -25,7 +25,7 @@
+         '''
+         try:
+             template = Cheetah.Template.Template.compile(template)
+-        except Cheetah.Parser.ParseError, ex:
++        except Cheetah.Parser.ParseError as ex:
+             self.fail('Failed to properly generate code %s' % ex)
+         template = template()
+         rc = tepmlate.funky('abc def')
+--- a/cheetah/Tests/Filters.py
++++ b/cheetah/Tests/Filters.py
+@@ -28,12 +28,12 @@
+             template = Cheetah.Template.Template(template, searchList=[{'foo' : 'bar'}])
+             template = str(template)
+             assert template == expected
+-        except ImportError, ex:
+-            print('>>> We probably failed to import markdown, bummer %s' % ex)
++        except ImportError as ex:
++            print(('>>> We probably failed to import markdown, bummer %s' % ex))
+             return
+-        except Exception, ex:
++        except Exception as ex:
+             if ex.__class__.__name__ == 'MarkdownException' and majorVer == 2 and minorVer < 5:
+-                print('>>> NOTE: Support for the Markdown filter will be broken for you. Markdown says: %s' % ex)
++                print(('>>> NOTE: Support for the Markdown filter will be broken for you. Markdown says: %s' % ex))
+                 return
+             raise
+ 
+--- a/cheetah/Tests/NameMapper.py
++++ b/cheetah/Tests/NameMapper.py
+@@ -94,7 +94,7 @@
+                 'anObj.meth3': 'A string',
+                 })
+ 
+-for k in testNamespace.keys():
++for k in list(testNamespace.keys()):
+     # put them in the globals for the valueFromFrame tests
+     exec('%s = testNamespace[k]'%k)
+ 
+--- a/cheetah/Tests/Parser.py
++++ b/cheetah/Tests/Parser.py
+@@ -24,11 +24,11 @@
+         '''
+         self.al.add_argument('a')
+         self.al.add_default('999')
+-        self.al.next()
++        next(self.al)
+         self.al.add_argument('b')
+         self.al.add_default('444')
+ 
+-        expect = [(u'a', u'999'), (u'b', u'444')]
++        expect = [('a', '999'), ('b', '444')]
+ 
+         self.assertEquals(expect, self.al.merge())
+ 
+--- a/cheetah/Tests/Performance.py
++++ b/cheetah/Tests/Performance.py
+@@ -57,8 +57,8 @@
+                     pystone_total_time = total_time / pystone_rate
+                 global DEBUG
+                 if DEBUG:
+-                    print('The test "%s" took: %s pystones' % (function.func_name,
+-                        pystone_total_time))
++                    print(('The test "%s" took: %s pystones' % (function.__name__,
++                        pystone_total_time)))
+                 else:
+                     if pystone_total_time > (max_num_pystones + TOLERANCE):
+                         raise DurationError((('Test too long (%.2f Ps, '
+@@ -98,8 +98,8 @@
+         self.prof.stop()
+         self.prof.close()
+         if self.display:
+-            print('>>> %s (%d iterations) ' % (self.__class__.__name__,
+-                    self.iterations))
++            print(('>>> %s (%d iterations) ' % (self.__class__.__name__,
++                    self.iterations)))
+             stats = hotshot.stats.load('%s.prof' % self.__class__.__name__)
+             #stats.strip_dirs()
+             stats.sort_stats('time', 'calls')
+@@ -154,7 +154,7 @@
+         template = Cheetah.Template.Template.compile(template, 
+             keepRefToGeneratedCode=False)
+         template = template()
+-        template = unicode(template)
++        template = str(template)
+ 
+ 
+ class FilterTest(PerformanceTest):
+@@ -173,7 +173,7 @@
+         self.template = template()
+ 
+     def performanceSample(self):
+-        value = unicode(self.template)
++        value = str(self.template)
+ 
+ 
+ class LongCompileTest(PerformanceTest):
+--- a/cheetah/Tests/Regressions.py
++++ b/cheetah/Tests/Regressions.py
+@@ -29,8 +29,8 @@
+     def test_ValidException(self):
+         o = CustomGetAttrClass()
+         try:
+-            print(o.attr)
+-        except GetAttrException, e:
++            print((o.attr))
++        except GetAttrException as e:
+             # expected
+             return
+         except:
+--- a/cheetah/Tests/SyntaxAndOutput.py
++++ b/cheetah/Tests/SyntaxAndOutput.py
+@@ -104,7 +104,7 @@
+     'nameList': [('john', 'doe'), ('jane', 'smith')],
+     'letterList': ['a', 'b', 'c'],
+     '_': lambda x: 'Translated: ' + x,
+-    'unicodeData': u'aoeu12345\u1234',
++    'unicodeData': 'aoeu12345\u1234',
+     }
+ 
+ 
+@@ -708,12 +708,12 @@
+         """unicode data in placeholder
+         """
+         #self.verify(u"$unicodeData", defaultTestNameSpace['unicodeData'], outputEncoding='utf8')
+-        self.verify(u"$unicodeData", defaultTestNameSpace['unicodeData'])
++        self.verify("$unicodeData", defaultTestNameSpace['unicodeData'])
+ 
+     def test2(self):
+         """unicode data in body
+         """
+-        self.verify(u"aoeu12345\u1234", u"aoeu12345\u1234")
++        self.verify("aoeu12345\u1234", "aoeu12345\u1234")
+         #self.verify(u"#encoding utf8#aoeu12345\u1234", u"aoeu12345\u1234")
+ 
+ class EncodingDirective(OutputTest):
+@@ -730,48 +730,48 @@
+     def test3(self):
+         """basic #encoding """
+         self.verify("#encoding utf-8\n\xe1\x88\xb4",
+-                    u'\u1234', outputEncoding='utf8')
++                    '\u1234', outputEncoding='utf8')
+ 
+     def test4(self):
+         """basic #encoding """
+         self.verify("#encoding latin-1\n\xe1\x88\xb4",
+-                    u"\xe1\x88\xb4")
++                    "\xe1\x88\xb4")
+ 
+     def test5(self):
+         """basic #encoding """
+         self.verify("#encoding latin-1\nAndr\202",
+-                    u'Andr\202')
++                    'Andr\202')
+ 
+     def test6(self):
+         '''Using #encoding on the second line'''
+         self.verify("""### Comments on the first line
+ #encoding utf-8\n\xe1\x88\xb4""",
+-                    u'\u1234', outputEncoding='utf8')
++                    '\u1234', outputEncoding='utf8')
+ 
+ class UnicodeDirective(OutputTest):
+     def test1(self):
+         """basic #unicode """
+         self.verify("#unicode utf-8\n1234",
+-                    u"1234")
++                    "1234")
+         
+         self.verify("#unicode ascii\n1234",
+-                    u"1234")
++                    "1234")
+ 
+         self.verify("#unicode latin-1\n1234",
+-                    u"1234")
++                    "1234")
+ 
+         self.verify("#unicode latin-1\n1234ü",
+-                    u"1234ü")
++                    "1234ü")
+         self.verify("#unicode: latin-1\n1234ü",
+-                    u"1234ü")
++                    "1234ü")
+         self.verify("#  unicode  : latin-1\n1234ü",
+-                    u"1234ü")
++                    "1234ü")
+ 
+-        self.verify(u"#unicode latin-1\n1234ü",
+-                    u"1234ü")
++        self.verify("#unicode latin-1\n1234ü",
++                    "1234ü")
+ 
+         self.verify("#encoding latin-1\n1234ü",
+-                    u"1234ü")
++                    "1234ü")
+ 
+ class Placeholders_Esc(OutputTest):
+     convertEOLs = False
+@@ -3226,7 +3226,7 @@
+     
+ 
+ def install_eols():
+-    klasses = [v for v in globals().values() if isinstance(v, type) and issubclass(v, unittest.TestCase)]
++    klasses = [v for v in list(globals().values()) if isinstance(v, type) and issubclass(v, unittest.TestCase)]
+     for klass in klasses:
+         name = klass.__name__        
+         if hasattr(klass, 'convertEOLs') and klass.convertEOLs:
+--- a/cheetah/Tests/Template.py
++++ b/cheetah/Tests/Template.py
+@@ -305,7 +305,7 @@
+         try:
+             rc = template.myClassMethod(foo='bar')
+             assert rc == '$foo = bar', (rc, 'Template class method didn\'t return what I expected')
+-        except AttributeError, ex:
++        except AttributeError as ex:
+             self.fail(ex)
+ 
+ class StaticMethodSupport(TemplateTest):
+@@ -323,7 +323,7 @@
+         try:
+             rc = template.myStaticMethod(foo='bar')
+             assert rc == '$foo = bar', (rc, 'Template class method didn\'t return what I expected')
+-        except AttributeError, ex:
++        except AttributeError as ex:
+             self.fail(ex)
+ 
+ class Useless(object):
+@@ -354,7 +354,7 @@
+         class Sub(Template):
+             greeting = 'Hola'
+         tmpl = Sub('''When we meet, I say "${greeting}"''')
+-        self.assertEquals(unicode(tmpl), 'When we meet, I say "Hola"')
++        self.assertEquals(str(tmpl), 'When we meet, I say "Hola"')
+ 
+ ##################################################
+ ## if run from the command line ##
+--- a/cheetah/Tests/Test.py
++++ b/cheetah/Tests/Test.py
+@@ -46,7 +46,7 @@
+ if __name__ == '__main__':
+     runner = unittest.TextTestRunner()
+     if 'xml' in sys.argv:
+-        import xmlrunner
++        from . import xmlrunner
+         runner = xmlrunner.XMLTestRunner(filename='Cheetah-Tests.xml')
+     
+     results = runner.run(unittest.TestSuite(suites))
+--- a/cheetah/Tests/Unicode.py
++++ b/cheetah/Tests/Unicode.py
+@@ -37,10 +37,10 @@
+         other = otherT()
+         t.other = other
+ 
+-        t.v = u'Unicode String'
+-        t.other.v = u'Unicode String'
++        t.v = 'Unicode String'
++        t.other.v = 'Unicode String'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ class JBQ_UTF8_Test2(unittest.TestCase):
+     def runTest(self):
+@@ -52,10 +52,10 @@
+         other = otherT()
+         t.other = other
+ 
+-        t.v = u'Unicode String with eacute Ã©'
+-        t.other.v = u'Unicode String'
++        t.v = 'Unicode String with eacute Ã©'
++        t.other.v = 'Unicode String'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ 
+ class JBQ_UTF8_Test3(unittest.TestCase):
+@@ -68,10 +68,10 @@
+         other = otherT()
+         t.other = other
+ 
+-        t.v = u'Unicode String with eacute Ã©'
+-        t.other.v = u'Unicode String and an eacute Ã©'
++        t.v = 'Unicode String with eacute Ã©'
++        t.other.v = 'Unicode String and an eacute Ã©'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ class JBQ_UTF8_Test4(unittest.TestCase):
+     def runTest(self):
+@@ -80,16 +80,16 @@
+ 
+         t.v = 'Unicode String'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ class JBQ_UTF8_Test5(unittest.TestCase):
+     def runTest(self):
+         t = Template.compile(source="""#encoding utf-8
+         Main file with |$v| and eacute in the template Ã©""")
+ 
+-        t.v = u'Unicode String'
++        t.v = 'Unicode String'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ def loadModule(moduleName, path=None):
+     if path:
+@@ -114,9 +114,9 @@
+         Main file with |$v| and eacute in the template Ã©"""
+         t = Template.compile(source=source)
+ 
+-        t.v = u'Unicode String'
++        t.v = 'Unicode String'
+ 
+-        assert unicode(t())
++        assert str(t())
+ 
+ class JBQ_UTF8_Test7(CommandLineTest):
+     def runTest(self):
+@@ -125,9 +125,9 @@
+         Main file with |$v| and eacute in the template Ã©"""
+ 
+         template = self.createAndCompile(source)
+-        template.v = u'Unicode String'
++        template.v = 'Unicode String'
+ 
+-        assert unicode(template())
++        assert str(template())
+ 
+ class JBQ_UTF8_Test8(CommandLineTest):
+     def testStaticCompile(self):
+@@ -137,7 +137,7 @@
+ 
+         template = self.createAndCompile(source)()
+ 
+-        a = unicode(template).encode("utf-8")
++        a = str(template).encode("utf-8")
+         self.assertEquals("BÃ©bÃ©", a)
+ 
+     def testDynamicCompile(self):
+@@ -147,7 +147,7 @@
+ 
+         template = Template(source = source)
+ 
+-        a = unicode(template).encode("utf-8")
++        a = str(template).encode("utf-8")
+         self.assertEquals("BÃ©bÃ©", a)
+ 
+ class EncodeUnicodeCompatTest(unittest.TestCase):
+@@ -157,10 +157,10 @@
+     """
+     def runTest(self):
+         t = Template("""Foo ${var}""", filter='EncodeUnicode')
+-        t.var = u"Text with some non-ascii characters: Ã¥Ã¤Ã¶"
++        t.var = "Text with some non-ascii characters: Ã¥Ã¤Ã¶"
+         
+         rc = t.respond()
+-        assert isinstance(rc, unicode), ('Template.respond() should return unicode', rc)
++        assert isinstance(rc, str), ('Template.respond() should return unicode', rc)
+         
+         rc = str(t)
+         assert isinstance(rc, str), ('Template.__str__() should return a UTF-8 encoded string', rc)
+@@ -172,7 +172,7 @@
+ 
+         template = self.createAndCompile(source)
+         assert template and issubclass(template, Template)
+-        template = template(searchList=[{'adjective' : u'neat'}])
++        template = template(searchList=[{'adjective' : 'neat'}])
+         assert template.respond()
+ 
+     def test_Thai(self):
+@@ -181,7 +181,7 @@
+         template = self.createAndCompile(source)
+         assert template and issubclass(template, Template)
+         template = template(searchList=[{'foo' : 'bar', 
+-            'adjective' : u'\u0e22\u0e34\u0e19\u0e14\u0e35\u0e15\u0e49\u0e2d\u0e19\u0e23\u0e31\u0e1a'}])
++            'adjective' : '\u0e22\u0e34\u0e19\u0e14\u0e35\u0e15\u0e49\u0e2d\u0e19\u0e23\u0e31\u0e1a'}])
+         assert template.respond()
+ 
+     def test_Thai_utf8(self):
+@@ -229,7 +229,7 @@
+         template = Template(template, searchList=[{'header' : '',
+                         'nombre' : '', 'numpedidos_bodega' : '',
+                         'numpedidos_noconf' : ''}])
+-        self.assertTrue(unicode(template))
++        self.assertTrue(str(template))
+ 
+ 
+ 
+--- a/cheetah/Tests/xmlrunner.py
++++ b/cheetah/Tests/xmlrunner.py
+@@ -13,10 +13,10 @@
+ import time
+ import traceback
+ import unittest
+-from StringIO import StringIO
++from io import StringIO
+ from xml.sax.saxutils import escape
+ 
+-from StringIO import StringIO
++from io import StringIO
+ 
+ 
+ 
+--- a/SetupConfig.py
++++ b/SetupConfig.py
+@@ -29,7 +29,6 @@
+   Topic :: Software Development :: Libraries :: Python Modules
+   Topic :: Software Development :: User Interfaces
+   Topic :: Text Processing'''.splitlines() if not line.strip().startswith('#')]
+-del line
+ 
+ package_dir = {'Cheetah':'cheetah'}
+ 
