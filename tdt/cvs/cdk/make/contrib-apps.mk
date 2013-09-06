@@ -98,47 +98,6 @@ $(DEPDIR)/grep: bootstrap $(DEPENDS_grep)
 	touch $@
 
 #
-# PPPD
-#
-BEGIN[[
-pppd
-  2.4.5
-  ppp-{PV}
-  extract:ftp://ftp.samba.org/pub/ppp/ppp-{PV}.tar.gz
-  patch:file://{PN}.patch
-  make:install:DESTDIR=PKDIR/usr
-;
-]]END
-
-PKGR_pppd = r1
-DESCRIPTION_pppd = "pppd"
-FILES_pppd = \
-/usr/sbin/* \
-/usr/lib/*
-
-$(DEPDIR)/pppd: bootstrap $(DEPENDS_pppd)
-	$(PREPARE_pppd)
-	$(start_build)
-	cd $(DIR_pppd); \
-		sed -ie s:/usr/include/pcap-bpf.h:$(prefix)/cdkroot/usr/include/pcap-bpf.h: pppd/Makefile.linux
-	cd $(DIR_pppd) ; \
-		$(BUILDENV) \
-		CFLAGS="$(TARGET_CFLAGS) -I$(buildprefix)/linux/arch/sh" \
-		./configure \
-			--build=$(build) \
-			--host=$(target) \
-			--target=$(target) \
-			--with-kernel=$(buildprefix)/$(KERNEL_DIR) \
-			--disable-kernel-module \
-			--prefix=/usr; \
-		$(MAKE) $(MAKE_OPTS); \
-		$(INSTALL_pppd)
-	$(tocdk_build)
-	$(toflash_build)
-	$(DISTCLEANUP_pppd)
-	touch $@
-
-#
 # USB MODESWITCH
 #
 BEGIN[[

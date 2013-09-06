@@ -131,7 +131,7 @@ modem_scripts
 ]]END
 
 DESCRIPTION_modem_scripts = utils to setup 3G modems
-RDEPENDS_modem_scripts = pppd usb_modeswitch iptables iptables-dev
+RDEPENDS_modem_scripts = usb_modeswitch iptables iptables-dev
 
 $(DEPDIR)/modem-scripts: $(DEPENDS_modem_scripts) $(RDEPENDS_modem_scripts)
 	$(PREPARE_modem_scripts)

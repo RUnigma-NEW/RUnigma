@@ -108,7 +108,6 @@ yaud-none: \
 #
 min-extras: \
 	usb_modeswitch \
-	pppd \
 	modem-scripts \
 	ntfs_3g \
 	enigma2_openwebif \
@@ -120,7 +119,6 @@ min-extras: \
 	
 all-extras: \
 	usb_modeswitch \
-	pppd \
 	modem-scripts \
 	enigma2-plugins \
 	xupnpd \
