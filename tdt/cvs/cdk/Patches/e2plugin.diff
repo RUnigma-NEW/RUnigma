@@ -135,7 +135,7 @@
  	{
 --- a/partnerbox/src/servicewebts/servicewebts.cpp
 +++ b/partnerbox/src/servicewebts/servicewebts.cpp
-@@ -763,11 +763,29 @@
+@@ -763,10 +763,28 @@
  	m_running = false;
  }
  
@@ -164,7 +164,6 @@
  	Py_InitModule("servicewebts", NULL);
 +#endif
  }
- 
 --- a/permanenttimeshift/src/eitsave/eitsave.cpp
 +++ b/permanenttimeshift/src/eitsave/eitsave.cpp
 @@ -78,11 +78,29 @@
@@ -199,7 +198,7 @@
  
 --- a/vlcplayer/src/servicets/servicets.cpp
 +++ b/vlcplayer/src/servicets/servicets.cpp
-@@ -712,11 +712,29 @@
+@@ -712,10 +712,28 @@
  	m_running = false;
  }
  
@@ -228,4 +227,3 @@
  	Py_InitModule("servicets", NULL);
 +#endif
  }
- 

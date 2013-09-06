@@ -4050,7 +4050,7 @@
 +		address = ""
 +		addressB = ""
  		try: # this is just to catch wrong lines
- 			if row[31] or (row[37] and number == normalizePhoneNumber(row[37])) or (row[40] and number == normalizePhoneNumber(row[40])): # Telefon geschaftlich
+ 			if row[31] or (row[37] and number == normalizePhoneNumber(row[37])) or (row[40] and number == normalizePhoneNumber(row[40])): # Telefon geschäftlich
  				no = normalizePhoneNumber(row[31])
 @@ -147,13 +147,13 @@
  	if not fileD:
@@ -12327,6 +12327,7 @@
  		#TODO Email notyfication about error
  		#self.subtitle_codepade = "None"
  		return "None"
+\
 --- a/subsdownloader2/src/SourceCode/myFileList.py
 +++ b/subsdownloader2/src/SourceCode/myFileList.py
 @@ -73,7 +73,7 @@
@@ -23283,7 +23284,7 @@
  			return video_url
  
  		# Get video info
-@@ -237,17 +237,17 @@
+@@ -236,17 +236,17 @@
  				videoinfo = parse_qs(infopage)
  				if ('url_encoded_fmt_stream_map' or 'fmt_url_map') in videoinfo:
  					break

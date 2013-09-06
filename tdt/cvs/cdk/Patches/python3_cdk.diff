@@ -515,10 +515,9 @@
  global work_dir
  work_dir = os.getcwd()
 -print "Building in", work_dir
--
--if os.environ.has_key('PACKAGES_' + parent_pkg):
 +print("Building in", work_dir)
-+
+ 
+-if os.environ.has_key('PACKAGES_' + parent_pkg):
 +if 'PACKAGES_' + parent_pkg in os.environ:
  	pkg_list = os.environ['PACKAGES_' + parent_pkg]
  else:
@@ -561,6 +560,15 @@
  
  def legitimize_package_name(s):
  	"""
+@@ -149,7 +150,7 @@
+ 	def fixutf(m):
+ 		cp = m.group(1)
+ 		if cp:
+-			return ('\u%s' % cp).decode('unicode_escape').encode('utf-8')
++			return ('\%s' % cp).decode('unicode_escape').encode('utf-8')
+ 
+ 	# Handle unicode codepoints encoded as <U0123>, as in glibc locale files.
+ 	s = re.sub('<U([0-9A-Fa-f]{1,4})>', fixutf, s)
 @@ -233,10 +234,10 @@
  		else:			
  			oldfiles = bb_get('FILES_' + pkg, d, True)			
@@ -574,7 +582,7 @@
  			hook(f, pkg, file_regex, output_pattern, m.group(1))
  
  	bb_set('PACKAGES', ' '.join(packages), d)
-@@ -251,7 +251,7 @@
+@@ -250,7 +251,7 @@
  #But keep packaging simple
  
  def read_control_file(fname):
