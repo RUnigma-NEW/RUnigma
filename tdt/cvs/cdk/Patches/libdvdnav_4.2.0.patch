@@ -1,3 +1,11 @@
+--- a/misc/dvdnavmini.pc.in
++++ b/misc/dvdnavmini.pc.in
+@@ -8,4 +8,4 @@ Description: DVD Navigation mini library
+ Version: @VERSION@
+ 
+ Cflags: -I${includedir} @DVDREAD_CFLAGS@ @THREAD_CFLAGS@
+-Libs: -L${libdir} -ldvdnav @THREAD_LIBS@
++Libs: -L${libdir} -ldvdnavmini @THREAD_LIBS@
 --- libdvdnav-4.1.3.orig/configure.ac	2012-05-10 17:28:37.540182957 +0200
 +++ libdvdnav-4.1.3/configure.ac	2012-05-10 17:29:59.452179512 +0200
 @@ -99,7 +99,7 @@
