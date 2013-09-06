@@ -1161,7 +1161,7 @@ libdvdnav
   4.2.0
   {PN}-{PV}
   extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
-  patch:file://{PN}_{PV}-3.diff
+  patch:file://{PN}_{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1204,7 +1204,7 @@ libdvdread
   4.2.0
   {PN}-{PV}
   extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
-  patch:file://{PN}_{PV}-5.diff
+  patch:file://{PN}_{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
 ]]END
