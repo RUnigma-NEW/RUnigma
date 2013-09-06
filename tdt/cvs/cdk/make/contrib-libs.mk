@@ -2341,7 +2341,7 @@ $(DEPDIR)/pycrypto: bootstrap setuptools $(DEPENDS_pycrypto)
 #
 BEGIN[[
 pyopenssl
-  0.13
+  0.13.1
   pyOpenSSL-{PV}
   extract:http://pypi.python.org/packages/source/p/pyOpenSSL/pyOpenSSL-{PV}.tar.gz
 ;
