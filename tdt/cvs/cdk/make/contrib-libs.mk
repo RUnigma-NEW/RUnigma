@@ -1158,9 +1158,9 @@ $(DEPDIR)/libdvdcss: bootstrap $(DEPENDS_libdvdcss)
 #
 BEGIN[[
 libdvdnav
-  4.1.3
+  4.2.0
   {PN}-{PV}
-  extract:http://www.mplayerhq.hu/MPlayer/releases/dvdnav-old/{PN}-{PV}.tar.bz2
+  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
   patch:file://{PN}_{PV}-3.diff
   make:install:DESTDIR=PKDIR
 ;
@@ -1201,9 +1201,9 @@ $(DEPDIR)/libdvdnav: bootstrap libdvdread $(DEPENDS_libdvdnav)
 #
 BEGIN[[
 libdvdread
-  4.1.3
+  4.2.0
   {PN}-{PV}
-  extract:http://www.mplayerhq.hu/MPlayer/releases/dvdnav-old/{PN}-{PV}.tar.bz2
+  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
   patch:file://{PN}_{PV}-5.diff
   make:install:DESTDIR=PKDIR
 ;
