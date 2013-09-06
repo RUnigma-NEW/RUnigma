@@ -202,6 +202,15 @@
 +    __enableReadlineSupport()
 --- python-3.3.2.org/Makefile.pre.in
 +++ python-3.3.2/Makefile.pre.in
+@@ -60,7 +60,7 @@
+ # Shared libraries must be installed with executable mode on some systems;
+ # rather than figuring out exactly which, we always give them executable mode.
+ # Also, making them read-only seems to be a good idea...
+-INSTALL_SHARED= ${INSTALL} -m 555
++INSTALL_SHARED= ${INSTALL} -m 755
+ 
+ MKDIR_P=	@MKDIR_P@
+ 
 @@ -202,6 +202,7 @@
  
  PYTHON=		python$(EXE)
