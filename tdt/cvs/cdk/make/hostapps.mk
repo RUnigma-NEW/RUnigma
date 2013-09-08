@@ -165,6 +165,16 @@ host_python
   pmove:Python-{PV}:{PN}-{PV}
   patch:file://python-{PV}/python_{PV}.diff
   patch:file://python-{PV}/python-{PV}-pgettext.diff
+  patch:file://python-{PV}/12-distutils-prefix-is-inside-staging-area.patch
+  patch:file://python-{PV}/080-distutils-dont_adjust_files.patch
+  patch:file://python-{PV}/130-readline-setup.patch
+  patch:file://python-{PV}/150-fix-setupterm.patch
+  patch:file://python-{PV}/python-3.3-multilib.patch
+  patch:file://python-{PV}/03-fix-tkinter-detection.patch
+  patch:file://python-{PV}/avoid_warning_about_tkinter.patch
+  patch:file://python-{PV}/06-ctypes-libffi-fix-configure.patch
+  patch:file://python-{PV}/shutil-follow-symlink-fix.patch
+  patch:file://python-{PV}/sysroot-include-headers.patch
 ;
 endif
 ]]END

@@ -2563,8 +2563,23 @@ python
   {PN}-{PV}
   extract:http://www.{PN}.org/ftp/{PN}/{PV}/Python-{PV}.tar.bz2
   pmove:Python-{PV}:{PN}-{PV}
-  patch:file://python-{PV}/python_{PV}.diff
-  patch:file://python-{PV}/{PN}-{PV}-pgettext.diff
+  patch:file://{PN}-{PV}/{PN}_{PV}.diff
+  patch:file://{PN}-{PV}/{PN}-{PV}-pgettext.diff
+  patch:file://{PN}-{PV}/12-distutils-prefix-is-inside-staging-area.patch
+  patch:file://{PN}-{PV}/080-distutils-dont_adjust_files.patch
+  patch:file://{PN}-{PV}/130-readline-setup.patch
+  patch:file://{PN}-{PV}/150-fix-setupterm.patch
+  patch:file://{PN}-{PV}/03-fix-tkinter-detection.patch
+  patch:file://{PN}-{PV}/04-default-is-optimized.patch
+  patch:file://{PN}-{PV}/avoid_warning_about_tkinter.patch
+  patch:file://{PN}-{PV}/06-ctypes-libffi-fix-configure.patch
+  patch:file://{PN}-{PV}/remove_sqlite_rpath.patch
+  patch:file://{PN}-{PV}/cgi_py.patch
+  patch:file://{PN}-{PV}/host_include_contamination.patch
+  patch:file://{PN}-{PV}/python-3.3-multilib.patch
+  patch:file://{PN}-{PV}/shutil-follow-symlink-fix.patch
+  patch:file://{PN}-{PV}/sysroot-include-headers.patch
+  patch:file://{PN}-{PV}/unixccompiler.patch
 ;
 ]]END
 

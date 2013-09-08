@@ -1,0 +1,28 @@
+Upstream-Status: Inappropriate [embedded specific]
+
+# The proper prefix is inside our staging area.
+# Signed-Off: Michael 'Mickey' Lauer <mickey@vanille-media.de>
+# Signed-off-by: Phil Blundell <philb@gnu.org>
+# Signed-off-by: Khem Raj <raj.khem@gmail.com>
+
+Index: Python-3.3.2/Lib/distutils/sysconfig.py
+===================================================================
+--- Python-3.3.2.orig/Lib/distutils/sysconfig.py	2013-07-30 00:00:52.769749805 -0700
++++ Python-3.3.2/Lib/distutils/sysconfig.py	2013-07-30 00:16:22.545767248 -0700
+@@ -136,6 +139,7 @@
+     If 'prefix' is supplied, use it instead of sys.base_prefix or
+     sys.base_exec_prefix -- i.e., ignore 'plat_specific'.
+     """
++    lib_basename = sys.lib
+     if prefix is None:
+         if standard_lib:
+             prefix = plat_specific and BASE_EXEC_PREFIX or BASE_PREFIX
+@@ -144,7 +153,7 @@
+ 
+     if os.name == "posix":
+         libpython = os.path.join(prefix,
+-                                 "lib", "python" + get_python_version())
++                                 lib_basename, "python" + get_python_version())
+         if standard_lib:
+             return libpython
+         else:
