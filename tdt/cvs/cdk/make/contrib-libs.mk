@@ -693,7 +693,7 @@ BEGIN[[
 glib2
   2.37.1
   glib-{PV}
-  extract:http://ftp.acc.umu.se/pub/GNOME/sources/glib/2.37/glib-2.37.1.tar.xz
+  extract:http://ftp.acc.umu.se/pub/GNOME/sources/glib/2.37/glib-{PV}.tar.xz
   patch:file://glib-{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
@@ -1014,7 +1014,7 @@ $(DEPDIR)/libexpat: bootstrap $(DEPENDS_libexpat)
 #
 BEGIN[[
 fontconfig
-  2.10.93
+  2.10.95
   {PN}-{PV}
   extract:http://{PN}.org/release/{PN}-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
@@ -1124,7 +1124,7 @@ $(DEPDIR)/a52dec: bootstrap $(DEPENDS_a52dec)
 #
 BEGIN[[
 libdvdcss
-  1.2.12
+  1.2.13
   {PN}-{PV}
   extract:http://download.videolan.org/pub/{PN}/{PV}/{PN}-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
@@ -1597,9 +1597,9 @@ $(DEPDIR)/lite: bootstrap directfb $(DEPENDS_lite)
 #
 BEGIN[[
 sqlite
-  3.7.17
-  {PN}-autoconf-3071700
-  extract:http://www.sqlite.org/2013/sqlite-autoconf-3071700.tar.gz
+  3.8.0
+  {PN}-autoconf-3080002
+  extract:http://www.sqlite.org/2013/sqlite-autoconf-3080002.tar.gz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
@@ -1703,7 +1703,7 @@ $(DEPDIR)/pixman: bootstrap $(DEPENDS_pixman)
 #
 BEGIN[[
 cairo
-  1.12.14
+  1.12.16
   {PN}-{PV}
   extract:http://cairographics.org/releases/{PN}-{PV}.tar.xz
   patch:file://{PN}-{PV}.diff
@@ -1976,7 +1976,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 BEGIN[[
 ifdef ENABLE_PY332
 setuptools
-  1.1
+  1.1.4
   {PN}-{PV}
   extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
 ;
@@ -2588,7 +2588,7 @@ PACKAGES_python = python python_ctypes
 DESCRIPTION_python = "A high-level scripting language"
 FILES_python = \
 /usr/bin/python* \
-/usr/lib/libpython$(PYTHON_VERSION).* \
+/usr/lib/libpython* \
 $(PYTHON_DIR)/*.py \
 $(PYTHON_DIR)/encodings \
 $(PYTHON_DIR)/hotshot \
