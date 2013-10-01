@@ -71,7 +71,7 @@ ROOTFS=$HDD"1"
 SYSFS=$HDD"2"
 SWAPFS=$HDD"3"
 DATAFS=$HDD"4"
-dd if=/dev/zero of=$HDD bs=512 count=64
+dd if=/dev/zero of=$HDD bs=512 count=256
 sfdisk --re-read $HDD
 # Löscht die Festplatte/Stick und erstellt 4 Partitionen
 #  1: 256MB Linux Uboot ext3
@@ -81,7 +81,7 @@ sfdisk --re-read $HDD
 sfdisk $HDD -uM << EOF
 ,256,L
 ,1024,L
-,64,S
+,256,S
 ,,L
 ;
 EOF
