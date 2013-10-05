@@ -24,7 +24,7 @@ get_opt() {
 init="/sbin/init"
 root="/dev/sda1"
 rootfs="/dev/sda2"
-record="/dev/sda4"
+record="/dev/sda3"
 
 echo "Активирую дисплей"
 insmod /drvko/proton.ko
@@ -65,10 +65,10 @@ else
     fsck.ext4 -f -y "${rootfs}" >> /fsck.log
     tune2fs -l "${rootfs}" | grep -i "Filesystem state" >> /fsck.log
 fi
-if [ `tune2fs -l /dev/sda4 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-    echo "SDA4 OK"
+if [ `tune2fs -l /dev/sda3 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
+    echo "SDA3 OK"
 else
-    echo "Проверяю раздел SDA4" > /fsck.log
+    echo "Проверяю раздел SDA3" > /fsck.log
     echo "ПРОВЕРКА" > /dev/vfd
     fsck.ext4 -f -y "${record}" >> /fsck.log
     tune2fs -l "${record}" | grep -i "Filesystem state" >> /fsck.log
