@@ -57,7 +57,7 @@ else
 		mount /dev/sda1 /rootfs
 	fi
 fi
-echo "Осторожненько запускаю загрузчик"
+echo "Запускаю загрузчик..."
 cd /rootfs/boot
 cp uImage.gz /install
 echo "Демонтирую загрузочный раздел /dev/sda1"
@@ -69,19 +69,15 @@ echo "Готовлю структуру разбиения диска"
 HDD=/dev/sda
 ROOTFS=$HDD"1"
 SYSFS=$HDD"2"
-SWAPFS=$HDD"3"
-DATAFS=$HDD"4"
-dd if=/dev/zero of=$HDD bs=512 count=256
+DATAFS=$HDD"3"
 sfdisk --re-read $HDD
 # Löscht die Festplatte/Stick und erstellt 4 Partitionen
 #  1: 256MB Linux Uboot ext3
 #  2:   1GB Linux System ext4
-#  3: 64MB Swap
-#  4: rest freier Speicher LINUX ext4 (bei HDD record)
+#  3: rest freier Speicher LINUX ext4 (bei HDD record)
 sfdisk $HDD -uM << EOF
 ,256,L
 ,1024,L
-,256,S
 ,,L
 ;
 EOF
@@ -92,10 +88,8 @@ echo "Форматирую загрузочный раздел"
 mkfs.ext3 -I 128 -b 4096 -L BOOTFS $HDD"1"
 echo "Форматирую системный раздел"
 mkfs.ext4 -L ROOTFS $HDD"2"
-echo "Форматирую раздел подкачки"
-mkswap $SWAPFS
 echo "Форматирую оставшееся свободное место"
-mkfs.ext4 -L RECORD $HDD"4"
+mkfs.ext4 -L RECORD $HDD"3"
 echo "Готово"
 echo "Монтирую раздел /dev/sda2"
 mount /dev/sda2 /rootfs
@@ -149,7 +143,7 @@ fsck.ext3  -f -y /dev/sda1
 sleep 1
 fsck.ext4  -f -y /dev/sda2
 sleep 1
-fsck.ext4  -f -y /dev/sda4
+fsck.ext4  -f -y /dev/sda3
 sleep 1
 echo "######################################################"
 echo ""
@@ -159,5 +153,3 @@ echo "######################################################"
 sleep 1
 mount /dev/sda1 /rootfs
 echo "Готово" > /dev/vfd
-echo "Ну, с Богом!!! Поехали... ..."
-
