@@ -31,18 +31,18 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
 #include <errno.h>
+#include <sys/uio.h>
 
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -246,35 +246,25 @@ static int writeData(void* _call)
     if (call->private_data == NULL)
     {
         aac_printf(10, "private_data = NULL\n");
-
-        call->private_data = DefaultAACHeader;
-        call->private_size = AAC_HEADER_LENGTH;
+	memcpy (ExtraData, DefaultAACHeader, AAC_HEADER_LENGTH);
     }
+    else
+    	memcpy (ExtraData, call->private_data, AAC_HEADER_LENGTH);
 
-    memcpy (ExtraData, call->private_data, AAC_HEADER_LENGTH);
-    ExtraData[3]       |= (PacketLength >> 12) & 0x3;
+    ExtraData[3]       |= (PacketLength >> 11) & 0x3;
     ExtraData[4]        = (PacketLength >> 3) & 0xff;
     ExtraData[5]       |= (PacketLength << 5) & 0xe0;
 
     unsigned int  HeaderLength = InsertPesHeader (PesHeader, PacketLength, AAC_AUDIO_PES_START_CODE, call->Pts, 0);
 
-    aac_printf(100, "H %d d %d ExtraData %d\n", HeaderLength, call->len, sizeof(ExtraData));
-
-    int iovcnt = 0;
     struct iovec iov[3];
-    iov[iovcnt].iov_base = PesHeader;
-    iov[iovcnt].iov_len  = HeaderLength;
-    iovcnt++;
-    iov[iovcnt].iov_base = ExtraData;
-    iov[iovcnt].iov_len  = sizeof(ExtraData);
-    iovcnt++;
-    iov[iovcnt].iov_base = call->data;
-    iov[iovcnt].iov_len  = call->len;
-    iovcnt++;
-
-    int len = writev(call->fd, iov, iovcnt);
-
-    return len;
+    iov[0].iov_base = PesHeader;
+    iov[0].iov_len = HeaderLength;
+    iov[1].iov_base = ExtraData;
+    iov[1].iov_len = AAC_HEADER_LENGTH;
+    iov[2].iov_base = call->data;
+    iov[2].iov_len = call->len;
+    return writev(call->fd, iov, 3);
 }
 
 /* ***************************** */

@@ -124,7 +124,7 @@ void framebuffer_init()
 int main(int argc,char* argv[]) {
     SubtitleOutputDef_t out;
     int showInfos = 0, noinput = 0;
-    char file[1025] = {""};
+    char file[255] = {""};
     int speed = 0, speedmap = 0;
     printf("%s >\n", __FILE__);
 
@@ -134,22 +134,13 @@ int main(int argc,char* argv[]) {
         exit(1);
     }
 
-    int n = sizeof(file);
     if (strstr(argv[1], "://") == NULL)
     {
-        n = snprintf(file, sizeof(file), "file://%s", argv[1]);
+        strcpy(file, "file://");
     }
-    else
-    {
-    	n = snprintf(file, sizeof(file), "%s", argv[1]);
-    }
-    
-    if (n >= sizeof(file))
-    {
-        printf("URL must not exceed %d characters!\n", sizeof(file) - 1);
-        exit(1);
-    }
-   
+
+    strcat(file, argv[1]);
+
     /* debug helper */
     if(argc == 3 && !strcmp(argv[2], "-d"))
     {
@@ -178,10 +169,8 @@ int main(int argc,char* argv[]) {
     /* for testing ass subtitles */
     out.screen_width = xRes;
     out.screen_height = yRes;
-    out.framebufferFD = fd;
-    out.destination   = lfb;
+    out.destination   = (uint32_t *)lfb;
     out.destStride    = stride;
-    out.shareFramebuffer = 1;
 
     player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
 

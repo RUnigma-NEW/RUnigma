@@ -33,6 +33,7 @@
 #include <sys/ioctl.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -41,7 +42,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -91,7 +91,7 @@ int InsertPesHeader (unsigned char *data, int size, unsigned char stream_id, uns
     BitPacker_t ld2 = {data, 0, 32};
 
     if (size > MAX_PES_PACKET_SIZE)
-        printf("%s: Packet size %d bigger than %dK eeeekkkkk\n",__FUNCTION__, size, (int)(MAX_PES_PACKET_SIZE/1024));
+    size = 0; // unbounded
 
     PutBits(&ld2,0x0  ,8);
     PutBits(&ld2,0x0  ,8);

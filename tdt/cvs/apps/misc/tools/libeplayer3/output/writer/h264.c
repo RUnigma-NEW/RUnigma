@@ -31,17 +31,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -110,15 +112,13 @@ static int writeData(void* _call)
 {
     WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    unsigned char*          PacketStart = NULL;
-    unsigned int            PacketStartSIZE = 0;
-    unsigned int            HeaderLength;
     unsigned char           PesHeader[PES_MAX_HEADER_SIZE];
     unsigned long long int  VideoPts;
     unsigned int            TimeDelta;
     unsigned int            TimeScale;
     int                     len = 0;
-    static int              NoOtherBeginningFound = 1;
+    int ic = 0;
+    struct iovec iov[128];
     h264_printf(10, "\n");
 
     if (call == NULL)
@@ -145,49 +145,41 @@ static int writeData(void* _call)
         return 0;
     }
 
-    if((call->data[0] == 0x00 && call->data[1] == 0x00 && call->data[2] == 0x00 && call->data[3] == 0x01) ||
-       (call->data[0] == 0x00 && call->data[1] == 0x00 && call->data[2] == 0x01 && NoOtherBeginningFound) ||
-            (call->data[0] == 0xff && call->data[1] == 0xff && call->data[2] == 0xff && call->data[3] == 0xff))
+    if((call->len > 3) && ((call->data[0] == 0x00 && call->data[1] == 0x00 && call->data[2] == 0x00 && call->data[3] == 0x01) ||
+            (call->data[0] == 0xff && call->data[1] == 0xff && call->data[2] == 0xff && call->data[3] == 0xff)))
     {
+	unsigned int PacketLength = 0;
         unsigned int FakeStartCode = (call->Version << 8) | PES_VERSION_FAKE_START_CODE;
-        unsigned int PrivateLength=0;
-        if(initialHeader)PrivateLength = call->private_size;
-        HeaderLength = InsertPesHeader(PesHeader, call->len,
-                                       MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
+	iov[ic++].iov_base = PesHeader;
+	if (initialHeader) {
+		initialHeader = 0;
+		iov[ic].iov_base = call->private_data;
+		iov[ic++].iov_len = call->private_size;
+		PacketLength += call->private_size;
+	}
+	iov[ic].iov_base = call->data;
+	iov[ic++].iov_len = call->len;
+	PacketLength += call->len;
         /*Hellmaster1024: some packets will only be accepted by the player if we send one byte more than
                           data is available. The content of this byte does not matter. It will be ignored
                           by the player */
-        unsigned char *PacketData = malloc(HeaderLength + call->len + PrivateLength + 1);
-
-        memcpy(PacketData, PesHeader, HeaderLength);
-        if(initialHeader){
-            memcpy (PacketData + HeaderLength, call->private_data, PrivateLength);
-            initialHeader=0;
-        }
-        memcpy (PacketData + HeaderLength + PrivateLength, call->data, call->len);
-
-        len = write(call->fd, PacketData, call->len + HeaderLength + PrivateLength + 1);
-
-        free(PacketData);
-
-        return len;
+	iov[ic].iov_base = "";
+	iov[ic++].iov_len = 1;
+        iov[0].iov_len = InsertPesHeader(PesHeader, PacketLength, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
+	return writev(call->fd, iov, ic);
     }
-    NoOtherBeginningFound = 0;
 
     if (initialHeader)
     {
-        unsigned char*  HeaderData = malloc(BUFFER_SIZE+PADDING_LENGTH);
         avcC_t*         avcCHeader          = (avcC_t*)call->private_data;
-        int             i;
+        unsigned int	i;
         unsigned int    ParamSets;
         unsigned int    ParamOffset;
-        unsigned int    InitialHeaderLength     = 0;
+        unsigned int	InitialHeaderLength     = 0;
         unsigned int    ParametersLength;
 
-        if (avcCHeader == NULL)
-        {
+        if (avcCHeader == NULL) {
             h264_err("private_data NULL\n");
-            free(HeaderData);
             return -1;
         }
 
@@ -196,6 +188,7 @@ static int writeData(void* _call)
 
         ParametersLength                      = 0;
 
+        unsigned char  HeaderData[19];
         HeaderData[ParametersLength++]        = 0x00;                                         // Start code
         HeaderData[ParametersLength++]        = 0x00;
         HeaderData[ParametersLength++]        = 0x01;
@@ -222,13 +215,16 @@ static int writeData(void* _call)
         HeaderData[ParametersLength++]        = 0xff;
         HeaderData[ParametersLength++]        = 0x80;                                         // Rsbp trailing bits
 
-        HeaderLength = InsertPesHeader (PesHeader, ParametersLength, MPEG_VIDEO_PES_START_CODE, INVALID_PTS_VALUE, 0);
+	assert(ParametersLength <= sizeof(HeaderData));
 
-        PacketStart = malloc(HeaderLength + ParametersLength);
-        PacketStartSIZE = HeaderLength + ParametersLength;
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, HeaderData, ParametersLength);
-        len += write(call->fd, PacketStart, HeaderLength + ParametersLength);
+	ic = 0;
+	iov[ic].iov_base = PesHeader;
+	iov[ic++].iov_len = InsertPesHeader (PesHeader, ParametersLength, MPEG_VIDEO_PES_START_CODE, INVALID_PTS_VALUE, 0);
+	iov[ic].iov_base = HeaderData;
+	iov[ic++].iov_len = ParametersLength;
+	len = writev(call->fd, iov, ic);
+	if (len < 0)
+		return len;
 
         NalLengthBytes  = (avcCHeader->NalLengthMinusOne & 0x03) + 1;
         ParamSets       = avcCHeader->NumParamSets & 0x1f;
@@ -242,26 +238,18 @@ static int writeData(void* _call)
         h264_printf(20, "    number of sequence param sets: %d\n", ParamSets);
 
         ParamOffset     = 0;
+	ic = 0;
+	iov[ic++].iov_base = PesHeader;
         for (i = 0; i < ParamSets; i++) {
             unsigned int  PsLength = (avcCHeader->Params[ParamOffset] << 8) + avcCHeader->Params[ParamOffset+1];
 
             h264_printf(20, "        sps %d has length           %d\n", i, PsLength);
 
-            if (HeaderLength + InitialHeaderLength + sizeof(Head) > PacketStartSIZE) {
-                PacketStart = realloc(PacketStart, HeaderLength + InitialHeaderLength + sizeof(Head));
-                PacketStartSIZE = HeaderLength + InitialHeaderLength + sizeof(Head);
-            }
-
-            memcpy (PacketStart + HeaderLength + InitialHeaderLength, Head, sizeof(Head));
+	    iov[ic].iov_base = (char *)Head;
+	    iov[ic++].iov_len = sizeof(Head);
             InitialHeaderLength        += sizeof(Head);
-
-            if (HeaderLength + InitialHeaderLength + PsLength > PacketStartSIZE) {
-                PacketStart = realloc(PacketStart, HeaderLength + InitialHeaderLength + PsLength);
-                PacketStartSIZE = HeaderLength + InitialHeaderLength + PsLength;
-            }
-
-            memcpy (PacketStart + HeaderLength + InitialHeaderLength, &avcCHeader->Params[ParamOffset+2], PsLength);
-
+	    iov[ic].iov_base = &avcCHeader->Params[ParamOffset+2];
+	    iov[ic++].iov_len = PsLength;
             InitialHeaderLength        += PsLength;
             ParamOffset                += PsLength+2;
         }
@@ -276,33 +264,22 @@ static int writeData(void* _call)
 
             h264_printf (20, "        pps %d has length           %d\n", i, PsLength);
 
-            if (HeaderLength + InitialHeaderLength + sizeof(Head) > PacketStartSIZE) {
-                PacketStart = realloc(PacketStart, HeaderLength + InitialHeaderLength + sizeof(Head));
-                PacketStartSIZE = HeaderLength + InitialHeaderLength + sizeof(Head);
-            }
-
-            memcpy (PacketStart + HeaderLength + InitialHeaderLength, Head, sizeof(Head));
+	    iov[ic].iov_base = (char *) Head;
+	    iov[ic++].iov_len = sizeof(Head);
             InitialHeaderLength        += sizeof(Head);
-
-            if (HeaderLength + InitialHeaderLength + PsLength > PacketStartSIZE) {
-                PacketStart = realloc(PacketStart, HeaderLength + InitialHeaderLength + PsLength);
-                PacketStartSIZE = HeaderLength + InitialHeaderLength + PsLength;
-            }
-
-            memcpy (PacketStart + HeaderLength + InitialHeaderLength, &avcCHeader->Params[ParamOffset+2], PsLength);
+	    iov[ic].iov_base = &avcCHeader->Params[ParamOffset+2];
+	    iov[ic++].iov_len = PsLength;
             InitialHeaderLength        += PsLength;
             ParamOffset                += PsLength+2;
         }
 
-        HeaderLength    = InsertPesHeader (PesHeader, InitialHeaderLength, MPEG_VIDEO_PES_START_CODE, INVALID_PTS_VALUE, 0);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-
-        len += write (call->fd, PacketStart, HeaderLength + InitialHeaderLength);
+	iov[0].iov_len = InsertPesHeader (PesHeader, InitialHeaderLength, MPEG_VIDEO_PES_START_CODE, INVALID_PTS_VALUE, 0);
+	ssize_t l = writev(call->fd, iov, ic);
+	if (l < 0)
+		return l;
+	len += l;
 
         initialHeader           = 0;
-
-        free(PacketStart);
-        free(HeaderData);
     }
 
     unsigned int SampleSize    = call->len;
@@ -310,66 +287,52 @@ static int writeData(void* _call)
     unsigned int VideoPosition = 0;
 
     do {
-        unsigned int   NalLength;
-        unsigned char  NalData[4];
-        int            NalPresent = 1;
+		unsigned int   NalLength;
+		unsigned char  NalData[4];
+		int NalPresent = 1;
 
-        memcpy (NalData, call->data + VideoPosition, NalLengthBytes);
-        VideoPosition += NalLengthBytes;
-        NalLength       = (NalLengthBytes == 1) ?  NalData[0] :
-                          (NalLengthBytes == 2) ? (NalData[0] <<  8) |  NalData[1] :
-                          (NalLengthBytes == 3) ? (NalData[0] << 16) | (NalData[1] <<  8) |  NalData[2] :
-                          (NalData[0] << 24) | (NalData[1] << 16) | (NalData[2] << 8) | NalData[3];
+		memcpy (NalData, call->data + VideoPosition, NalLengthBytes);
+		VideoPosition += NalLengthBytes;
+		NalStart += NalLengthBytes;
+		switch(NalLengthBytes) {
+			case 1:  NalLength = (NalData[0]); break;
+			case 2:  NalLength = (NalData[0] <<  8) | (NalData[1]); break;
+			case 3:  NalLength = (NalData[0] << 16) | (NalData[1] <<  8) | (NalData[2]); break;
+			default: NalLength = (NalData[0] << 24) | (NalData[1] << 16) | (NalData[2] << 8) | (NalData[3]); break;
+		}
 
-        h264_printf(20, "NalStart = %u + NalLength = %u > SampleSize = %u\n", NalStart, NalLength, SampleSize);
+		h264_printf(20, "NalStart = %u + NalLength = %u > SampleSize = %u\n", NalStart, NalLength, SampleSize);
 
-        if (NalStart + NalLength > SampleSize) {
+		if (NalStart + NalLength > SampleSize) {
+			h264_printf(20, "nal length past end of buffer - size %u frame offset %u left %u\n",
+				NalLength, NalStart , SampleSize - NalStart );
 
-            h264_printf(20, "nal length past end of buffer - size %u frame offset %u left %u\n",
-                        NalLength, NalStart , SampleSize - NalStart );
+			NalStart = SampleSize;
+		} else {
+			NalStart += NalLength;
+			ic = 0;
+			iov[ic++].iov_base = PesHeader;
 
-            NalStart    = SampleSize;
-        } else {
-            NalStart               += NalLength + NalLengthBytes;
-            while (NalLength > 0) {
-                unsigned int   PacketLength     = (NalLength < BUFFER_SIZE) ? NalLength : BUFFER_SIZE;
-                int            ExtraLength      = 0;
-                unsigned char* PacketStart;
+			if (NalPresent) {
+				NalPresent = 0;
+				iov[ic].iov_base = (char *)Head;
+				iov[ic++].iov_len = sizeof(Head);
+			}
 
-                NalLength      -= PacketLength;
+			iov[ic].iov_base = call->data + VideoPosition;
+			iov[ic++].iov_len = NalLength;
+			VideoPosition += NalLength;
 
-                if (NalPresent) {
-                    PacketStart     = malloc(sizeof(Head) + PacketLength);
-                    memcpy (PacketStart + sizeof(Head), call->data + VideoPosition, PacketLength);
-                    VideoPosition    += PacketLength;
+			h264_printf (20, "  pts=%llu\n", VideoPts);
 
-                    memcpy (PacketStart, Head, sizeof(Head));
-                    ExtraLength    = sizeof(Head);
-                } else {
-                    PacketStart     = malloc(PacketLength);
-                    memcpy (PacketStart, call->data + VideoPosition, PacketLength);
-                    VideoPosition    += PacketLength;
-                }
+			iov[0].iov_len = InsertPesHeader (PesHeader, NalLength, MPEG_VIDEO_PES_START_CODE, VideoPts, 0);
+			ssize_t l = writev(call->fd, iov, ic);
+			if (l < 0)
+				return l;
+			len += l;
 
-                PacketLength   += ExtraLength;
-
-                h264_printf (20, "  pts=%llu\n", VideoPts);
-
-                HeaderLength    = InsertPesHeader (PesHeader, PacketLength, MPEG_VIDEO_PES_START_CODE, VideoPts, 0);
-
-                unsigned char*    WritePacketStart = malloc(HeaderLength + PacketLength);
-                memcpy (WritePacketStart,              PesHeader,   HeaderLength);
-                memcpy (WritePacketStart+HeaderLength, PacketStart, PacketLength);
-                free(PacketStart);
-
-                PacketLength   += HeaderLength;
-                len += write (call->fd, WritePacketStart, PacketLength);
-                free(WritePacketStart);
-
-                NalPresent      = 0;
-                VideoPts        = INVALID_PTS_VALUE;
-            }
-        }
+			VideoPts = INVALID_PTS_VALUE;
+		}
     } while (NalStart < SampleSize);
 
     if (len < 0)
@@ -385,8 +348,6 @@ static int writeData(void* _call)
 static int writeReverseData(void* _call)
 {
     WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
-
-#ifndef old_reverse_playback
 
     h264_printf(10, "\n");
 
@@ -411,13 +372,6 @@ static int writeReverseData(void* _call)
     }
 
     return 0;
-
-#else
-
-    return 0;
-
-#endif
-
 }
 /* ***************************** */
 /* Writer  Definition            */

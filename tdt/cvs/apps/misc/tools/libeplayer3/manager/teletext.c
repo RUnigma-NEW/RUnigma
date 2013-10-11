@@ -1,5 +1,5 @@
 /*
- * video manager handling.
+ * teletext manager handling.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,35 +24,36 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <libavformat/avformat.h>
 #include "manager.h"
 #include "common.h"
 
 /* ***************************** */
 /* Makros/Constants              */
 /* ***************************** */
-#define TRACKWRAP 4
+#define TRACKWRAP 20
 
-#define VIDEO_MGR_DEBUG
+#define TELETEXT_MGR_DEBUG
 
-#ifdef VIDEO_MGR_DEBUG
+#ifdef TELETEXT_MGR_DEBUG
 
 static short debug_level = 0;
 
-#define video_mgr_printf(level, x...) do { \
+#define teletext_mgr_printf(level, x...) do { \
 if (debug_level >= level) printf(x); } while (0)
 #else
-#define video_mgr_printf(level, x...)
+#define teletext_mgr_printf(level, x...)
 #endif
 
-#ifndef VIDEO_MGR_SILENT
-#define video_mgr_err(x...) do { printf(x); } while (0)
+#ifndef TELETEXT_MGR_SILENT
+#define teletext_mgr_err(x...) do { printf(x); } while (0)
 #else
-#define video_mgr_err(x...)
+#define teletext_mgr_err(x...)
 #endif
 
 /* Error Constants */
-#define cERR_VIDEO_MGR_NO_ERROR        0
-#define cERR_VIDEO_MGR_ERROR          -1
+#define cERR_TELETEXT_MGR_NO_ERROR        0
+#define cERR_TELETEXT_MGR_ERROR          -1
 
 static const char FILENAME[] = __FILE__;
 
@@ -66,7 +67,7 @@ static const char FILENAME[] = __FILE__;
 
 static Track_t * Tracks = NULL;
 static int TrackCount = 0;
-static int CurrentTrack = 0; //TRACK[0] as default.
+static int CurrentTrack = -1;
 
 /* ***************************** */
 /* Prototypes                    */
@@ -77,7 +78,8 @@ static int CurrentTrack = 0; //TRACK[0] as default.
 /* ***************************** */
 
 static int ManagerAdd(Context_t  *context, Track_t track) {
-    video_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
+
+    teletext_mgr_printf(10, "%s::%s name=\"%s\" encoding=\"%s\" id=%d\n", FILENAME, __FUNCTION__, track.Name, track.Encoding, track.Id);
 
     if (Tracks == NULL) {
         Tracks = malloc(sizeof(Track_t) * TRACKWRAP);
@@ -88,40 +90,39 @@ static int ManagerAdd(Context_t  *context, Track_t track) {
 
     if (Tracks == NULL)
     {
-        video_mgr_err("%s:%s malloc failed\n", FILENAME, __FUNCTION__);
-        return cERR_VIDEO_MGR_ERROR;
+        teletext_mgr_err("%s:%s malloc failed\n", FILENAME, __FUNCTION__);
+        return cERR_TELETEXT_MGR_ERROR;
     }
 
     int i;
     for (i = 0; i < TRACKWRAP; i++) {
 	if (Tracks[i].Id == track.Id) {
 		Tracks[i].pending = 0;
-        	return cERR_VIDEO_MGR_NO_ERROR;
+        	return cERR_TELETEXT_MGR_NO_ERROR;
 	}
     }
 
     if (TrackCount < TRACKWRAP) {
         copyTrack(&Tracks[TrackCount], &track);
-
         TrackCount++;
     } else {
-        video_mgr_err("%s:%s TrackCount out if range %d - %d\n", FILENAME, __FUNCTION__, TrackCount, TRACKWRAP);
-        return cERR_VIDEO_MGR_ERROR;
+        teletext_mgr_err("%s:%s TrackCount out if range %d - %d\n", FILENAME, __FUNCTION__, TrackCount, TRACKWRAP);
+        return cERR_TELETEXT_MGR_ERROR;
     }
 
     if (TrackCount > 0)
-        context->playback->isVideo = 1;
+        context->playback->isTeletext = 1;
 
-    video_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
+    teletext_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
 
-    return cERR_VIDEO_MGR_NO_ERROR;
+    return cERR_TELETEXT_MGR_NO_ERROR;
 }
 
 static char ** ManagerList(Context_t  *context __attribute__((unused))) {
     int i = 0, j = 0;
     char ** tracklist = NULL;
 
-    video_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
+    teletext_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
 
     if (Tracks != NULL) {
 
@@ -129,7 +130,7 @@ static char ** ManagerList(Context_t  *context __attribute__((unused))) {
 
         if (tracklist == NULL)
         {
-            video_mgr_err("%s:%s malloc failed\n", FILENAME, __FUNCTION__);
+            teletext_mgr_err("%s:%s malloc failed\n", FILENAME, __FUNCTION__);
             return NULL;
         }
 
@@ -145,15 +146,16 @@ static char ** ManagerList(Context_t  *context __attribute__((unused))) {
         tracklist[j] = NULL;
     }
 
-    video_mgr_printf(10, "%s::%s return %p (%d - %d)\n", FILENAME, __FUNCTION__, tracklist, j, TrackCount);
+    teletext_mgr_printf(10, "%s::%s return %p (%d - %d)\n", FILENAME, __FUNCTION__, tracklist, j, TrackCount);
 
     return tracklist;
 }
 
 static int ManagerDel(Context_t * context) {
+
     int i = 0;
 
-    video_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
+    teletext_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
 
     if(Tracks != NULL) {
         for (i = 0; i < TrackCount; i++) {
@@ -163,28 +165,30 @@ static int ManagerDel(Context_t * context) {
         Tracks = NULL;
     } else
     {
-        video_mgr_err("%s::%s nothing to delete!\n", FILENAME, __FUNCTION__);
-        return cERR_VIDEO_MGR_ERROR;
+        teletext_mgr_err("%s::%s nothing to delete!\n", FILENAME, __FUNCTION__);
+        return cERR_TELETEXT_MGR_ERROR;
     }
 
     TrackCount = 0;
-    CurrentTrack = 0;
-    context->playback->isVideo = 0;
+    CurrentTrack = -1;
+    context->playback->isTeletext = 0;
 
-    video_mgr_printf(10, "%s::%s return no error\n", FILENAME, __FUNCTION__);
+    teletext_mgr_printf(10, "%s::%s return no error\n", FILENAME, __FUNCTION__);
 
-    return cERR_VIDEO_MGR_NO_ERROR;
+    return cERR_TELETEXT_MGR_NO_ERROR;
 }
+
 
 static int Command(void  *_context, ManagerCmd_t command, void * argument) {
     Context_t  *context = (Context_t*) _context;
-    int ret = cERR_VIDEO_MGR_NO_ERROR;
+    int ret = cERR_TELETEXT_MGR_NO_ERROR;
 
-    video_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
+    teletext_mgr_printf(10, "%s::%s\n", FILENAME, __FUNCTION__);
 
     switch(command) {
     case MANAGER_ADD: {
         Track_t * track = argument;
+
         ret = ManagerAdd(context, *track);
         break;
     }
@@ -194,6 +198,8 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
         break;
     }
     case MANAGER_GET: {
+        teletext_mgr_printf(20, "%s::%s MANAGER_GET\n", FILENAME, __FUNCTION__);
+
         if ((TrackCount > 0) && (CurrentTrack >=0))
             *((int*)argument) = (int)Tracks[CurrentTrack].Id;
         else
@@ -201,7 +207,7 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
         break;
     }
     case MANAGER_GET_TRACK: {
-        video_mgr_printf(20, "%s::%s MANAGER_GET_TRACK\n", FILENAME, __FUNCTION__);
+        teletext_mgr_printf(20, "%s::%s MANAGER_GET_TRACK\n", FILENAME, __FUNCTION__);
 
         if ((TrackCount > 0) && (CurrentTrack >=0))
             *((Track_t**)argument) = (Track_t*) &Tracks[CurrentTrack];
@@ -225,6 +231,7 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
     }
     case MANAGER_SET: {
 	int i;
+        teletext_mgr_printf(20, "%s::%s MANAGER_SET id=%d\n", FILENAME, __FUNCTION__, *((int*)argument));
 
 	for (i = 0; i < TrackCount; i++)
 		if (Tracks[i].Id == *((int*)argument)) {
@@ -232,10 +239,9 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
 			break;
 		}
 
-        if (i == TrackCount)
-        {
-            video_mgr_err("%s::%s track id %d unknown\n", FILENAME, __FUNCTION__, *((int*)argument));
-            ret = cERR_VIDEO_MGR_ERROR;
+        if (i == TrackCount) {
+            teletext_mgr_err("%s::%s track id %d unknown\n", FILENAME, __FUNCTION__, *((int*)argument));
+            ret = cERR_TELETEXT_MGR_ERROR;
         }
         break;
     }
@@ -250,19 +256,19 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
         break;
     }
     default:
-        video_mgr_err("%s::%s ContainerCmd %d not supported!\n", FILENAME, __FUNCTION__, command);
-        ret = cERR_VIDEO_MGR_ERROR;
+        teletext_mgr_err("%s::%s ContainerCmd %d not supported!\n", FILENAME, __FUNCTION__, command);
+        ret = cERR_TELETEXT_MGR_ERROR;
         break;
     }
 
-    video_mgr_printf(10, "%s:%s: returning %d\n", FILENAME, __FUNCTION__,ret);
+    teletext_mgr_printf(10, "%s:%s: returning %d\n", FILENAME, __FUNCTION__,ret);
 
     return ret;
 }
 
 
-struct Manager_s VideoManager = {
-    "Video",
+struct Manager_s TeletextManager = {
+    "Teletext",
     &Command,
     NULL
 };

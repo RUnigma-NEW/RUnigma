@@ -31,6 +31,7 @@
 #include <sys/ioctl.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -39,7 +40,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 
 /* ***************************** */
@@ -65,7 +65,7 @@
 void PutBits(BitPacker_t * ld, unsigned int code, unsigned int length)
 {
     unsigned int bit_buf;
-    int bit_left;
+    unsigned int bit_left;
 
     bit_buf = ld->BitBuffer;
     bit_left = ld->Remaining;

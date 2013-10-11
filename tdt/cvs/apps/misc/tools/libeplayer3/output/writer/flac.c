@@ -34,6 +34,7 @@
 #include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -42,7 +43,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -54,7 +54,7 @@
 
 #ifdef FLAC_DEBUG
 
-static short debug_level = 1;
+static short debug_level = 0;
 
 #define flac_printf(level, fmt, x...) do { \
 if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); } while (0)
@@ -117,18 +117,14 @@ static int writeData(void* _call)
         return 0;
     }
 
-    int HeaderLength = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
-
-    int iovcnt = 0;
     struct iovec iov[2];
-    iov[iovcnt].iov_base = PesHeader;
-    iov[iovcnt].iov_len  = HeaderLength;
-    iovcnt++;
-    iov[iovcnt].iov_base = call->data;
-    iov[iovcnt].iov_len  = call->len;
-    iovcnt++;
+    iov[0].iov_base = PesHeader;
+    iov[0].iov_len = InsertPesHeader (PesHeader, call->len , MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
+    iov[1].iov_base = call->data;
+    iov[1].iov_len = call->len;
 
-    int len = writev(call->fd, iov, iovcnt);
+    int len = writev(call->fd, iov, 2);
+
     flac_printf(10, "flac_Write-< len=%d\n", len);
     return len;
 }

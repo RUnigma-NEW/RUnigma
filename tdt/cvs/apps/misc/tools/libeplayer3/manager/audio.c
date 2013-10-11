@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <libavformat/avformat.h>
 #include "manager.h"
 #include "common.h"
 
@@ -64,7 +65,7 @@ static const char FILENAME[] = __FILE__;
 /* Varaibles                     */
 /* ***************************** */
 
-static Track_t * Tracks;
+static Track_t * Tracks = NULL;
 static int TrackCount = 0;
 static int CurrentTrack = 0; //TRACK[0] as default.
 
@@ -82,12 +83,23 @@ static int ManagerAdd(Context_t  *context, Track_t track) {
 
     if (Tracks == NULL) {
         Tracks = malloc(sizeof(Track_t) * TRACKWRAP);
+	int i;
+	for (i = 0; i < TRACKWRAP; i++)
+		Tracks[i].Id = -1;
     }
 
     if (Tracks == NULL)
     {
         audio_mgr_err("%s:%s malloc failed\n", FILENAME, __FUNCTION__);
         return cERR_AUDIO_MGR_ERROR;
+    }
+
+    int i;
+    for (i = 0; i < TRACKWRAP; i++) {
+	if (Tracks[i].Id == track.Id) {
+		Tracks[i].pending = 0;
+    		return cERR_AUDIO_MGR_NO_ERROR;
+	}
     }
 
     if (TrackCount < TRACKWRAP) {
@@ -106,7 +118,7 @@ static int ManagerAdd(Context_t  *context, Track_t track) {
     return cERR_AUDIO_MGR_NO_ERROR;
 }
 
-static char ** ManagerList(Context_t  *context) {
+static char ** ManagerList(Context_t  *context __attribute__((unused))) {
     int i = 0, j = 0;
     char ** tracklist = NULL;
 
@@ -123,7 +135,12 @@ static char ** ManagerList(Context_t  *context) {
         }
 
         for (i = 0, j = 0; i < TrackCount; i++, j+=2) {
-            tracklist[j]    = strdup(Tracks[i].Name);
+	    if (Tracks[i].pending)
+		continue;
+	    size_t len = strlen(Tracks[i].Name) + 20;
+	    char tmp[len];
+	    snprintf(tmp, len, "%d %s\n", Tracks[i].Id, Tracks[i].Name);
+            tracklist[j]    = strdup(tmp);
             tracklist[j+1]  = strdup(Tracks[i].Encoding);
         }
         tracklist[j] = NULL;
@@ -176,6 +193,7 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
         break;
     }
     case MANAGER_LIST: {
+	container_ffmpeg_update_tracks(context, context->playback->uri, 0);
         *((char***)argument) = (char **)ManagerList(context);
         break;
     }
@@ -212,21 +230,29 @@ static int Command(void  *_context, ManagerCmd_t command, void * argument) {
         break;
     }
     case MANAGER_SET: {
-        int id = *((int*)argument);
+	int i;
+        audio_mgr_printf(20, "%s::%s MANAGER_SET id=%d\n", FILENAME, __FUNCTION__, *((int*)argument));
 
-        audio_mgr_printf(20, "%s::%s MANAGER_SET id=%d\n", FILENAME, __FUNCTION__, id);
+	for (i = 0; i < TrackCount; i++)
+		if (Tracks[i].Id == *((int*)argument)) {
+			CurrentTrack = i;
+			break;
+		}
 
-        if (id < TrackCount)
-            CurrentTrack = id;
-        else
-        {
-            audio_mgr_err("%s::%s track id out of range (%d - %d)\n", FILENAME, __FUNCTION__, id, TrackCount);
+        if (i == TrackCount) {
+            audio_mgr_err("%s::%s track id %d unknown\n", FILENAME, __FUNCTION__, *((int*)argument));
             ret = cERR_AUDIO_MGR_ERROR;
         }
         break;
     }
     case MANAGER_DEL: {
         ret = ManagerDel(context);
+        break;
+    }
+    case MANAGER_INIT_UPDATE: {
+	int i;
+	for (i = 0; i < TrackCount; i++)
+		Tracks[i].pending = 1;
         break;
     }
     default:

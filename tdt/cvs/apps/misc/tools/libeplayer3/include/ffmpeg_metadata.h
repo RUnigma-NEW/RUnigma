@@ -14,22 +14,31 @@
 char* metadata_map[] =
 {
  /* our tags      ffmpeg tag / id3v2 */  
-   "Title",       "title",
-   "Artist",      "artist",
-   "Albumartist", "album_artist",
-   "Album",       "album",
-   "Year",        "date",  /* fixme */
+   "Title",       "TIT2",
+   "Title",       "TT2",
+   "Artist",      "TPE1",
+   "Artist",      "TP1",
+   "AlbumArtist", "TPE2",
+   "AlbumArtist", "TP2",
+   "Album",       "TALB",
+   "Album",       "TAL",
+   "Year",        "TDRL",  /* fixme */
+   "Year",        "TDRC",  /* fixme */
    "Comment",     "unknown",
-   "Track",       "track",
-   "Copyright",   "copyright",
-   "Composer",    "composer",
-   "Genre",       "genre",
-   "EncodedBy",   "encoded_by",
-   "Language",    "language",
-   "Performer",   "performer",
-   "Publisher",   "publisher",
-   "Encoder",     "encoder",
-   "Disc",        "disc",
+   "Track",       "TRCK",
+   "Track",       "TRK",
+   "Copyright",   "TCOP",
+   "Composer",    "TCOM",
+   "Genre",       "TCON",
+   "Genre",       "TCO",   
+   "EncodedBy",   "TENC",   
+   "EncodedBy",   "TEN", 
+   "Language",    "TLAN",
+   "Performer",   "TPE3",
+   "Performer",   "TP3",
+   "Publisher",   "TPUB",
+   "Encoder",     "TSSE",
+   "Disc",        "TPOS",
    NULL
 };
 

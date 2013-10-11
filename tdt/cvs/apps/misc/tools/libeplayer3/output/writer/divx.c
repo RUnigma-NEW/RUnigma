@@ -34,6 +34,7 @@
 #include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -42,7 +43,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -98,10 +98,8 @@ static int writeData(void* _call)
     unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
     unsigned char  FakeHeaders[64]; // 64bytes should be enough to make the fake headers
     unsigned int   FakeHeaderLength;
-    unsigned int   ExtraLength = 0;
     unsigned char  Version             = 5;
     unsigned int   FakeStartCode       = (Version << 8) | PES_VERSION_FAKE_START_CODE;
-    unsigned int   HeaderLength = 0;
     unsigned int   usecPerFrame = 41708; /* Hellmaster1024: default value */
     BitPacker_t ld = {FakeHeaders, 0, 32};
 
@@ -112,8 +110,6 @@ static int writeData(void* _call)
         divx_err("call data is NULL...\n");
         return 0;
     }
-
-    divx_printf(10, "AudioPts %lld\n", call->Pts);
 
     if ((call->data == NULL) || (call->len <= 0))
     {
@@ -126,6 +122,8 @@ static int writeData(void* _call)
         divx_err("file pointer < 0. ignoring ...\n");
         return 0;
     }
+
+    divx_printf(10, "AudioPts %lld\n", call->Pts);
 
     usecPerFrame = 1000000000 / call->FrameRate;
     divx_printf(10, "Microsecends per frame = %d\n", usecPerFrame);
@@ -148,29 +146,23 @@ static int writeData(void* _call)
 
     FakeHeaderLength    = (ld.Ptr - (FakeHeaders));
 
-    if (initialHeader) ExtraLength = call->private_size;
-
-    HeaderLength = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
-    int iovcnt = 0;
     struct iovec iov[4];
-    iov[iovcnt].iov_base = PesHeader;
-    iov[iovcnt].iov_len  = HeaderLength;
-    iovcnt++;
-    iov[iovcnt].iov_base = FakeHeaders;
-    iov[iovcnt].iov_len  = FakeHeaderLength;
-    iovcnt++;
+    int ic = 0;
+    iov[ic].iov_base = PesHeader;
+    iov[ic++].iov_len = InsertPesHeader (PesHeader, call->len, MPEG_VIDEO_PES_START_CODE, call->Pts, FakeStartCode);
+    iov[ic].iov_base = FakeHeaders;
+    iov[ic++].iov_len = FakeHeaderLength;
 
     if (initialHeader) {
-        initialHeader = 0;
-        iov[iovcnt].iov_base = call->private_data;
-        iov[iovcnt].iov_len  = call->private_size;
-        iovcnt++;
-    }
+	iov[ic].iov_base = call->private_data;
+	iov[ic++].iov_len = call->private_size;
 
-    iov[iovcnt].iov_base = call->data;
-    iov[iovcnt].iov_len  = call->len;
-    iovcnt++;
-    int len = writev(call->fd, iov, iovcnt); 
+        initialHeader = 0;
+    }
+    iov[ic].iov_base = call->data;
+    iov[ic++].iov_len = call->len;
+
+    int len = writev(call->fd, iov, ic);
 
     divx_printf(10, "xvid_Write < len=%d\n", len);
 

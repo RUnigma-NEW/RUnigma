@@ -34,6 +34,7 @@
 #include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -42,7 +43,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -96,8 +96,7 @@ static int writeData(void* _call)
 
     unsigned char               PesHeader[PES_MAX_HEADER_SIZE];
     int len = 0;
-    int Position = 0;
-    struct iovec iov[4];
+    unsigned int Position = 0;
 
     mpeg2_printf(10, "\n");
 
@@ -121,7 +120,7 @@ static int writeData(void* _call)
         return 0;
     }
 
-    while(1) {
+    while(Position < call->len) {
         int PacketLength = (call->len - Position) <= MAX_PES_PACKET_SIZE ?
                            (call->len - Position) : MAX_PES_PACKET_SIZE;
 
@@ -129,23 +128,21 @@ static int writeData(void* _call)
 
         mpeg2_printf(20, "PacketLength=%d, Remaining=%d, Position=%d\n", PacketLength, Remaining, Position);
 
-        int HeaderLength = InsertPesHeader (PesHeader, PacketLength, MPEG_VIDEO_PES_START_CODE, call->Pts, 0);
-        int iovcnt = 0;
-        iov[iovcnt].iov_base = PesHeader;
-        iov[iovcnt].iov_len  = HeaderLength;
-        iovcnt++;
+	struct iovec iov[2];
+	iov[0].iov_base = PesHeader;
+	iov[0].iov_len = InsertPesHeader (PesHeader, PacketLength, 0xe0, call->Pts, 0);
+	iov[1].iov_base = call->data + Position;
+	iov[1].iov_len = PacketLength;
 
-        iov[iovcnt].iov_base = call->data + Position;
-        iov[iovcnt].iov_len  = PacketLength;
-        iovcnt++;
-
-        len += writev(call->fd, iov, iovcnt);
+        ssize_t l = writev(call->fd, iov, 2);
+	if (l < 0) {
+		len = l;
+		break;
+	}
+	len += l;
 
         Position += PacketLength;
         call->Pts = INVALID_PTS_VALUE;
-
-        if (Position == call->len)
-            break;
     }
 
     mpeg2_printf(10, "< len %d\n", len);

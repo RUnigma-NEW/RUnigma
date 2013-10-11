@@ -31,8 +31,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -41,7 +43,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -96,9 +97,7 @@ static int writeData(void* _call)
 {
     WriterAVCallData_t* call = (WriterAVCallData_t*) _call;
 
-    int             i = 0;
     unsigned char   PesHeader[PES_AUDIO_HEADER_SIZE];
-    unsigned char * Data = 0;
 
     dts_printf(10, "\n");
 
@@ -122,9 +121,9 @@ static int writeData(void* _call)
         return 0;
     }
 
-    memset (PesHeader, '0', PES_AUDIO_HEADER_SIZE);
-
-    Data = (unsigned char *) malloc(call->len);
+// #define DO_BYTESWAP
+#ifdef DO_BYTESWAP
+    unsigned char *Data = (unsigned char *) malloc(call->len);
     memcpy(Data, call->data, call->len);
 
     /* 16-bit byte swap all data before injecting it */
@@ -134,16 +133,24 @@ static int writeData(void* _call)
         Data[i] = Data[i+1];
         Data[i+1] = Tmp;
     }
+#endif
 
-    int HeaderLength    = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE/*PRIVATE_STREAM_1_PES_START_CODE*/, call->Pts, 0);
-    unsigned char* PacketStart = malloc(call->len + HeaderLength);
-    memcpy (PacketStart, PesHeader, HeaderLength);
-    memcpy (PacketStart + HeaderLength, call->data, call->len);
+    struct iovec iov[2];
 
-    int len = write(call->fd,PacketStart,call->len + HeaderLength);
+    iov[0].iov_base = PesHeader;
+    iov[0].iov_len = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE/*PRIVATE_STREAM_1_PES_START_CODE*/, call->Pts, 0);
+#ifdef DO_BYTESPWAP
+    iov[1].iov_base = Data;
+#else
+    iov[1].iov_base = call->data;
+#endif
+    iov[1].iov_len = call->len;
 
-    free(PacketStart);
+    int len = writev(call->fd, iov, 2);
+
+#ifdef DO_BYTESWAP
     free(Data);
+#endif
 
     dts_printf(10, "< len %d\n", len);
     return len;

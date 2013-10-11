@@ -10,10 +10,13 @@ CONTAINER_CAPABILITIES,
 CONTAINER_PLAY, 
 CONTAINER_STOP, 
 CONTAINER_SEEK, 
+CONTAINER_SEEK_ABS, 
 CONTAINER_LENGTH, 
 CONTAINER_DEL, 
 CONTAINER_SWITCH_AUDIO, 
 CONTAINER_SWITCH_SUBTITLE, 
+CONTAINER_SWITCH_DVBSUBTITLE, 
+CONTAINER_SWITCH_TELETEXT, 
 CONTAINER_INFO, 
 CONTAINER_STATUS, 
 CONTAINER_LAST_PTS, 
@@ -34,11 +37,6 @@ typedef struct Container_s {
 
 
 extern Container_t FFMPEGContainer;
-
-static Container_t * AvailableContainer[] = {
-    &FFMPEGContainer,
-    NULL
-};
 
 typedef struct ContainerHandler_s {
     char * Name;

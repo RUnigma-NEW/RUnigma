@@ -31,8 +31,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <sys/uio.h>
 #include <linux/dvb/video.h>
 #include <linux/dvb/audio.h>
+#include <linux/dvb/stm_ioctls.h>
 #include <memory.h>
 #include <asm/types.h>
 #include <pthread.h>
@@ -41,7 +43,6 @@
 #include "common.h"
 #include "output.h"
 #include "debug.h"
-#include "stm_ioctls.h"
 #include "misc.h"
 #include "pes.h"
 #include "writer.h"
@@ -54,7 +55,7 @@
 
 #ifdef WMA_DEBUG
 
-static short debug_level = 10;
+static short debug_level = 0;
 
 #define wma_printf(level, fmt, x...) do { \
 if (debug_level >= level) printf("[%s:%s] " fmt, __FILE__, __FUNCTION__, ## x); } while (0)
@@ -123,7 +124,6 @@ static int writeData(void* _call)
     if (initialHeader) {
 
         unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
-        int HeaderLength;
 
         if ((call->private_size <= 0) || (call->private_data == NULL))
         {
@@ -131,32 +131,34 @@ static int writeData(void* _call)
             return -1;
         }
 
-        HeaderLength = InsertPesHeader (PesHeader, call->private_size, MPEG_AUDIO_PES_START_CODE, 0, 0);
 
-        unsigned char* PacketStart = malloc(call->private_size + HeaderLength);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, call->private_data, call->private_size);
+	struct iovec iov[2];
+	iov[0].iov_base = PesHeader;
+	iov[0].iov_len = InsertPesHeader (PesHeader, call->private_size, MPEG_AUDIO_PES_START_CODE, 0, 0);
+	iov[1].iov_base = call->private_data;
+	iov[1].iov_len = call->private_size;
 
-        len = write(call->fd, PacketStart, call->private_size + HeaderLength);
-
-        free(PacketStart);
+        len = writev(call->fd, iov, 2);
 
         initialHeader = 0;
     }
 
-    if (call->len > 0 && call->data)
+    if (len > -1 && call->len > 0 && call->data)
     {
         unsigned char  PesHeader[PES_MAX_HEADER_SIZE];
 
-        int HeaderLength = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
 
-        unsigned char* PacketStart = malloc(call->len + HeaderLength);
-        memcpy (PacketStart, PesHeader, HeaderLength);
-        memcpy (PacketStart + HeaderLength, call->data, call->len);
+	struct iovec iov[2];
+	iov[0].iov_base = PesHeader;
+	iov[0].iov_len = InsertPesHeader (PesHeader, call->len, MPEG_AUDIO_PES_START_CODE, call->Pts, 0);
+	iov[1].iov_base = call->data;
+	iov[1].iov_len = call->len;
 
-        len = write(call->fd, PacketStart, call->len + HeaderLength);
-
-        free(PacketStart);
+        ssize_t l = writev(call->fd, iov, 2);
+	if (l > -1)
+		len += l;
+	else
+		len = l;
     }
 
     wma_printf(10, "wma < %d\n", len);

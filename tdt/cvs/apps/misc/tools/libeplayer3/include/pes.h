@@ -9,12 +9,11 @@
 #define PES_FLAGS_BYTE                          7
 #define PES_EXTENSION_DATA_PRESENT              0x01
 #define PES_HEADER_DATA_LENGTH_BYTE             8
-#define PES_MIN_HEADER_SIZE                     9
 #define PES_START_CODE_RESERVED_4               0xfd
 #define PES_VERSION_FAKE_START_CODE             0x31
 
 
-#define MAX_PES_PACKET_SIZE                     65400
+#define MAX_PES_PACKET_SIZE                     (65535)
 
 
 /* start codes */

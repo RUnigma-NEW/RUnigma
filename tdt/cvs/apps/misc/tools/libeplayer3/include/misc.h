@@ -22,18 +22,6 @@ typedef struct BitPacker_s
 
 #define INVALID_PTS_VALUE                       0x200000000ull
 
-/*#define BIG_READS*/
-#if defined (BIG_READS)
-#define BLOCK_COUNT                             8
-#else
-#define BLOCK_COUNT                             1
-#endif
-#define TP_PACKET_SIZE                          188
-#define BD_TP_PACKET_SIZE                       192
-#define NUMBER_PACKETS                          (199*BLOCK_COUNT)
-#define BUFFER_SIZE                             (TP_PACKET_SIZE*NUMBER_PACKETS)
-#define PADDING_LENGTH                          (1024*BLOCK_COUNT)
-
 /* subtitle hacks ->for file subtitles */
 #define TEXTSRTOFFSET 100
 #define TEXTSSAOFFSET 200
@@ -49,48 +37,14 @@ void FlushBits(BitPacker_t * ld);
 /* MISC Functions                */
 /* ***************************** */
 
-static inline void getExtension(char * FILENAMEname, char ** extension) {
-
-    int i = 0;
-    int stringlength;
-
-    if (extension == NULL)
-       return;
-       
-    *extension = NULL;
-    
-    if (FILENAMEname == NULL)
-       return;
-
-    stringlength = (int) strlen(FILENAMEname);
-
-    for (i = 0; stringlength - i > 0; i++) {
-        if (FILENAMEname[stringlength - i - 1] == '.') {
-            *extension = strdup(FILENAMEname+(stringlength - i));
-            break;
-        }
-    }
-}
-
-static inline void getUPNPExtension(char * FILENAMEname, char ** extension) {
-    char* str;
-
-    if (extension == NULL)
-       return;
-       
-    *extension = NULL;
-    
-    if (FILENAMEname == NULL)
-       return;
-
-    str = strstr(FILENAMEname, "ext=");
-
-    if (str != NULL)
-    {
-        *extension = strdup(str + strlen("ext=") + 1);
-        return;
-    }
-    *extension = NULL;
+static inline char *getExtension(char * name)
+{
+	if (name) {
+		char *ext = strrchr(name, '.');
+		if (ext)
+			return ext + 1;
+	}
+	return NULL;
 }
 
 /* the function returns the base name */
@@ -116,7 +70,7 @@ static inline char * basename(char * name)
 static inline char * dirname(char * name)
 {
   static char path[100];
-  int i = 0;
+  unsigned int i = 0;
   int pos = 0;
 
   while((name[i] != 0) && (i < sizeof(path)))
