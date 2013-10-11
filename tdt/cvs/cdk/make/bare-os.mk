@@ -240,7 +240,7 @@ FILES_libstdc++-dev = \
 
 LIBGCC := libgcc
 GCC := gcc
-GCC_VERSION := 4.7.3-128
+GCC_VERSION := 4.7.3-129
 GCC_SPEC := stm-target-$(GCC).spec
 GCC_SPEC_PATCH := $(GCC_SPEC).$(GCC_VERSION).diff
 GCC_PATCHES := stm-target-$(GCC).$(GCC_VERSION).diff
