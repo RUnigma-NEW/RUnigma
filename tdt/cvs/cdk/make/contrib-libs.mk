@@ -1268,6 +1268,13 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 			--disable-vfp \
 			--disable-runtime-cpudetect \
 			--disable-static \
+			--disable-doc \
+			--disable-htmlpages \
+			--disable-manpages \
+			--disable-podpages \
+			--disable-txtpages \
+			--disable-fast-unaligned \
+			--disable-bsfs \
 			--enable-libaacplus \
 			--enable-libfaac \
 			--enable-nonfree \
@@ -1352,6 +1359,7 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 			--enable-parser=h264 \
 			--enable-parser=mjpeg \
 			--enable-demuxer=mjpeg \
+			--enable-demuxer=rtsp \
 			--enable-decoder=dvbsub \
 			--enable-decoder=iff_byterun1 \
 			--enable-small \
