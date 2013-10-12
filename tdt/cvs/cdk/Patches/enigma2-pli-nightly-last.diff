@@ -1498,6 +1498,15 @@ diff -Nur '--exclude=.git' '--exclude=tuxtxt' enigma2-nightly.org/lib/dvb/pmt.cp
  		m_subtitle_widget->resize(parent->size()); /* full size */
 --- enigma2-nightly.org/lib/service/servicemp3.cpp
 +++ enigma2-nightly.patched/lib/service/servicemp3.cpp
+@@ -519,7 +519,7 @@
+ 		out.screen_height = fb->getScreenResY();
+ 		out.shareFramebuffer = 1;
+ 		out.framebufferFD = fb->getFD();
+-		out.destination = fb->getLFB_Direct();
++		out.destination = (uint32_t *)fb->getLFB_Direct();
+ 		out.destStride = fb->Stride();
+ 		player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
+ 	}
 @@ -2609,9 +2609,15 @@
  	if (tuplesize < 1)
  		goto error_out;
