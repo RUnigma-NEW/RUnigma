@@ -57,42 +57,42 @@ else
     fsck.ext3 -f -y "${root}" >> /fsck.log
     tune2fs -l "${root}" | grep -i "Filesystem state" >> /fsck.log
 fi
-if [ `tune2fs -l /dev/sda2 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-    echo "SDA2 OK"
-else
-    echo "Проверяю раздел SDA2" > /fsck.log
-    echo "ПРОВЕРКА" > /dev/vfd
-    fsck.ext4 -f -y "${rootfs}" >> /fsck.log
-    tune2fs -l "${rootfs}" | grep -i "Filesystem state" >> /fsck.log
-fi
-if [ `tune2fs -l /dev/sda3 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-    echo "SDA3 OK"
-else
-    echo "Проверяю раздел SDA3" > /fsck.log
-    echo "ПРОВЕРКА" > /dev/vfd
-    fsck.ext4 -f -y "${record}" >> /fsck.log
-    tune2fs -l "${record}" | grep -i "Filesystem state" >> /fsck.log
-fi
+#if [ `tune2fs -l /dev/sda2 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
+#    echo "SDA2 OK"
+#else
+#    echo "Проверяю раздел SDA2" > /fsck.log
+#    echo "ПРОВЕРКА" > /dev/vfd
+#    fsck.ext4 -f -y "${rootfs}" >> /fsck.log
+#    tune2fs -l "${rootfs}" | grep -i "Filesystem state" >> /fsck.log
+#fi
+#if [ `tune2fs -l /dev/sda3 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
+#    echo "SDA3 OK"
+#else
+#    echo "Проверяю раздел SDA3" > /fsck.log
+#    echo "ПРОВЕРКА" > /dev/vfd
+#    fsck.ext4 -f -y "${record}" >> /fsck.log
+#    tune2fs -l "${record}" | grep -i "Filesystem state" >> /fsck.log
+#fi
 #Mount the root device
 echo "Монтирую загрузочный раздел /dev/sda1"
 mount "${root}" /rootfs
 
 # Check auf installing System Files
-if [ -e /rootfs/install ]; then
+if [ -e /rootfs/service/install ]; then
 	cd /install
 	./install.sh
-elif [ -e /rootfs/update ]; then
+elif [ -e /rootfs/service/update ]; then
 	cd /install
 	./update.sh
 fi
 # Wenn kein install mounte rootfs to start
 # Switch from /dev/sda1 to /dev/sda2 (ROOTFS)
-if [ ! -e /rootfs/install ]; then
-echo "Демонтирую /dev/sda1"
-umount "${root}"
-fi
-echo "Монтирую /dev/sda2"
-mount "${rootfs}" /rootfs
+#if [ ! -e /rootfs/install ]; then
+#echo "Демонтирую /dev/sda1"
+#umount "${root}"
+#fi
+#echo "Монтирую /dev/sda2"
+#mount "${rootfs}" /rootfs
 
 # erst hier ist sda2 mounted
 if [ -e /fsck.log ]; then
