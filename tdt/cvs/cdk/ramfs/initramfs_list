@@ -65,6 +65,7 @@ slink /sbin/fsck.ext4	/sbin/e2fsck            0755 0 0
 slink /sbin/fsck.jfs	/sbin/e2fsck            0755 0 0
 slink /etc/mtab		/proc/mounts            0755 0 0
 dir  /lib					0755 0 0
+file /lib/libcrypt.so.1		../ramfs/libs/libcrypt.so.1			0755 0 0
 file /lib/libc.so.6		../ramfs/libs/libc.so.6			0755 0 0
 file /lib/libpthread.so.0	../ramfs/libs/libpthread.so.0		0755 0 0
 file /lib/ld-linux.so.2		../ramfs/libs/ld-linux.so.2		0755 0 0
