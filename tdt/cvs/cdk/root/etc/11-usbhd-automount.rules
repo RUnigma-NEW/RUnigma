@@ -14,8 +14,8 @@ RUN+="/bin/ntfs-3g -o rw,umask=0 /dev/%k  /media/%E{dir_name}"
 ACTION=="add", ENV{dir_usb}!="sda1",ENV{dir_name}!="BOOTFS|ROOTFS",ENV{ID_FS_TYPE}!="ntfs|swap",RUN+="/bin/mkdir -p /media/%E{dir_name}", \
 RUN+="/bin/mount /dev/%k /media/%E{dir_name}"
 
-ACTION=="add", ENV{dir_name}=="BOOTFS",RUN+="/bin/mkdir -p /boot/%E{dir_name}", \
-RUN+="/bin/mount /dev/%k /boot/%E{dir_name}"
+#ACTION=="add", ENV{dir_name}=="BOOTFS",RUN+="/bin/mkdir -p /boot/%E{dir_name}", \
+#RUN+="/bin/mount /dev/%k /boot/%E{dir_name}"
 
 ACTION=="add", ENV{ID_FS_TYPE}=="swap",RUN+="/sbin/swapon -p 10 /dev/%k"
 
