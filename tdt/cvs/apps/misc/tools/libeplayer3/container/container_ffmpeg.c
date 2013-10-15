@@ -1832,7 +1832,7 @@ int container_ffmpeg_update_tracks(Context_t *context, char *filename, int initi
 		    	stream->codec->codec = NULL;
 		    }
 		}
-		if (/*stream->codec->codec &&*/ context->manager->subtitle->Command(context, MANAGER_ADD, &track) < 0) {
+		if (stream->codec->codec && context->manager->subtitle->Command(context, MANAGER_ADD, &track) < 0) {
 		    /* konfetti: fixme: is this a reason to return with error? */
 		    ffmpeg_err("failed to add subtitle track %d\n", n);
 		}
