@@ -11039,13 +11039,14 @@
  	attrlist = set()
 --- enigma2-nightly.org/RecordTimer.py
 +++ enigma2-nightly.patched/RecordTimer.py
-@@ -57,13 +57,13 @@
- 	dirname = os.path.realpath(dirname)
- 	mountpoint = Harddisk.findMountPoint(dirname)
- 	if mountpoint in ('/', '/media'):
--		print '[RecordTimer] media is not mounted:', dirname
-+		print('[RecordTimer] media is not mounted:', dirname)
+@@ -57,15 +57,11 @@
  		return None
+ 	from Components import Harddisk
+ 	dirname = os.path.realpath(dirname)
+-	mountpoint = Harddisk.findMountPoint(dirname)
+-	if mountpoint in ('/', '/media'):
+-		print '[RecordTimer] media is not mounted:', dirname
+-		return None
  	if not os.path.isdir(dirname):
  		try:
  			os.makedirs(dirname)
