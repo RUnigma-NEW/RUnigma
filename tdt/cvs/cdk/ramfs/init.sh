@@ -23,8 +23,6 @@ get_opt() {
 #Defaults
 init="/sbin/init"
 root="/dev/sda1"
-rootfs="/dev/sda2"
-record="/dev/sda3"
 
 echo "Активирую дисплей"
 insmod /drvko/proton.ko
@@ -57,22 +55,7 @@ else
     fsck.ext3 -f -y "${root}" >> /fsck.log
     tune2fs -l "${root}" | grep -i "Filesystem state" >> /fsck.log
 fi
-#if [ `tune2fs -l /dev/sda2 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-#    echo "SDA2 OK"
-#else
-#    echo "Проверяю раздел SDA2" > /fsck.log
-#    echo "ПРОВЕРКА" > /dev/vfd
-#    fsck.ext4 -f -y "${rootfs}" >> /fsck.log
-#    tune2fs -l "${rootfs}" | grep -i "Filesystem state" >> /fsck.log
-#fi
-#if [ `tune2fs -l /dev/sda3 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-#    echo "SDA3 OK"
-#else
-#    echo "Проверяю раздел SDA3" > /fsck.log
-#    echo "ПРОВЕРКА" > /dev/vfd
-#    fsck.ext4 -f -y "${record}" >> /fsck.log
-#    tune2fs -l "${record}" | grep -i "Filesystem state" >> /fsck.log
-#fi
+
 #Mount the root device
 echo "Монтирую загрузочный раздел /dev/sda1"
 mount "${root}" /rootfs
@@ -85,16 +68,8 @@ elif [ -e /rootfs/service/update ]; then
 	cd /install
 	./update.sh
 fi
-# Wenn kein install mounte rootfs to start
-# Switch from /dev/sda1 to /dev/sda2 (ROOTFS)
-#if [ ! -e /rootfs/install ]; then
-#echo "Демонтирую /dev/sda1"
-#umount "${root}"
-#fi
-#echo "Монтирую /dev/sda2"
-#mount "${rootfs}" /rootfs
 
-# erst hier ist sda2 mounted
+# erst hier ist sda1 mounted
 if [ -e /fsck.log ]; then
     mkdir /rootfs/var/config 
 	cp /fsck.log /rootfs/var/config/fsck.log
@@ -105,7 +80,6 @@ if [[ -x "/rootfs/${init}" ]] ; then
 	#Unmount all other mounts so that the ram used by
 	#the initramfs can be cleared after switch_root
 	umount /sys /proc
-	
 	#Switch to the new root and execute init
 	echo "Перехожу в новый системный раздел и начинаю загрузку сборки"
 	exec switch_root /rootfs "${init}"
