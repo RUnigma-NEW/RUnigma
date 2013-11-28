@@ -82,6 +82,9 @@
    #modprobe cec
 
    modprobe bpamem
+   
+   modprobe lirc_stm
+   
    echo "init oc"
    #modprobe cpu_frequ
    #300mhz
