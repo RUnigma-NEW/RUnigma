@@ -52,7 +52,7 @@ if [ `tune2fs -l /dev/sda1 | grep -i "Filesystem state" | awk '{ print $3 }'` ==
 else
     echo "Проверяю раздел SDA1" > /fsck.log
     echo "ПРОВЕРКА" > /dev/vfd
-    fsck.ext3 -f -y "${root}" >> /fsck.log
+    fsck.ext3 -y "${root}" >> /fsck.log
     tune2fs -l "${root}" | grep -i "Filesystem state" >> /fsck.log
 fi
 
