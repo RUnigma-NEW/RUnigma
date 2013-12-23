@@ -3,19 +3,9 @@ echo "Копирую" > /dev/vfd
 cd /rootfs
 cp service/*.tar.gz /install
 echo "Готово"
-echo "Сохраняю" > /dev/vfd
-if [ -e /rootfs/etc/enigma2 ]; then
-	echo "Проверяю, есть ли пользовательские настройки Энигмы..."
+if [ -e /rootfs/backup/backup.tar.gz ]; then
 	echo "Сохраняю" > /dev/vfd
-	cd /rootfs/etc/enigma2
-	rm settings
-	tar -czvf /install/backup/E2Settings.tar.gz ./ > /dev/null 2>&1
-	cd /
-fi
-if [ -e /rootfs/var/keys ]; then
-	cd /rootfs/var/keys
-	tar -czvf /install/backup/keys.tar.gz ./ > /dev/null 2>&1
-	echo "Готово"
+	cp /backup/backup.tar.gz /install/backup
 	cd /
 fi
 echo "Запускаю загрузчик..."
@@ -55,22 +45,12 @@ tar -xf *.tar.gz
 echo "Удаляю стартовый системный образ"
 rm /rootfs/*.tar.gz
 echo "Готово"
-echo "Восстанавливаю настройки"
-if [ -e /install/backup/E2Settings.tar.gz ]; then
-	cp /install/backup/E2Settings.tar.gz /rootfs/etc/enigma2
-	cd /rootfs/etc/enigma2
-	tar -xf E2Settings.tar.gz
-	cd ../../..
-else
-	echo "Нет данных для сохранения или восстановления"
-fi
-if [ -e /install/backup/keys.tar.gz ]; then
-	cp /install/backup/keys.tar.gz /rootfs/var/keys
-	cd /rootfs/var/keys
-	tar -xf keys.tar.gz
-	cd ../../..
-else
-	echo "Нет ключей для сохранения или восстановления"
+if [ -e /install/backup/backup.tar.gz ]; then
+	cp /install/backup/keys.tar.gz /rootfs/backup
+	rm /install/backup/*
+	cd /rootfs
+	tar -xf /backup/backup.tar.gz
+	cd ../..
 fi
 cd /
 echo "Загрузка" > /dev/vfd
@@ -80,17 +60,9 @@ rm /install/uImage
 cd /rootfs/boot
 cd ../..
 sleep 2
-umount /dev/sda1
-sleep 2
-echo "Проверка" > /dev/vfd
-echo "Запускаю проверку дисков..."
-fsck.ext3 -y /dev/sda1
-sleep 1
 echo "######################################################"
 echo ""
 echo "   Всё готово!!! Сейчас начнётся загрузка сборки...   "
 echo ""
 echo "######################################################"
-sleep 1
-mount /dev/sda1 /rootfs
 echo "Готово" > /dev/vfd
