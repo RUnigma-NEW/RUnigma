@@ -10,6 +10,9 @@ echo "-------------------------------------------------"
 echo "Устанавливаю Busybox"
 busybox --install -s
 
+rm -f /etc/mtab
+grep ' / ' /proc/mounts >/etc/mtab
+
 #Create device nodes
 mknod /dev/tty c 5 0
 mdev -s
