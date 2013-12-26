@@ -470,7 +470,7 @@ CROSS_CPP = cross-sh4-cpp
 CROSS_G++ = cross-sh4-g++
 CROSS_PROTOIZE = cross-sh4-protoize
 CROSS_LIBGCC = cross-sh4-libgcc
-CROSS_GCC_VERSION = 4.7.3-124
+CROSS_GCC_VERSION = 4.8.2-126
 CROSS_GCC_RAWVERSION = $(firstword $(subst -, ,$(CROSS_GCC_VERSION)))
 CROSS_GCC_SPEC = stm-$(subst cross-sh4-,cross-,$(CROSS_GCC)).spec
 CROSS_GCC_SPEC_PATCH = $(CROSS_GCC_SPEC).$(CROSS_GCC_VERSION).diff
@@ -656,6 +656,7 @@ host_autoconf
   autoconf-{PV}
   extract:http://ftp.gnu.org/gnu/autoconf/autoconf-{PV}.tar.xz
   patch:file://autoconf-remove-usr-local-lib-from-m4.patch
+  patch:file://autoconf.text.{PV}.patch
   make:install
 ;
 ]]END

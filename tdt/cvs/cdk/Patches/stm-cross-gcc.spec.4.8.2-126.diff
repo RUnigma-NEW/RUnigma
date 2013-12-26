@@ -10,15 +10,6 @@
  %description
  This is the GNU C compiler, a fairly portable optimizing compiler which
  supports multiple languages.  This package includes support for C, and
-@@ -223,7 +226,7 @@
-         --with-gmp=%{_stm_cross_dir} \
-         --with-mpfr=%{_stm_cross_dir} \
-         --without-ppl \
--        --with-gxx-include-dir="\\\${prefix}/target%{_stm_target_include_dir}/c++/%{version}" \
-+        --with-gxx-include-dir="\\\${prefix}/../../cdkroot%{_stm_target_include_dir}/c++/%{version}" \
-         --enable-__cxa_atexit \
- %if "%{_stm_target_fpu}" == "no"
- %if %target_arch sh4_uclibc
 @@ -264,15 +267,6 @@
  %cross_setup
  %cross_makeinstall
