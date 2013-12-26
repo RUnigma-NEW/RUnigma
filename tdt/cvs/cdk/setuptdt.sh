@@ -133,6 +133,9 @@ PACKAGES="\
 	${UBUNTU:+autopoint}            ${SUSE:+glib2-devel} \
 	${UBUNTU:+cfv}                  ${SUSE:+fakeroot} \
 	${UBUNTU:+fakeroot} \
+	${UBUNTU:+libgmp-dev} \
+	${UBUNTU:+libmpfr-dev} \
+	${UBUNTU:+libmpc-dev} \
 	${UBUNTU:+gawk} \
 	${UBUNTU:+gperf} \
 	${UBUNTU:+libglib2.0-bin} \
