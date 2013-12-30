@@ -656,7 +656,6 @@ host_autoconf
   autoconf-{PV}
   extract:http://ftp.gnu.org/gnu/autoconf/autoconf-{PV}.tar.xz
   patch:file://autoconf-remove-usr-local-lib-from-m4.patch
-  patch:file://autoconf.text.{PV}.patch
   make:install
 ;
 ]]END
