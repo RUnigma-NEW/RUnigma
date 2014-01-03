@@ -50,10 +50,9 @@ for i in $(cat /proc/cmdline); do
 			;;
 	esac
 done
-
 #Mount the root device
 echo "Монтирую загрузочный раздел /dev/sda1"
-mount "${root}" /rootfs
+mount /dev/sda1 /rootfs
 
 # Check auf installing System Files
 if [ -e /rootfs/service/install ]; then

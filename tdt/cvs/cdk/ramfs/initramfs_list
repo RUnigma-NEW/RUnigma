@@ -63,10 +63,10 @@ slink /sbin/fsck.ext2	/sbin/e2fsck            0755 0 0
 slink /sbin/fsck.ext3	/sbin/e2fsck            0755 0 0
 slink /sbin/fsck.ext4	/sbin/e2fsck            0755 0 0
 slink /sbin/fsck.jfs	/sbin/e2fsck            0755 0 0
-slink /etc/mtab		/proc/mounts            0755 0 0
+slink /etc/mtab         /proc/mounts            0777 0 0
 dir  /lib					0755 0 0
 file /lib/libcrypt.so.1		../ramfs/libs/libcrypt.so.1			0755 0 0
-file /lib/libc.so.6		../ramfs/libs/libc.so.6			0755 0 0
+file /lib/libc.so.6		    ../ramfs/libs/libc.so.6			0755 0 0
 file /lib/libpthread.so.0	../ramfs/libs/libpthread.so.0		0755 0 0
 file /lib/ld-linux.so.2		../ramfs/libs/ld-linux.so.2		0755 0 0
 file /lib/libe2p.so.2		../ramfs/libs/libe2p.so.2		0755 0 0
@@ -74,5 +74,5 @@ file /lib/libext2fs.so.2	../ramfs/libs/libext2fs.so.2		0755 0 0
 file /lib/libcom_err.so.2	../ramfs/libs/libcom_err.so.2		0755 0 0
 file /lib/libblkid.so.1		../ramfs/libs/libblkid.so.1		0755 0 0
 file /lib/libuuid.so.1		../ramfs/libs/libuuid.so.1		0755 0 0
-file /init ../ramfs/init.sh 			755 0 0
+file /init                  ../ramfs/init.sh 			755 0 0
 

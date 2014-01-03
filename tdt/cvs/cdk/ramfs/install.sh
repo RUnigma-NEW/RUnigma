@@ -34,7 +34,7 @@ mkfs.ext3 -I 128 -b 4096 -L BOOTFS $HDD"1"
 echo "Готово"
 echo "Монтирую раздел /dev/sda1"
 mount /dev/sda1 /rootfs
-echo "Загрузка" > /dev/vfd
+echo "Установка" > /dev/vfd
 echo "Копирую системные файлы в системный раздел /dev/sda1..."
 cp /install/*.tar.gz /rootfs
 cd /rootfs
