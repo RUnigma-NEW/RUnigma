@@ -1,6 +1,14 @@
 --- stm-cross-gcc.spec.orig	2013-04-25 12:48:08.879328460 +0200
 +++ stm-cross-gcc.spec	2013-04-25 12:48:08.839328458 +0200
-@@ -58,6 +58,9 @@
+@@ -19,6 +19,7 @@
+ Source3: gcc-protoize.1
+ 
+ # SH4 common
++Patch0: stm-cross-gcc.%{version}-%{release}.diff
+ Patch100: gcc-4.8.2-stm-131204.patch
+ Patch101: gcc-4.7.0-sh-use-gnu-hash-style.patch
+ Patch102: gcc-4.2.4-multilibpath.patch
+@@ -61,6 +62,9 @@
  
  %define _gccdir %{_stm_cross_lib_dir}/gcc/%{_stm_target_config}/%{version}
  
@@ -10,6 +18,23 @@
  %description
  This is the GNU C compiler, a fairly portable optimizing compiler which
  supports multiple languages.  This package includes support for C, and
+@@ -151,6 +155,7 @@
+ 
+ # SH4 common patches
+ %if %target_cpu sh
++%patch0 -p1
+ %patch100 -p1
+ %patch101 -p1
+ %patch102 -p1
+@@ -183,7 +188,7 @@
+ echo 'STMicroelectronics/Linux Base %{version}-%{release}' > gcc/DEV-PHASE
+ 
+ # Update configure in the gcc directory
+-(cd gcc && autoconf)
++#(cd gcc && autoconf)
+ 
+ ##############################################################################
+ 
 @@ -264,15 +267,6 @@
  %cross_setup
  %cross_makeinstall
