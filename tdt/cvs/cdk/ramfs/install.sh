@@ -19,7 +19,6 @@ echo "Формат" > /dev/vfd
 echo "Готовлю структуру разбиения диска"
 HDD=/dev/sda
 ROOTFS=$HDD"1"
-sfdisk --re-read $HDD
 # Löscht die Festplatte/Stick und erstellt 4 Partitionen
 #  1: ALL Linux Uboot ext3
 sfdisk $HDD -uM << EOF
@@ -34,6 +33,13 @@ mkfs.ext3 -I 128 -b 4096 -L BOOTFS $HDD"1"
 echo "Готово"
 echo "Монтирую раздел /dev/sda1"
 mount /dev/sda1 /rootfs
+while [ -e `mount | grep -i "dev" | awk '{ print $2 }'` ]
+do
+	umount /dev/sda1
+	sleep 1
+	echo "ошибка монтирования"
+	mount /dev/sda1 /rootfs
+done
 echo "Установка" > /dev/vfd
 echo "Копирую системные файлы в системный раздел /dev/sda1..."
 cp /install/*.tar.gz /rootfs

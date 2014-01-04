@@ -31,13 +31,13 @@ echo "Активирую дисплей"
 insmod /drvko/proton.ko
 
 echo "Ожидание" > /dev/vfd
-while [ -e `fdisk -l | grep -i "Disk" | awk '{ print $1 }'` ]
-do
-	echo "Ожидание usb"
-	sleep 1
-done
+#while [ -e `fdisk -l | grep -i "Disk" | awk '{ print $1 }'` ]
+#do
+#	echo "Ожидание usb"
+#	sleep 1
+#done
 
-echo "RAMFS"
+#echo "RAMFS"
 
 #Process command line options
 for i in $(cat /proc/cmdline); do
@@ -53,6 +53,14 @@ done
 #Mount the root device
 echo "Монтирую загрузочный раздел /dev/sda1"
 mount /dev/sda1 /rootfs
+
+while [ -e `mount | grep -i "dev" | awk '{ print $2 }'` ]
+do
+	umount /dev/sda1
+	sleep 1
+	echo "ошибка монтирования"
+	mount /dev/sda1 /rootfs
+done
 
 # Check auf installing System Files
 if [ -e /rootfs/service/install ]; then
