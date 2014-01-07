@@ -385,7 +385,7 @@ static int VFD_Show_Ico(LogNum_T log_num, int log_stat)
 	if(log_num >= LogNum_Max)
 	{
 		res = -EINVAL ;
-		dprintk(2, "%s bad parameter!\n", res);
+		dprintk(2, "%s bad parameter!\n", __func__);
 		return res;
 	}
 	dig_num = log_num/16;
@@ -438,22 +438,23 @@ void clear_display(void)
 void draw_thread(void *arg)
 {
 	struct vfd_ioctl_data *data;
-	data = (struct vfd_ioctl_data *)arg;
 	struct vfd_ioctl_data draw_data;
+	int count = 0; 
+	int pos = 0;
+	int k = 0;
+	int j = 0;
+	unsigned char c0;
+	unsigned char c1;
+	unsigned char temp;
+	unsigned char draw_buf[64][2];
+
+	data = (struct vfd_ioctl_data *)arg;
 
 	draw_data.length = data->length;
 	memcpy(draw_data.data,data->data,data->length);
 
 	thread_stop = 0;
 
-	unsigned char c = 0;
-	unsigned char c1 = 0;
-	unsigned char temp = 0;
-	unsigned char draw_buf[64][2];
-	int count = 0; 
-	int pos = 0;
-	int k = 0;
-	int j = 0;
 
 	while(pos < draw_data.length)
 	{
@@ -462,7 +463,7 @@ void draw_thread(void *arg)
 			thread_stop = 1;
 			return;
 		}
-		c = c1 = temp = 0;
+		c0 = c1 = temp = 0;
 		if(draw_data.data[pos] == 32)
 		{
 			k++;
@@ -487,7 +488,7 @@ void draw_thread(void *arg)
 				temp = 49;
 			if(temp < 50)
 			{
-				c  = ASCII[temp][0];
+				c0 = ASCII[temp][0];
 				c1 = ASCII[temp][1];
 			}
 		}
@@ -498,27 +499,27 @@ void draw_thread(void *arg)
 				switch (draw_data.data[pos-1])
 				{
 				case 0xc2:
-					c  = UTF_C2[draw_data.data[pos] & 0x00][0];
+					c0 = UTF_C2[draw_data.data[pos] & 0x00][0];
 					c1 = UTF_C2[draw_data.data[pos] & 0x00][1];
 				break;
 				case 0xc3:
-					c  = UTF_C3[draw_data.data[pos] & 0x00][0];
+					c0 = UTF_C3[draw_data.data[pos] & 0x00][0];
 					c1 = UTF_C3[draw_data.data[pos] & 0x00][1];
 				break;
 				case 0xc4:
-					c  = UTF_C4[draw_data.data[pos] & 0x00][0];
+					c0 = UTF_C4[draw_data.data[pos] & 0x00][0];
 					c1 = UTF_C4[draw_data.data[pos] & 0x00][1];
 				break;
 				case 0xc5:
-					c  = UTF_C5[draw_data.data[pos] & 0x00][0];
+					c0 = UTF_C5[draw_data.data[pos] & 0x00][0];
 					c1 = UTF_C5[draw_data.data[pos] & 0x00][1];
 				break;
 				case 0xd0:
-					c  = UTF_D0[draw_data.data[pos] & 0x3f][0];
+					c0 = UTF_D0[draw_data.data[pos] & 0x3f][0];
 					c1 = UTF_D0[draw_data.data[pos] & 0x3f][1];
 				break;
 				case 0xd1:
-					c  = UTF_D1[draw_data.data[pos] & 0x3f][0];
+					c0 = UTF_D1[draw_data.data[pos] & 0x3f][0];
 					c1 = UTF_D1[draw_data.data[pos] & 0x3f][1];
 				break;
 				}
@@ -533,7 +534,7 @@ void draw_thread(void *arg)
 				else
 					pos+=5;
 				}
-			draw_buf[count][0] = c;
+			draw_buf[count][0] = c0;
 			draw_buf[count][1] = c1;
 			count++;
  		pos++;
@@ -641,9 +642,8 @@ void run_time_thread(void *arg)
 	int sec = 0;
 	int hour = 0;
 	int pTime_test = 0;
-	sec_0 = 0;
-
 	unsigned char trig = 0;
+	unsigned char sec_0 = 0;
 
 	while(time_on != 0)
 	{
@@ -680,7 +680,7 @@ int run_draw_thread(struct vfd_ioctl_data *draw_data)
 		{msleep(2);}
 
 	thread_stop = 2;
-	thread = kthread_run(draw_thread,draw_data,"draw thread",NULL,true);
+	thread = kthread_run(draw_thread,draw_data,"draw thread");
 
 	//wait thread run
 	while(thread_stop == 2)
@@ -716,7 +716,7 @@ unsigned char PROTONfp_Scan_Keyboard(unsigned char read_num)
 	res = VFD_Set_Mode(VFDREADMODE);
 	if(res != 0)
 	{
-		dprintk(2, "%s DEVICE BUSY!\n", res);
+		dprintk(2, "%s DEVICE BUSY!\n", __func__);
 		return INVALID_KEY;
 	}
 	
@@ -729,7 +729,7 @@ unsigned char PROTONfp_Scan_Keyboard(unsigned char read_num)
 	res = VFD_Set_Mode(VFDWRITEMODE);
 	if(res != 0)
 	{
-		dprintk(2, "%s DEVICE BUSY!\n", res);
+		dprintk(2, "%s DEVICE BUSY!\n", __func__);
 		return INVALID_KEY;
 	}
 	return key_val[5];
@@ -844,7 +844,7 @@ int vfd_init_func(void)
 	return res;
 }
 
-static void VFD_CLR()
+int VFD_CLR(void)
 {
 	int res = 0;
 	sema_init(&cs_sem,1);
@@ -941,7 +941,7 @@ static ssize_t PROTONdev_write(struct file *filp, const char *buff, size_t len, 
 		return len;
 }
 
-static ssize_t PROTONdev_read(struct file *filp, unsigned char __user *buff, size_t len, loff_t *off)
+static ssize_t PROTONdev_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 {
 	int minor, vLoop;
 
@@ -1066,7 +1066,7 @@ int protonSetONOFF(int onoff)
 	if(onoff == 1 && time_on == 0)
 	{
 		time_on = 1;
-		time_thread=kthread_run(run_time_thread,NULL,"time thread",NULL,true);
+		time_thread=kthread_run(run_time_thread,NULL,"time thread");
 	}
 	else if(onoff == 0)
 		{
@@ -1086,12 +1086,13 @@ int protonSetGMT(int gmt)
 int VFD_ON_All(void)
 {
 	int res = 0;
+	unsigned char i;
+
 	if (down_interruptible(&vfd_sem))
 	{
 		res =-EBUSY;
 		return res;
 	}
-	int i;
 	for(i = 0; i < 13; i++)
 	{
 		VFD_Seg_Dig_Seg(i + 1,SEGNUM1, 0xff);
