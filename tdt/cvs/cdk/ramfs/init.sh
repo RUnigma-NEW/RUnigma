@@ -56,7 +56,7 @@ mount /dev/sda1 /rootfs
 
 while [ -e `mount | grep -i "dev" | awk '{ print $2 }'` ]
 do
-	umount /dev/sda1
+	#umount /dev/sda1
 	sleep 1
 	echo "ошибка монтирования"
 	mount /dev/sda1 /rootfs
