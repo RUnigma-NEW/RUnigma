@@ -30,7 +30,6 @@ obj-y	+= bpamem/
 obj-y	+= cic/
 obj-y	+= smartcard/
 obj-y	+= cpu_frequ/
-obj-y	+= cec/
 obj-y	+= dvbloopback/
 
 endif

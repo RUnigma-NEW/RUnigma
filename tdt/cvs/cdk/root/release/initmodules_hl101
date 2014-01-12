@@ -4,107 +4,151 @@
 # 
 # chkconfig: S 9 0
 #
+/usr/sbin/telnetd -l /bin/autologin
+modprobe cpu_frequ
+echo 31241 > /proc/cpu_frequ/pll0_ndiv_mdiv
+echo "init frontpanel"
+modprobe proton
+modprobe simu_button
+modprobe e2_proc
 
-   modprobe cpu_frequ
-   echo 31241 > /proc/cpu_frequ/pll0_ndiv_mdiv
-   echo "init frontpanel"
-   modprobe proton
-   modprobe simu_button
-   echo "init e2_proc"
-   modprobe e2_proc
+#echo "Filesystem drivers ext3 ext4 ..."
+modprobe fat
+modprobe fscache
+modprobe isofs
+modprobe msdos
+modprobe ntfs
+modprobe udf
+modprobe vfat
+modprobe cifs
+modprobe cachefiles
+modprobe ext3
+modprobe jbd
+modprobe nls_ascii
+modprobe nls_cp1250
+modprobe nls_cp1251
+modprobe nls_cp437
+modprobe nls_cp850
+modprobe nls_cp855
+modprobe nls_cp866
+modprobe nls_iso8859-1
+modprobe nls_iso8859-2
+modprobe nls_iso8859-5
+modprobe nls_koi8-r
+modprobe nls_koi8-ru
+modprobe nls_koi8-u
+modprobe nls_utf8
 
-   echo "Filesystem drivers ext3 ext4 ..."
-   modprobe fat
-   modprobe fscache
-   modprobe isofs
-   modprobe msdos
-   modprobe ntfs
-   modprobe udf
-   modprobe vfat
-   modprobe cachefiles
+# start automounter with umount timeout of 5 seconds
+#modprobe autofs4
+#/usr/sbin/automount --timeout=5 /autofs file /etc/auto.hotplug
+#/usr/sbin/automount --timeout=5 /media/net file /etc/auto.network
 
-   echo "init stmfb"
-   modprobe stmcore-display-stx7109c3
-   modprobe stmfb display0=1920x1080-32@50:12m:pal:yuv:yuv
+echo "init stmfb"
+modprobe stmcore-display-stx7109c3
+modprobe stmfb display0=720x576-32@50:12m:pal:yuv:yuv
 
-   echo "LOADING MODULES"   
-   echo "ЗАГРУЗКА" >/dev/vfd
+echo "LOADING MODULES"
+echo "ЗАГРУЗКА" >/dev/vfd
 
-   if [ -e /lib/modules/ics.ko ]; then
-      modprobe /lib/modules/ics.ko firmware=1:video.elf,2:audio.elf bpa2_part=LMI_VID
-      modprobe /lib/modules/embx.ko
-      modprobe /lib/modules/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2
-      modprobe /lib/modules/mme.ko pool_size=524288
-      modprobe /lib/modules/mme_user.ko
-   else
-      /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
-      /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
-      
-      echo "load v firmware"
-      /bin/stslave -t st231.0 -R /lib/firmware/video.elf
-      echo "load a firmware"
-      /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
+if [ -e /lib/modules/2.6.32.59_stm24_0211/extra/multicom/src/ics/ics.ko ]; then
+	echo "multicom-4.0.6"
+	modprobe ics firmware=1:video.elf,2:audio.elf bpa2_part=LMI_VID
+	modprobe ics_user
+	modprobe embx
+	modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2
+	modprobe mme pool_size=524288
+	modprobe mme_user
+else
+	echo "load v firmware"
+	/bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+	/bin/stslave -t st231.0 -R /lib/firmware/video.elf
+	echo "load a firmware"
+	/bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
+	/bin/stslave -t st231.1 -R /lib/firmware/audio.elf
+	echo "multicom-3.2.4"
+	echo "init embx"
+	modprobe embxshell
+	modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
+	modprobe embxshm mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
+	modprobe mme_host transport0=shm
+fi
 
-      echo "init embx"
-      modprobe embxshell
-      modprobe embxmailbox mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-      modprobe embxshm mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
-      modprobe mme_host transport0=shm
-   fi
+echo "init AVS"
+modprobe avs type=stv6418
 
-   echo "init AVS"
-   modprobe avs type=stv6418
+modprobe mmelog
+modprobe mpeg2hw mmeName=MPEG2_TRANSFORMER1;
+modprobe ksound
+modprobe kreplay
+modprobe silencegen
+modprobe p2div64
+modprobe stm_v4l2
+modprobe pseudocard
 
-   modprobe mmelog
-   modprobe mpeg2hw mmeName=MPEG2_TRANSFORMER1;
-   modprobe ksound
-   modprobe kreplay
-   modprobe silencegen
-   modprobe p2div64
-   modprobe stm_v4l2
-   modprobe pseudocard
+echo "init fe-core"
+modprobe fe-core demod=stb0899 tuner=stb6100
+modprobe cimax
+modprobe pti videoMem=5632
+#waitMS=20 videoMem=4096
+modprobe stmdvb
+modprobe stm_monitor
 
-   echo "init fe-core"
-   modprobe fe-core demod=stb0899 tuner=stb6100
-   modprobe cimax
-   modprobe pti
-   #waitMS=20 videoMem=4096
-   modprobe stmdvb
-   modprobe stm_monitor
+echo "init player2"
+modprobe player2 discardlateframe=0 noaudiosync=0 useoldaudiofw=1
+modprobe sth264pp
+modprobe stmalloc
+modprobe platform
 
-   echo "init player2"
-   modprobe player2 discardlateframe=0 noaudiosync=0 useoldaudiofw=1
-   modprobe sth264pp
-   modprobe stmalloc
-   modprobe platform
+modprobe smartcard debug=100
+modprobe bpamem
 
-   modprobe smartcard debug=100
-   #modprobe cec
+modprobe mac80211
+modprobe cfg80211
 
-   modprobe bpamem
-   
-   modprobe lirc_stm
-   
-   echo "init oc"
-   #modprobe cpu_frequ
-   #300mhz
-   echo 15110 > /proc/cpu_frequ/pll0_ndiv_mdiv
-   #echo 1 > /proc/cpu_frequ/pll1_fdma_bypass
-   #15110 = 266mhz
-   #25609 = 300mhz
-   #9475 = 333mhz
-   #31241 = 366mhz
-   #22790 = 400mhz
-   #3841 = 405mhz
-   #35593 = 417mhz
-   #36361 = 426mhz
-   #4097 = 432mhz
-   rmmod cpu_frequ
+#modprobe 8192cu
 
-   echo "1" > /proc/sys/kernel/printk
-   cat /etc/videomode > /proc/stb/video/videomode
-   showiframe -p /boot/bootlogo.mvi &
-   stfbcontrol a 0
+#modprobe 8712u
 
-   echo " e2 "
-   /etc/init.d/auto_rb_st.sh &
+#modprobe rt2870sta
+
+#modprobe rt3070sta
+
+#modprobe rt5370sta
+
+#modprobe rt2x00lib
+#modprobe rt2x00usb
+#modprobe rt73usb
+
+#modprobe zd1211rw
+
+#modprobe lzo1x_compress
+#modprobe lzo1x_decompress
+#modprobe ramzswap disksize_kb=64000
+
+echo "init oc"
+#modprobe cpu_frequ
+#300mhz
+echo 15110 > /proc/cpu_frequ/pll0_ndiv_mdiv
+#echo 1 > /proc/cpu_frequ/pll1_fdma_bypass
+#15110 = 266mhz
+#25609 = 300mhz
+#9475 = 333mhz
+#31241 = 366mhz
+#22790 = 400mhz
+#3841 = 405mhz
+#35593 = 417mhz
+#36361 = 426mhz
+#4097 = 432mhz
+rmmod cpu_frequ
+
+#mknod /dev/ramzswap0 b 253 0 >/dev/null 2>&1
+#swapon /dev/ramzswap0
+
+echo "1" > /proc/sys/kernel/printk
+cat /etc/videomode > /proc/stb/video/videomode
+showiframe -p /boot/bootlogo.mvi &
+stfbcontrol a 0
+
+echo " e2 "
+/etc/init.d/auto_rb_st.sh &
