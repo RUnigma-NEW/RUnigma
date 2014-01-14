@@ -643,7 +643,7 @@ void run_time_thread(void *arg)
 	int hour = 0;
 	int pTime_test = 0;
 	unsigned char trig = 0;
-	unsigned char sec_0 = 0;
+	sec_0 = 0;
 
 	while(time_on != 0)
 	{
