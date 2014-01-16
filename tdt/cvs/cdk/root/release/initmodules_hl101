@@ -145,7 +145,6 @@ rmmod cpu_frequ
 #mknod /dev/ramzswap0 b 253 0 >/dev/null 2>&1
 #swapon /dev/ramzswap0
 
-echo "1" > /proc/sys/kernel/printk
 cat /etc/videomode > /proc/stb/video/videomode
 showiframe -p /boot/bootlogo.mvi &
 stfbcontrol a 0
