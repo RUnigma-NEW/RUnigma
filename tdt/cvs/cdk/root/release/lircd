@@ -8,11 +8,22 @@ PID=/var/run/lirc/lircd.pid
 [ -e /dev/lirc ] || ln -s lirc0 /dev/lirc
 [ -d /var/run/lirc ] || mkdir -p /var/run/lirc
 
+boxver()
+{
+	STB_ID=`sed 's/.*STB_ID=//;s/ .*//;/[:]/!d;s/:/_/g' /proc/cmdline`
+	BOX_ID=${STB_ID:0:8}
+	echo "STB_ID = $STB_ID" 
+	echo "BOX_ID = $BOX_ID"
+}
+
 case $1 in
 	start)
 		echo "Starting lircd..."
-		/usr/bin/lircd /etc/lircd.conf
+		boxver
+		[ -z "$LIRCD_OPTS" ] && [ -e /etc/$BOX_ID.lircd.conf ] && LIRCD_OPTS=/etc/$BOX_ID.lircd.conf
+		/usr/bin/lircd $LIRCD_OPTS
 		start-stop-daemon -S -b -x /bin/evremote2
+		echo "LIRCD_OPTS = $LIRCD_OPTS"
 		;;
 	stop)
 		echo "Stopping lircd..."
