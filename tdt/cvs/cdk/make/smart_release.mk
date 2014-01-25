@@ -372,9 +372,6 @@ release_hl101:
 	cp -dp $(buildprefix)/root/etc/init.d/rdate.sh $(prefix)/release/etc/init.d
 	ln -sf /etc/init.d/rdate.sh $(prefix)/release/etc/rc.d/rcS.d/S99rdate.sh
 	rm -Rf $(prefix)/release/usr/share/meta
-	mv $(prefix)/release/etc/lircd.conf $(prefix)/release/etc/lircd_Opticum-9500HD.conf
-	ln -sf /etc/lircd_Opticum-9500HD.conf $(prefix)/release/etc/lircd.conf
-	cp -dp $(buildprefix)/root/etc/lircd_GI-S980.conf $(prefix)/release/etc
 
 # The main target depends on the model.
 # IMPORTANT: it is assumed that only one variable is set. Otherwise the target name won't be resolved.

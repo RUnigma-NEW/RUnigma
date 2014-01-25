@@ -184,7 +184,8 @@ $(DEPDIR)/lirc: bootstrap $(DEPENDS_lirc)
 	$(tocdk_build)
 	$(INSTALL_DIR) $(PKDIR)/etc
 	$(INSTALL_DIR) $(PKDIR)/var/run/lirc/
-	$(INSTALL_FILE) $(buildprefix)/root/etc/lircd$(if $(HL101),_$(HL101)).conf $(PKDIR)/etc/lircd.conf
+	$(INSTALL_FILE) $(buildprefix)/root/etc/03_00_02.lircd.conf $(PKDIR)/etc/03_00_02.lircd.conf
+	$(INSTALL_FILE) $(buildprefix)/root/etc/03_00_07.lircd.conf $(PKDIR)/etc/03_00_07.lircd.conf
 	$(toflash_build)
 	$(DISTCLEANUP_lirc)
 	touch $@
