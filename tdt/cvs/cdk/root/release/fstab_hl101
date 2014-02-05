@@ -3,3 +3,4 @@
 # <file system> <mount point>   <type>  <options>               <dump>  <pass>
 proc          /proc               proc    defaults                        0 0
 tmpfs         /tmp                tmpfs   defaults                        0 0
+/media/hdd/swapfile  none         swap    sw                              0 0
