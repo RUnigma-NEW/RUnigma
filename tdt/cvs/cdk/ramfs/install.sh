@@ -6,16 +6,14 @@ echo "Готово"
 if [ -e /rootfs/etc/enigma2 ]; then
 	echo "Сохраняю"
 	echo "Сохраняю настройки" > /dev/vfd
-	cd /rootfs
-	tar -czvf /install/backup/E2Settings.tar.gz etc/enigma2/* etc/tuxbox/* media/hdd/* var/emu/* var/keys/* etc/init.d/softcam* --exclude=media/hdd/swapfile > /dev/null 2>&1
-	cd /
+	tar -czvf /install/backup/E2Settings.tar.gz etc/enigma2/* etc/tuxbox/* var/emu/* var/keys/* etc/init.d/softcam* > /dev/null 2>&1
 fi
-if [ -e /rootfs/backup/backup.tar.gz ]; then
+if [ -e /rootfs/backup/*backup.tar.gz ]; then
 	echo "Сохраняю"
 	echo "Сохраняю настройки" > /dev/vfd
-	cp backup/backup.tar.gz /install/backup
-	cd /
+	cp backup/*backup.tar.gz /install/backup/backup.tar.gz
 fi
+cd /
 echo "Копирую загрузчик..."
 cd /rootfs/boot
 cp uImage /install
@@ -26,12 +24,11 @@ echo "Готово"
 echo "Формат" > /dev/vfd
 echo "Готовлю структуру разбиения диска"
 HDD=/dev/sda
-ROOTFS=$HDD"1"
+dd if=/dev/zero of=$HDD bs=512 count=64
 sfdisk --re-read $HDD
 # Löscht die Festplatte/Stick und erstellt 4 Partitionen
 #  1: ALL Linux Uboot ext3
 sfdisk $HDD -uM << EOF
-,,L
 ;
 EOF
 echo "Начинаю форматирование..."
@@ -60,33 +57,27 @@ if [ -e /install/backup/E2Settings.tar.gz ]; then
 	cp /install/backup/E2Settings.tar.gz /rootfs
 	echo "Удаляю настройки из Оперативной памяти..."
 	rm /install/backup/E2Settings.tar.gz
-	cd /rootfs
 	echo "Востановление настройки"
 	tar -xf E2Settings.tar.gz
 	echo "Удаляю настройки в архиве"
 	rm E2Settings.tar.gz
-	cd ../..
 fi
 if [ -e /install/backup/backup.tar.gz ]; then
 	echo "Копирую настройки в системный раздел /dev/sda1..."
 	cp /install/backup/backup.tar.gz /rootfs
 	echo "Удаляю настройки из Оперативной памяти..."
 	rm /install/backup/backup.tar.gz
-	cd /rootfs
 	echo "Востановление настройки"
 	tar -xf backup.tar.gz
 	echo "Удаляю настройки в архиве"
 	rm backup.tar.gz
-	cd ../..
 fi
 cd /
 echo "Загрузка" > /dev/vfd
 echo "Восстанавливаю загрузчик"
 cp /install/uImage /rootfs/boot
 rm /install/uImage
-cd /rootfs/boot
-cd ../..
-sleep 2
+sleep 1
 echo "done"
 echo "######################################################"
 echo ""
