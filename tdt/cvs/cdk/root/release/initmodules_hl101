@@ -22,8 +22,6 @@ modprobe udf
 modprobe vfat
 modprobe cifs
 modprobe cachefiles
-modprobe ext3
-modprobe jbd
 modprobe nls_ascii
 modprobe nls_cp1250
 modprobe nls_cp1251
