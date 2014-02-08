@@ -1388,7 +1388,7 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 #
 BEGIN[[
 libass
-  0.10.1
+  0.10.2
   {PN}-{PV}
   extract:http://{PN}.googlecode.com/files/{PN}-{PV}.tar.xz
   make:install:DESTDIR=PKDIR
