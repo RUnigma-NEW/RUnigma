@@ -2,14 +2,17 @@
 # busybox
 #
 
-PKGR_busybox = r2
+PKGR_busybox = r3
 BEGIN[[
 busybox
-  1.21.1
+  1.22.1
   {PN}-{PV}
   extract:http://www.{PN}.net/downloads/{PN}-{PV}.tar.bz2
   nothing:file://{PN}-{PV}.config
   pmove:{PN}-{PV}/{PN}-{PV}.config:{PN}-{PV}/.config
+  patch:file://{PN}-{PV}-ash.patch
+  patch:file://{PN}-{PV}-date.patch
+  patch:file://{PN}-{PV}-iplink.patch
   make:install:CONFIG_PREFIX=PKDIR
 ;
 ]]END
