@@ -1159,7 +1159,7 @@ $(DEPDIR)/libdvdcss: bootstrap $(DEPENDS_libdvdcss)
 #
 BEGIN[[
 libdvdnav
-  4.2.0
+  4.2.1
   {PN}-{PV}
   extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
   patch:file://{PN}_{PV}.patch
@@ -1202,7 +1202,7 @@ $(DEPDIR)/libdvdnav: bootstrap libdvdread $(DEPENDS_libdvdnav)
 #
 BEGIN[[
 libdvdread
-  4.2.0
+  4.2.1
   {PN}-{PV}
   extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
   patch:file://{PN}_{PV}.patch
