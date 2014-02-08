@@ -3736,7 +3736,7 @@ $(DEPDIR)/rtmpdump: bootstrap openssl openssl-dev $(DEPENDS_rtmpdump)
 #
 BEGIN[[
 libdvbsipp
-  0.3.6
+  0.3.7
   libdvbsi++-{PV}
   extract:http://www.saftware.de/libdvbsi++/libdvbsi++-{PV}.tar.bz2
   patch:file://libdvbsi++-{PV}.patch
