@@ -3312,7 +3312,7 @@ $(DEPDIR)/libdca: $(DEPENDS_libdca)
 #
 BEGIN[[
 liborc
-  0.4.17
+  0.4.18
   orc-{PV}
   extract:http://code.entropywave.com/download/orc/orc-{PV}.tar.gz
   make:install:DESTDIR=PKDIR
