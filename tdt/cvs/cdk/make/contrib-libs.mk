@@ -472,7 +472,7 @@ $(DEPDIR)/curl: bootstrap openssl rtmpdump $(DEPENDS_curl)
 #
 BEGIN[[
 libfribidi
-  0.19.5
+  0.19.6
   fribidi-{PV}
   extract:http://fribidi.org/download/fribidi-{PV}.tar.bz2
   patch:file://glib.diff
