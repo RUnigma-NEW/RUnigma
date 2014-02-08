@@ -3514,7 +3514,7 @@ $(DEPDIR)/libusb2: bootstrap $(DEPENDS_libusb2)
 #
 BEGIN[[
 libusbcompat
-  0.1.3
+  0.1.5
   libusb-compat-{PV}
   extract:http://downloads.sourceforge.net/project/libusb/libusb-compat-0.1/libusb-compat-{PV}/libusb-compat-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
