@@ -49,13 +49,15 @@ for i in $(cat /proc/cmdline); do
 	esac
 done
 
-if [ `tune2fs -l /dev/sda1 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
-	echo "SDA1 OK"
-else
-	echo "FSCK SDA1 run"
-	fsck.ext2 -y "${root}"
-	tune2fs -l "${root}" | grep -i "Filesystem state"
-	sleep 1
+if [ -x `fdisk -l | grep -i "FAT" | awk '{ print $1 }'` ]; then
+	if [ `tune2fs -l /dev/sda1 | grep -i "Filesystem state" | awk '{ print $3 }'` == "clean" ]; then
+		echo "SDA1 OK"
+	else
+		echo "FSCK SDA1 run"
+		fsck.ext2 -y "${root}"
+		tune2fs -l "${root}" | grep -i "Filesystem state"
+		sleep 1
+	fi
 fi
 
 echo "Монтирую загрузочный раздел /dev/sda1"
