@@ -3662,7 +3662,7 @@ $(DEPDIR)/libcap: bootstrap $(DEPENDS_libcap)
 #
 BEGIN[[
 libalsa
-  1.0.26
+  1.0.27
   alsa-lib-{PV}
   extract:http://alsa.cybermirror.org/lib/alsa-lib-{PV}.tar.bz2
   #patch:file://alsa-lib-{PV}-soft_float.patch
