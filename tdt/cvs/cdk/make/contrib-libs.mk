@@ -1015,7 +1015,7 @@ $(DEPDIR)/libexpat: bootstrap $(DEPENDS_libexpat)
 #
 BEGIN[[
 fontconfig
-  2.10.95
+  2.11.0
   {PN}-{PV}
   extract:http://{PN}.org/release/{PN}-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
