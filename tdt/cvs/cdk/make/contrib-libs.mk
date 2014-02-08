@@ -100,7 +100,7 @@ $(DEPDIR)/libreadline: bootstrap ncurses-dev $(DEPENDS_libreadline)
 #
 BEGIN[[
 libfreetype
-  2.5.0.1
+  2.5.2
   freetype-{PV}
   extract:http://download.savannah.gnu.org/releases/freetype/freetype-{PV}.tar.bz2
   patch:file://libfreetype-{PV}.patch
