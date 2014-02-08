@@ -121,6 +121,7 @@ all-extras: \
 	usb_modeswitch \
 	modem-scripts \
 	enigma2-plugins \
+	minidlna \
 	xupnpd \
 	ntfs_3g \
 	enigma2-plugins-sh4 \

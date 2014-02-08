@@ -4407,7 +4407,7 @@ $(DEPDIR)/libexif: bootstrap $(DEPENDS_libexif)
 #
 BEGIN[[
 minidlna
-  1.0.25
+  1.1.1
   {PN}-{PV}
   extract:http://netcologne.dl.sourceforge.net/project/{PN}/{PN}/{PV}/{PN}_{PV}_src.tar.gz
   patch:file://{PN}-{PV}.patch

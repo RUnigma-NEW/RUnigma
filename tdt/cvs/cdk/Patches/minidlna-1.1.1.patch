@@ -1,0 +1,147 @@
+--- a/Makefile-org	2012-10-04 19:54:03.056477360 +0200
++++ b/Makefile	2012-10-04 19:48:01.432462371 +0200
+@@ -12,13 +12,11 @@
+ #
+ #CFLAGS = -Wall -O -D_GNU_SOURCE -g -DDEBUG
+ #CFLAGS = -Wall -g -Os -D_GNU_SOURCE
+-CFLAGS = -Wall -g -O3 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 \
+-	 -I/usr/include/ffmpeg \
+-	 -I/usr/include/libavutil -I/usr/include/libavcodec -I/usr/include/libavformat \
+-	 -I/usr/include/ffmpeg/libavutil -I/usr/include/ffmpeg/libavcodec -I/usr/include/ffmpeg/libavformat
++CFLAGS = -Wall -g -O2 -Os -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I.
++
+ #STATIC_LINKING: CFLAGS += -DSTATIC
+ #STATIC_LINKING: LDFLAGS = -static
+-CC = gcc
++STRIP = sh4-linux-strip
+ RM = rm -f
+ INSTALL = install
+ 
+@@ -37,7 +35,7 @@
+ 
+ ALLOBJS = $(BASEOBJS) $(LNXOBJS)
+ 
+-LIBS = -lpthread -lexif -ljpeg -lsqlite3 -lavformat -lavutil -lavcodec -lid3tag -lFLAC -logg -lvorbis
++LIBS = -lpthread -lexif -ljpeg -lsqlite3 -lavformat -lavutil -lavcodec -lid3tag -lFLAC -logg -lvorbis -lm
+ #STATIC_LINKING: LIBS = -lvorbis -logg -lm -lsqlite3 -lpthread -lexif -ljpeg -lFLAC -lm -lid3tag -lz -lavformat -lavutil -lavcodec -lm
+ 
+ TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+@@ -64,7 +62,10 @@
+ 	$(INSTALL) -d $(ETCINSTALLDIR)
+ 	$(INSTALL) --mode=0644 minidlna.conf $(ETCINSTALLDIR)
+ 
+-minidlna:	$(BASEOBJS) $(LNXOBJS) $(LIBS)
++install-strip: install
++	$(STRIP) -s $(SBININSTALLDIR)/minidlna
++
++minidlna:	$(BASEOBJS) $(LNXOBJS) #$(LIBS)
+ 	@echo Linking $@
+ 	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(BASEOBJS) $(LNXOBJS) $(LIBS)
+ 
+@@ -74,7 +75,7 @@
+ 	@$(CC) $(CFLAGS) -o $@ $(TESTUPNPDESCGENOBJS)
+ 
+ config.h:	genconfig.sh
+-	./genconfig.sh
++	DESTDIR=$(DESTDIR) ./genconfig.sh
+ 
+ depend:	config.h
+ 	makedepend -f$(MAKEFILE_LIST) -Y \
+--- a/metadata.c.org	2012-10-04 19:54:03.056477360 +0200
++++ b/metadata.c	2012-10-04 19:48:01.432462371 +0200
+@@ -30,9 +30,9 @@
+ #include "image_utils.h"
+ #include <jpeglib.h>
+ #include <setjmp.h>
+-#include <avutil.h>
+-#include <avcodec.h>
+-#include <avformat.h>
++#include <libavutil/avutil.h>
++#include <libavfilter/avcodec.h>
++#include <libavformat/avformat.h>
+ #include "tagutils/tagutils.h"
+ 
+ #include "upnpglobalvars.h"
+--- a/minidlna.c-orig	2012-10-04 19:54:03.056477360 +0200
++++ b/minidlna.c	2012-10-04 19:48:01.432462371 +0200
+@@ -52,6 +52,7 @@
+ #include <stdio.h>
+ #include <ctype.h>
+ #include <sys/types.h>
++#include <sys/stat.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+--- a/genconfig.sh-orig	2012-10-04 19:54:03.056477360 +0200
++++ b/genconfig.sh	2012-10-04 19:48:01.432462371 +0200
+@@ -40,22 +40,22 @@
+ 
+ # Detect if there are missing headers
+ # NOTE: This check only works with a normal distro
+-[ ! -e "/usr/include/sqlite3.h" ] && MISSING="libsqlite3 $MISSING"
+-[ ! -e "/usr/include/jpeglib.h" ] && MISSING="libjpeg $MISSING"
+-[ ! -e "/usr/include/libexif/exif-loader.h" ] && MISSING="libexif $MISSING"
+-[ ! -e "/usr/include/id3tag.h" ] && MISSING="libid3tag $MISSING"
+-[ ! -e "/usr/include/ogg/ogg.h" ] && MISSING="libogg $MISSING"
+-[ ! -e "/usr/include/vorbis/codec.h" ] && MISSING="libvorbis $MISSING"
+-[ ! -e "/usr/include/FLAC/metadata.h" ] && MISSING="libflac $MISSING"
+-[ ! -e "/usr/include/ffmpeg/avutil.h" -a \
+-  ! -e "/usr/include/libavutil/avutil.h" -a \
+-  ! -e "/usr/include/ffmpeg/libavutil/avutil.h" ] && MISSING="libavutil $MISSING"
+-[ ! -e "/usr/include/ffmpeg/avformat.h" -a \
+-  ! -e "/usr/include/libavformat/avformat.h" -a \
+-  ! -e "/usr/include/ffmpeg/libavformat/avformat.h" ] && MISSING="libavformat $MISSING"
+-[ ! -e "/usr/include/ffmpeg/avcodec.h" -a \
+-  ! -e "/usr/include/libavcodec/avcodec.h" -a \
+-  ! -e "/usr/include/ffmpeg/libavcodec/avcodec.h" ] && MISSING="libavcodec $MISSING"
++[ ! -e "$DESTDIR/usr/include/sqlite3.h" ] && MISSING="libsqlite3 $MISSING"
++[ ! -e "$DESTDIR/usr/include/jpeglib.h" ] && MISSING="libjpeg $MISSING"
++[ ! -e "$DESTDIR/usr/include/libexif/exif-loader.h" ] && MISSING="libexif $MISSING"
++[ ! -e "$DESTDIR/usr/include/id3tag.h" ] && MISSING="libid3tag $MISSING"
++[ ! -e "$DESTDIR/usr/include/ogg/ogg.h" ] && MISSING="libogg $MISSING"
++[ ! -e "$DESTDIR/usr/include/vorbis/codec.h" ] && MISSING="libvorbis $MISSING"
++[ ! -e "$DESTDIR/usr/include/FLAC/metadata.h" ] && MISSING="libflac $MISSING"
++[ ! -e "$DESTDIR/usr/include/ffmpeg/avutil.h" -a \
++  ! -e "$DESTDIR/usr/include/libavutil/avutil.h" -a \
++  ! -e "$DESTDIR/usr/include/ffmpeg/libavutil/avutil.h" ] && MISSING="libavutil $MISSING"
++[ ! -e "$DESTDIR/usr/include/ffmpeg/avformat.h" -a \
++  ! -e "$DESTDIR/usr/include/libavformat/avformat.h" -a \
++  ! -e "$DESTDIR/usr/include/ffmpeg/libavformat/avformat.h" ] && MISSING="libavformat $MISSING"
++[ ! -e "$DESTDIR/usr/include/ffmpeg/avcodec.h" -a \
++  ! -e "$DESTDIR/usr/include/libavcodec/avcodec.h" -a \
++  ! -e "$DESTDIR/usr/include/ffmpeg/libavcodec/avcodec.h" ] && MISSING="libavcodec $MISSING"
+ if [ -n "$MISSING" ]; then
+ 	echo -e "\nERROR!  Cannot continue."
+ 	echo -e "The following required libraries are either missing, or are missing development headers:\n"
+@@ -171,11 +171,11 @@
+ 
+ echo "/* Comment the following line to use home made daemonize() func instead" >> ${CONFIGFILE}
+ echo " * of BSD daemon() */" >> ${CONFIGFILE}
+-echo "#define USE_DAEMON" >> ${CONFIGFILE}
++echo "/*#define USE_DAEMON*/" >> ${CONFIGFILE}
+ echo "" >> ${CONFIGFILE}
+ 
+ echo "/* Enable if the system inotify.h exists.  Otherwise our own inotify.h will be used. */" >> ${CONFIGFILE}
+-if [ -f /usr/include/sys/inotify.h ]; then
++if [ -f $DESTDIR/usr/include/sys/inotify.h ]; then
+ echo "#define HAVE_INOTIFY_H" >> ${CONFIGFILE}
+ else
+ echo "/*#define HAVE_INOTIFY_H*/" >> ${CONFIGFILE}
+@@ -183,7 +183,7 @@
+ echo "" >> ${CONFIGFILE}
+ 
+ echo "/* Enable if the system iconv.h exists.  ID3 tag reading in various character sets will not work properly otherwise. */" >> ${CONFIGFILE}
+-if [ -f /usr/include/iconv.h ]; then
++if [ -f $DESTDIR/usr/include/iconv.h ]; then
+ echo "#define HAVE_ICONV_H" >> ${CONFIGFILE}
+ else
+ echo -e "\nWARNING!!  Iconv support not found.  ID3 tag reading may not work."
+@@ -192,7 +192,7 @@
+ echo "" >> ${CONFIGFILE}
+ 
+ echo "/* Enable if the system libintl.h exists for NLS support. */" >> ${CONFIGFILE}
+-if [ -f /usr/include/libintl.h ]; then
++if [ -z "$DISABLE_NLS" -a -f $DESTDIR/usr/include/libintl.h ]; then
+ echo "#define ENABLE_NLS" >> ${CONFIGFILE}
+ else
+ echo "/*#define ENABLE_NLS*/" >> ${CONFIGFILE}
