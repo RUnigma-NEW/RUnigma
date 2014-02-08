@@ -1161,7 +1161,7 @@ BEGIN[[
 libdvdnav
   4.2.1
   {PN}-{PV}
-  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
+  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.xz
   patch:file://{PN}_{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
@@ -1204,7 +1204,7 @@ BEGIN[[
 libdvdread
   4.2.1
   {PN}-{PV}
-  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.bz2
+  extract:http://dvdnav.mplayerhq.hu/releases/{PN}-{PV}.tar.xz
   patch:file://{PN}_{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
