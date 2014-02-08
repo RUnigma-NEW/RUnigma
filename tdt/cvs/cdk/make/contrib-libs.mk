@@ -1679,7 +1679,7 @@ $(DEPDIR)/libsoup: bootstrap $(DEPENDS_libsoup)
 #
 BEGIN[[
 pixman
-  0.30.2
+  0.32.4
   {PN}-{PV}
   extract:http://cairographics.org/releases/{PN}-{PV}.tar.gz
   make:install:DESTDIR=PKDIR
