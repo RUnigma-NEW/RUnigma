@@ -13,23 +13,18 @@ modprobe simu_button
 modprobe e2_proc
 
 #echo "Filesystem drivers ext3 ext4 ..."
-modprobe fat
 modprobe fscache
 modprobe isofs
-modprobe msdos
 modprobe ntfs
 modprobe udf
-modprobe vfat
 modprobe cifs
 modprobe cachefiles
 modprobe nls_ascii
 modprobe nls_cp1250
 modprobe nls_cp1251
-modprobe nls_cp437
 modprobe nls_cp850
 modprobe nls_cp855
 modprobe nls_cp866
-modprobe nls_iso8859-1
 modprobe nls_iso8859-2
 modprobe nls_iso8859-5
 modprobe nls_koi8-r
