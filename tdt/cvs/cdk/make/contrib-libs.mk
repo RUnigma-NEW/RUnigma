@@ -318,11 +318,11 @@ $(DEPDIR)/libpng12: bootstrap $(DEPENDS_libpng12)
 #
 BEGIN[[
 libpng
-  1.5.16
+  1.6.8
   {PN}-{PV}
   extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.xz
   nothing:file://{PN}.diff
-  patch:file://{PN}-{PV}-workaround_for_stmfb_alpha_error.patch
+  patch:file://{PN}-workaround_for_stmfb_alpha_error.patch
   make:install:prefix=PKDIR/usr
 ;
 ]]END
@@ -427,7 +427,7 @@ $(DEPDIR)/libgif: bootstrap $(DEPENDS_libgif)
 #
 BEGIN[[
 curl
-  7.30.0
+  7.34.0
   {PN}-{PV}
   extract:http://{PN}.haxx.se/download/{PN}-{PV}.tar.bz2
   patch:file://lib{PN}.diff
