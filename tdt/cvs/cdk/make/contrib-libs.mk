@@ -3343,7 +3343,7 @@ $(DEPDIR)/liborc: $(DEPENDS_liborc)
 #
 BEGIN[[
 libao
-  1.1.0
+  1.2.0
   {PN}-{PV}
   extract:http://downloads.xiph.org/releases/ao/{PN}-{PV}.tar.gz
   make:install:DESTDIR=PKDIR
