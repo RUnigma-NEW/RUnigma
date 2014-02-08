@@ -3482,7 +3482,7 @@ $(DEPDIR)/libgd2: bootstrap libpng libjpeg libiconv libfreetype $(DEPENDS_libgd2
 #
 BEGIN[[
 libusb2
-  1.0.8
+  1.0.18
   libusb-{PV}
   extract:http://downloads.sourceforge.net/project/libusb/libusb-1.0/libusb-{PV}/libusb-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
