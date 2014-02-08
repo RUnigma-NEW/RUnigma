@@ -2676,9 +2676,9 @@ endif
 
 BEGIN[[
 libgdbm
-  1.10
+  1.11
   gdbm-{PV}
-  extract:ftp://ftp.gnu.org/gnu/gdbm/gdbm-1.10.tar.gz
+  extract:ftp://ftp.gnu.org/gnu/gdbm/gdbm-1.11.tar.gz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
