@@ -2317,7 +2317,7 @@ $(DEPDIR)/pyusb: bootstrap setuptools $(DEPENDS_pyusb)
 #
 BEGIN[[
 pycrypto
-  2.5
+  2.7.a1
   {PN}-{PV}
   extract:http://ftp.dlitz.net/pub/dlitz/crypto/{PN}/{PN}-{PV}.tar.gz
   patch:file://python-{PN}-no-usr-include.patch
