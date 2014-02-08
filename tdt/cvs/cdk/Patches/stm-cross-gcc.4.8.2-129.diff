@@ -1,8 +1,8 @@
---- a/gcc/Makefile.in.org	2011-11-02 10:34:37.000000000 +0100
-+++ b/gcc/Makefile.in	2013-07-03 17:12:06.658799684 +0200
-@@ -4534,7 +4534,7 @@
- # We keep the directory structure for files in config and .def files. All
- # other files are flattened to a single directory.
+--- a/gcc/Makefile.in	2014-02-01 16:41:33.696762016 +0200
++++ b/gcc/Makefile.in	2014-02-01 16:44:56.969769996 +0200
+@@ -4627,7 +4627,7 @@
+ # We keep the directory structure for files in config or c-family and .def
+ # files. All other files are flattened to a single directory.
  	$(mkinstalldirs) $(DESTDIR)$(plugin_includedir)
 -	headers=`echo $(PLUGIN_HEADERS) | tr ' ' '\012' | sort -u`; \
 +	headers="$(sort $(PLUGIN_HEADERS))"; \
