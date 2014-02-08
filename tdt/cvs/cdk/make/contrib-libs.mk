@@ -2063,7 +2063,7 @@ $(DEPDIR)/gdata: bootstrap setuptools $(DEPENDS_gdata)
 #
 BEGIN[[
 twisted
-  13.1.0
+  13.2.0
   Twisted-{PV}
   extract:https://pypi.python.org/packages/source/T/Twisted/Twisted-{PV}.tar.bz2
 ;
@@ -2150,9 +2150,9 @@ $(DEPDIR)/twistedweb2: bootstrap setuptools twisted $(DEPENDS_twistedweb2)
 #
 BEGIN[[
 twistedweb
-  13.1.0
+  13.2.0
   TwistedWeb-{PV}
-  extract:http://twistedmatrix.com/Releases/Web/13.1/TwistedWeb-{PV}.tar.bz2
+  extract:http://twistedmatrix.com/Releases/Web/13.2/TwistedWeb-{PV}.tar.bz2
 ;
 ]]END
 
@@ -2195,9 +2195,9 @@ endif
 #
 BEGIN[[
 twistedmail
-  13.1.0
+  13.2.0
   TwistedMail-{PV}
-  extract:http://twistedmatrix.com/Releases/Mail/13.1/TwistedMail-{PV}.tar.bz2
+  extract:http://twistedmatrix.com/Releases/Mail/13.2/TwistedMail-{PV}.tar.bz2
 ;
 ]]END
 DESCRIPTION_twistedmail = "twistedmail"
