@@ -279,9 +279,9 @@ $(DEPDIR)/libjpeg_turbo: bootstrap $(DEPENDS_libjpeg_turbo)
 #
 BEGIN[[
 libpng12
-  1.2.49
+  1.2.50
   libpng-{PV}
-  extract:http://ftp.de.debian.org/debian/pool/main/libp/libpng/libpng_{PV}.orig.tar.bz2
+  extract:http://ftp.de.debian.org/debian/pool/main/libp/libpng/libpng_{PV}.orig.tar.xz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
