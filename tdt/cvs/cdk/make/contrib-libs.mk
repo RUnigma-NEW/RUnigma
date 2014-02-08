@@ -1644,7 +1644,7 @@ $(DEPDIR)/sqlite: bootstrap $(DEPENDS_sqlite)
 #
 BEGIN[[
 libsoup
-  2.43.90
+  2.43.92
   {PN}-{PV}
   extract:http://ftp.acc.umu.se/pub/GNOME/sources/libsoup/2.43/{PN}-{PV}.tar.xz
   make:install:DESTDIR=PKDIR
