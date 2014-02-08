@@ -1956,9 +1956,9 @@ $(DEPDIR)/libxslt: bootstrap libxml2 $(DEPENDS_libxslt)
 #
 BEGIN[[
 lxml
-  3.2.3
+  3.3.0
   {PN}-{PV}
-  extract:https://pypi.python.org/packages/source/l/lxml/lxml-3.2.3.tar.gz
+  extract:https://pypi.python.org/packages/source/l/lxml/{PN}-{PV}.tar.gz
 ;
 ]]END
 
@@ -1985,7 +1985,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 BEGIN[[
 ifdef ENABLE_PY332
 setuptools
-  1.1.4
+  2.2
   {PN}-{PV}
   extract:http://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
 ;
