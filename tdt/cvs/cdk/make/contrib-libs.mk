@@ -2803,9 +2803,9 @@ $(DEPDIR)/pythoncheetah: bootstrap setuptools $(DEPENDS_pythoncheetah)
 #
 BEGIN[[
 zope_interface
-  4.0.5
+  4.1.0
   zope.interface-{PV}
-  extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.zip
+  extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.tar.gz
 ;
 ]]END
 
