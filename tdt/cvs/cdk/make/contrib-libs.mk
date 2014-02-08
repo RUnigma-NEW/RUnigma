@@ -427,7 +427,7 @@ $(DEPDIR)/libgif: bootstrap $(DEPENDS_libgif)
 #
 BEGIN[[
 curl
-  7.34.0
+  7.35.0
   {PN}-{PV}
   extract:http://{PN}.haxx.se/download/{PN}-{PV}.tar.bz2
   patch:file://lib{PN}.diff
