@@ -3,9 +3,9 @@
 #
 BEGIN[[
 libboost
-  boost-1.54.0
-  boost_1_54_0
-  extract:http://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2
+  boost-1.55.0
+  boost_1_55_0
+  extract:http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2
   patch:file://{PN}.diff
   remove:TARGETS/include/boost
   move:boost:TARGETS/usr/include/boost
