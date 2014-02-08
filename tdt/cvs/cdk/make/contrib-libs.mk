@@ -779,9 +779,9 @@ $(DEPDIR)/libiconv: bootstrap $(DEPENDS_libiconv)
 #
 BEGIN[[
 libmng
-  1.0.10
+  2.0.2
   {PN}-{PV}
-  extract:http://dfn.dl.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.bz2
+  extract:http://dfn.dl.sourceforge.net/sourceforge/{PN}/{PN}-{PV}.tar.xz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
