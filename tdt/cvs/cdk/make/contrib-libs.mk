@@ -393,7 +393,7 @@ $(DEPDIR)/libungif: bootstrap $(DEPENDS_libungif)
 #
 BEGIN[[
 libgif
-  5.0.4
+  5.0.5
   giflib-{PV}
   extract:http://heanet.dl.sourceforge.net/sourceforge/giflib/giflib-{PV}.tar.bz2
   make:install:DESTDIR=PKDIR
