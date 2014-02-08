@@ -1607,8 +1607,8 @@ $(DEPDIR)/lite: bootstrap directfb $(DEPENDS_lite)
 BEGIN[[
 sqlite
   3.8.0
-  {PN}-autoconf-3080002
-  extract:http://www.sqlite.org/2013/sqlite-autoconf-3080002.tar.gz
+  {PN}-autoconf-3080300
+  extract:http://www.sqlite.org/2014/sqlite-autoconf-3080300.tar.gz
   make:install:DESTDIR=PKDIR
 ;
 ]]END
