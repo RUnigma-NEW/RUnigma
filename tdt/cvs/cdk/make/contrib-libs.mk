@@ -2257,7 +2257,7 @@ $(DEPDIR)/pilimaging: bootstrap python $(DEPENDS_pilimaging)
 #
 BEGIN[[
 Pillow
-  2.1.0
+  2.3.0
   {PN}-{PV}
   extract:https://pypi.python.org/packages/source/P/{PN}/{PN}-{PV}.zip
   patch:file://Pillow-fix-search-paths.patch
