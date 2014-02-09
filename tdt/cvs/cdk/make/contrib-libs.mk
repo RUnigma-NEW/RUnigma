@@ -100,7 +100,7 @@ $(DEPDIR)/libreadline: bootstrap ncurses-dev $(DEPENDS_libreadline)
 #
 BEGIN[[
 libfreetype
-  2.5.2
+  2.5.0.1
   freetype-{PV}
   extract:http://download.savannah.gnu.org/releases/freetype/freetype-{PV}.tar.bz2
   patch:file://libfreetype-{PV}.patch
@@ -318,7 +318,7 @@ $(DEPDIR)/libpng12: bootstrap $(DEPENDS_libpng12)
 #
 BEGIN[[
 libpng
-  1.6.9
+  1.6.8
   {PN}-{PV}
   extract:http://prdownloads.sourceforge.net/libpng/{PN}/{PN}-{PV}.tar.xz
   nothing:file://{PN}.diff
@@ -1266,115 +1266,120 @@ $(DEPDIR)/ffmpeg: bootstrap libass libaacplus libfaac rtmpdump libx264 $(DEPENDS
 	cd $(DIR_ffmpeg); \
 		PKG_CONFIG_PATH=$(targetprefix)/usr/lib/pkgconfig \
 		./configure \
-			--disable-vfp \
-			--disable-runtime-cpudetect \
-			--disable-static \
-			--disable-doc \
-			--disable-htmlpages \
-			--disable-manpages \
-			--disable-podpages \
-			--disable-txtpages \
-			--disable-fast-unaligned \
-			--disable-bsfs \
-			--enable-libaacplus \
-			--enable-libfaac \
-			--enable-nonfree \
-			--enable-libass \
-			--enable-libx264 \
-			--enable-gpl \
-			--enable-version3 \
-			--enable-shared \
-			--enable-cross-compile \
-			--enable-librtmp \
-			--enable-openssl \
-			--disable-ffserver \
-			--disable-ffplay \
-			--disable-ffprobe \
-			--disable-debug \
-			--disable-asm \
-			--disable-altivec \
-			--disable-amd3dnow \
-			--disable-amd3dnowext \
-			--disable-mmx \
-			--disable-mmxext \
-			--disable-sse \
-			--disable-sse2 \
-			--disable-sse3 \
-			--disable-ssse3 \
-			--disable-sse4 \
-			--disable-sse42 \
-			--disable-avx \
-			--disable-fma4 \
-			--disable-armv5te \
-			--disable-armv6 \
-			--disable-armv6t2 \
-			--disable-neon \
-			--disable-vis \
-			--disable-inline-asm \
-			--disable-yasm \
-			--disable-mips32r2 \
-			--disable-mipsdspr1 \
-			--disable-mipsdspr2 \
-			--disable-mipsfpu \
-			--disable-indevs \
-			--disable-outdevs \
-			--disable-muxers \
-			--enable-muxer=ogg \
-			--enable-muxer=flac \
-			--enable-muxer=mp3 \
-			--enable-muxer=h261 \
-			--enable-muxer=h263 \
-			--enable-muxer=h264 \
-			--enable-muxer=mpeg1video \
-			--enable-muxer=mpeg2video \
-			--enable-muxer=image2 \
-			--disable-encoders \
-			--enable-encoder=aac \
-			--enable-encoder=h261 \
-			--enable-encoder=h263 \
-			--enable-encoder=h263p \
-			--enable-encoder=ljpeg \
-			--enable-encoder=mjpeg \
-			--enable-encoder=png \
-			--enable-encoder=mpeg4 \
-			--enable-encoder=mpeg1video \
-			--enable-encoder=mpeg2video \
-			--disable-decoders \
-			--enable-decoder=aac \
-			--enable-decoder=mp3 \
-			--enable-decoder=theora \
-			--enable-decoder=h261 \
-			--enable-decoder=h263 \
-			--enable-decoder=h263i \
-			--enable-decoder=h264 \
-			--enable-decoder=mpeg1video \
-			--enable-decoder=mpeg2video \
-			--enable-decoder=mpeg4 \
-			--enable-decoder=png \
-			--enable-decoder=mjpeg \
-			--enable-decoder=vorbis \
-			--enable-demuxer=wav \
-			--enable-decoder=wmv3 \
-			--enable-decoder=pcm_s16le \
-			--enable-decoder=flac \
-			--enable-parser=h264 \
-			--enable-parser=mjpeg \
-			--enable-demuxer=mjpeg \
-			--enable-demuxer=rtsp \
-			--enable-decoder=dvbsub \
-			--enable-decoder=iff_byterun1 \
-			--enable-small \
-			--enable-avresample \
-			--enable-pthreads \
-			--enable-bzlib \
-			--enable-zlib \
-			--pkg-config="pkg-config" \
-			--cross-prefix=$(target)- \
-			--target-os=linux \
-			--arch=sh4 \
-			--extra-cflags="-fno-strict-aliasing" \
-			--enable-stripping \
-			--prefix=/usr; \
+		--disable-static \
+		--enable-shared \
+		--disable-runtime-cpudetect \
+		--disable-ffserver \
+		--disable-ffplay \
+		--disable-ffprobe \
+		--disable-doc \
+		--disable-htmlpages \
+		--disable-manpages \
+		--disable-podpages \
+		--disable-txtpages \
+		--disable-asm \
+		--disable-altivec \
+		--disable-amd3dnow \
+		--disable-amd3dnowext \
+		--disable-mmx \
+		--disable-mmxext \
+		--disable-sse \
+		--disable-sse2 \
+		--disable-sse3 \
+		--disable-ssse3 \
+		--disable-sse4 \
+		--disable-sse42 \
+		--disable-avx \
+		--disable-fma4 \
+		--disable-armv5te \
+		--disable-armv6 \
+		--disable-armv6t2 \
+		--disable-vfp \
+		--disable-neon \
+		--disable-vis \
+		--disable-inline-asm \
+		--disable-yasm \
+		--disable-mips32r2 \
+		--disable-mipsdspr1 \
+		--disable-mipsdspr2 \
+		--disable-mipsfpu \
+		--disable-fast-unaligned \
+		--disable-muxers \
+		--enable-muxer=flac \
+		--enable-muxer=mp3 \
+		--enable-muxer=h261 \
+		--enable-muxer=h263 \
+		--enable-muxer=h264 \
+		--enable-muxer=image2 \
+		--enable-muxer=mpeg1video \
+		--enable-muxer=mpeg2video \
+		--enable-muxer=ogg \
+		--disable-encoders \
+		--enable-encoder=aac \
+		--enable-encoder=h261 \
+		--enable-encoder=h263 \
+		--enable-encoder=h263p \
+		--enable-encoder=ljpeg \
+		--enable-encoder=mjpeg \
+		--enable-encoder=mpeg1video \
+		--enable-encoder=mpeg2video \
+		--enable-encoder=png \
+		--disable-decoders \
+		--enable-decoder=aac \
+		--enable-decoder=dvbsub \
+		--enable-decoder=flac \
+		--enable-decoder=pcm_s16le \
+		--enable-decoder=flv \
+		--enable-decoder=h261 \
+		--enable-decoder=h263 \
+		--enable-decoder=h263i \
+		--enable-decoder=h263p \
+		--enable-decoder=h264 \
+		--enable-decoder=h264_crystalhd \
+		--enable-decoder=iff_byterun1 \
+		--enable-decoder=mjpeg \
+		--enable-decoder=mp3 \
+		--enable-decoder=mpegvideo \
+		--enable-decoder=mpeg1video \
+		--enable-decoder=mpeg2video \
+		--enable-decoder=mpeg2video_crystalhd \
+		--enable-decoder=mpeg4 \
+		--enable-decoder=mpeg4_crystalhd \
+		--enable-decoder=png \
+		--enable-decoder=theora \
+		--enable-decoder=vorbis \
+		--enable-parser=mjpeg \
+		--enable-demuxer=mjpeg \
+		--enable-demuxer=wav \
+		--enable-demuxer=hls \
+		--enable-protocol=file \
+		--enable-protocol=hls \
+		--enable-protocol=udp \
+		--enable-libaacplus \
+		--enable-libfaac \
+		--enable-nonfree \
+		--enable-libass \
+		--enable-libx264 \
+		--enable-gpl \
+		--enable-demuxer=rtsp \
+		--disable-indevs \
+		--disable-outdevs \
+		--enable-avresample \
+		--enable-pthreads \
+		--enable-bzlib \
+		--disable-zlib \
+		--disable-bsfs \
+		--enable-librtmp \
+		--pkg-config="pkg-config" \
+		--disable-parser=hevc \
+		--enable-cross-compile \
+		--cross-prefix=$(target)- \
+		--target-os=linux \
+		--arch=sh4 \
+		--disable-debug \
+		--extra-cflags="-fno-strict-aliasing" \
+		--enable-stripping \
+		--prefix=/usr; \
 		$(MAKE); \
 		$(INSTALL_ffmpeg)
 	$(tocdk_build)
@@ -2317,10 +2322,9 @@ $(DEPDIR)/pyusb: bootstrap setuptools $(DEPENDS_pyusb)
 #
 BEGIN[[
 pycrypto
-  2.7.a1
+  2.7a1
   {PN}-{PV}
   extract:http://ftp.dlitz.net/pub/dlitz/crypto/{PN}/{PN}-{PV}.tar.gz
-  patch:file://python-{PN}-no-usr-include.patch
 ;
 ]]END
 
