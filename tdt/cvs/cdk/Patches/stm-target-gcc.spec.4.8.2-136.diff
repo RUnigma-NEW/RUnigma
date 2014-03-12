@@ -27,16 +27,16 @@
  # Common patches
  %if %target_cpu sh
 @@ -239,8 +244,10 @@
- export CFLAGS="-Os"
- export CXXFLAGS="-Os"
+ %target_autoreconf
  
+ # need to bootstrap with the same data size that target.
 +%if %force_32bit
  export CC_FOR_BUILD="gcc -m32"
  export CXX_FOR_BUILD="g++ -m32"
 +%endif
  
- # When cross compiling this fails because it needs to run code
- export ac_cv_header_stdc=yes
+ export CFLAGS_FOR_TARGET=$CFLAGS
+ export CXXFLAGS_FOR_TARGET=$CXXFLAGS
 @@ -255,7 +262,6 @@
  	--enable-nls \
  	--enable-c99 \

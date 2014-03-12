@@ -73,7 +73,7 @@ usr/bin/ar \
 usr/bin/ld
 
 BINUTILS_DEV := binutils-dev
-BINUTILS_VERSION := 2.23.2-75
+BINUTILS_VERSION := 2.23.2-76
 BINUTILS_SPEC := stm-target-$(BINUTILS).spec
 BINUTILS_SPEC_PATCH := $(BINUTILS_SPEC).$(BINUTILS_VERSION).diff
 BINUTILS_PATCHES := stm-target-$(BINUTILS).$(BINUTILS_VERSION).diff
@@ -104,7 +104,7 @@ $(DEPDIR)/$(BINUTILS_DEV): $(BINUTILS_DEV_RPM)
 # GMP
 #
 GMP := gmp
-GMP_VERSION := 5.1.0-8
+GMP_VERSION := 5.1.3-10
 GMP_SPEC := stm-target-$(GMP).spec
 GMP_SPEC_PATCH :=
 GMP_PATCHES :=
@@ -132,7 +132,7 @@ $(DEPDIR)/$(GMP): $(GMP_RPM)
 # MPFR
 #
 MPFR := mpfr
-MPFR_VERSION := 3.1.2-9
+MPFR_VERSION := 3.1.2-10
 MPFR_SPEC := stm-target-$(MPFR).spec
 MPFR_SPEC_PATCH :=
 MPFR_PATCHES :=
@@ -160,7 +160,7 @@ $(DEPDIR)/$(MPFR): $(MPFR_RPM)
 # MPC
 #
 MPC := mpc
-MPC_VERSION := 1.0.1-5
+MPC_VERSION := 1.0.2-6
 MPC_SPEC := stm-target-$(MPC).spec
 MPC_SPEC_PATCH :=
 MPC_PATCHES :=
@@ -222,7 +222,7 @@ FILES_libstdc++-dev = \
 
 LIBGCC := libgcc
 GCC := gcc
-GCC_VERSION := 4.8.2-134
+GCC_VERSION := 4.8.2-136
 GCC_SPEC := stm-target-$(GCC).spec
 GCC_SPEC_PATCH := $(GCC_SPEC).$(GCC_VERSION).diff
 GCC_PATCHES := stm-target-$(GCC).$(GCC_VERSION).diff
@@ -560,7 +560,7 @@ $(DEPDIR)/$(USBUTILS): $(USBUTILS_RPM)
 
 UDEV := udev
 UDEV_DEV := udev-dev
-UDEV_VERSION := 162-34
+UDEV_VERSION := 162-37
 PKGR_udev := r0
 UDEV_SPEC := stm-target-$(UDEV).spec
 UDEV_SPEC_PATCH := stm-target-udev.spec.diff
