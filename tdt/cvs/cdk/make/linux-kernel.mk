@@ -16,6 +16,10 @@ ifdef ENABLE_P0211
 PATCH_STR=_0211
 endif
 
+ifdef ENABLE_P0212
+PATCH_STR=_0212
+endif
+
 STM24_DVB_PATCH = linux-sh4-linuxdvb_stm24$(PATCH_STR).patch
 
 COMMONPATCHES_24 = \
@@ -34,10 +38,9 @@ COMMONPATCHES_24 = \
 		linux-ftdi_sio.c_stm24$(PATCH_STR).patch \
 		linux-sh4-lzma-fix_stm24$(PATCH_STR).patch \
 		linux-tune_stm24.patch \
-		$(if $(P0210)$(P0211),linux-sh4-mmap_stm24.patch) \
-		$(if $(P0210)$(P0211),linux-sh4-remove_pcm_reader_stm24.patch) \
+		$(if $(P0210)$(P0211)$(P0212),linux-sh4-mmap_stm24.patch) \
+		$(if $(P0210)$(P0211)$(P0212),linux-sh4-remove_pcm_reader_stm24.patch) \
 		$(if $(P0207),linux-sh4-sti7100_missing_clk_alias_stm24$(PATCH_STR).patch) \
-		$(if $(P0211),linux-sh4-directfb_stm24$(PATCH_STR).patch)
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		linux-sh4-hl101_setup_stm24$(PATCH_STR).patch \
@@ -68,13 +71,17 @@ ifdef ENABLE_P0207
 KERNELHEADERS_VERSION := 2.6.32.16-44
 else
 ifdef ENABLE_P0209
-KERNELHEADERS_VERSION := 2.6.32.46-45
+KERNELHEADERS_VERSION := 2.6.32.46-47
 else
 ifdef ENABLE_P0210
-KERNELHEADERS_VERSION := 2.6.32.46-45
+KERNELHEADERS_VERSION := 2.6.32.46-47
 else
 ifdef ENABLE_P0211
-KERNELHEADERS_VERSION := 2.6.32.46-45
+KERNELHEADERS_VERSION := 2.6.32.46-47
+else
+ifdef ENABLE_P0212
+KERNELHEADERS_VERSION := 2.6.32.46-47
+endif
 endif
 endif
 endif
@@ -128,6 +135,10 @@ HOST_KERNEL_VERSION = 2.6.32.57$(KERNELSTMLABEL)-$(KERNELLABEL)
 else
 ifdef ENABLE_P0211
 HOST_KERNEL_VERSION = 2.6.32.59$(KERNELSTMLABEL)-$(KERNELLABEL)
+else
+ifdef ENABLE_P0212
+HOST_KERNEL_VERSION = 2.6.32.61$(KERNELSTMLABEL)-$(KERNELLABEL)
+endif
 endif
 endif
 endif

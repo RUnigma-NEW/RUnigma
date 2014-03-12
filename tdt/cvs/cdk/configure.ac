@@ -105,6 +105,14 @@ AC_ARG_ENABLE(p0211,
 TDT_CONDITIONAL(ENABLE_P0211,test "$enable_p0211" = "yes")
 AC_SUBST(P0211)
 
+AC_ARG_ENABLE(p0212,
+	AS_HELP_STRING(--enable-p0212,  set up the CDK to use the STLinux 2.4 with patchlevel 0212),
+	[case "${enableval}" in
+		yes) P0212=p0212 ;;
+	esac], [enable_p0212=no])
+TDT_CONDITIONAL(ENABLE_P0212,test "$enable_p0212" = "yes")
+AC_SUBST(P0212)
+
 AC_ARG_ENABLE(debug,
 	AS_HELP_STRING(--enable-debug,	set up the CDK to use debug kernel configs),
 	,[enable_debug=no])
@@ -230,14 +238,6 @@ AC_ARG_ENABLE(spark,
 	esac],[enable_spark=no])
 TDT_CONDITIONAL(ENABLE_SPARK,test "$enable_spark" = "yes")
 AC_SUBST(SPARK)
-
-AC_ARG_ENABLE(spark7162,
-	AS_HELP_STRING(--enable-spark7162,    enable spark7162),
-	[case "${enableval}" in
-		yes) SPARK7162=spark7162 ;;
-	esac],[enable_spark7162=no])
-TDT_CONDITIONAL(ENABLE_SPARK7162,test "$enable_spark7162" = "yes")
-AC_SUBST(SPARK7162)
 
 AC_ARG_ENABLE(e2pd0,
 	AS_HELP_STRING(--enable-e2pd0, enable enigma2-pli-nigthly diff0 ),
@@ -768,6 +768,7 @@ Patchlevel P0207            : $enable_p0207
 Patchlevel P0209            : $enable_p0209
 Patchlevel P0210            : $enable_p0210
 Patchlevel P0211            : $enable_p0211
+Patchlevel P0212            : $enable_p0212
 ccache                      : $enable_ccache
 target prefix               : $targetprefix
 boot prefix                 : $bootprefix

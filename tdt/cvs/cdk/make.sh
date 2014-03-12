@@ -2,7 +2,7 @@
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
  echo "Parameter 1: Поддерживаемая платформа (1)"
- echo "Parameter 2: Ядро (1-3)"
+ echo "Parameter 2: Ядро (1-4)"
  echo "Parameter 3: Режим отладки (Y/N)"
  echo "Parameter 4: Плэйер (1)"
  echo "Parameter 5: Мультиком (1)"
@@ -71,25 +71,22 @@ echo -e "Ядро:"
 echo "---------------------------------------"
 #echo "   1) STM 24 P0207"
 #echo "   2) STM 24 P0210"
-echo "   STM 24 P0211"
-#echo "   4) STM 24 P0302"
-#case $2 in
-#        [1-4]) REPLY=$2
-#        echo -e "\nВыбранное ядро: $REPLY\n"
-#        ;;
-#        *)
-#        read -p "Выберите ядро (1-3)? ";;
-#esac
-
-#case "$REPLY" in
-#	1) KERNEL="--enable-stm24 --enable-p0207";STMFB="stm24";;
-#	2) KERNEL="--enable-stm24 --enable-p0210";STMFB="stm24";;
-#	3) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
-#	4) KERNEL="--enable-stm24 --enable-p0302";STMFB="stm24";;
-#	*) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
-#esac
-KERNEL="--enable-stm24 --enable-p0211"
-STMFB="stm24"
+echo "   1) STM 24 P0211"
+echo "   2) STM 24 P0212"
+case $2 in
+        [1-2]) REPLY=$2
+        echo -e "\nВыбранное ядро: $REPLY\n"
+        ;;
+        *)
+        read -p "Выберите ядро (1-2)? ";;
+esac
+case "$REPLY" in
+	1) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
+	2) KERNEL="--enable-stm24 --enable-p0212";STMFB="stm24";;
+	*) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
+esac
+#KERNEL="--enable-stm24 --enable-p0211"
+#STMFB="stm24"
 CONFIGPARAM="$CONFIGPARAM $KERNEL"
 
 ##############################################
