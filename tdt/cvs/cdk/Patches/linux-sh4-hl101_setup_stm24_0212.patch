@@ -634,23 +634,3 @@
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
---- linux-sh4/include/linux/dvb/frontend.h.org	2012-12-26 21:01:29.588293732 +0100
-+++ linux-sh4/include/linux/dvb/frontend.h	2012-12-26 20:37:11.032257712 +0100
-@@ -303,6 +303,9 @@
- #define DTV_ISDBT_LAYER_ENABLED	41
- 
- #define DTV_ISDBS_TS_ID		42
-+ 
-+#define DTV_DVBT2_PLP_ID		43
-+#define DTV_DVBS2_MIS_ID		44
- 
- #define DTV_MAX_COMMAND				DTV_DVBS2_MIS_ID
- 
-@@ -324,6 +326,7 @@
- 	SYS_DVBC_ANNEX_AC,
- 	SYS_DVBC_ANNEX_B,
- 	SYS_DVBT,
-+	SYS_DVBT2,
- 	SYS_DSS,
- 	SYS_DVBS,
- 	SYS_DVBS2,
