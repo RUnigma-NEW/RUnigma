@@ -2,7 +2,7 @@
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
  echo "Parameter 1: Поддерживаемая платформа (1)"
- echo "Parameter 2: Ядро (1-4)"
+ echo "Parameter 2: Ядро (1-2)"
  echo "Parameter 3: Режим отладки (Y/N)"
  echo "Parameter 4: Плэйер (1)"
  echo "Parameter 5: Мультиком (1)"
@@ -69,8 +69,6 @@ CONFIGPARAM="$CONFIGPARAM $TARGET"
 echo ""
 echo -e "Ядро:"
 echo "---------------------------------------"
-#echo "   1) STM 24 P0207"
-#echo "   2) STM 24 P0210"
 echo "   1) STM 24 P0211"
 echo "   2) STM 24 P0212"
 case $2 in

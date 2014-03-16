@@ -8,18 +8,6 @@ export DRPMBUILD
 
 #######################################      #########################################
 
-ifdef ENABLE_P0207
-KERNELVERSION := 2.6.32.28_stm24_0207
-endif
-
-ifdef ENABLE_P0209
-KERNELVERSION := 2.6.32.46_stm24_0209
-endif
-
-ifdef ENABLE_P0210
-KERNELVERSION := 2.6.32.57_stm24_0210
-endif
-
 ifdef ENABLE_P0211
 KERNELVERSION := 2.6.32.59_stm24_0211
 endif
