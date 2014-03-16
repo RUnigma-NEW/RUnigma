@@ -23,15 +23,16 @@ COMMONPATCHES_24 = \
 		linux-ftdi_sio.c_stm24$(PATCH_STR).patch \
 		linux-sh4-lzma-fix_stm24$(PATCH_STR).patch \
 		linux-tune_stm24.patch \
-		$(if $(P0211)$(P0212),linux-sh4-mmap_stm24.patch) \
-		$(if $(P0211)$(P0212),linux-sh4-remove_pcm_reader_stm24.patch)
+		linux-sh4-mmap_stm24.patch \
+		linux-sh4-remove_pcm_reader_stm24.patch
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		linux-sh4-hl101_setup_stm24$(PATCH_STR).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24$(PATCH_STR).patch \
 		linux-sh4-i2c-st40-pio_stm24$(PATCH_STR).patch \
-		linux-sh4-hl101_i2c_st40_stm24.patch
+		linux-sh4-hl101_i2c_st40_stm24.patch \
+		$(if $(P0212),gpio$(PATCH_STR).patch)
 
 KERNELPATCHES_24 =  \
 		$(if $(HL101),$(HL101_PATCHES_24))
