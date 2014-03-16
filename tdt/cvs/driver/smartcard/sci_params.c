@@ -20,20 +20,14 @@
 #include "sci.h"
 #include "sci_types.h"
 
-#if defined(CONFIG_CPU_SUBTYPE_STB7100) || defined(CONFIG_CPU_SUBTYPE_STX7100) || defined(CONFIG_SH_ST_MB442) || defined(CONFIG_SH_ST_MB411)
 #include "sci_7100.h"
-#elif defined(CONFIG_CPU_SUBTYPE_STX7111) || defined(CONFIG_SH_ST_MB618)
-#include "sci_7111.h"
-#elif defined(CONFIG_CPU_SUBTYPE_STX7105) || defined(ATEVIO7500)
-#include "sci_7105.h"
-#endif
 
 #define MAIN_FREQ			100000000
-#define MAIN_FREQ_P1		1000
-#define MAIN_FREQ_P2		100000
+#define MAIN_FREQ_P1			1000
+#define MAIN_FREQ_P2			100000
 #define	PW_2_16				65536
 
-#define	THRESHOLD_BAUDRATE	19200
+#define	THRESHOLD_BAUDRATE		19200
 #define	CLOCK_3572			3572000
 #define	CLOCK_417			4166667
 #define	CLOCK_500			5000000
@@ -123,9 +117,7 @@ SCI_ERROR sci_set_para(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_parameters)
         rc = sci_set_para_T    (sci, p_sci_parameters);
         rc = sci_set_para_f    (sci, p_sci_parameters);
         rc = sci_set_para_ETU  (sci, p_sci_parameters);
-#if !defined(SUPPORT_NO_AUTOSET)
         rc = sci_set_para_WWT  (sci, p_sci_parameters);
-#endif
         rc = sci_set_para_CWT  (sci, p_sci_parameters);
         rc = sci_set_para_BWT  (sci, p_sci_parameters);
         rc = sci_set_para_EGT  (sci, p_sci_parameters);
@@ -393,7 +385,7 @@ static SCI_ERROR sci_set_para_ETU_table(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *
 			else /* no datasheet case -> calculate the new baud rate*/
 			{
 				req_baud=sci->WWT;
-				dprintk(4, " ETU=%d,  WWT: %d\n",sci->sci_parameters.ETU, req_baud);
+				dprintk(4, " ETU=%lu,  WWT: %d\n",sci->sci_parameters.ETU, req_baud);
 
 				if( (sci->sci_parameters.ETU>=360) && (sci->sci_parameters.ETU<=384) )
 				{
@@ -588,7 +580,7 @@ SCI_ERROR sci_set_para_WWT(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_paramet
 {
     SCI_ERROR rc = SCI_ERROR_OK;
 
-	dprintk(8, "Setting WWT: %d\n",p_sci_parameters->WWT);
+	dprintk(8, "Setting WWT: %lu\n",p_sci_parameters->WWT);
 
     if((p_sci_parameters->WWT >= SCI_MIN_WWT) && (p_sci_parameters->WWT <= SCI_MAX_WWT))
     {
@@ -806,7 +798,7 @@ SCI_ERROR sci_set_para_class(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_param
 			PDEBUG("WARNING: Set 3 V\n");
 		}
 		else
-			PDEBUG("Card %ld is set 5 V\n",sci);
+			PDEBUG("Card %d is set 5 V\n",sci);
 	}
 	else if(p_sci_parameters->U == SCI_CLASS_B)
     {
@@ -823,7 +815,7 @@ SCI_ERROR sci_set_para_class(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_param
 			PDEBUG("WARNING: Set 3 V\n");
 		}
 		else
-			PDEBUG("Card %ld is set 3 V\n",sci->id);
+			PDEBUG("Card %d is set 3 V\n",sci->id);
 	}
 	else if(p_sci_parameters->U == SCI_CLASS_AB)
     {
@@ -840,7 +832,7 @@ SCI_ERROR sci_set_para_class(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_param
 			PDEBUG("WARNING: Set 3 V\n");
 		}
 		else
-			PDEBUG("Card %ld is set 3 V\n",sci->id);
+			PDEBUG("Card %d is set 3 V\n",sci->id);
 	}
 	else if(p_sci_parameters->U == SCI_UNKNOWN_CLASS)
     {

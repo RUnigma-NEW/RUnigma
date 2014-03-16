@@ -20,13 +20,7 @@
 #ifndef _SCI_H
 #define _SCI_H
 
-#if defined(CONFIG_CPU_SUBTYPE_STB7100) || defined(CONFIG_CPU_SUBTYPE_STX7100) || defined(CONFIG_SH_ST_MB442) || defined(CONFIG_SH_ST_MB411)
 #include "sci_7100.h"
-#elif defined(CONFIG_CPU_SUBTYPE_STX7111) || defined(UFS912) || defined(SPARK) || defined(HS7810A) || defined(HS7110) || defined(WHITEBOX)
-#include "sci_7111.h"
-#elif defined(CONFIG_CPU_SUBTYPE_STX7105) || defined(ATEVIO7500)
-#include "sci_7105.h"
-#endif
 
 #define MYVERSION "1.0.1"
 
@@ -54,11 +48,7 @@
 
 /******* SC generic *******/
 
-#if defined(HL101) || defined(ATEVIO7500) || defined(FORTIS_HDBOX) || defined(CUBEREVO) || defined(ADB_BOX)
 #define SCI_NUMBER_OF_CONTROLLERS   2           /* Num of SC controllers */
-#else
-#define SCI_NUMBER_OF_CONTROLLERS   1           /* Num of SC controllers */
-#endif
 
 #define SCI_BUFFER_SIZE             0x400 		/* 1024 //512 */
 #define SCI_INT_MEM_REG             0x1000
@@ -163,11 +153,7 @@
 
 /******* Char dev driver *******/
 #define DEVICE_NAME			"sc"
-#if defined(FORTIS_HDBOX)
-#define MAJOR_NUM			253	/**< Major num of char dev */
-#else
 #define MAJOR_NUM			169	/**< Major num of char dev */
-#endif
 #define MINOR_START			0	/**< Starting minor for char dev */
 
 /* Ioctl cmd table */
@@ -317,11 +303,11 @@ typedef struct
 /**************************************/
 #define	HW_FIFO_SIZE			16
 /* Used in exclusive mode */
-#define	RX_FULL_IRQ				0x01
+#define	RX_FULL_IRQ			0x01
 #define	TX_EMPTY_IRQ			0x02
 
 /* Usend with both interrupt (rx and tx) */
-#define	RX_FULL_TX_EMPTY_IRQ	0x03
+#define	RX_FULL_TX_EMPTY_IRQ		0x03
 
 /* When there are more 16 bytes to trasmit */
 #define	TX_HALF_EMPTY_IRQ		0x04
@@ -378,6 +364,7 @@ typedef struct
 	struct stpio_pin	*detect;
 	struct stpio_pin	*cmdvcc;
 	struct stpio_pin	*clock;
+	struct stpio_pin	*voltage;
 	struct task_struct  *thread;;
 	unsigned int 		polling;
 } SCI_CONTROL_BLOCK;

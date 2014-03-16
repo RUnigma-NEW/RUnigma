@@ -325,33 +325,64 @@ void set_reg_writeonly16(SCI_CONTROL_BLOCK *sci, BASE_ADDR base_address, ULONG r
 /*******************************/
 static void set_serial_irq(SCI_CONTROL_BLOCK *sci, unsigned char type)
 {
-	if(type==RX_FULL_IRQ)
-	{
-		sci->irq_mode=RX_FULL_IRQ;
-		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, RX_FULL_IRQ , 0x1FF);
-		PDEBUG(" ### Set RX_FULL_IRQ interrupt\n");
-	}
-	else if(type==TX_EMPTY_IRQ)
-	{
-		sci->irq_mode=TX_EMPTY_IRQ;
-		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN,TX_EMPTY_IRQ , 0x1FF);
-		PDEBUG(" ### Set TX_EMPTY_IRQ interrupt\n");
-	}
-	else if(type==RX_FULL_TX_EMPTY_IRQ)
-	{
-		sci->irq_mode=RX_FULL_TX_EMPTY_IRQ;
-		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, RX_FULL_TX_EMPTY_IRQ , 0x1FF);
-		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ interrupt\n");
-	}
-	else if(type==(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ))
-	{
-		sci->irq_mode=(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ);
-		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, (TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ) , 0x1FF);
-		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ and TX_HALF_EMPTY_IRQ interrupt\n");
-	}
-	
-	else
-		PDEBUG("Type of interrupt is not implemented\n");
+  if(sci->id==0)
+  {
+  	if(type==RX_FULL_IRQ)
+  	{
+  		sci->irq_mode=RX_FULL_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, RX_FULL_IRQ , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_IRQ interrupt\n");
+  	}
+  	else if(type==TX_EMPTY_IRQ)
+  	{
+  		sci->irq_mode=TX_EMPTY_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN,TX_EMPTY_IRQ , 0x1FF);
+  		PDEBUG(" ### Set TX_EMPTY_IRQ interrupt\n");
+  	}
+  	else if(type==RX_FULL_TX_EMPTY_IRQ)
+  	{
+  		sci->irq_mode=RX_FULL_TX_EMPTY_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, RX_FULL_TX_EMPTY_IRQ , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ interrupt\n");
+  	}
+  	else if(type==(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ))
+  	{
+  		sci->irq_mode=(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ);
+  		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, (TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ) , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ and TX_HALF_EMPTY_IRQ interrupt\n");
+  	}
+  	else
+  		PDEBUG("Type of interrupt is not implemented\n");
+  }
+  else if(sci->id==1)
+  {
+  	if(type==RX_FULL_IRQ)
+  	{
+  		sci->irq_mode=RX_FULL_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, RX_FULL_IRQ , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_IRQ interrupt\n");
+  	}
+  	else if(type==TX_EMPTY_IRQ)
+  	{
+  		sci->irq_mode=TX_EMPTY_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN,TX_EMPTY_IRQ , 0x1FF);
+  		PDEBUG(" ### Set TX_EMPTY_IRQ interrupt\n");
+  	}
+  	else if(type==RX_FULL_TX_EMPTY_IRQ)
+  	{
+  		sci->irq_mode=RX_FULL_TX_EMPTY_IRQ;
+  		set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, RX_FULL_TX_EMPTY_IRQ , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ interrupt\n");
+  	}
+  	else if(type==(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ))
+  	{
+  		sci->irq_mode=(TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ);
+  		set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, (TX_HALF_EMPTY_IRQ|RX_FULL_TX_EMPTY_IRQ) , 0x1FF);
+  		PDEBUG(" ### Set RX_FULL_TX_EMPTY_IRQ and TX_HALF_EMPTY_IRQ interrupt\n");
+  	}
+  	else
+  		PDEBUG("Type of interrupt is not implemented\n");
+  }
 }
 
 /**
@@ -366,61 +397,51 @@ void smartcard_reset(SCI_CONTROL_BLOCK *sci, unsigned char wait)
     if (sci->id == 0) {
         disable_irq(SCI0_INT_RX_TX);
 
-#if defined(ADB_BOX)
-        /* VCC cmd low */
-        stpio_set_pin(sci->cmdvcc, 0);
-#else
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 1);
-#endif
 
         /* Reset low */
          stpio_set_pin(sci->reset, 0); 
-         mdelay(500); 
+         //mdelay(500);
+				 //change to non Busy-Waiting
+				 msleep(500);
 
-#if defined(ADB_BOX)
-        /* VCC cmd low */
-        stpio_set_pin(sci->cmdvcc, 1);
-#else
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 0);
-#endif
        }
     
     else if (sci->id == 1){
         disable_irq(SCI1_INT_RX_TX);
-#if defined(ADB_BOX)
-        /* VCC cmd low */
-        stpio_set_pin(sci->cmdvcc, 0);
-#else
+
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 1);
-#endif
 
         /* Reset low */
-         stpio_set_pin(sci->reset, 0); 
-         mdelay(500); 
+         stpio_set_pin(sci->reset, 0);
+         //mdelay(500);
+				 //change to non Busy-Waiting
+				 msleep(500);
 
-#if defined(ADB_BOX)
-        /* VCC cmd low */
-        stpio_set_pin(sci->cmdvcc, 1);
-#else
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 0);
-#endif	
+
       } else
 	{
-		PERROR("Invalid SC ID controller '%ld'", sci->id);
+		PERROR("Invalid SC ID controller '%d'", sci->id);
 		return;
 	}
 
-    mdelay(6);
+    //mdelay(6);
+		//change to non Busy-Waiting
+		msleep(6);
     sci->rx_rptr = 0;
 	sci->rx_wptr = 0;
 	sci->tx_rptr = 0;
 	sci->tx_wptr = 0;
     /* Wait 100 ms */
-    mdelay(100);
+		//mdelay(100);
+		//change to non Busy-Waiting
+		msleep(100);
 
     if (sci->id == 0)
     {
@@ -429,7 +450,9 @@ void smartcard_reset(SCI_CONTROL_BLOCK *sci, unsigned char wait)
         set_reg_writeonly(sci, BASE_ADDRESS_ASC0, ASC0_RX_RST, 0xFF);
         set_serial_irq(sci, RX_FULL_IRQ);
         enable_irq(SCI0_INT_RX_TX);
-        mdelay(20);
+				//mdelay(20);
+				//change to non Busy-Waiting
+				msleep(20);
         /* Reset high */
         stpio_set_pin(sci->reset, 1);
     }
@@ -466,7 +489,7 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
         {
             sci->sci_atr_class=SCI_CLASS_B;
 #if !defined(SUPPORT_NO_VOLTAGE)
-#if !defined(SPARK) && !defined(HL101) && !defined(ATEVIO7500) && !defined(ADB_BOX)  // no votage control
+#if !defined(SPARK) && !defined(HL101) && !defined(ATEVIO7500) && !defined(ADB_BOX) && !defined(VITAMIN_HD5000)  // no votage control
             set_reg_writeonly(sci, BASE_ADDRESS_PIO4, PIO_CLR_P4OUT, 0x40);
 #endif
 #endif
@@ -475,7 +498,7 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
         {
             sci->sci_atr_class=SCI_CLASS_A;
 #if !defined(SUPPORT_NO_VOLTAGE)
-#if !defined(SPARK) && !defined(HL101) && !defined(ATEVIO7500) && !defined(ADB_BOX)  // no votage control
+#if !defined(SPARK) && !defined(HL101) && !defined(ATEVIO7500) && !defined(ADB_BOX) && !defined(VITAMIN_HD5000)  // no votage control
             set_reg_writeonly(sci, BASE_ADDRESS_PIO4, PIO_SET_P4OUT, 0x40);
 #endif
 #endif
@@ -527,7 +550,7 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
     }
     else
     {
-        PERROR("Invalid SC ID controller '%ld'", sci->id);
+        PERROR("Invalid SC ID controller '%d'", sci->id);
         return SCI_ERROR_SCI_INVALID;
     }
 
@@ -550,7 +573,9 @@ static INT smartcard_clock_config(SCI_CONTROL_BLOCK *sci, UINT clock)
     if(!SCI_Set_Clock(sci))
     	return SCI_ERROR_VCC_INVALID;
 
-    mdelay(3);
+    //mdelay(3);
+		//change to non Busy-Waiting
+		msleep(3);
     
     return SCI_ERROR_OK;
 }
@@ -623,6 +648,8 @@ irqreturn_t sci_irq1_rx_tx_handler (int irq, void *dev_id)
  * we should use the ctrl regs to disable it.
  */
     disable_irq(SCI1_INT_RX_TX);
+#else
+    set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, 0x00 , 0x1FF);
 #endif
 	res = get_reg(sci, BASE_ADDRESS_ASC1, ASC1_STA);
 
@@ -645,6 +672,8 @@ irqreturn_t sci_irq1_rx_tx_handler (int irq, void *dev_id)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
 /* se below */
 	                enable_irq(SCI1_INT_RX_TX);
+#else
+		              set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, sci->irq_mode , 0x1FF);
 #endif
 	                return IRQ_HANDLED;
 	            }
@@ -689,11 +718,11 @@ irqreturn_t sci_irq1_rx_tx_handler (int irq, void *dev_id)
 			{
 				if(sci->byte_invert==INVERT)
 		        {
-		           	set_reg_writeonly(sci, BASE_ADDRESS_ASC0, ASC0_TX_BUF, (UCHAR)byte_invert[sci->write_buf[sci->tx_wptr]]);
+		           	set_reg_writeonly(sci, BASE_ADDRESS_ASC1, ASC1_TX_BUF, (UCHAR)byte_invert[sci->write_buf[sci->tx_wptr]]);
 				}
 				else
 				{
-					set_reg_writeonly(sci, BASE_ADDRESS_ASC0, ASC0_TX_BUF, (UCHAR)sci->write_buf[sci->tx_wptr]);
+					set_reg_writeonly(sci, BASE_ADDRESS_ASC1, ASC1_TX_BUF, (UCHAR)sci->write_buf[sci->tx_wptr]);
 		        }
 		        sci->tx_wptr++;
 		        sci->rx_wptr++;
@@ -716,11 +745,11 @@ irqreturn_t sci_irq1_rx_tx_handler (int irq, void *dev_id)
 			{
 				if(sci->byte_invert==INVERT)
 		        {
-		           	set_reg_writeonly(sci, BASE_ADDRESS_ASC0, ASC0_TX_BUF, (UCHAR)byte_invert[sci->write_buf[sci->tx_wptr]]);
+		           	set_reg_writeonly(sci, BASE_ADDRESS_ASC1, ASC1_TX_BUF, (UCHAR)byte_invert[sci->write_buf[sci->tx_wptr]]);
 				}
 				else
 				{
-					set_reg_writeonly(sci, BASE_ADDRESS_ASC0, ASC0_TX_BUF, (UCHAR)sci->write_buf[sci->tx_wptr]);
+					set_reg_writeonly(sci, BASE_ADDRESS_ASC1, ASC1_TX_BUF, (UCHAR)sci->write_buf[sci->tx_wptr]);
 		        }
 		        sci->tx_wptr++;
 		        sci->rx_wptr++;
@@ -733,6 +762,8 @@ irqreturn_t sci_irq1_rx_tx_handler (int irq, void *dev_id)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
 /* se below */
     enable_irq(SCI1_INT_RX_TX);
+#else
+		set_reg(sci, BASE_ADDRESS_ASC1, ASC1_INT_EN, sci->irq_mode , 0x1FF);
 #endif
 
     return IRQ_HANDLED;
@@ -759,6 +790,8 @@ irqreturn_t sci_irq0_rx_tx_handler (int irq, void *dev_id)
  * we should use the ctrl regs to disable it.
  */
     disable_irq(SCI0_INT_RX_TX);
+#else
+		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, 0x00, 0x1FF);
 #endif
 	res = get_reg(sci, BASE_ADDRESS_ASC0, ASC0_STA);
 
@@ -781,6 +814,8 @@ irqreturn_t sci_irq0_rx_tx_handler (int irq, void *dev_id)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
 /* se below */
 	                enable_irq(SCI0_INT_RX_TX);
+#else
+									set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, sci->irq_mode , 0x1FF);
 #endif
 	                return IRQ_HANDLED;
 	            }
@@ -871,6 +906,8 @@ irqreturn_t sci_irq0_rx_tx_handler (int irq, void *dev_id)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,32)
 /* se below */
     enable_irq(SCI0_INT_RX_TX);
+#else
+		set_reg(sci, BASE_ADDRESS_ASC0, ASC0_INT_EN, sci->irq_mode , 0x1FF);
 #endif
 	dprintk(8," OK\n");
 
@@ -880,20 +917,17 @@ irqreturn_t sci_irq0_rx_tx_handler (int irq, void *dev_id)
 static void sci_detect_change(SCI_CONTROL_BLOCK *sci)
 {
     /* Debounce time for the OFF pin in the TDA8024 */
-    mdelay(8);
+		//mdelay(8);
+		//change to non Busy-Waiting
+		msleep(8);
 
     if (sci->card_detect == SCI_CARD_NOT_PRESENT)
     {
         dprintk(1, "Removing Smartcard %d!\n", sci->id);
 
 		sci->atr_status = SCI_WITHOUT_ATR;
-#if defined(ADB_BOX)
-        /* VCC cmd low */
-        stpio_set_pin(sci->cmdvcc, 0);
-#else
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 1);
-#endif
         sci_hw_init(sci);
 
         memset(sci->read_buf, 0, SCI_BUFFER_SIZE);
@@ -911,11 +945,7 @@ static void sci_detect_change(SCI_CONTROL_BLOCK *sci)
     {
         dprintk(1, "Inserting Smartcard %d!\n", sci->id);
         sci_hw_init(sci);
-#if defined(ADB_BOX)
-	stpio_set_pin(sci->cmdvcc, 1);
-#else
 	stpio_set_pin(sci->cmdvcc, 0);
-#endif
     
     }
 }
@@ -981,7 +1011,6 @@ SCI_ERROR sci_hw_init(SCI_CONTROL_BLOCK *sci)
         set_reg(sci, BASE_ADDRESS_ASC0, ASC0_CTRL, 0x2787, 0x3FFF);
         set_reg(sci, BASE_ADDRESS_ASC0, ASC0_BAUDRATE, 0x28B, 0xFFFF);
         set_reg(sci, BASE_ADDRESS_ASC0, ASC0_GUARDTIME, GT_DEFAULT, 0x1FF);
-                
         smartcard_voltage_config(sci, SCI_VCC_5);
     } 
     else if (sci->id == 1)
@@ -1080,7 +1109,7 @@ void sci_exit (void)
 
 	    //wait thread stop
 	    while(!sci->polling)
-	    {mdelay(1);}
+	    {/*mdelay(1); change to non Busy-Waiting*/ msleep(1);}
 
 		PDEBUG("[SCI %d] thread stopped\n", sci->id);
 
@@ -1090,14 +1119,12 @@ void sci_exit (void)
 			free_irq(SCI1_INT_RX_TX, NULL);
 
 		SCI_ClockDisable(sci);
-		mdelay(10);
+		//mdelay(10);
+		//change to non Busy-Waiting
+		msleep(10);
 
 	    if(sci->cmdvcc!= NULL) {
-#if defined(ADB_BOX)
-	    	stpio_set_pin(sci->cmdvcc, 0); // active low
-#else
 		stpio_set_pin(sci->cmdvcc, 1);
-#endif
 	    	stpio_free_pin (sci->cmdvcc);
 	    	sci->cmdvcc=NULL;
 	    }
@@ -1126,6 +1153,11 @@ void sci_exit (void)
 	    	stpio_free_pin (sci->txd);
 	    	sci->txd=NULL;
 	    }
+
+	    if(sci->voltage!= NULL) {
+	    	stpio_free_pin (sci->voltage);
+	    	sci->voltage=NULL;
+	    }
 	}
 	sci_driver_init=0;
 }
@@ -1138,7 +1170,6 @@ static int SCI_SetClockSource(SCI_CONTROL_BLOCK *sci)
 	U32 reg_address = 0;
 	U32 val = 0;
 
-#if defined(CONFIG_CPU_SUBTYPE_STB7100) || defined(CONFIG_CPU_SUBTYPE_STX7100) || defined(CONFIG_SH_ST_MB442) || defined(CONFIG_SH_ST_MB411) || defined(CONFIG_CPU_SUBTYPE_STX7111) || defined(HS7810A) || defined(HS7110) || defined(WHITEBOX) || defined(UFS912) || defined(SPARK) 
 	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG7, 4);
 	if(!reg_address)
 		return 0;
@@ -1146,80 +1177,16 @@ static int SCI_SetClockSource(SCI_CONTROL_BLOCK *sci)
 	val = ctrl_inl(reg_address);
 	val|=0x1B0;
 
-#ifdef CUBEBOX
-	/* configure SC0_nSETVCC: derived from SC0_DETECT input */
-	val |= (1 << 7);
-#else
 	val &= ~(1 << 7);
-#endif
 	/* set polarity of SC0_nSETVCC: SC0_nSETVCC = NOT(SC0_DETECT) */
 	val |= (1 << 8);
 	ctrl_outl(val, reg_address);
 
 	iounmap((void *)reg_address);
 
-#if defined(CONFIG_CPU_SUBTYPE_STX7111) || defined(UFS912) || defined(SPARK) || defined(HS7810A) || defined(HS7110) || defined(WHITEBOX)
-	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG5, 4);
-	if(!reg_address)
-		return 0;
-#endif
-
 	val = ctrl_inl(reg_address);
 	ctrl_outl(val&~(1<<23), reg_address);
 	iounmap((void *)reg_address);
-#endif
-
-#if defined(CONFIG_CPU_SUBTYPE_STX7105) || defined(ATEVIO7500)
-	reg_address = (U32)checked_ioremap(EPLD_BASE_ADDRESS/+EPLD_SCREG, 4);
-	if(reg_address) {
-		val = ctrl_inl(reg_address);
-		val = (val & ~0x77) | 0x77;
-		ctrl_outl(val, reg_address);
-		iounmap((void *)reg_address);
-	}
-
-	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG7, 4);
-	if(!reg_address)
-		return 0;
-	val = ctrl_inl(reg_address);
-	val = (val & ~0xdf8) | 0xdf8;
-#ifdef STX7105_SETPOWERLOW
-	val &= ~(1 << 7);
-	val &= ~(1 << 11);
-	val |= (1 << 3);
-	val |= (1 << 8);
-#endif
-	ctrl_outl(val, reg_address);
-	iounmap((void *)reg_address);
-
-	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG19, 4);
-	if(!reg_address)
-		return 0;
-	val = ctrl_inl(reg_address);
-	val = (val & ~0xff00) | 0xff00;
-	ctrl_outl(val, reg_address);
-	iounmap((void *)reg_address);
-
-
-	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG20, 4);
-	if(!reg_address)
-		return 0;
-	val = ctrl_inl(reg_address);
-	val = (val & ~0xff00) | 0xff00;
-	ctrl_outl(val, reg_address);
-	iounmap((void *)reg_address);
-
-#ifdef STX7105_SETPOWERLOW
-	reg_address = (U32)checked_ioremap(SYS_CFG_BASE_ADDRESS+SYS_CFG7, 4);
-	if(!reg_address)
-		return 0;
-	val = ctrl_inl(reg_address);
-	ctrl_outl(val&~(1<<23), reg_address);
-	iounmap((void *)reg_address);
-#endif
-
-#endif
-
 
     /* Configure smartcard control register */
 	reg_address = (U32)checked_ioremap(sci->base_address_sci+4, 4); // SCI_n_CLK_CTRL
@@ -1277,7 +1244,7 @@ static int SCI_ClockDisable(SCI_CONTROL_BLOCK *sci)
 
 static int SCI_Set_Clock(SCI_CONTROL_BLOCK *sci)
 {
-	dprintk(1, "Setting clock to: %lu.%02luMhz\n",
+	dprintk(1, "Setting clock to: %u.%02uMhz\n",
 		       sci->clk/100, sci->clk % 100);
 
 	U32 val;
@@ -1308,13 +1275,16 @@ static int SCI_IO_init(SCI_CONTROL_BLOCK *sci)
 {
 	PDEBUG(" ...\n");
 
-    sci->txd    = stpio_request_pin(sci->pio_port, 0, "sc_io",    STPIO_ALT_BIDIR);
-    sci->rxd    = stpio_request_pin(sci->pio_port, 1, "sc_rxd",   STPIO_IN);
+    sci->txd    	= stpio_request_pin(sci->pio_port, 0, "sc_io",    STPIO_ALT_BIDIR);/* ist koreckt */
+    sci->rxd    	= stpio_request_pin(sci->pio_port, 1, "sc_rxd",   STPIO_IN); 	   /* ist koreckt */
+    sci->clock  	= stpio_request_pin(sci->pio_port, 3, "sc_clock", STPIO_ALT_OUT);  /* ist koreckt */
+    sci->reset  	= stpio_request_pin(sci->pio_port, 4, "sc_reset", STPIO_OUT);	   /* ist koreckt */
+    sci->cmdvcc 	= stpio_request_pin(sci->pio_port, 5, "sc_cmdvcc",STPIO_OUT); 	   /* ist koreckt */
+    sci->voltage 	= stpio_request_pin(sci->pio_port, 6, "sc_volt",STPIO_IN);	   /* ist koreckt */
+    sci->detect 	= stpio_request_pin(sci->pio_port, 7, "sc_detect",STPIO_IN);	   /* ist koreckt */
 
-	sci->clock  = stpio_request_pin(sci->pio_port, 3, "sc_clock", STPIO_ALT_OUT);
-    sci->reset  = stpio_request_pin(sci->pio_port, 4, "sc_reset", STPIO_OUT);
-    sci->detect = stpio_request_pin(sci->pio_port, 7, "sc_detect",STPIO_IN);
-    sci->cmdvcc = stpio_request_pin(sci->pio_port, 5, "sc_cmdvcc",STPIO_OUT); // must be after detect
+    /* Enable SCI Voltage clock 3V/5V */
+    stpio_set_pin(sci->voltage, 1);
 
     if(!SCI_SetClockSource(sci)) return 0;
     if(!SCI_ClockEnable(sci)) return 0;
@@ -1330,12 +1300,7 @@ void sci_detect_handler (void *params)
     int last_status=0;
 
     sci->polling =1;
-#if defined(ADB_BOX)
-    /* VCC cmd low */
-    stpio_set_pin(sci->cmdvcc, 0);
-#else
     stpio_set_pin(sci->cmdvcc, 1);
-#endif
 
 	PDEBUG(" sci %d...\n", sci->id);
 
@@ -1393,6 +1358,10 @@ SCI_ERROR sci_init(void)
             sci->base_address_sci     = (ULONG)SCI1_BASE_ADDRESS;
             sci->base_address_pio4    = (ULONG)PIO3_BASE_ADDRESS;
             sci->pio_port = 1;
+            
+            set_reg(sci, BASE_ADDRESS_ASC1, ASC1_CTRL, 0x2787, 0x3FFF);
+            set_reg(sci, BASE_ADDRESS_ASC1, ASC1_BAUDRATE, 0x28B, 0xFFFF);
+            set_reg(sci, BASE_ADDRESS_ASC1, ASC1_GUARDTIME, GT_DEFAULT, 0x1FF);
         }
     
         sci->base_address_syscfg = (ULONG)SYS_CFG_BASE_ADDRESS;
@@ -1523,6 +1492,7 @@ SCI_ERROR sci_read_buf (SCI_CONTROL_BLOCK *sci, UCHAR **p_buffer, ULONG num_byte
 SCI_ERROR sci_deactivate(SCI_CONTROL_BLOCK *sci)
 {
     SCI_ERROR rc = SCI_ERROR_OK;
+
 #if 0
     PDEBUG("card[%d] enter\n", (UINT) sci_id);
 
@@ -1588,16 +1558,11 @@ SCI_ERROR sci_reset(SCI_CONTROL_BLOCK *sci)
     SCI_CHECK_INIT_COND(sci->id, rc);
     if (rc != SCI_ERROR_OK)
     {
-        PDEBUG("sc[%d] error=%d\n", sci->id, rc);
+		    PDEBUG("sc[%d] error=%d\n", sci->id, rc);
         return rc;
     }
     /* FIXME: Add wake_up_interruptible() */
-#if defined(ADB_BOX)
-    /* VCC cmd low  (active) */
-    stpio_set_pin(sci->cmdvcc, 1);
-#else
     stpio_set_pin(sci->cmdvcc, 0);
-#endif
 
     smartcard_reset(sci, 0);
     
@@ -1901,7 +1866,7 @@ static int sci_open(struct inode *inode, struct file *filp)
     ULONG sci_id = MINOR(inode->i_rdev);
     int rc = 0;
 
-    dprintk(1, "Opening device sci%d!\n",sci_id);
+    dprintk(1, "Opening device sci%ld!\n",sci_id);
 
     if (sci_id < SCI_NUMBER_OF_CONTROLLERS)
     {
@@ -1920,7 +1885,7 @@ static int sci_open(struct inode *inode, struct file *filp)
     }
     else
     {
-        dprintk(1, "Couldn't open device for sc[%d]\n", sci_id);
+        dprintk(1, "Couldn't open device for sc[%ld]\n", sci_id);
         rc = -ENODEV;
     }
 
@@ -1939,7 +1904,7 @@ static int sci_close(struct inode *inode, struct file *filp)
     ULONG sci_id = MINOR(inode->i_rdev);
     int rc = 0;
 
-    dprintk(1, "Closing device sci%d!\n", sci_id);
+    dprintk(1, "Closing device sci%ld!\n", sci_id);
 
     if (sci_id < SCI_NUMBER_OF_CONTROLLERS)
     {
@@ -1954,15 +1919,11 @@ static int sci_close(struct inode *inode, struct file *filp)
         	dprintk(1,"sc[%d] device is not opend: %d\n", sci->id, sci->driver_inuse);
             rc = -EINVAL;
         }
-#if defined(ADB_BOX)
-        stpio_set_pin(sci->cmdvcc, 0); // disable TDA8024
-#else
         stpio_set_pin(sci->cmdvcc, 1);
-#endif
     }
     else
     {
-        dprintk(1,"Couldn't close sc[%d]\n", sci_id);
+        dprintk(1,"Couldn't close sc[%ld]\n", sci_id);
         rc = -ENODEV;
     }
 
@@ -1994,7 +1955,9 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 		{
 			return -EWOULDBLOCK;
 		}
-		mdelay(57);
+		//mdelay(57);
+		//change to non Busy-Waiting
+		//msleep(57);
 	}
 
 	if(sci->card_detect!=SCI_CARD_PRESENT)
@@ -2007,8 +1970,10 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 		if(real_num_bytes<length)
 		{
 			unsigned char cnt_tmp=0;
-			do{	
-				mdelay(10);
+			do{
+				//mdelay(10);
+				//change to non Busy-Waiting
+				//msleep(10);
 				cnt_tmp++;
 				real_num_bytes=sci->rx_rptr - sci->rx_wptr;
 			}while ( (real_num_bytes<length) && (cnt_tmp<100) );	/* Wait a second */
@@ -2028,7 +1993,9 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 	{
 		sci->rx_wptr=0;
 		sci->rx_rptr=0;
-		mdelay(3);   /*Hellmaster1024: on Atevio we seem to have some timing probs without that delay */
+		//mdelay(3);   /*Hellmaster1024: on Atevio we seem to have some timing probs without that delay */
+		//change to non Busy-Waiting
+		msleep(3);
 
 	}
 	return (ssize_t) real_num_bytes;
@@ -2058,7 +2025,9 @@ static ssize_t sci_write(struct file *file, const char *buffer, size_t length, l
 		{
 			return -EWOULDBLOCK;
 		}
-		mdelay(57);
+		//mdelay(57);
+		//change to non Busy-Waiting
+		//msleep(57);
 	}
 	
 	if(sci->card_detect!=SCI_CARD_PRESENT)
@@ -2115,7 +2084,7 @@ void parse_atr(SCI_CONTROL_BLOCK *sci)
 	sci->WWT   =(sci->CLOCK*(sci->DI/1000000)/sci->FI);
 	sci->ETU   = sci->CLOCK/sci->WWT;
 
-	dprintk(4, "FI=%d  DI=%lu.%02lu  ETU=%d  WWT=%d  Clock=%dHz\n",	sci->FI,
+	dprintk(4, "FI=%ld  DI=%lu.%02lu  ETU=%ld  WWT=%ld  Clock=%ldHz\n",	sci->FI,
 			(sci->DI/1000000),(sci->DI/10000)%100,
 			sci->ETU,sci->WWT,sci->CLOCK);
 }
@@ -2162,14 +2131,16 @@ static int detect_ATR(SCI_CONTROL_BLOCK *sci)
 	{
 		return -1;
 	}
-	
+
 	if ( sci_reset(sci) == SCI_ERROR_OK )
 		rc = 0;
 	else
 		rc = -1;
-	mdelay(1100);
+	//mdelay(1100);
+	//change to non Busy-Waiting
+	msleep(1100);
 
-	/* Change the clock */
+	// Change the clock
 	if( (sci->read_buf[sci->rx_wptr]!=0x3B) && (sci->read_buf[sci->rx_wptr]!=0x3F) )
 	{
 		memset(sci->read_buf, 0, SCI_BUFFER_SIZE);
@@ -2186,8 +2157,11 @@ static int detect_ATR(SCI_CONTROL_BLOCK *sci)
 			rc = 0;
 		else
 			rc = -1;
-		mdelay(750);
+		//mdelay(750);
+		//change to non Busy-Waiting
+		msleep(750);
 	}
+
 	return (rc);
 }
 /*****************************************************/
@@ -2238,10 +2212,10 @@ int sci_ioctl(struct inode *inode,
 				return -1;
 
 			rc=detect_ATR(sci);
-			
-			/* Check the ATR and change the voltage for hw security */
+
+			// Check the ATR and change the voltage for hw security
 			check_atr(sci);
-			/* Set the parity */
+			// Set the parity
 			if (sci->byte_invert==INVERT)
 			{
 				if(sci_id==0)
@@ -2266,12 +2240,8 @@ int sci_ioctl(struct inode *inode,
 			}
 			if(rc || !sci->WWT)
 			{
-			#if defined(ADB_BOX)
-			    stpio_set_pin(sci->cmdvcc, 0);
-			#else
-			    stpio_set_pin(sci->cmdvcc, 1);
-			#endif
-	            dprintk(1, "no atr detected!\n");
+			stpio_set_pin(sci->cmdvcc, 1);
+			dprintk(1, "no atr detected!\n");
 			}
 
            break;
@@ -2315,7 +2285,7 @@ int sci_ioctl(struct inode *inode,
 
             if (sci_set_parameters(sci, &sci_param) == SCI_ERROR_OK){
                 rc = 0;
-		dprintk(1, "f is set to %d\n", sci_param.f);
+		dprintk(1, "f is set to %lu\n", sci_param.f);
 		switch(sci_param.f){
 			case 3:
 				smartcard_clock_config(sci,357);
