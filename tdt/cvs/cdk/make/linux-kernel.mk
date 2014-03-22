@@ -53,10 +53,10 @@ $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
 
 KERNELHEADERS := linux-kernel-headers
 ifdef ENABLE_P0211
-KERNELHEADERS_VERSION := 2.6.32.46-47
+KERNELHEADERS_VERSION := 2.6.32.46-48
 else
 ifdef ENABLE_P0213
-KERNELHEADERS_VERSION := 2.6.32.46-47
+KERNELHEADERS_VERSION := 2.6.32.46-48
 endif
 endif
 
