@@ -70,7 +70,7 @@ echo ""
 echo -e "Ядро:"
 echo "---------------------------------------"
 echo "   1) STM 24 P0211"
-echo "   2) STM 24 P0212"
+echo "   2) STM 24 P0213"
 case $2 in
         [1-2]) REPLY=$2
         echo -e "\nВыбранное ядро: $REPLY\n"
@@ -80,7 +80,7 @@ case $2 in
 esac
 case "$REPLY" in
 	1) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
-	2) KERNEL="--enable-stm24 --enable-p0212";STMFB="stm24";;
+	2) KERNEL="--enable-stm24 --enable-p0213";STMFB="stm24";;
 	*) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
 esac
 #KERNEL="--enable-stm24 --enable-p0211"
