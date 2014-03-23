@@ -24,6 +24,7 @@ COMMONPATCHES_24 = \
 		linux-sh4-lzma-fix_stm24$(PATCH_STR).patch \
 		linux-tune_stm24.patch \
 		linux-sh4-mmap_stm24.patch \
+		linux-sh4-permit_gcc_command_line_sections_stm24.patch \
 		linux-sh4-remove_pcm_reader_stm24.patch
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
