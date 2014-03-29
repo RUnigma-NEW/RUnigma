@@ -61,4 +61,14 @@
  $configure_ac = require_configure_ac;
  
  # We may have to rerun aclocal if some file have been installed, but
-
+--- automake-1.11.1.orig/lib/Automake/Config.in	2009-12-08 19:02:32.000000000 +0100
++++ automake-1.11.1/lib/Automake/Config.in	2014-03-04 17:58:02.108004908 +0100
+@@ -28,7 +28,7 @@
+ our $APIVERSION = '@APIVERSION@';
+ our $PACKAGE = '@PACKAGE@';
+ our $VERSION = '@VERSION@';
+-our $libdir = '@datadir@/@PACKAGE@-@APIVERSION@';
++our $libdir = $ENV{'automake_perlibdir'} || '@datadir@/@PACKAGE@-@APIVERSION@';
+ our $perl_threads = @PERL_THREADS@;
+ 
+ 1;;

@@ -10,20 +10,13 @@
 \
 --- a/alternativesoftcammanager/src/Manager.py
 +++ b/alternativesoftcammanager/src/Manager.py
-@@ -1,5 +1,5 @@
- from . import _
--import Softcam
-+from . import Softcam
- 
- from Components.ActionMap import ActionMap
- from Components.config import config, getConfigListEntry
-@@ -218,7 +218,7 @@
+@@ -184,7 +184,7 @@
  		if self.iscam and self.finish:
  			self.camstart = self["list"].getCurrent()[0]
  			if self.camstart != self.actcam:
 -				print "[Alternative SoftCam Manager] Start SoftCam"
 +				print("[Alternative SoftCam Manager] Start SoftCam")
- 				self.camstartcmd = Softcam.getcamcmd(self.camstart)
+ 				self.camstartcmd = getcamcmd(self.camstart)
  				msg = _("Starting %s") % self.camstart
  				self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 @@ -239,7 +239,7 @@
@@ -47,14 +40,14 @@
 --- a/alternativesoftcammanager/src/Softcam.py
 +++ b/alternativesoftcammanager/src/Softcam.py
 @@ -47,7 +47,7 @@
+ 		cmd = config.plugins.AltSoftcam.camdir.value + "/" + cam + " stop"
  	else:
  		cmd = "killall -15 " + cam
- 	Console().ePopen(cmd)
 -	print "[Alternative SoftCam Manager] stopping", cam
 +	print("[Alternative SoftCam Manager] stopping", cam)
+ 	Console().ePopen(cmd)
  	try:
  		remove("/tmp/ecm.info")
- 	except:
 @@ -61,7 +61,7 @@
  			try:
  				mkdir(dir)
@@ -64,33 +57,6 @@
  
  def checkconfigdir():
  	if not path.exists(config.plugins.AltSoftcam.camconfig.value):
---- a/alternativesoftcammanager/src/plugin.py
-+++ b/alternativesoftcammanager/src/plugin.py
-@@ -1,5 +1,5 @@
- from . import _
--import Softcam
-+from . import Softcam
- 
- from Components.config import config, ConfigSubsection, ConfigText
- from Components.Console import Console
-@@ -19,7 +19,7 @@
- Softcam.checkconfigdir()
- 
- def main(session, **kwargs):
--	import Manager
-+	from . import Manager
- 	session.open(Manager.AltCamManager)
- 
- EnigmaStart = False
-@@ -33,7 +33,7 @@
- 			try:
- 				cmd = Softcam.getcamcmd(config.plugins.AltSoftcam.actcam.value)
- 				Console().ePopen(cmd)
--				print "[Alternative SoftCam Manager] ", cmd
-+				print("[Alternative SoftCam Manager] ", cmd)
- 			except:
- 				pass
- 		elif reason == 1 and EnigmaStart == True: # Enigma stop
 --- a/antiscrollbar/src/plugin.py
 +++ b/antiscrollbar/src/plugin.py
 @@ -30,7 +30,7 @@
@@ -4243,10 +4209,10 @@
  			debug("[nrzuname] html2utf8: ValueError " + repr(key) + ":" + repr(codepoint) + " (" + str(e) + ")")
  	return in_html
  
-@@ -118,7 +118,7 @@
+@@ -121,7 +121,7 @@
  	print(name)
  
- def simpleout(number, caller): #@UnusedVariable # pylint: disable-msg=W0613
+ def simpleout(number, caller): #@UnusedVariable # pylint: disable=W0613
 -	print caller
 +	print(caller)
  
@@ -4278,19 +4244,15 @@
  			self.nextWebsiteNo = 1
 --- a/fritzcall/src/plugin.py
 +++ b/fritzcall/src/plugin.py
-@@ -43,11 +43,11 @@
- from twisted.protocols.basic import LineReceiver #@UnresolvedImport
- from twisted.web.client import getPage #@UnresolvedImport
+@@ -56,8 +56,8 @@
  
--from urllib import urlencode 
-+from urllib.parse import urlencode 
- import re, time, os, hashlib, traceback
+ import re, time, os, traceback
  
--from nrzuname import ReverseLookupAndNotifier, html2unicode
+-from nrzuname import ReverseLookupAndNotifier
 -import FritzOutlookCSV, FritzLDIF
-+from .nrzuname import ReverseLookupAndNotifier, html2unicode
++from . nrzuname import ReverseLookupAndNotifier
 +from . import FritzOutlookCSV, FritzLDIF
- from . import _, initDebug, debug #@UnresolvedImport # pylint: disable=E0611,F0401
+ from . import _, __, initDebug, debug #@UnresolvedImport # pylint: disable=W0611,F0401
  
  from enigma import getDesktop
 @@ -131,18 +131,18 @@
@@ -4336,23 +4298,6 @@
  		for cbc in cbcInfos[countrycode]:
  			if len(cbc.getElementsByTagName("length"))<1 or len(cbc.getElementsByTagName("prefix"))<1:
  				debug("[FritzCall] stripCbCPrefix: entries for " + countrycode + " %s invalid")
-@@ -757,13 +757,13 @@
- 			
- 		callListL = []
- 		if config.plugins.FritzCall.filter.value and config.plugins.FritzCall.filterCallList.value:
--			filtermsns = map(lambda x: x.strip(), config.plugins.FritzCall.filtermsn.value.split(","))
-+			filtermsns = [x.strip() for x in config.plugins.FritzCall.filtermsn.value.split(",")]
- 			debug("[FritzCallFBF] _gotPageCalls: filtermsns %s" % (repr(filtermsns)))
- 
- 		# Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer
- 		# 0  ;1	;2   ;3		;4		  ;5			   ;6
--		lines = map(lambda line: line.split(';'), lines)
--		lines = filter(lambda line: (len(line)==7 and (line[0]=="Typ" or self._callType == '.' or line[0] == self._callType)), lines)
-+		lines = [line.split(';') for line in lines]
-+		lines = [line for line in lines if (len(line)==7 and (line[0]=="Typ" or self._callType == '.' or line[0] == self._callType))]
- 
- 		for line in lines:
- 			# debug("[FritzCallFBF] _gotPageCalls: line %s" % (line))
 @@ -1637,7 +1637,7 @@
  		self._wlanActive = (wlanState[0] == '1')
  		self._mailboxActive = False
@@ -4366,8 +4311,8 @@
  					else:
  						self["FBFMailbox"].setText(str(tamActive[0]) + ' ' + _('mailboxes active') + ' ' + message)
  	
--			if fritzbox.info[FBF_dectActive] and dectActive and self.has_key("dect_inactive"):
-+			if fritzbox.info[FBF_dectActive] and dectActive and "dect_inactive" in self:
+-			if dectActive and self.has_key("dect_inactive"):
++			if dectActive and "dect_inactive" in self:
  				self["dect_inactive"].hide()
  				self["dect_active"].show()
  				if dectActive == 0:
@@ -4889,60 +4834,15 @@
  
 --- a/hddmanager/src/plugin.py
 +++ b/hddmanager/src/plugin.py
-@@ -37,8 +37,8 @@
- 					des = str(size / 1024) + "MB"
- 				device.append(parts[3] + "  " + des)
- 		f.close()
--	except IOError, ex:
--		print "[HddManager] Failed to open /proc/partitions", ex
-+	except IOError as ex:
-+		print("[HddManager] Failed to open /proc/partitions", ex)
- 	return device
- 
- def ReadMounts():
-@@ -47,8 +47,8 @@
- 		f = open("/proc/mounts", "r")
- 		result = [line.strip().split(' ') for line in f]
- 		f.close()
--	except IOError, ex:
--		print "[HddManager] Failed to open /proc/mounts", ex
-+	except IOError as ex:
-+		print("[HddManager] Failed to open /proc/mounts", ex)
- 	for item in result:
- 		item[1] = item[1].replace('\\040', ' ')
- 	return result
-@@ -79,9 +79,9 @@
- 			if not os.path.exists(dir):
- 				try:
- 					os.mkdir(dir)
--					print "[HddManager] mkdir", dir
-+					print("[HddManager] mkdir", dir)
- 				except:
--					print "[HddManager] Failed to mkdir", dir
-+					print("[HddManager] Failed to mkdir", dir)
- 		if os.path.exists("/bin/ntfs-3g"):
- 			self.Console.ePopen("sfdisk -l /dev/sd? | grep NTFS", self.CheckNtfs, [device, dirpath])
- 		else:
-@@ -102,7 +102,7 @@
- 
- 	def StartMount(self, cmd):
- 		self.Console.ePopen(cmd)
--		print "[HddManager]", cmd
-+		print("[HddManager]", cmd)
- 
- MountDeviceInstance = None
- 
-@@ -162,8 +162,8 @@
- 						if device.startswith(line[5:9]):
- 							self.swap = device
- 			f.close()
--		except IOError, ex:
--			print "[HddManager] Failed to open /proc/swaps", ex
-+		except IOError as ex:
-+			print("[HddManager] Failed to open /proc/swaps", ex)
- 		self.CreateList()
- 
- 	def CreateList(self):
+@@ -79,7 +79,7 @@
+ 				else:
+ 					enableswap = True
+ 		if config.plugins.HddMount.MountOnStart.value:
+-			print "[HddManager] MountOnStart"
++			print("[HddManager] MountOnStart")
+ 			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
+ 				config.plugins.HddMount.MountOnMovie.value, enableswap)
+ 		elif enableswap:
 --- a/httpproxy/src/plugin.py
 +++ b/httpproxy/src/plugin.py
 @@ -59,13 +59,13 @@
@@ -4995,13 +4895,9 @@
  from Plugins.Plugin import PluginDescriptor
  from Tools.Downloader import downloadWithProgress
  from enigma import ePicLoad, eServiceReference
-@@ -20,17 +20,17 @@
- from Components.config import config, ConfigSubsection, ConfigYesNo
- from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN_IMAGE
- from os import environ as os_environ
--from NTIVirtualKeyBoard import NTIVirtualKeyBoard
-+from .NTIVirtualKeyBoard import NTIVirtualKeyBoard
- import re
+@@ -23,14 +23,14 @@
+ from Screens.VirtualKeyBoard import VirtualKeyBoard
+ import os, re
  try:
 -	import htmlentitydefs
 -	from urllib import quote_plus
@@ -5028,7 +4924,7 @@
  
  		entities = re.finditer('&#x([0-9A-Fa-f]{2,2}?);', in_html)
  		for x in entities:
-@@ -438,12 +438,12 @@
+@@ -451,12 +451,12 @@
  
  		if re.search("charset=utf-8", in_html):
  			for key, codepoint in iteritems(entitydict):
@@ -5040,9 +4936,9 @@
  		for key, codepoint in iteritems(entitydict):
 -			in_html = in_html.replace(key, unichr(int(codepoint)).encode('latin-1', 'ignore'))
 +			in_html = in_html.replace(key, chr(int(codepoint)).encode('latin-1', 'ignore'))
- 
  		self.inhtml = in_html.decode('latin-1').encode('utf8')
  
+ 	def IMDBquery(self,string):
 --- a/infobartunerstate/src/IBTSConfiguration.py
 +++ b/infobartunerstate/src/IBTSConfiguration.py
 @@ -30,7 +30,7 @@
@@ -5696,10 +5592,10 @@
  					result += x in range(6) and {0:'1/2',1:'2/3',2:'3/4',3:'5/6',4:'7/8',5:'Auto'}[x] or ''
 --- a/libgisclubskin/src/Converter/ServiceOrbitalPosition2.py
 +++ b/libgisclubskin/src/Converter/ServiceOrbitalPosition2.py
-@@ -23,7 +23,7 @@
- 			transponder_info = info.getInfoObject(ref, iServiceInformation.sTransponderData)
- 		else:
- 			transponder_info = info.getInfoObject(iServiceInformation.sTransponderData)
+@@ -30,7 +30,7 @@
+ 				return _("Stream")
+ 			if refString.startswith("1:134:"):
+ 				return _("Altern")
 -		if transponder_info and "orbital_position" in transponder_info.keys():
 +		if transponder_info and "orbital_position" in list(transponder_info.keys()):
  			pos = int(transponder_info["orbital_position"])
@@ -6336,26 +6232,6 @@
  
  def main(session):
  	session.open(MovieEpgSetup)
---- a/movielistpreview/src/plugin.py
-+++ b/movielistpreview/src/plugin.py
-@@ -278,7 +278,7 @@
- 
- 	def grabDone(self, result, retval, extra_args):
- 		if retval != 0:
--			print result
-+			print(result)
- 		if self.callback:
- 			self.callback()
- previewcreator = PreviewCreator()
-@@ -539,7 +539,7 @@
- 	Show2 = MovieSelectionSP.show
- 	MovieSelectionSP.show = showMovieSelection2
- except ImportError:
--	print "[Movielist Preview] Could not import Suomipoeka Plugin, maybe not installed or too old version?"
-+	print("[Movielist Preview] Could not import Suomipoeka Plugin, maybe not installed or too old version?")
- 
- ##############################################################################
- 
 --- a/movieretitle/src/__init__.py
 +++ b/movieretitle/src/__init__.py
 @@ -10,7 +10,7 @@
@@ -6780,8 +6656,9 @@
  
 --- a/mytube/src/MyTubeSearch.py
 +++ b/mytube/src/MyTubeSearch.py
-@@ -1,5 +1,5 @@
- from enigma import eListboxPythonMultiContent, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, gFont, eTimer
+@@ -1,6 +1,6 @@
+ from . import _
+ from enigma import eTimer, ePythonMessagePump
 -from MyTubeService import GoogleSuggestions
 +from .MyTubeService import GoogleSuggestions
  from Screens.Screen import Screen
@@ -6789,8 +6666,8 @@
  from Components.config import config, ConfigText, getConfigListEntry
 @@ -16,9 +16,9 @@
  from threading import Thread
- from threading import Condition
- from xml.etree.cElementTree import parse as cet_parse
+ from ThreadQueue import ThreadQueue
+ from xml.etree.cElementTree import fromstring as cet_fromstring
 -from StringIO import StringIO
 +from io import StringIO
  #import urllib
@@ -6799,19 +6676,16 @@
  
  class MyOpener(FancyURLopener):
  	version = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12'
-@@ -188,9 +188,9 @@
+@@ -201,7 +201,7 @@
+ 				for suggestion in suggestions_tree.findall("CompleteSuggestion"):
  					name = None
- 					numresults = None
  					for subelement in suggestion:
 -						if subelement.attrib.has_key('data'):
 +						if 'data' in subelement.attrib:
  							name = subelement.attrib['data'].encode("UTF-8")
--						if subelement.attrib.has_key('int'):
-+						if 'int' in subelement.attrib:
- 							numresults = subelement.attrib['int']
- 						if name and numresults:
- 							self.suggestlist.append((name, numresults ))
-@@ -208,43 +208,43 @@
+ 						if name:
+ 							self.suggestlist.append(name)
+@@ -217,43 +217,43 @@
  		return len(self.list)
  
  	def up(self):
@@ -6827,7 +6701,7 @@
  		if self.list and len(self.list) > 0:
  			self["suggestionslist"].selectNext()
  			return self.getSelection()
- 	
+ 
  	def pageUp(self):
 -		print "up"
 +		print("up")
@@ -6871,7 +6745,7 @@
  		if self["config"].getCurrent() == self.loadFeedEntry:
  			self.createSetup()
  
-@@ -371,13 +371,13 @@
+@@ -385,13 +385,13 @@
  		self.newConfig()
  
  	def keyCancel(self):
@@ -6879,7 +6753,7 @@
 +		print("cancel")
  		for x in self["config"].list:
  			x[1].cancel()
- 		self.close()	
+ 		self.close()
  
  	def keySave(self):
 -		print "saving"
@@ -6887,7 +6761,7 @@
  		config.plugins.mytube.search.orderBy.save()
  		config.plugins.mytube.search.racy.save()
  		config.plugins.mytube.search.categories.save()
-@@ -479,14 +479,14 @@
+@@ -497,14 +497,14 @@
  
  	def keyOK(self):
  		current = self["tasklist"].getCurrent()
@@ -6897,13 +6771,13 @@
  			job = current[0]
  			from Screens.TaskView import JobView
  			self.session.openWithCallback(self.JobViewCB, JobView, job)
- 	
+ 
  	def JobViewCB(self, why):
 -		print "WHY---",why
 +		print("WHY---",why)
  
  	def keyCancel(self):
- 		self.close()	
+ 		self.close()
 @@ -515,17 +515,17 @@
  		Screen.__init__(self, session)
  		self.session = session
@@ -6912,7 +6786,7 @@
 +		print("self.historylist",self.historylist)
  		self["historylist"] = List(self.historylist)
  		self.activeState = False
- 		
+ 
  	def activate(self):
 -		print "activate"
 +		print("activate")
@@ -6925,7 +6799,7 @@
  		self.historylist = []
  		for entry in self.history:
  			self.historylist.append(( str(entry),))
-@@ -533,36 +533,36 @@
+@@ -551,35 +551,35 @@
  		self["historylist"].updateList(self.historylist)
  
  	def deactivate(self):
@@ -6937,7 +6811,7 @@
 -		print self.activeState
 +		print(self.activeState)
  		return self.activeState
- 	
+ 
  	def getSelection(self):
  		if self["historylist"].getCurrent() is None:
  			return None
@@ -6956,7 +6830,7 @@
 +		print("down")
  		self["historylist"].selectNext()
  		return self.getSelection()
- 	
+ 
  	def pageUp(self):
 -		print "up"
 +		print("up")
@@ -6989,35 +6863,58 @@
 +from urllib.request import Request, urlopen as urlopen2
 +from urllib.error import URLError
  from socket import gaierror, error
- import os, socket
--from urllib import quote, unquote_plus, unquote
+ import os, socket, httplib,urllib,urllib2,re,json
+-from urllib import quote, unquote_plus, unquote, urlencode
 -from httplib import HTTPConnection, CannotSendRequest, BadStatusLine, HTTPException
 -
--from urlparse import parse_qs
-+from urllib.parse import quote, unquote_plus, unquote
+-from urlparse import parse_qs, parse_qsl
++from urllib.parse import quote, unquote_plus, unquote, urlencode
 +from http.client import HTTPConnection, CannotSendRequest, BadStatusLine, HTTPException
 +
-+from urllib.parse import parse_qs
++from urllib.parse import parse_qs, parse_qsl
  from threading import Thread
  
  HTTPConnection.debuglevel = 1
-@@ -72,13 +73,13 @@
- 			try:
- 				self.conn.request("GET", querry)
+@@ -225,7 +225,7 @@
+ 		if self.hl is not None:
+ 			self.prepQuerry = self.prepQuerry + "hl=" + self.hl + "&"
+ 		self.prepQuerry = self.prepQuerry + "jsonp=self.getSuggestions&q="
+-		print "[MyTube - GoogleSuggestions] prepareQuery:",self.prepQuerry
++		print("[MyTube - GoogleSuggestions] prepareQuery:",self.prepQuerry)
+ 
+ 	def getSuggestions(self, queryString):
+ 		self.prepareQuery()
+@@ -236,7 +236,7 @@
+ 				self.conn.request("GET", query, "", {"Accept-Encoding": "UTF-8"})
  			except (CannotSendRequest, gaierror, error):
--				print "[MyTube]  Can not send request for suggestions"
-+				print("[MyTube]  Can not send request for suggestions")
- 				self.gotFeed(None)
+ 				self.conn.close()
+-				print "[MyTube - GoogleSuggestions] Can not send request for suggestions"
++				print("[MyTube - GoogleSuggestions] Can not send request for suggestions")
+ 				return None
  			else:
  				try:
+@@ -243,7 +243,7 @@
  					response = self.conn.getresponse()
  				except BadStatusLine:
--					print "[MyTube]  Can not get a response from google"
-+					print("[MyTube]  Can not get a response from google")
- 					self.gotFeed(None)
+ 					self.conn.close()
+-					print "[MyTube - GoogleSuggestions] Can not get a response from google"
++					print("[MyTube - GoogleSuggestions] Can not get a response from google")
+ 					return None
  				else:
  					if response.status == 200:
-@@ -189,7 +190,7 @@
+@@ -252,9 +252,9 @@
+ 						charset = "ISO-8859-1"
+ 						try:
+ 							charset = header.split(";")[1].split("=")[1]
+-							print "[MyTube - GoogleSuggestions] Got charset %s" %charset
++							print("[MyTube - GoogleSuggestions] Got charset %s" %charset)
+ 						except:
+-							print "[MyTube - GoogleSuggestions] No charset in Header, falling back to %s" %charset
++							print("[MyTube - GoogleSuggestions] No charset in Header, falling back to %s" %charset)
+ 						data = data.decode(charset).encode("utf-8")
+ 						self.conn.close()
+ 						return data
+@@ -379,7 +379,7 @@
  		# show thumbnails
  		list = []
  		for thumbnail in self.entry.media.thumbnail:
@@ -7026,93 +6923,31 @@
  			list.append(str(thumbnail.url))
  		EntryDetails['Thumbnails'] = list
  		#print EntryDetails
-@@ -212,10 +213,10 @@
- 		watch_url = 'http://www.youtube.com/watch?v=%s&gl=US&hl=en' % video_id
+@@ -432,10 +432,10 @@
  		watchrequest = Request(watch_url, None, std_headers)
+ 
  		try:
 -			print "[MyTube] trying to find out if a HD Stream is available",watch_url
 +			print("[MyTube] trying to find out if a HD Stream is available",watch_url)
- 			watchvideopage = urlopen2(watchrequest).read()
--		except (URLError, HTTPException, socket.error), err:
+ 			result = urlopen2(watchrequest).read()
+ 		except (URLError, HTTPException, socket.error), err:
 -			print "[MyTube] Error: Unable to retrieve watchpage - Error code: ", str(err)
-+		except (URLError, HTTPException, socket.error) as err:
 +			print("[MyTube] Error: Unable to retrieve watchpage - Error code: ", str(err))
  			return video_url
  
- 		# Get video info
-@@ -227,32 +228,32 @@
- 				videoinfo = parse_qs(infopage)
- 				if ('url_encoded_fmt_stream_map' or 'fmt_url_map') in videoinfo:
- 					break
--			except (URLError, HTTPException, socket.error), err:
--				print "[MyTube] Error: unable to download video infopage",str(err)
-+			except (URLError, HTTPException, socket.error) as err:
-+				print("[MyTube] Error: unable to download video infopage",str(err))
- 				return video_url
+ 		flashvars = self.extractFlashVars(result, 0)
+@@ -471,7 +471,7 @@
+ 			try:
+ 				links[VIDEO_FMT_PRIORITY_MAP[str(key)]] = url
+ 			except KeyError:
+-				print 'skipping',key,'fmt not in priority videos'
++				print('skipping',key,'fmt not in priority videos')
+ 				continue
+ 		try:
+ 			return links[sorted(links.iterkeys())[0]].encode('utf-8')
+@@ -479,26 +479,26 @@
+ 			return None
  
- 		if ('url_encoded_fmt_stream_map' or 'fmt_url_map') not in videoinfo:
- 			# Attempt to see if YouTube has issued an error message
- 			if 'reason' not in videoinfo:
--				print '[MyTube] Error: unable to extract "fmt_url_map" or "url_encoded_fmt_stream_map" parameter for unknown reason'
-+				print('[MyTube] Error: unable to extract "fmt_url_map" or "url_encoded_fmt_stream_map" parameter for unknown reason')
- 			else:
- 				reason = unquote_plus(videoinfo['reason'][0])
--				print '[MyTube] Error: YouTube said: %s' % reason.decode('utf-8')
-+				print('[MyTube] Error: YouTube said: %s' % reason.decode('utf-8'))
- 			return video_url
- 
- 		video_fmt_map = {}
- 		fmt_infomap = {}
--		if videoinfo.has_key('url_encoded_fmt_stream_map'):
-+		if 'url_encoded_fmt_stream_map' in videoinfo:
- 			tmp_fmtUrlDATA = videoinfo['url_encoded_fmt_stream_map'][0].split(',')
- 		else:
- 			tmp_fmtUrlDATA = videoinfo['fmt_url_map'][0].split(',')
- 		for fmtstring in tmp_fmtUrlDATA:
- 			fmturl = fmtid = fmtsig = ""
--			if videoinfo.has_key('url_encoded_fmt_stream_map'):
-+			if 'url_encoded_fmt_stream_map' in videoinfo:
- 				try:
- 					for arg in fmtstring.split('&'):
- 						if arg.find('=') >= 0:
--							print arg.split('=')
-+							print(arg.split('='))
- 							key, value = arg.split('=')
- 							if key == 'itag':
- 								if len(value) > 3:
-@@ -263,42 +264,42 @@
- 							elif key == 'sig':
- 								fmtsig = value
- 
--					if fmtid != "" and fmturl != "" and fmtsig != ""  and VIDEO_FMT_PRIORITY_MAP.has_key(fmtid):
-+					if fmtid != "" and fmturl != "" and fmtsig != ""  and fmtid in VIDEO_FMT_PRIORITY_MAP:
- 						video_fmt_map[VIDEO_FMT_PRIORITY_MAP[fmtid]] = { 'fmtid': fmtid, 'fmturl': unquote_plus(fmturl), 'fmtsig': fmtsig }
- 						fmt_infomap[int(fmtid)] = "%s&signature=%s" %(unquote_plus(fmturl), fmtsig)
- 					fmturl = fmtid = fmtsig = ""
- 
- 				except:
--					print "error parsing fmtstring:",fmtstring
-+					print("error parsing fmtstring:",fmtstring)
- 
- 			else:
- 				(fmtid,fmturl) = fmtstring.split('|')
--			if VIDEO_FMT_PRIORITY_MAP.has_key(fmtid) and fmtid != "":
-+			if fmtid in VIDEO_FMT_PRIORITY_MAP and fmtid != "":
- 				video_fmt_map[VIDEO_FMT_PRIORITY_MAP[fmtid]] = { 'fmtid': fmtid, 'fmturl': unquote_plus(fmturl) }
- 				fmt_infomap[int(fmtid)] = unquote_plus(fmturl)
--		print "[MyTube] got",sorted(fmt_infomap.iterkeys())
-+		print("[MyTube] got",sorted(fmt_infomap.keys()))
- 		if video_fmt_map and len(video_fmt_map):
--			print "[MyTube] found best available video format:",video_fmt_map[sorted(video_fmt_map.iterkeys())[0]]['fmtid']
--			best_video = video_fmt_map[sorted(video_fmt_map.iterkeys())[0]]
-+			print("[MyTube] found best available video format:",video_fmt_map[sorted(video_fmt_map.keys())[0]]['fmtid'])
-+			best_video = video_fmt_map[sorted(video_fmt_map.keys())[0]]
- 			video_url = "%s&signature=%s" %(best_video['fmturl'].split(';')[0], best_video['fmtsig'])
--			print "[MyTube] found best available video url:",video_url
-+			print("[MyTube] found best available video url:",video_url)
- 		
- 		return video_url
- 	
  	def getRelatedVideos(self):
 -		print "[MyTubeFeedEntry] getRelatedVideos()"
 +		print("[MyTubeFeedEntry] getRelatedVideos()")
@@ -7133,23 +6968,41 @@
 +				print("Found Responses: ", link.href)
  				return link.href
  
+ 	def getUserVideos(self):
+-		print "[MyTubeFeedEntry] getUserVideos()"
++		print("[MyTubeFeedEntry] getUserVideos()")
+ 		username = self.getUserId()
+ 		myuri = 'http://gdata.youtube.com/feeds/api/users/%s/uploads' % username
+-		print "Found Uservideos: ", myuri
++		print("Found Uservideos: ", myuri)
+ 		return myuri
+ 
  class MyTubePlayerService():
-@@ -306,12 +307,12 @@
- #	ClientId: ytapi-dream-MyTubePlayer-i0kqrebg-0
- #	DeveloperKey: AI39si4AjyvU8GoJGncYzmqMCwelUnqjEMWTFCcUtK-VUzvWygvwPO-sadNwW5tNj9DDCHju3nnJEPvFy4WZZ6hzFYCx8rJ6Mw
+@@ -511,12 +511,12 @@
+ 	yt_service = None
+ 
  	def __init__(self):
 -		print "[MyTube] MyTubePlayerService - init"
 +		print("[MyTube] MyTubePlayerService - init")
  		self.feedentries = []
  		self.feed = None
- 				
+ 
  	def startService(self):
 -		print "[MyTube] MyTubePlayerService - startService"
 +		print("[MyTube] MyTubePlayerService - startService")
- 		self.yt_service = gdata.youtube.service.YouTubeService( 
- 			developer_key = 'AI39si4AjyvU8GoJGncYzmqMCwelUnqjEMWTFCcUtK-VUzvWygvwPO-sadNwW5tNj9DDCHju3nnJEPvFy4WZZ6hzFYCx8rJ6Mw',
- 			client_id = 'ytapi-dream-MyTubePlayer-i0kqrebg-0' 
-@@ -324,11 +325,11 @@
+ 
+ 		self.yt_service = gdata.youtube.service.YouTubeService()
+ 
+@@ -529,7 +529,7 @@
+ 
+ 		# yt_service is reinit on every feed build; cache here to not reauth. remove init every time?
+ 		if self.current_auth_token is not None:
+-			print "[MyTube] MyTubePlayerService - auth_cached"
++			print("[MyTube] MyTubePlayerService - auth_cached")
+ 			self.yt_service.SetClientLoginToken(self.current_auth_token)
+ 
+ #		self.loggedIn = False
+@@ -540,7 +540,7 @@
  		#	print a
  
  	def stopService(self):
@@ -7157,30 +7010,100 @@
 +		print("[MyTube] MyTubePlayerService - stopService")
  		del self.ytService
  
- 	def getFeed(self, url, callback = None, errorback = None):
--		print "[MyTube] MyTubePlayerService - getFeed:",url
-+		print("[MyTube] MyTubePlayerService - getFeed:",url)
+ 	def getLoginTokenOnCurl(self, email, pw):
+@@ -553,7 +553,7 @@
+ 		  'source': self.yt_service.client_id,
+ 		}
+ 
+-		print "[MyTube] MyTubePlayerService - Starting external curl auth request"
++		print("[MyTube] MyTubePlayerService - Starting external curl auth request")
+ 		result = os.popen('curl -s -k -X POST "%s" -d "%s"' % (gdata.youtube.service.YOUTUBE_CLIENTLOGIN_AUTHENTICATION_URL , urlencode(opts))).read()
+ 
+ 		return result
+@@ -576,40 +576,40 @@
+ 		return 'Logged In'
+ 
+ 	def auth_user(self, username, password):
+-		print "[MyTube] MyTubePlayerService - auth_use - " + str(username)
++		print("[MyTube] MyTubePlayerService - auth_use - " + str(username))
+ 
+ 		if self.yt_service is None:
+ 			self.startService()
+ 
+ 		if self.current_auth_token is not None:
+-			print "[MyTube] MyTubePlayerService - auth_cached"
++			print("[MyTube] MyTubePlayerService - auth_cached")
+ 			self.yt_service.SetClientLoginToken(self.current_auth_token)
+ 			return
+ 
+ 		if self.supportsSSL() is False:
+-			print "[MyTube] MyTubePlayerService - HTTPSConnection not found trying external curl"
++			print("[MyTube] MyTubePlayerService - HTTPSConnection not found trying external curl")
+ 			self.cached_auth_request = self.getFormattedTokenRequest(username, password)
+ 			if self.cached_auth_request.get('Auth') is None:
+ 				raise Exception('Got no auth token from curl; you need curl and valid youtube login data')
+ 
+ 			self.yt_service.SetClientLoginToken(self.cached_auth_request.get('Auth'))
+ 		else:
+-			print "[MyTube] MyTubePlayerService - Using regularly ProgrammaticLogin for login"
++			print("[MyTube] MyTubePlayerService - Using regularly ProgrammaticLogin for login")
+ 			self.yt_service.email = username
+ 			self.yt_service.password  = password
+ 			self.yt_service.ProgrammaticLogin()
+ 
+ 		# double check login: reset any token on wrong logins
+ 		if self.is_auth() is False:
+-			print "[MyTube] MyTubePlayerService - auth_use - auth not possible resetting"
++			print("[MyTube] MyTubePlayerService - auth_use - auth not possible resetting")
+ 			self.resetAuthState()
+ 			return
+ 
+-		print "[MyTube] MyTubePlayerService - Got successful login"
++		print("[MyTube] MyTubePlayerService - Got successful login")
+ 		self.current_auth_token = self.auth_token()
+ 
+ 	def resetAuthState(self):
+-		print "[MyTube] MyTubePlayerService - resetting auth"
++		print("[MyTube] MyTubePlayerService - resetting auth")
+ 		self.cached_auth_request = {}
+ 		self.current_auth_token = None
+ 
+@@ -651,7 +651,7 @@
+ 		return self.yt_service.GetYouTubeVideoFeed
+ 
+ 	def getFeed(self, url, feedname = "", callback = None, errorback = None):
+-		print "[MyTube] MyTubePlayerService - getFeed:",url, feedname
++		print("[MyTube] MyTubePlayerService - getFeed:",url, feedname)
  		self.feedentries = []
- 		queryThread = YoutubeQueryThread(self.yt_service.GetYouTubeVideoFeed, url, self.gotFeed, self.gotFeedError, callback, errorback)
- 		queryThread.start()
-@@ -338,7 +339,7 @@
- 					orderby = "relevance", racy = "include", 
- 					author = "", lr = "", categories = "", sortOrder = "ascending", 
+ 		ytservice = self.yt_service.GetYouTubeVideoFeed
+ 
+@@ -684,7 +684,7 @@
+ 					orderby = "relevance", time = 'all_time', racy = "include",
+ 					author = "", lr = "", categories = "", sortOrder = "ascending",
  					callback = None, errorback = None):
 -		print "[MyTube] MyTubePlayerService - search()"
 +		print("[MyTube] MyTubePlayerService - search()")
  		self.feedentries = []
  		query = gdata.youtube.service.YouTubeVideoQuery()
  		query.vq = searchTerms
-@@ -409,7 +410,7 @@
- 			feed = self.query(self.param)
- 			self.messages.push((True, feed, self.callback))
- 			self.messagePump.send(0)
--		except Exception, ex:
-+		except Exception as ex:
- 			self.messages.push((False, ex, self.errorback))
- 			self.messagePump.send(0)			
- 	
+@@ -720,7 +720,7 @@
+ 			new_subscription = self.yt_service.AddSubscriptionToChannel(username_to_subscribe_to=username)
+ 
+ 			if isinstance(new_subscription, gdata.youtube.YouTubeSubscriptionEntry):
+-				print '[MyTube] MyTubePlayerService: New subscription added'
++				print('[MyTube] MyTubePlayerService: New subscription added')
+ 				return _('New subscription added')
+ 
+ 			return _('Unknown error')
+@@ -736,7 +736,7 @@
+ 
+ 			# The response, if succesfully posted is a YouTubeVideoEntry
+ 			if isinstance(response, gdata.youtube.YouTubeVideoEntry):
+-				print '[MyTube] MyTubePlayerService: Video successfully added to favorites'
++				print('[MyTube] MyTubePlayerService: Video successfully added to favorites')
+ 				return _('Video successfully added to favorites')
+ 
+ 			return _('Unknown error')
 --- a/mytube/src/__init__.py
 +++ b/mytube/src/__init__.py
 @@ -2,6 +2,7 @@
@@ -7188,9 +7111,9 @@
  from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
  import os, gettext, hashlib
 +from functools import reduce
+ 
  PluginLanguageDomain = "MyTube"
  PluginLanguagePath = "Extensions/MyTube/locale"
- 
 @@ -16,7 +17,7 @@
  	return t
  
@@ -7200,659 +7123,6 @@
  
  def long2bin(l):
  	res = ""
---- a/mytube/src/plugin.py
-+++ b/mytube/src/plugin.py
-@@ -12,8 +12,8 @@
- from Components.Task import Task, Job, job_manager
- from Components.config import config, ConfigSelection, ConfigSubsection, ConfigText, ConfigYesNo, getConfigListEntry
- #, ConfigIP, ConfigNumber, ConfigLocations
--from MyTubeSearch import ConfigTextWithGoogleSuggestions, MyTubeSettingsScreen, MyTubeTasksScreen, MyTubeHistoryScreen
--from MyTubeService import validate_cert, get_rnd, myTubeService
-+from .MyTubeSearch import ConfigTextWithGoogleSuggestions, MyTubeSettingsScreen, MyTubeTasksScreen, MyTubeHistoryScreen
-+from .MyTubeService import validate_cert, get_rnd, myTubeService
- from Plugins.Plugin import PluginDescriptor
- from Screens.ChoiceBox import ChoiceBox
- from Screens.InfoBarGenerics import InfoBarNotifications
-@@ -24,7 +24,7 @@
- from Tools.Directories import resolveFilename, SCOPE_HDD, SCOPE_CURRENT_PLUGIN
- from Tools.Downloader import downloadWithProgress
- 
--from __init__ import decrypt_block
-+from .__init__ import decrypt_block
- 
- from enigma import eTPM, eTimer, ePoint, RT_HALIGN_LEFT, RT_VALIGN_CENTER, gFont, ePicLoad, eServiceReference, iPlayableService
- from os import path as os_path, remove as os_remove
-@@ -172,13 +172,13 @@
- 		self.progress = int(self.end*recvbytes/float(totalbytes))
- 	
- 	def http_finished(self, string=""):
--		print "[http_finished]" + str(string)
-+		print("[http_finished]" + str(string))
- 		Task.processFinished(self, 0)
- 	
- 	def http_failed(self, failure_instance=None, error_message=""):
- 		if error_message == "" and failure_instance is not None:
- 			error_message = failure_instance.getErrorMessage()
--			print "[http_failed] " + error_message
-+			print("[http_failed] " + error_message)
- 			Task.processFinished(self, 1)
- 
- 
-@@ -397,11 +397,11 @@
- 
- 		self.l3key = validate_cert(l3cert, self.l2key)
- 		if self.l3key is None:
--			print "l3cert invalid"
-+			print("l3cert invalid")
- 			return
- 		rnd = get_rnd()
- 		if rnd is None:
--			print "random error"
-+			print("random error")
- 			return
- 
- 		val = etpm.challenge(rnd)
-@@ -460,7 +460,7 @@
- 				self["feedlist"].style = "state"
- 				self['feedlist'].setList(self.statuslist)
- 			else:
--				print "Genuine Dreambox validation passed"
-+				print("Genuine Dreambox validation passed")
- 				if self.FirstRun == True:
- 					self.appendEntries = False
- 					myTubeService.startService()
-@@ -493,7 +493,7 @@
- 
- 
- 	def handleHelpWindow(self):
--		print "[handleHelpWindow]"
-+		print("[handleHelpWindow]")
- 		if self.currList == "configlist":
- 			self.hideSuggestions()
- 			self.session.openWithCallback(self.ScreenClosed, MyTubeVideoHelpScreen, self.skin_path, wantedinfo = self.searchtext, wantedtitle = _("MyTubePlayer Help") )
-@@ -501,7 +501,7 @@
- 			self.session.openWithCallback(self.ScreenClosed, MyTubeVideoHelpScreen, self.skin_path, wantedinfo = self.feedtext, wantedtitle = _("MyTubePlayer Help") )
- 			
- 	def handleFirstHelpWindow(self):
--		print "[handleFirstHelpWindow]"
-+		print("[handleFirstHelpWindow]")
- 		if config.plugins.mytube.general.showHelpOnOpen.value is True:
- 			if self.currList == "configlist":
- 				self.hideSuggestions()
-@@ -540,7 +540,7 @@
- 	def openMenu(self, answer):
- 		answer = answer and answer[1]
- 		if answer == "settings":
--			print "settings selected"
-+			print("settings selected")
- 			self.session.openWithCallback(self.ScreenClosed,MyTubeSettingsScreen, self.skin_path )
- 		elif answer == "related":
- 			current = self["feedlist"].getCurrent()[0]
-@@ -572,7 +572,7 @@
- 		self.session.openWithCallback(self.SearchEntryCallback, VirtualKeyBoard, title = (_("Enter your search term(s)")), text = config.plugins.mytube.search.searchTerm.value)
- 
- 	def ScreenClosed(self):
--		print "ScreenCLosed, restoring old window state"
-+		print("ScreenCLosed, restoring old window state")
- 		if self.currList == "historylist":
- 			if self.HistoryWindow.status() is False:
- 				self.HistoryWindow.activate()
-@@ -626,7 +626,7 @@
- 			self.leavePlayerConfirmed([True, how])
- 
- 	def leavePlayer(self):
--		print "leavePlayer"
-+		print("leavePlayer")
- 		if self.HistoryWindow is not None:
- 			self.HistoryWindow.deactivate()
- 			self.HistoryWindow.instance.hide()
-@@ -690,13 +690,13 @@
- 		self.close()
- 			
- 	def keyOK(self):
--		print "self.currList im KeyOK",self.currList
-+		print("self.currList im KeyOK",self.currList)
- 		if self.currList == "configlist" or self.currList == "suggestionslist":
- 			self["config"].invalidateCurrent()
- 			if config.plugins.mytube.search.searchTerm.value != "":
- 				self.add2History()
- 				searchContext = config.plugins.mytube.search.searchTerm.value
--				print "Search searchcontext",searchContext
-+				print("Search searchcontext",searchContext)
- 				if isinstance(self["config"].getCurrent()[1], ConfigTextWithGoogleSuggestions) and not self.propagateUpDownNormally:
- 					self.propagateUpDownNormally = True
- 					self["config"].getCurrent()[1].deactivateSuggestionList()
-@@ -705,11 +705,11 @@
- 		elif self.currList == "feedlist":
- 			current = self[self.currList].getCurrent()
- 			if current:
--				print current
-+				print(current)
- 				myentry = current[0]
- 				if myentry is not None:
- 					myurl = myentry.getVideoUrl()
--					print "Playing URL",myurl
-+					print("Playing URL",myurl)
- 					if myurl is not None:
- 						myreference = eServiceReference(4097,0,myurl)
- 						myreference.setName(myentry.getTitle())
-@@ -722,12 +722,12 @@
- 			self["config"].invalidateCurrent()
- 			if config.plugins.mytube.search.searchTerm.value != "":
- 				searchContext = config.plugins.mytube.search.searchTerm.value
--				print "Search searchcontext",searchContext
-+				print("Search searchcontext",searchContext)
- 				self.setState('getSearchFeed')
- 				self.runSearch(searchContext)
- 
- 	def keyUp(self):
--		print "self.currList im KeyUp",self.currList
-+		print("self.currList im KeyUp",self.currList)
- 		if self.currList == "suggestionslist":
- 			if config.plugins.mytube.search.searchTerm.value != "":
- 				if not self.propagateUpDownNormally:
-@@ -740,15 +740,15 @@
- 				self.HistoryWindow.up()
- 
- 	def keyDown(self):
--		print "self.currList im KeyDown",self.currList
-+		print("self.currList im KeyDown",self.currList)
- 		if self.currList == "suggestionslist":
- 			if config.plugins.mytube.search.searchTerm.value != "":
- 				if not self.propagateUpDownNormally:
- 					self["config"].getCurrent()[1].suggestionListDown()
- 					self["config"].invalidateCurrent()
- 		elif self.currList == "feedlist":
--			print self[self.currList].count()
--			print self[self.currList].index
-+			print(self[self.currList].count())
-+			print(self[self.currList].index)
- 			if self[self.currList].index == self[self.currList].count()-1 and myTubeService.getNextFeedEntriesURL() is not None:
- 				self.session.openWithCallback(self.getNextEntries, MessageBox, _("Do you want to see more entries?"))
- 			else:
-@@ -757,7 +757,7 @@
- 			if self.HistoryWindow is not None and self.HistoryWindow.shown:
- 				self.HistoryWindow.down()
- 	def keyRight(self):
--		print "self.currList im KeyRight",self.currList
-+		print("self.currList im KeyRight",self.currList)
- 		if self.propagateUpDownNormally:
- 			ConfigListScreen.keyRight(self)
- 		else:
-@@ -770,7 +770,7 @@
- 					self.HistoryWindow.pageDown()
- 
- 	def keyLeft(self):
--		print "self.currList im kEyLeft",self.currList
-+		print("self.currList im kEyLeft",self.currList)
- 		if self.propagateUpDownNormally:
- 			ConfigListScreen.keyLeft(self)
- 		else:
-@@ -798,8 +798,8 @@
- 		self.session.openWithCallback(self.openStandardFeedClosed, ChoiceBox, title=_("Select new feed to view."), list = menulist)
- 
- 	def handleSuggestions(self):
--		print "handleSuggestions"
--		print "self.currList",self.currList
-+		print("handleSuggestions")
-+		print("self.currList",self.currList)
- 		if self.currList == "configlist":
- 			self.switchToSuggestionsList()
- 		elif self.currList == "historylist":
-@@ -807,7 +807,7 @@
- 				self.HistoryWindow.down()
- 
- 	def switchToSuggestionsList(self):
--		print "switchToSuggestionsList"
-+		print("switchToSuggestionsList")
- 		self.currList = "suggestionslist"
- 		self["ButtonBlue"].hide()
- 		self["VKeyIcon"].hide()	
-@@ -825,7 +825,7 @@
- 			self.HistoryWindow.instance.hide()
- 	
- 	def switchToConfigList(self):
--		print "switchToConfigList"
-+		print("switchToConfigList")
- 		self.currList = "configlist"
- 		self["config_actions"].setEnabled(True)	
- 		self["historyactions"].setEnabled(False)
-@@ -853,9 +853,9 @@
- 			self.handleFirstHelpWindow()
- 
- 	def switchToFeedList(self, append = False):
--		print "switchToFeedList"
--		print "switching to feedlist from:",self.currList
--		print "len(self.videolist):",len(self.videolist)
-+		print("switchToFeedList")
-+		print("switching to feedlist from:",self.currList)
-+		print("len(self.videolist):",len(self.videolist))
- 		if self.HistoryWindow is not None and self.HistoryWindow.shown:
- 			self.HistoryWindow.deactivate()
- 			self.HistoryWindow.instance.hide()
-@@ -879,11 +879,11 @@
- 
- 
- 	def switchToHistory(self):
--		print "switchToHistory"
-+		print("switchToHistory")
- 		self.oldlist = self.currList
- 		self.currList = "historylist"
--		print "switchToHistory currentlist",self.currList
--		print "switchToHistory oldlist",self.oldlist
-+		print("switchToHistory currentlist",self.currList)
-+		print("switchToHistory oldlist",self.oldlist)
- 		self.hideSuggestions()
- 		self["ButtonBlue"].hide()
- 		self["VKeyIcon"].hide()	
-@@ -902,17 +902,17 @@
- 			self.HistoryWindow = self.session.instantiateDialog(MyTubeHistoryScreen)
- 		if self.currList in ("configlist","feedlist"):
- 			if self.HistoryWindow.status() is False:
--				print "status is FALSE,switchToHistory"
-+				print("status is FALSE,switchToHistory")
- 				self.switchToHistory()
- 		elif self.currList == "historylist":
- 			self.closeHistory()
- 
- 	def closeHistory(self):
--		print "closeHistory currentlist",self.currList
--		print "closeHistory oldlist",self.oldlist
-+		print("closeHistory currentlist",self.currList)
-+		print("closeHistory oldlist",self.oldlist)
- 		if self.currList == "historylist":
- 			if self.HistoryWindow.status() is True:
--				print "status is TRUE, closing historyscreen"
-+				print("status is TRUE, closing historyscreen")
- 				self.HistoryWindow.deactivate()
- 				self.HistoryWindow.instance.hide()
- 				if self.oldlist == "configlist":
-@@ -925,7 +925,7 @@
- 			self.History = config.plugins.mytube.general.history.value.split(',')
- 		if self.History[0] == '':
- 			del self.History[0]
--		print "self.History im add",self.History
-+		print("self.History im add",self.History)
- 		if config.plugins.mytube.search.searchTerm.value in self.History:
- 			self.History.remove((config.plugins.mytube.search.searchTerm.value))
- 		self.History.insert(0,(config.plugins.mytube.search.searchTerm.value))
-@@ -933,7 +933,7 @@
- 			self.History.pop()
- 		config.plugins.mytube.general.history.value = ",".join(self.History)
- 		config.plugins.mytube.general.history.save()
--		print "configvalue",config.plugins.mytube.general.history.value
-+		print("configvalue",config.plugins.mytube.general.history.value)
- 
- 	def hideSuggestions(self):
- 		current = self["config"].getCurrent()
-@@ -958,7 +958,7 @@
- 	def getRelatedVideos(self, myentry):
- 		if myentry:
- 			myurl =  myentry.getRelatedVideos()
--			print "RELATEDURL--->",myurl
-+			print("RELATEDURL--->",myurl)
- 			if myurl is not None:
- 				self.appendEntries = False
- 				self.getFeed(myurl, _("Related video entries."))
-@@ -966,19 +966,19 @@
- 	def getResponseVideos(self, myentry):
- 		if myentry:
- 			myurl =  myentry.getResponseVideos()
--			print "RESPONSEURL--->",myurl
-+			print("RESPONSEURL--->",myurl)
- 			if myurl is not None:
- 				self.appendEntries = False
- 				self.getFeed(myurl, _("Response video entries."))
- 
- 	def runSearch(self, searchContext = None):
--		print "[MyTubePlayer] runSearch"
-+		print("[MyTubePlayer] runSearch")
- 		if searchContext is not None:
--			print "[MyTubePlayer] searchDialogClosed: ", searchContext
-+			print("[MyTubePlayer] searchDialogClosed: ", searchContext)
- 			self.searchFeed(searchContext)
- 
- 	def searchFeed(self, searchContext):
--		print "[MyTubePlayer] searchFeed"		
-+		print("[MyTubePlayer] searchFeed")		
- 		self.queryStarted()		
- 		self.appendEntries = False
- 		self.queryThread = myTubeService.search(searchContext, 
-@@ -998,20 +998,20 @@
- 		self.queryRunning = False
- 	
- 	def cancelThread(self):
--		print "[MyTubePlayer] cancelThread"
-+		print("[MyTubePlayer] cancelThread")
- 		if self.queryThread is not None:
- 			self.queryThread.cancel()
- 		self.queryFinished()
- 	
- 	def gotFeed(self, feed):
--		print "[MyTubePlayer] gotFeed"
-+		print("[MyTubePlayer] gotFeed")
- 		self.queryFinished()
- 		if feed is not None:
- 			self.ytfeed = feed
- 		self.buildEntryList()
- 	
- 	def gotFeedError(self, exception):
--		print "[MyTubePlayer] gotFeedError"
-+		print("[MyTubePlayer] gotFeedError")
- 		self.queryFinished()
- 		self.setState('Error')
- 	
-@@ -1040,7 +1040,7 @@
- 					thumbnailUrl = entry.getThumbnailUrl(0)				
- 					if thumbnailUrl is not None:
- 						self.screenshotList.append((TubeID,thumbnailUrl))
--					if not self.Details.has_key(TubeID):
-+					if TubeID not in self.Details:
- 						self.Details[TubeID] = { 'thumbnail': None}
- 					self.videolist.append(self.buildEntryComponent(entry, TubeID))
- 				if len(self.videolist):
-@@ -1063,7 +1063,7 @@
- 					thumbnailUrl = entry.getThumbnailUrl(0)				
- 					if thumbnailUrl is not None:
- 						self.screenshotList.append((TubeID,thumbnailUrl))
--					if not self.Details.has_key(TubeID):
-+					if TubeID not in self.Details:
- 						self.Details[TubeID] = { 'thumbnail': None}
- 					self.videolist.append(self.buildEntryComponent(entry, TubeID))
- 				if len(self.videolist):
-@@ -1078,7 +1078,7 @@
- 					self["feedlist"].selectNext()
- 					self.switchToFeedList(True)
- 			if not self.timer_startDownload.isActive():
--				print "STARRTDOWNLOADTIMER IM BUILDENTRYLIST"
-+				print("STARRTDOWNLOADTIMER IM BUILDENTRYLIST")
- 				self.timer_startDownload.start(5)
- 		else:
- 			self.setState('Error')
-@@ -1086,7 +1086,7 @@
- 	
- 	def buildEntryComponent(self, entry,TubeID):
- 		Title = entry.getTitle()
--		print "Titel-->",Title
-+		print("Titel-->",Title)
- 		Description = entry.getDescription()
- 		myTubeID = TubeID
- 		PublishedDate = entry.getPublishedDate()
-@@ -1127,15 +1127,15 @@
- 				if myentry:
- 					myurl = myentry.getVideoUrl()
- 					if myurl is not None:
--						print "Got a URL to stream"
-+						print("Got a URL to stream")
- 						myreference = eServiceReference(4097,0,myurl)
- 						myreference.setName(myentry.getTitle())
- 						return myreference,False
- 					else:
--						print "NoURL im getNextEntry"
-+						print("NoURL im getNextEntry")
- 						return None,True
- 						
--		print "no more entries to play"
-+		print("no more entries to play")
- 		return None,False
- 
- 	def getPrevEntry(self):
-@@ -1148,7 +1148,7 @@
- 				if myentry:
- 					myurl = myentry.getVideoUrl()
- 					if myurl is not None:
--						print "Got a URL to stream"
-+						print("Got a URL to stream")
- 						myreference = eServiceReference(4097,0,myurl)
- 						myreference.setName(myentry.getTitle())
- 						return myreference,False
-@@ -1166,7 +1166,7 @@
- 			if current:
- 				myentry = current[0]
- 				if myentry:
--					print "Title im showVideoInfo",myentry.getTitle()
-+					print("Title im showVideoInfo",myentry.getTitle())
- 					videoinfos = myentry.PrintEntryDetails()
- 					self.session.open(MyTubeVideoInfoScreen, self.skin_path, videoinfo = videoinfos )
- 
-@@ -1176,7 +1176,7 @@
- 			thumbnailUrl = entry[1]
- 			tubeid = entry[0]
- 			thumbnailFile = "/tmp/"+str(tubeid)+".jpg"
--			if self.Details.has_key(tubeid):
-+			if tubeid in self.Details:
- 				if self.Details[tubeid]["thumbnail"] is None:
- 					if thumbnailUrl is not None:
- 						if tubeid not in self.pixmaps_to_load:
-@@ -1191,11 +1191,11 @@
- 							self.fetchFinished(False,tubeid, failed = True)
- 
- 	def fetchFailed(self,string,tubeid):
--		print "thumbnail-fetchFailed for: ",tubeid,string.getErrorMessage()
-+		print("thumbnail-fetchFailed for: ",tubeid,string.getErrorMessage())
- 		self.fetchFinished(False,tubeid, failed = True)
- 
- 	def fetchFinished(self,x,tubeid, failed = False):
--		print "thumbnail-fetchFinished for:",tubeid
-+		print("thumbnail-fetchFinished for:",tubeid)
- 		self.pixmaps_to_load.remove(tubeid)
- 		if failed:
- 			thumbnailFile = resolveFilename(SCOPE_CURRENT_PLUGIN, "Extensions/MyTube/plugin.png")
-@@ -1212,18 +1212,18 @@
- 			self.fetchFinished(False,tubeid, failed = True)
- 
- 	def finish_decode(self,tubeid,info):
--		print "thumbnail finish_decode:", tubeid,info
-+		print("thumbnail finish_decode:", tubeid,info)
- 		ptr = self.picloads[tubeid].getData()
- 		thumbnailFile = "/tmp/"+str(tubeid)+".jpg"
- 		if ptr != None:
--			if self.Details.has_key(tubeid):
-+			if tubeid in self.Details:
- 				self.Details[tubeid]["thumbnail"] = ptr
- 			if (os_path.exists(thumbnailFile) == True):
- 				os_remove(thumbnailFile)
- 			del self.picloads[tubeid]
- 		else:
- 			del self.picloads[tubeid]
--			if self.Details.has_key(tubeid):
-+			if tubeid in self.Details:
- 				self.Details[tubeid]["thumbnail"] = None
- 		self.timer_thumbnails.start(1)
- 
-@@ -1235,7 +1235,7 @@
- 			idx = 0
- 			for entry in self.videolist:
- 				tubeid = entry[3]
--				if self.Details.has_key(tubeid):
-+				if tubeid in self.Details:
- 					if self.Details[tubeid]["thumbnail"] is not None:
- 						thumbnail = entry[4]
- 						if thumbnail == None:
-@@ -1395,10 +1395,10 @@
- 			pass
- 
- 	def fetchFailed(self, string, index, id):
--		print "[fetchFailed] for index:" + str(index) + "for ThumbID:" + id + string.getErrorMessage()
-+		print("[fetchFailed] for index:" + str(index) + "for ThumbID:" + id + string.getErrorMessage())
- 
- 	def fetchFinished(self, string, index, id):
--		print "[fetchFinished] for index:" + str(index) + " for ThumbID:" + id
-+		print("[fetchFinished] for index:" + str(index) + " for ThumbID:" + id)
- 		self.decodePic(index)
- 
- 	def decodePic(self, index):
-@@ -1410,19 +1410,19 @@
- 				self.index = index
- 				thumbnailFile = entry[2]
- 				if (os_path.exists(thumbnailFile) == True):
--					print "[decodePic] DECODING THUMBNAIL for INDEX:"+  str(self.index) + "and file: " + thumbnailFile
-+					print("[decodePic] DECODING THUMBNAIL for INDEX:"+  str(self.index) + "and file: " + thumbnailFile)
- 					self.picloads[index].setPara((self["thumbnail"].instance.size().width(), self["thumbnail"].instance.size().height(), sc[0], sc[1], False, 1, "#00000000"))
- 					self.picloads[index].startDecode(thumbnailFile)
- 				else:
--					print "[decodePic] Thumbnail file NOT FOUND !!!-->:",thumbnailFile
-+					print("[decodePic] Thumbnail file NOT FOUND !!!-->:",thumbnailFile)
- 
- 	def finish_decode(self, picindex = None, picInfo=None):
--		print "finish_decode - of INDEX", picindex
-+		print("finish_decode - of INDEX", picindex)
- 		ptr = self.picloads[picindex].getData()
- 		if ptr != None:
- 			self.thumbnails[picindex][3] = ptr
- 			if (os_path.exists(self.thumbnails[picindex][2]) == True):
--				print "removing", self.thumbnails[picindex][2]
-+				print("removing", self.thumbnails[picindex][2])
- 				os_remove(self.thumbnails[picindex][2])
- 				del self.picloads[picindex]
- 				if len(self.picloads) == 0:
-@@ -1554,7 +1554,7 @@
- 		self.screen_timeout = 5000
- 		self.nextservice = None
- 
--		print "evEOF=%d" % iPlayableService.evEOF
-+		print("evEOF=%d" % iPlayableService.evEOF)
- 		self.__event_tracker = ServiceEventTracker(screen = self, eventmap =
- 			{
- 				iPlayableService.evSeekableStatusChanged: self.__seekableStatusChanged,
-@@ -1593,8 +1593,8 @@
- 		self.session.nav.stopService()
- 
- 	def __evEOF(self):
--		print "evEOF=%d" % iPlayableService.evEOF
--		print "Event EOF"
-+		print("evEOF=%d" % iPlayableService.evEOF)
-+		print("Event EOF")
- 		self.handleLeave(config.plugins.mytube.general.on_movie_stop.value)
- 
- 	def __setHideTimer(self):
-@@ -1624,9 +1624,9 @@
- 			self.infoCallback()
- 
- 	def playNextFile(self):
--		print "playNextFile"
-+		print("playNextFile")
- 		nextservice,error = self.nextCallback()
--		print "nextservice--->",nextservice
-+		print("nextservice--->",nextservice)
- 		if nextservice is None:
- 			self.handleLeave(config.plugins.mytube.general.on_movie_stop.value, error)
- 		else:
-@@ -1634,7 +1634,7 @@
- 			self.showInfobar()
- 
- 	def playPrevFile(self):
--		print "playPrevFile"
-+		print("playPrevFile")
- 		prevservice,error = self.prevCallback()
- 		if prevservice is None:
- 			self.handleLeave(config.plugins.mytube.general.on_movie_stop.value, error)
-@@ -1643,7 +1643,7 @@
- 			self.showInfobar()
- 
- 	def playagain(self):
--		print "playagain"
-+		print("playagain")
- 		if self.state != self.STATE_IDLE:
- 			self.stopCurrent()
- 		self.play()
-@@ -1664,24 +1664,24 @@
- 			self.__setHideTimer()
- 
- 	def stopCurrent(self):
--		print "stopCurrent"
-+		print("stopCurrent")
- 		self.session.nav.stopService()
- 		self.state = self.STATE_IDLE
- 
- 	def playpauseService(self):
--		print "playpauseService"
-+		print("playpauseService")
- 		if self.state == self.STATE_PLAYING:
- 			self.pauseService()
- 		elif self.state == self.STATE_PAUSED:
- 			self.unPauseService()
- 
- 	def pauseService(self):
--		print "pauseService"
-+		print("pauseService")
- 		if self.state == self.STATE_PLAYING:
- 			self.setSeekState(self.STATE_PAUSED)
- 		
- 	def unPauseService(self):
--		print "unPauseService"
-+		print("unPauseService")
- 		if self.state == self.STATE_PAUSED:
- 			self.setSeekState(self.STATE_PLAYING)
- 
-@@ -1704,42 +1704,42 @@
- 		return True
- 
- 	def __seekableStatusChanged(self):
--		print "seekable status changed!"
-+		print("seekable status changed!")
- 		if not self.isSeekable():
- 			self.setSeekState(self.STATE_PLAYING)
- 		else:
--			print "seekable"
-+			print("seekable")
- 
- 	def __serviceStarted(self):
- 		self.state = self.STATE_PLAYING
- 		self.__seekableStatusChanged()
- 
- 	def setSeekState(self, wantstate):
--		print "setSeekState"
-+		print("setSeekState")
- 		if wantstate == self.STATE_PAUSED:
--			print "trying to switch to Pause- state:",self.STATE_PAUSED
-+			print("trying to switch to Pause- state:",self.STATE_PAUSED)
- 		elif wantstate == self.STATE_PLAYING:
--			print "trying to switch to playing- state:",self.STATE_PLAYING
-+			print("trying to switch to playing- state:",self.STATE_PLAYING)
- 		service = self.session.nav.getCurrentService()
- 		if service is None:
--			print "No Service found"
-+			print("No Service found")
- 			return False
- 		pauseable = service.pause()
- 		if pauseable is None:
--			print "not pauseable."
-+			print("not pauseable.")
- 			self.state = self.STATE_PLAYING
- 
- 		if pauseable is not None:
--			print "service is pausable"
-+			print("service is pausable")
- 			if wantstate == self.STATE_PAUSED:
--				print "WANT TO PAUSE"
-+				print("WANT TO PAUSE")
- 				pauseable.pause()
- 				self.state = self.STATE_PAUSED
- 				if not self.shown:
- 					self.hidetimer.stop()
- 					self.show()
- 			elif wantstate == self.STATE_PLAYING:
--				print "WANT TO PLAY"
-+				print("WANT TO PLAY")
- 				pauseable.unpause()
- 				self.state = self.STATE_PLAYING
- 				if self.shown:
-@@ -1792,12 +1792,12 @@
- 	l2 = False
- 	l2cert = etpm.getCert(eTPM.TPMD_DT_LEVEL2_CERT)
- 	if l2cert is None:
--		print "l2cert not found"
-+		print("l2cert not found")
- 		return
- 	
- 	l2key = validate_cert(l2cert, rootkey)
- 	if l2key is None:
--		print "l2cert invalid"
-+		print("l2cert invalid")
- 		return
- 	l2 = True
- 	if l2:
 --- a/namezap/src/plugin.py
 +++ b/namezap/src/plugin.py
 @@ -10,7 +10,7 @@
@@ -8342,9 +7612,9 @@
  				os.unlink(path)
  		os.rmdir(d)
 -	except Exception, ex:
--	        print "AutoMount failed to remove", d, "Error:", ex
+-		print "AutoMount failed to remove", d, "Error:", ex
 +	except Exception as ex:
-+	        print("AutoMount failed to remove", d, "Error:", ex)
++		print("AutoMount failed to remove", d, "Error:", ex)
  
  class AutoMount():
  	"""Manages Mounts declared in a XML-Document."""
@@ -8390,7 +7660,7 @@
  				self.MountConsole.ePopen(umountcmd, self.CheckMountPointFinished, [data, callback])
  		else:
  			if data['active'] == 'False' or data['active'] is False:
-@@ -166,37 +166,37 @@
+@@ -166,35 +166,35 @@
  							options = data['options'] + ',noatime,noserverino,iocharset=utf8,username='+ tmpusername + ',password='+ data['password']
  							tmpcmd = "mount -t cifs -o %s '//%s/%s' '%s'" % (options, data['ip'], data['sharedir'], path)
  							command = tmpcmd.encode("UTF-8")
@@ -8411,31 +7681,29 @@
 +		print("[AutoMount.py] CheckMountPointFinished",result,retval)
  		(data, callback ) = extra_args
  		path = os.path.join('/media/net', data['sharename'])
- 		if os.path.exists(path):
- 			if os.path.ismount(path):
--				if self.automounts.has_key(data['sharename']):
-+				if data['sharename'] in self.automounts:
- 					self.automounts[data['sharename']]['isMounted'] = True
- 					desc = data['sharename']
- 					if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
- 						self.makeHDDlink(path)
- 					harddiskmanager.addMountedPartition(path, desc)
- 			else:
--				if self.automounts.has_key(data['sharename']):
-+				if data['sharename'] in self.automounts:
- 					self.automounts[data['sharename']]['isMounted'] = False
- 				if os.path.exists(path):
- 					if not os.path.ismount(path):
- 					        try:
- 							os.rmdir(path)
- 							harddiskmanager.removeMountedPartition(path)
--						except Exception, ex:
--						        print "Failed to remove", path, "Error:", ex
-+						except Exception as ex:
-+						        print("Failed to remove", path, "Error:", ex)
+ 		if [True for m in getProcMounts() if m[1] == path]:
+-			if self.automounts.has_key(data['sharename']):
++			if data['sharename'] in self.automounts:
+ 				self.automounts[data['sharename']]['isMounted'] = True
+ 				desc = data['sharename']
+ 				if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
+ 					self.makeHDDlink(path)
+ 				harddiskmanager.addMountedPartition(path, desc)
+ 		else:
+-			if self.automounts.has_key(data['sharename']):
++			if data['sharename'] in self.automounts:
+ 				self.automounts[data['sharename']]['isMounted'] = False
+ 			if os.path.exists(path):
+ 				try:
+ 					os.rmdir(path)
+ 					harddiskmanager.removeMountedPartition(path)
+-				except Exception, ex:
+-					print "Failed to remove", path, "Error:", ex
++				except Exception as ex:
++					print("Failed to remove", path, "Error:", ex)
+ 
  		if self.checkList:
  			# Go to next item in list...
- 			self.CheckMountPoint(self.checkList.pop(), callback)
 @@ -208,7 +208,7 @@
  
  	def makeHDDlink(self, path):
@@ -8455,14 +7723,14 @@
 +			print("[AutoMount.py] add symlink fails!", ex)
  		movie = os.path.join(hdd_dir, 'movie')
  		if not os.path.exists(movie):
- 		        try:
+ 			try:
  				os.mkdir(movie)
 -			except Exception, ex:
 -				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
 +			except Exception as ex:
 +				print("[AutoMount.py] Failed to create ", movie, "Error:", ex)
- 				remove("/hdd")
- 				symlink("/media/hdd /hdd")
+ 				os.remove("/hdd")
+ 				os.symlink("/media/hdd", "/hdd")
  
 @@ -233,7 +233,7 @@
  		self.timer.stop()
@@ -8533,13 +7801,13 @@
  		(path, callback ) = extra_args
  		if os.path.exists(path):
  			if not os.path.ismount(path):
- 			        try:
+ 				try:
  					os.rmdir(path)
  					harddiskmanager.removeMountedPartition(path)
 -				except Exception, ex:
--				        print "Failed to remove", path, "Error:", ex
+-					print "Failed to remove", path, "Error:", ex
 +				except Exception as ex:
-+				        print("Failed to remove", path, "Error:", ex)
++					print("Failed to remove", path, "Error:", ex)
  		if self.removeConsole:
  			if len(self.removeConsole.appContainers) == 0:
  				if callback is not None:
@@ -10408,191 +9676,6 @@
  					instance.actions["seekbarLeft"] = instance.actions["seekBackManual"]
  			DoBind(instance)
  
---- a/serienfilm/src/MovieInfo.py
-+++ b/serienfilm/src/MovieInfo.py
-@@ -2,7 +2,7 @@
- from Components.Element import cached, ElementError
- from enigma import iServiceInformation, eServiceReference
- from ServiceReference import ServiceReference
--from MovieList import MovieList
-+from .MovieList import MovieList
- 
- class MovieInfo(Converter, object):
- 	MOVIE_SHORT_DESCRIPTION = 0 # meta description when available.. when not .eit short description
---- a/serienfilm/src/MovieList.py
-+++ b/serienfilm/src/MovieList.py
-@@ -322,7 +322,7 @@
- 		parent = None
- 		info = self.serviceHandler.info(root)
- 		pwd = info and info.getName(root)
--		print "[SF-Plugin] MovieList.realDirUp: pwd = >%s<" % (str(pwd))
-+		print("[SF-Plugin] MovieList.realDirUp: pwd = >%s<" % (str(pwd)))
- 		if pwd and os.path.exists(pwd) and not os.path.samefile(pwd, defaultMoviePath()):
- 			parentdir = pwd[:pwd.rfind("/", 0, -1)] + "/"
- 			parent = eServiceReference("2:0:1:0:0:0:0:0:0:0:" + parentdir)
-@@ -351,7 +351,7 @@
- 		self.root = root
- 		list = self.serviceHandler.list(root)
- 		if list is None:
--			print "[SF-Plugin] listing of movies failed"
-+			print("[SF-Plugin] listing of movies failed")
- 			list = [ ]	
- 			return
- 		tags = set()
---- a/serienfilm/src/MovieSelection.py
-+++ b/serienfilm/src/MovieSelection.py
-@@ -6,7 +6,7 @@
- from Components.Button import Button
- from Components.ActionMap import HelpableActionMap, ActionMap
- from Components.MenuList import MenuList
--from MovieList import MovieList
-+from .MovieList import MovieList
- from Components.DiskInfo import DiskInfo
- from Components.Pixmap import Pixmap
- from Components.Label import Label
-@@ -26,7 +26,7 @@
- from Tools.BoundFunction import boundFunction
- 
- from enigma import eServiceReference, eServiceCenter, eTimer, eSize, iServiceInformation
--from SerienFilm import EpiSepCfg
-+from .SerienFilm import EpiSepCfg
- 
- config.movielist.sfmoviesort = ConfigInteger(default=MovieList.SORT_RECORDED)
- config.movielist.sflisttype = ConfigInteger(default=MovieList.LISTTYPE_MINIMAL)
-@@ -38,13 +38,13 @@
- 	try:
- 		if preferredTagEditor == None:
- 			preferredTagEditor = te
--			print "Preferred tag editor changed to ", preferredTagEditor
--		else:
--			print "Preferred tag editor already set to ", preferredTagEditor
--			print "ignoring ", te
-+			print("Preferred tag editor changed to ", preferredTagEditor)
-+		else:
-+			print("Preferred tag editor already set to ", preferredTagEditor)
-+			print("ignoring ", te)
- 	except:
- 		preferredTagEditor = te
--		print "Preferred tag editor set to ", preferredTagEditor
-+		print("Preferred tag editor set to ", preferredTagEditor)
- 
- def getPreferredTagEditor():
- 	global preferredTagEditor
-@@ -193,7 +193,7 @@
- 
- class SelectionEventInfo:
- 	def __init__(self):
--		print "[SF-Plugin] SF:SelectionEventInfo init"
-+		print("[SF-Plugin] SF:SelectionEventInfo init")
- 		self["Service"] = ServiceEvent()
- 		self.list.connectSelChanged(self.__selectionChanged)
- 		self.timer = eTimer()
---- a/serienfilm/src/SerienFilm.py
-+++ b/serienfilm/src/SerienFilm.py
-@@ -24,7 +24,7 @@
- 		</screen>"""
- 
- 	def __init__(self, session, args = None):
--		print "[SF-Plugin] SerienFilmCfg init"
-+		print("[SF-Plugin] SerienFilmCfg init")
- 		self.session = session
- 		Screen.__init__(self, session)
- 		self["myLabel"] = Label(_x("This plugin is configured by the MENU key in the movielist\n\nApplication details provides the HELP key in the movielist"))
---- a/serienfilm/src/plugin.py
-+++ b/serienfilm/src/plugin.py
-@@ -4,19 +4,19 @@
- from . import _x
- 
- from Plugins.Plugin import PluginDescriptor
--from SerienFilm import SerienFilmVersion, SerienFilmCfg
-+from .SerienFilm import SerienFilmVersion, SerienFilmCfg
- from traceback import print_exc
- from sys import stdout, exc_info
- from Screens.InfoBar import MoviePlayer
--from MovieSelection import MovieSelection
-+from .MovieSelection import MovieSelection
- 
- 
- def pluginConfig(session, **kwargs):
--	print "[SF-Plugin] Config\n"
-+	print("[SF-Plugin] Config\n")
- 	try:
- 		session.open(SerienFilmCfg)
--	except Exception, e:
--		print "[SF-Plugin] pluginConfig Config exception:\n" + str(e)
-+	except Exception as e:
-+		print("[SF-Plugin] pluginConfig Config exception:\n" + str(e))
- 
- 
- gLeavePlayerConfirmed = None
-@@ -25,8 +25,8 @@
- 	try:
- #		print "[SF-Plugin] showMoviesSF.InfoBar"
- 		self.session.openWithCallback(self.movieSelected, MovieSelection)
--	except Exception, e:
--		print "[SF-Plugin] showMoviesSF exception:\n" + str(e)
-+	except Exception as e:
-+		print("[SF-Plugin] showMoviesSF exception:\n" + str(e))
- 
- def showMoviesMP(self):
- 	ref = self.session.nav.getCurrentlyPlayingServiceReference()
-@@ -54,12 +54,12 @@
- 	try:
- 		dlg = self.create(screen, arguments, **kwargs)
- 	except:
--		print 'EXCEPTION IN DIALOG INIT CODE, ABORTING:'
--		print '-'*60
-+		print('EXCEPTION IN DIALOG INIT CODE, ABORTING:')
-+		print('-'*60)
- 		print_exc(file=stdout)
- 		from enigma import quitMainloop
- 		quitMainloop(5)
--		print '-'*60
-+		print('-'*60)
- 
- 	if dlg is None:
- 		return
-@@ -81,10 +81,10 @@
- def autostart(reason, **kwargs):
- 	if RUNPLUGIN != 1: return
- 	if reason == 0: # start
--		if kwargs.has_key("session"):
-+		if "session" in kwargs:
- 			global gLeavePlayerConfirmed
- 			Session = kwargs["session"]
--			print "[SF-Plugin] autostart, Session = " +  str(Session) + "\n"
-+			print("[SF-Plugin] autostart, Session = " +  str(Session) + "\n")
- 			try:
- 				from Screens.InfoBar import InfoBar
- 				InfoBar.showMovies = showMoviesSF
-@@ -93,15 +93,15 @@
- 					gLeavePlayerConfirmed = MoviePlayer.leavePlayerConfirmed
- 				MoviePlayer.leavePlayerConfirmed = leavePlayerConfirmedMP
- 
--				Session.doInstantiateDialog.im_class.doInstantiateDialog = doInstantiateDialogSF
-+				Session.doInstantiateDialog.__self__.__class__.doInstantiateDialog = doInstantiateDialogSF
- 				modname = Session.doInstantiateDialog.__module__
--				print "[SF-Plugin] mytest.Session.doInstantiateDialog modname = %s = %s" % (str(type(modname)), str(modname))
-+				print("[SF-Plugin] mytest.Session.doInstantiateDialog modname = %s = %s" % (str(type(modname)), str(modname)))
- 				
--			except Exception, e:
--				print "[SF-Plugin] autostart MovieList launch override exception:\n" + str(e)
-+			except Exception as e:
-+				print("[SF-Plugin] autostart MovieList launch override exception:\n" + str(e))
- 
- 		else:
--			print "[SF-Plugin] autostart without session\n"
-+			print("[SF-Plugin] autostart without session\n")
- 
- 
- def Plugins(**kwargs):
-@@ -112,5 +112,5 @@
- 		icon = "SerienFilm.png",
- 		where = PluginDescriptor.WHERE_PLUGINMENU,
- 		fnc = pluginConfig) )
--	print "[SF-Plugin] autostart descriptors = " + str(descriptors)
-+	print("[SF-Plugin] autostart descriptors = " + str(descriptors))
- 	return descriptors
 --- a/setpasswd/src/__init__.py
 +++ b/setpasswd/src/__init__.py
 @@ -12,7 +12,7 @@
@@ -25055,18 +24138,18 @@
  vps_already_registered = False
  
 @@ -123,7 +123,7 @@
- 			self.timerentry_vpsplugin_enabled = ConfigYesNo(default = self.timer.vpsplugin_enabled)
- 			self.timerentry_vpsplugin_dontcheck_pdc = self.timer.vpsplugin_enabled
- 		elif self.timer.eit is not None and self.timer.name != "" and self.timer not in self.session.nav.RecordTimer.timer_list and self.timer not in self.session.nav.RecordTimer.processed_timers and config.plugins.vps.default_vps.value:
+ 				default_value = {False: "yes_safe", True: "yes"}[self.timer.vpsplugin_overwrite]
+ 
+ 		elif config.plugins.vps.vps_default.value != "no" and self.timer.eit is not None and self.timer.name != "" and self.timer not in self.session.nav.RecordTimer.timer_list and self.timer not in self.session.nav.RecordTimer.processed_timers:
 -			from Vps_check import Check_PDC, VPS_check_PDC_Screen
 +			from .Vps_check import Check_PDC, VPS_check_PDC_Screen
  			service = self.timerentry_service_ref.ref
  			if service and service.flags & eServiceReference.isGroup:
  				service = getBestPlayableServiceReference(service, eServiceReference())
 @@ -170,7 +170,7 @@
- 				if config.plugins.vps.allow_overwrite.value == True:
- 					self.list.append(getConfigListEntry(_("Recording controlled by channel"), self.timerentry_vpsplugin_overwrite))
- 				
+ 			self.list.append(self.timerVps_enabled_Entry)
+ 
+ 			if self.timerentry_vpsplugin_enabled.value != "no":
 -				from Vps_check import Check_PDC, VPS_check_PDC_Screen
 +				from .Vps_check import Check_PDC, VPS_check_PDC_Screen
  				service = self.timerentry_service_ref.ref
@@ -25085,21 +24168,21 @@
  			nextExecution = 14400
 @@ -599,7 +599,7 @@
  			nextExecution = 1
- 		
+ 
  		self.timer.startLongTimer(nextExecution)
 -		print "[VPS-Plugin] next execution in "+ str(nextExecution) +" sec" 
-+		print("[VPS-Plugin] next execution in "+ str(nextExecution) +" sec") 
- 	
++		print("[VPS-Plugin] next execution in "+ str(nextExecution) +" sec")
+ 
  	def addTimerToList(self, timer):
  		self.vpstimers.append(vps_timer(timer, self.session))
 --- a/vps/src_py/Vps_check.py
 +++ b/vps/src_py/Vps_check.py
 @@ -10,7 +10,7 @@
- from Tools.XMLTools import stringToXML
  from Tools import Directories
  from time import time
--from Vps import vps_exe
-+from .Vps import vps_exe
+ from Components.config import config
+-from Vps import vps_exe, vps_timers
++from .Vps import vps_exe, vps_timers
  import NavigationInstance
  from xml.etree.cElementTree import parse as xml_parse
  
@@ -25114,9 +24197,9 @@
 +from .Vps import vps_timers
 +from .Vps_setup import VPS_Setup
 +from .Modifications import register_vps
+ from . import _
  
  # Config
- from Components.config import config, ConfigYesNo, ConfigSubsection, ConfigInteger
 @@ -20,7 +20,7 @@
  
  def autostart(reason, **kwargs):

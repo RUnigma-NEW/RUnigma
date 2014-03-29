@@ -82,6 +82,24 @@
  
      # bash bug again:
      :
+@@ -2486,11 +92486,12 @@
+   all_pkgltdl_files="COPYING.LIB Makefile Makefile.in Makefile.inc Makefile.am README acinclude.m4 aclocal.m4 argz_.h argz.c config.h.in config-h.in configure configure.ac configure.in libltdl/lt__alloc.h libltdl/lt__dirent.h libltdl/lt__glibc.h libltdl/lt__private.h libltdl/lt__strl.h libltdl/lt_dlloader.h libltdl/lt_error.h libltdl/lt_system.h libltdl/slist.h loaders/dld_link.c loaders/dlopen.c loaders/dyld.c loaders/load_add_on.c loaders/loadlibrary.c loaders/preopen.c loaders/shl_load.c lt__alloc.c lt__dirent.c lt__strl.c lt_dlloader.c lt_error.c ltdl.c ltdl.h slist.c"
+ 
+   # Locations for important files:
+-  prefix=@prefix@
+-  datadir=@datadir@
+-  pkgdatadir=@pkgdatadir@
+-  pkgltdldir=@pkgdatadir@
+-  aclocaldir=@aclocaldir@
++  prefix=${LIBTOOLIZE_PREFIX}
++  if [ -z "$prefix" ]; then prefix=@prefix@; fi
++  datadir=${prefix}/share
++  pkgdatadir=${prefix}/share/libtool
++  pkgltdldir=${prefix}/share/libtool
++  aclocaldir=${prefix}/share/aclocal
+   auxdir=
+   macrodir=
+   configure_ac=configure.in
 --- libtool-2.4.2.org/tests/defs.in	2011-10-17 12:19:53.000000000 +0200
 +++ libtool-2.4.2/tests/defs.in	2012-05-19 18:45:34.764985442 +0200
 @@ -596,7 +596,7 @@
