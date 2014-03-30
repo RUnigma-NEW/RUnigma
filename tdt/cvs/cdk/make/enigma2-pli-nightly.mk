@@ -10,39 +10,6 @@ ifdef ENABLE_E2PD0
 endif
 
 ifdef ENABLE_E2PD1
-  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=945aeb939308b3652b56bc6c577853369d54a537
-  patch:file://enigma2-pli-nightly.1.diff
-  patch:file://enigma2-pli-nightly.1.gstreamer.diff
-  patch:file://enigma2-pli-nightly.1.graphlcd.diff
-endif
-
-ifdef ENABLE_E2PD2
-  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=839e96b79600aba73f743fd39628f32bc1628f4c
-  patch:file://enigma2-pli-nightly.2.diff
-  patch:file://enigma2-pli-nightly.2.graphlcd.diff
-endif
-
-ifdef ENABLE_E2PD3
-  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=51a7b9349070830b5c75feddc52e97a1109e381e
-  patch:file://enigma2-pli-nightly.3.diff
-endif
-
-ifdef ENABLE_E2PD4
-  git://openpli.git.sourceforge.net/gitroot/openpli/enigma2:r=002b85aa8350e9d8e88f75af48c3eb8a6cdfb880
-  patch:file://enigma2-pli-nightly.4.diff
-endif
-
-ifdef ENABLE_E2PD5
-  git://github.com/technic/amiko-e2-pli.git;b=master
-  patch:file://enigma2-pli-nightly.5.diff
-endif
-
-ifdef ENABLE_E2PD6
-    git://github.com/technic/amiko-e2-pli.git:b=testing
-    patch:file://enigma2-pli-nightly-testing.diff
-endif
-
-ifdef ENABLE_E2PD7
   git://github.com/technic/amiko-e2-pli.git:b=last
   patch:file://enigma2-pli-nightly-last.diff
   patch:file://python_m4.diff
@@ -51,14 +18,10 @@ ifdef ENABLE_PY332
 endif
 endif
 
-ifdef ENABLE_E2PD8
+ifdef ENABLE_E2PD2
   git://github.com/technic/amiko-e2-pli.git:b=master
 endif
 
-ifdef ENABLE_E2PD9
-  git://github.com/openaaf/enigma2.git:r=0f7fa25f26091617213e85b0ed440beb67612ce3
-  patch:file://enigma2-pli-nightly.9.diff
-endif
 ;
 ]]END
 
