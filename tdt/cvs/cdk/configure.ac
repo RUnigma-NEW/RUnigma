@@ -57,13 +57,13 @@ AC_ARG_ENABLE(py273,
 TDT_CONDITIONAL(ENABLE_PY273,test "$enable_py273" = "yes")
 AC_SUBST(PY273)
 
-AC_ARG_ENABLE(py275,
-	AS_HELP_STRING(--enable-py275,      enable Python 2.7.5 ),
+AC_ARG_ENABLE(py276,
+	AS_HELP_STRING(--enable-py276,      enable Python 2.7.6 ),
 	[case "${enableval}" in
-		yes) PY275=py275 ;;
-	esac],[enable_py275=no])
-TDT_CONDITIONAL(ENABLE_PY275,test "$enable_py275" = "yes")
-AC_SUBST(PY275)
+		yes) PY276=py276 ;;
+	esac],[enable_py276=no])
+TDT_CONDITIONAL(ENABLE_PY276,test "$enable_py276" = "yes")
+AC_SUBST(PY276)
 
 AC_ARG_ENABLE(py332,
 	AS_HELP_STRING(--enable-py332,      enable Python 3.3.2 ),
@@ -594,7 +594,7 @@ GraphicFw Dep               : $GRAPHICFW_DEP
 EXTERNALLCD                 : $enable_externallcd
 EXTERNALLCD_DEP             : $EXTERNALLCD_DEP
 PYTHON-2.7.3                : $enable_py273
-PYTHON-2.7.5                : $enable_py275
+PYTHON-2.7.6                : $enable_py276
 PYTHON-3.3.2                : $enable_py332
 ccache support              : $enable_ccache
                               $ccacheinfo

@@ -2476,12 +2476,12 @@ $(DEPDIR)/python: bootstrap host_python openssl-dev sqlite libreadline bzip2 lib
 	$(DISTCLEANUP_python)
 	touch $@
 endif
-ifdef ENABLE_PY275
+ifdef ENABLE_PY276
 BEGIN[[
 python
-  2.7.5
+  2.7.6
   {PN}-{PV}
-  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.bz2
+  extract:http://www.python.org/ftp/python/{PV}/Python-{PV}.tar.xz
   pmove:Python-{PV}:{PN}-{PV}
   patch:file://python-{PV}/python_{PV}.diff
   patch:file://python-{PV}/python-{PV}-pgettext.diff

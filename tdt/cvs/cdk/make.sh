@@ -89,13 +89,10 @@ CONFIGPARAM="$CONFIGPARAM $KERNEL"
 
 ##############################################
 
-echo "   python 2.7.3"
-PYTHON="--enable-py27"
-
 echo ""
 echo -e "\npython:"
 echo " 1) Python 2.7.3 - по умолчанию"
-echo " 2) Python 2.7.5 - test"
+echo " 2) Python 2.7.6 - test"
 echo " 3) Python 3.3.2 - test"
 case $4 in
 	[1-3]) REPLY=$4
@@ -108,8 +105,8 @@ echo "---------------------------------------"
 case "$REPLY" in
 	1 ) PYTHON="--enable-py273"
 	echo "   Python 2.7.3" ;;
-	2 ) PYTHON="--enable-py275"
-	echo "   Python 2.7.5" ;;
+	2 ) PYTHON="--enable-py276"
+	echo "   Python 2.7.6" ;;
 	3 ) PYTHON="--enable-py332"
 	echo "   Python 3.3.2" ;;
 	*) PYTHON="--enable-py273"

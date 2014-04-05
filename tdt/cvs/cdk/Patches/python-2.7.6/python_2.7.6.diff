@@ -234,7 +234,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  
  # Compile a binary with gcc profile guided optimization.
  profile-opt:
-@@ -408,11 +411,11 @@
+@@ -408,7 +411,7 @@
  # Under BSD make, MAKEFLAGS might be " -s -v x=y".
  sharedmods: $(BUILDPYTHON) pybuilddir.txt
  	@case "$$MAKEFLAGS" in \
@@ -243,11 +243,6 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  	    *) quiet="";; \
  	esac; \
  	$(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' \
--		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
-+		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
- 
- # Build static library
- # avoid long command lines, same as LIBRARY_OBJS
 @@ -543,7 +546,7 @@
  $(GRAMMAR_H): $(GRAMMAR_INPUT) $(PGENSRCS)
  		@$(MKDIR_P) Include
@@ -434,29 +429,19 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          except:
              exc_type, why, tb = sys.exc_info()
              self.announce('*** WARNING: importing extension "%s" '
-@@ -437,10 +437,18 @@
- 
-     def detect_modules(self):
-         # Ensure that /usr/local is always used
--        add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
--        add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
--        self.add_gcc_paths()
--        self.add_multiarch_paths()
-+        if not cross_compiling:
-+            add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
-+            add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-+        if cross_compiling:
-+            self.add_gcc_paths()
+@@ -437,6 +437,12 @@
+             add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
+         if cross_compiling:
+             self.add_gcc_paths()
 +            modules_include_dirs = os.environ["PYTHON_MODULES_INCLUDE"].split()
 +            modules_lib_dirs = os.environ["PYTHON_MODULES_LIB"].split()
 +            for dir in modules_include_dirs:
 +                add_dir_to_list(self.compiler.include_dirs, dir)
 +            for dir in modules_lib_dirs:
 +                add_dir_to_list(self.compiler.library_dirs, dir)
-+        self.add_multiarch_paths()
+         self.add_multiarch_paths()
  
          # Add paths specified in the environment variables LDFLAGS and
-         # CPPFLAGS for header and library files.
 @@ -478,6 +478,10 @@
                  ('CPPFLAGS', '-I', self.compiler.include_dirs)):
              env_val = sysconfig.get_config_var(env_var)
