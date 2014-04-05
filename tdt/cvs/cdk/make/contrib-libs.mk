@@ -602,6 +602,8 @@ $(DEPDIR)/libid3tag: bootstrap $(DEPENDS_libid3tag)
 	$(PREPARE_libid3tag)
 	$(start_build)
 	cd $(DIR_libid3tag); \
+		touch NEWS AUTHORS ChangeLog; \
+		autoreconf -fi; \
 		$(BUILDENV) \
 		CFLAGS="$(TARGET_CFLAGS) -Os" \
 		./configure \
