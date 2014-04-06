@@ -56,6 +56,9 @@
 #include "sci.h"
 #include "atr.h"
 
+static int EnableVoltage;
+static char *boxtype = "vip1";
+
 /*****************************
  * MACROS
  *****************************/
@@ -129,23 +132,27 @@ ULONG get_reg(SCI_CONTROL_BLOCK *sci, BASE_ADDR base_address, ULONG reg)
         case BASE_ADDRESS_SYSCFG:
             reg_address = (ULONG)(sci->base_address_syscfg + reg);
             break;
-        case BASE_ADDRESS_PIO0:
+        /*case BASE_ADDRESS_PIO0:
             reg_address = (ULONG)(sci->base_address_pio0 + reg);
             break;
         case BASE_ADDRESS_PIO1:
             reg_address = (ULONG)(sci->base_address_pio1 + reg);
-            break;
-        case BASE_ADDRESS_PIO3:
+            break;*/
+        /*case BASE_ADDRESS_PIO3:
             reg_address = (ULONG)(sci->base_address_pio3 + reg);
-            break;
-        case BASE_ADDRESS_PIO4:
+            break;*/
+        /*case BASE_ADDRESS_PIO4:
             reg_address = (ULONG)(sci->base_address_pio4 + reg);
-            break;
+            break;*/
         case BASE_ADDRESS_ASC0:
+            reg_address = (ULONG)(sci->base_address_asc + reg);
+            break;
         case BASE_ADDRESS_ASC1:
             reg_address = (ULONG)(sci->base_address_asc + reg);
             break;
         case BASE_ADDRESS_SCI0:
+            reg_address = (ULONG)(sci->base_address_sci + reg);
+            break;
         case BASE_ADDRESS_SCI1:
             reg_address = (ULONG)(sci->base_address_sci + reg);
             break;
@@ -181,23 +188,27 @@ void set_reg(SCI_CONTROL_BLOCK *sci, BASE_ADDR base_address, ULONG reg, UINT bit
         case BASE_ADDRESS_SYSCFG:
             reg_address = (ULONG)(sci->base_address_syscfg + reg);
             break;
-        case BASE_ADDRESS_PIO0:
+        /*case BASE_ADDRESS_PIO0:
             reg_address = (ULONG)(sci->base_address_pio0 + reg);
             break;
         case BASE_ADDRESS_PIO1:
             reg_address = (ULONG)(sci->base_address_pio1 + reg);
-            break;
-        case BASE_ADDRESS_PIO3:
+            break;*/
+       /* case BASE_ADDRESS_PIO3:
             reg_address = (ULONG)(sci->base_address_pio3 + reg);
             break;
         case BASE_ADDRESS_PIO4:
             reg_address = (ULONG)(sci->base_address_pio4 + reg);
-            break;
+            break;*/
         case BASE_ADDRESS_ASC0:
+            reg_address = (ULONG)(sci->base_address_asc + reg);
+            break;
         case BASE_ADDRESS_ASC1:
             reg_address = (ULONG)(sci->base_address_asc + reg);
             break;
         case BASE_ADDRESS_SCI0:
+            reg_address = (ULONG)(sci->base_address_sci + reg);
+            break;
         case BASE_ADDRESS_SCI1:
             reg_address = (ULONG)(sci->base_address_sci + reg);
             break;
@@ -233,23 +244,27 @@ void set_reg_writeonly(SCI_CONTROL_BLOCK *sci, BASE_ADDR base_address, ULONG reg
         case BASE_ADDRESS_SYSCFG:
             reg_address = (ULONG)(sci->base_address_syscfg + reg);
             break;
-        case BASE_ADDRESS_PIO0:
+        /*case BASE_ADDRESS_PIO0:
             reg_address = (ULONG)(sci->base_address_pio0 + reg);
             break;
         case BASE_ADDRESS_PIO1:
             reg_address = (ULONG)(sci->base_address_pio1 + reg);
-            break;
-        case BASE_ADDRESS_PIO3:
+            break;*/
+        /*case BASE_ADDRESS_PIO3:
             reg_address = (ULONG)(sci->base_address_pio3 + reg);
             break;
         case BASE_ADDRESS_PIO4:
             reg_address = (ULONG)(sci->base_address_pio4 + reg);
-            break;
+            break;*/
         case BASE_ADDRESS_ASC0:
+            reg_address = (ULONG)(sci->base_address_asc + reg);
+            break;
         case BASE_ADDRESS_ASC1:
             reg_address = (ULONG)(sci->base_address_asc + reg);
             break;
         case BASE_ADDRESS_SCI0:
+            reg_address = (ULONG)(sci->base_address_sci + reg);
+            break;
         case BASE_ADDRESS_SCI1:
             reg_address = (ULONG)(sci->base_address_sci + reg);
             break;
@@ -285,23 +300,27 @@ void set_reg_writeonly16(SCI_CONTROL_BLOCK *sci, BASE_ADDR base_address, ULONG r
         case BASE_ADDRESS_SYSCFG:
             reg_address = (ULONG)(sci->base_address_syscfg + reg);
             break;
-        case BASE_ADDRESS_PIO0:
+        /*case BASE_ADDRESS_PIO0:
             reg_address = (ULONG)(sci->base_address_pio0 + reg);
             break;
         case BASE_ADDRESS_PIO1:
             reg_address = (ULONG)(sci->base_address_pio1 + reg);
-            break;
-        case BASE_ADDRESS_PIO3:
+            break;*/
+        /*case BASE_ADDRESS_PIO3:
             reg_address = (ULONG)(sci->base_address_pio3 + reg);
             break;
         case BASE_ADDRESS_PIO4:
             reg_address = (ULONG)(sci->base_address_pio4 + reg);
-            break;
+            break;*/
         case BASE_ADDRESS_ASC0:
+            reg_address = (ULONG)(sci->base_address_asc + reg);
+            break;
         case BASE_ADDRESS_ASC1:
             reg_address = (ULONG)(sci->base_address_asc + reg);
             break;
         case BASE_ADDRESS_SCI0:
+            reg_address = (ULONG)(sci->base_address_sci + reg);
+            break;
         case BASE_ADDRESS_SCI1:
             reg_address = (ULONG)(sci->base_address_sci + reg);
             break;
@@ -404,7 +423,7 @@ void smartcard_reset(SCI_CONTROL_BLOCK *sci, unsigned char wait)
          stpio_set_pin(sci->reset, 0); 
          //mdelay(500);
 				 //change to non Busy-Waiting
-				 msleep(500);
+				 msleep(200);
 
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 0);
@@ -420,7 +439,7 @@ void smartcard_reset(SCI_CONTROL_BLOCK *sci, unsigned char wait)
          stpio_set_pin(sci->reset, 0);
          //mdelay(500);
 				 //change to non Busy-Waiting
-				 msleep(500);
+				 msleep(200);
 
 	/* VCC cmd high */
 	stpio_set_pin(sci->cmdvcc, 0);
@@ -485,6 +504,7 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
 
     if (sci->id == 0)
     {
+	#if 0
         if (vcc == SCI_VCC_3)
         {
             sci->sci_atr_class=SCI_CLASS_B;
@@ -514,9 +534,12 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
 #endif
             return SCI_ERROR_VCC_INVALID;
         }
+	#endif
+	sci->sci_atr_class=SCI_CLASS_AB;
     }
     else if (sci->id == 1)
     {
+	#if 0
         if (vcc == SCI_VCC_3)
         {
 			sci->sci_atr_class=SCI_CLASS_B;
@@ -547,6 +570,8 @@ INT smartcard_voltage_config(SCI_CONTROL_BLOCK *sci, UINT vcc)
 #endif
             return SCI_ERROR_VCC_INVALID;
         }
+	#endif
+	sci->sci_atr_class=SCI_CLASS_AB;
     }
     else
     {
@@ -1273,18 +1298,23 @@ static int SCI_Set_Clock(SCI_CONTROL_BLOCK *sci)
 
 static int SCI_IO_init(SCI_CONTROL_BLOCK *sci)
 {
-	PDEBUG(" ...\n");
+    PDEBUG(" ...\n");
 
     sci->txd    	= stpio_request_pin(sci->pio_port, 0, "sc_io",    STPIO_ALT_BIDIR);/* ist koreckt */
     sci->rxd    	= stpio_request_pin(sci->pio_port, 1, "sc_rxd",   STPIO_IN); 	   /* ist koreckt */
     sci->clock  	= stpio_request_pin(sci->pio_port, 3, "sc_clock", STPIO_ALT_OUT);  /* ist koreckt */
     sci->reset  	= stpio_request_pin(sci->pio_port, 4, "sc_reset", STPIO_OUT);	   /* ist koreckt */
     sci->cmdvcc 	= stpio_request_pin(sci->pio_port, 5, "sc_cmdvcc",STPIO_OUT); 	   /* ist koreckt */
-    sci->voltage 	= stpio_request_pin(sci->pio_port, 6, "sc_volt",STPIO_IN);	   /* ist koreckt */
+    
+    if (EnableVoltage == 1){
+	sci->voltage 	= stpio_request_pin(sci->pio_port, 6, "sc_volt",STPIO_IN);	   /* ist koreckt */
+    }
     sci->detect 	= stpio_request_pin(sci->pio_port, 7, "sc_detect",STPIO_IN);	   /* ist koreckt */
 
     /* Enable SCI Voltage clock 3V/5V */
-    stpio_set_pin(sci->voltage, 1);
+    if (EnableVoltage == 1){
+    	stpio_set_pin(sci->voltage, 1);
+    }
 
     if(!SCI_SetClockSource(sci)) return 0;
     if(!SCI_ClockEnable(sci)) return 0;
@@ -1331,7 +1361,7 @@ SCI_ERROR sci_init(void)
     SCI_ERROR rc = SCI_ERROR_OK;
 	SCI_CONTROL_BLOCK *sci;
     UCHAR i;
-
+    
     /* Init and set to defaults the main sci control struct and the hw registers */
     for (i = 0; i < SCI_NUMBER_OF_CONTROLLERS; i++)
     {
@@ -1341,24 +1371,20 @@ SCI_ERROR sci_init(void)
 
         if (i == 0)
         {
-            sci->base_address_pio0    = (ULONG)PIO0_BASE_ADDRESS;
             sci->base_address_asc     = (ULONG)ASC0_BASE_ADDRESS;
             sci->base_address_sci     = (ULONG)SCI0_BASE_ADDRESS;
-            sci->base_address_pio4    = (ULONG)PIO4_BASE_ADDRESS;
             sci->pio_port = 0;
 
-            set_reg(sci, BASE_ADDRESS_ASC0, ASC0_CTRL, 0x2787, 0x3FFF);
+	    set_reg(sci, BASE_ADDRESS_ASC0, ASC0_CTRL, 0x2787, 0x3FFF);
             set_reg(sci, BASE_ADDRESS_ASC0, ASC0_BAUDRATE, 0x28B, 0xFFFF);
             set_reg(sci, BASE_ADDRESS_ASC0, ASC0_GUARDTIME, GT_DEFAULT, 0x1FF);
         }
         else if (i == 1)
         {
-            sci->base_address_pio0    = (ULONG)PIO1_BASE_ADDRESS;
             sci->base_address_asc     = (ULONG)ASC1_BASE_ADDRESS;
             sci->base_address_sci     = (ULONG)SCI1_BASE_ADDRESS;
-            sci->base_address_pio4    = (ULONG)PIO3_BASE_ADDRESS;
             sci->pio_port = 1;
-            
+
             set_reg(sci, BASE_ADDRESS_ASC1, ASC1_CTRL, 0x2787, 0x3FFF);
             set_reg(sci, BASE_ADDRESS_ASC1, ASC1_BAUDRATE, 0x28B, 0xFFFF);
             set_reg(sci, BASE_ADDRESS_ASC1, ASC1_GUARDTIME, GT_DEFAULT, 0x1FF);
@@ -1957,7 +1983,7 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 		}
 		//mdelay(57);
 		//change to non Busy-Waiting
-		//msleep(57);
+		msleep(57);
 	}
 
 	if(sci->card_detect!=SCI_CARD_PRESENT)
@@ -1973,12 +1999,13 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 			do{
 				//mdelay(10);
 				//change to non Busy-Waiting
-				//msleep(10);
+				msleep(10);
 				cnt_tmp++;
 				real_num_bytes=sci->rx_rptr - sci->rx_wptr;
 			}while ( (real_num_bytes<length) && (cnt_tmp<100) );	/* Wait a second */
 		}
 	}
+
 
 	if (real_num_bytes>length)
 		real_num_bytes=length;
@@ -1995,7 +2022,7 @@ static ssize_t sci_read(struct file *file, char *buffer, size_t length, loff_t *
 		sci->rx_rptr=0;
 		//mdelay(3);   /*Hellmaster1024: on Atevio we seem to have some timing probs without that delay */
 		//change to non Busy-Waiting
-		msleep(3);
+		//msleep(3);
 
 	}
 	return (ssize_t) real_num_bytes;
@@ -2138,7 +2165,7 @@ static int detect_ATR(SCI_CONTROL_BLOCK *sci)
 		rc = -1;
 	//mdelay(1100);
 	//change to non Busy-Waiting
-	msleep(1100);
+	msleep(200);
 
 	// Change the clock
 	if( (sci->read_buf[sci->rx_wptr]!=0x3B) && (sci->read_buf[sci->rx_wptr]!=0x3F) )
@@ -2146,10 +2173,11 @@ static int detect_ATR(SCI_CONTROL_BLOCK *sci)
 		memset(sci->read_buf, 0, SCI_BUFFER_SIZE);
 		smartcard_clock_config( sci, 625 );
                 
-		if(sci->id==0)
+		if(sci->id==0) {
 			set_reg(sci, BASE_ADDRESS_ASC0, ASC0_BAUDRATE, 0x271, 0xFFFF);
-		else if(sci->id==1)
+		} else if(sci->id==1) {
 			set_reg(sci, BASE_ADDRESS_ASC1, ASC1_BAUDRATE, 0x271, 0xFFFF);
+		}
 
 		sci->sci_parameters.ETU = 372;
 
@@ -2159,7 +2187,7 @@ static int detect_ATR(SCI_CONTROL_BLOCK *sci)
 			rc = -1;
 		//mdelay(750);
 		//change to non Busy-Waiting
-		msleep(750);
+		msleep(200);
 	}
 
 	return (rc);
@@ -2221,10 +2249,12 @@ int sci_ioctl(struct inode *inode,
 				if(sci_id==0)
 				{
 					set_reg(sci, BASE_ADDRESS_ASC0, ASC0_CTRL, PARITY_ODD, 0);
+					dprintk(1, "ioctl IOCTL_SET_RESET: invert\n");
 				}
 				else if(sci_id==1)
 				{
 					set_reg(sci, BASE_ADDRESS_ASC1, ASC1_CTRL, PARITY_ODD, 0);
+					dprintk(1, "ioctl IOCTL_SET_RESET: invert\n");
 				}
 			}
 			else if (sci->byte_invert==UNINVERT)
@@ -2232,10 +2262,12 @@ int sci_ioctl(struct inode *inode,
 				if(sci_id==0)
 				{
 					set_reg(sci, BASE_ADDRESS_ASC0, ASC0_CTRL, 0, PARITY_ODD);
+					dprintk(1, "ioctl IOCTL_SET_RESET: uninver\n");
 				}
 				else if(sci_id==1)
 				{
 					set_reg(sci, BASE_ADDRESS_ASC1, ASC1_CTRL, 0, PARITY_ODD);
+					dprintk(1, "ioctl IOCTL_SET_RESET: uninver\n");
 				}
 			}
 			if(rc || !sci->WWT)
@@ -2510,7 +2542,23 @@ static int __init sci_module_init(void)
     dev = MKDEV(MAJOR_NUM, MINOR_START);
 
     sci_driver_init = 0;
-
+    
+    if((boxtype[0] == 0) || (strcmp("vip1", boxtype) == 0))
+    {
+	printk("Boxtype: Vip1");
+		EnableVoltage = 0;
+    }
+    else if(strcmp("vip2", boxtype) == 0)
+    {
+	printk("Boxtype: Vip2");
+	EnableVoltage = 1;
+    }
+    else
+    {
+	printk("Boxtype: Vip1");
+	EnableVoltage = 0;
+    }
+    
     if (sci_init() == SCI_ERROR_OK)
     {
         if(register_chrdev_region(dev, SCI_NUMBER_OF_CONTROLLERS, DEVICE_NAME) < 0)
@@ -2589,6 +2637,9 @@ MODULE_VERSION(SMARTCARD_VERSION);
 
 module_param(debug, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 MODULE_PARM_DESC(debug, "Turn on/off SmartCard debugging (default:off)");
+
+module_param(boxtype,charp,0);
+MODULE_PARM_DESC(boxtype, "Boxtype extra 3V/5V Enable: vip2 (default vip1");
 
 MODULE_AUTHOR("Spider-Team");
 MODULE_DESCRIPTION("SmartCard Interface driver");

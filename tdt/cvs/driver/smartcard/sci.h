@@ -72,12 +72,12 @@
 
 #define SCI_UNKNOWN_CLASS			0           /**  */
 
-#define SCI_CLASS_A                 1           /**< Not used: only 5V Vcc to SC */
-#define SCI_CLASS_B                 2           /**< Not used: only 3V Vcc to SC */
-#define SCI_CLASS_AB                3           /**< Not used: 5V or 3V Vcc to SC */
+#define SCI_CLASS_A                 1    //1       /**< Not used: only 5V Vcc to SC */
+#define SCI_CLASS_B                 2    //2       /**< Not used: only 3V Vcc to SC */
+#define SCI_CLASS_AB                3    //3       /**< Not used: 5V or 3V Vcc to SC */ <-use only this
 
-#define SCI_VCC_3                   3           /**< 3V to SC */
-#define SCI_VCC_5                   5           /**< 3V to SC */
+#define SCI_VCC_3                   3  //3          /**< 3V to SC */
+#define SCI_VCC_5                   5  //5         /**< 3V to SC */
 
 #define SCI_PROC_FILENAME           "sc"
 
@@ -212,10 +212,6 @@
 #define PINFO	PDEBUG
 #define PERROR	PDEBUG
 
-// FIXME Remove it
-// This value is defined only to compile but it is a 'dummy' value
-#define __STB_SYS_CLK               (63000000)      // 63MHz SYS_CLK of xxx
-
 /*****************************
  * DATA TYPES
  *****************************/
@@ -226,15 +222,10 @@
 typedef enum
 {
     BASE_ADDRESS_SYSCFG=0,
-    BASE_ADDRESS_PIO0, 
-    BASE_ADDRESS_PIO1, 
-    BASE_ADDRESS_PIO3,
-    BASE_ADDRESS_PIO4,
     BASE_ADDRESS_ASC0,
     BASE_ADDRESS_ASC1,
     BASE_ADDRESS_SCI0,
-    BASE_ADDRESS_SCI1,
-	BASE_ADDRESS_FPGA
+    BASE_ADDRESS_SCI1
 } BASE_ADDR;
 
 /* Card present */
@@ -301,7 +292,7 @@ typedef struct
 } SCI_PARAMETERS;
 
 /**************************************/
-#define	HW_FIFO_SIZE			16
+#define	HW_FIFO_SIZE			16 // 16
 /* Used in exclusive mode */
 #define	RX_FULL_IRQ			0x01
 #define	TX_EMPTY_IRQ			0x02

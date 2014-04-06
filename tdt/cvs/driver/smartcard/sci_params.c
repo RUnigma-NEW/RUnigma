@@ -69,13 +69,6 @@ void sci_atom_set_para_f(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_parameter
     ULONG divisor, frequency;
 
     /* set scclk to nearest possible frequency */
-    divisor = 0;
-    do
-    {
-        divisor++;
-        frequency = __STB_SYS_CLK / (2 * divisor);
-    }
-    while(frequency > p_sci_parameters->f);
 
     sci->sci_parameters.f = frequency;
 }
@@ -292,8 +285,7 @@ SCI_ERROR sci_set_para_f(SCI_CONTROL_BLOCK *sci, SCI_PARAMETERS *p_sci_parameter
 
     /* set the f of sci */
     if((p_sci_parameters->f >= SCI_MIN_F/1000000) &&
-       (p_sci_parameters->f <= SCI_MAX_F/1000000) &&
-       (p_sci_parameters->f <= (__STB_SYS_CLK / 2)))
+       (p_sci_parameters->f <= SCI_MAX_F/1000000))
     {
         if(sci->sci_parameters.f != p_sci_parameters->f)
         {
