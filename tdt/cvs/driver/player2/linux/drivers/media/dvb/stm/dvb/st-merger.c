@@ -129,11 +129,13 @@ unsigned long tsm_io = 0;
 void* tsm_io = NULL;
 #endif
 
+#if defined(ADB_BOX)
 extern int TsinMode;
 enum{
     SERIAL,
 	PARALLEL,
 	    };
+#endif
 
 extern int highSR;
 
@@ -185,6 +187,7 @@ struct stm_dma_req_config fdma_req_config = {
 static const char *fdmac_id[]    = { STM_DMAC_ID, NULL };
 static const char *fdma_cap_hb[] = { STM_DMA_CAP_HIGH_BW, NULL };
 
+#if defined(ADB_BOX)
 //wstrzykiwanie streamu do SWTS z sterownika DVB-T * injecting a stream of SWTS dvbt driver
 void extern_inject_data(u32 *data, off_t size)
 {
@@ -217,6 +220,7 @@ for (n=0;n<blocks;n++) {
 
 }
 EXPORT_SYMBOL(extern_inject_data);
+#endif
 
 void stm_tsm_inject_data(struct stm_tsm_handle *handle, u32 *data, off_t size)
 {
@@ -364,7 +368,7 @@ int stm_tsm_inject_user_data(const char __user *data, off_t size)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
   dma_unmap_sg(NULL, sg, nr_pages, DMA_TO_DEVICE);
 #else
-/*#warning FIXME, STM24, skipping dma_unmap_sg */
+#warning FIXME, STM24, skipping dma_unmap_sg
 /* dma_unmap_sg(NULL, sg, nr_pages, DMA_TO_DEVICE); */
 #endif
 
@@ -706,7 +710,7 @@ void stm_tsm_init (int use_cimax)
 #if !defined(FORTIS_HDBOX) && !defined(UFS912) && !defined(UFS913) && !defined(SPARK) && !defined(OCTAGON1008) && !defined(HOMECAST5101) && \
     !defined(ATEVIO7500) && !defined(HS7810A) && !defined(HS7110) && !defined(WHITEBOX) && !defined(CUBEREVO) && !defined(CUBEREVO_MINI2) && \
     !defined(CUBEREVO_MINI) && !defined(CUBEREVO_250HD) && !defined(CUBEREVO_2000HD) && \
-    !defined(CUBEREVO_9500HD) && !defined(CUBEREVO_MINI_FTA)
+    !defined(CUBEREVO_9500HD) && !defined(CUBEREVO_MINI_FTA) && !defined(HL101)
       unsigned int stream_sync = 0xbc4733;
 #else
       unsigned int stream_sync = 0xbc4722;
@@ -836,7 +840,7 @@ void stm_tsm_init (int use_cimax)
 
       ctrl_outl(0x0, tsm_io + SWTS_CFG(0));
 
-#if  defined(FORTIS_HDBOX) || defined(UFS922) || defined(TF7700) || defined(HL101) || defined(VIP1_V2) || defined(UFS912) || defined(UFS913) || defined(SPARK) || defined(CUBEREVO) || defined(CUBEREVO_MINI2) || defined(CUBEREVO_MINI) || defined(CUBEREVO_250HD) || defined(CUBEREVO_2000HD) || defined(CUBEREVO_9500HD) || defined(CUBEREVO_MINI_FTA) || defined(ATEVIO7500) || defined(HS7810A) || defined(HS7110) || defined(WHITEBOX) || defined(IPBOX9900)
+#if  defined(FORTIS_HDBOX) || defined(UFS922) || defined(TF7700) || defined(HL101) || defined(CLASSIC) || defined(VIP1_V2) || defined(UFS912) || defined(UFS913) || defined(SPARK) || defined(CUBEREVO) || defined(CUBEREVO_MINI2) || defined(CUBEREVO_MINI) || defined(CUBEREVO_250HD) || defined(CUBEREVO_2000HD) || defined(CUBEREVO_9500HD) || defined(CUBEREVO_MINI_FTA) || defined(ATEVIO7500) || defined(HS7810A) || defined(HS7110) || defined(WHITEBOX) || defined(IPBOX9900)
       ctrl_outl(0x0, tsm_io + SWTS_CFG(1));
       ctrl_outl(0x0, tsm_io + SWTS_CFG(2));
 #endif
@@ -846,7 +850,7 @@ void stm_tsm_init (int use_cimax)
 
 
    /* RAM partitioning of streams max 1984kb (31*64) */
-#if  defined(FORTIS_HDBOX) || defined(UFS922) || defined(HL101) || defined(VIP1_V2)
+#if  defined(FORTIS_HDBOX) || defined(UFS922) || /*defined(HL101) || */defined(CLASSIC) || defined(VIP1_V2)
       ctrl_outl(0x0,    tsm_io + TSM_STREAM0_CFG);     	//320kb (5*64)
       ctrl_outl(0x500,  tsm_io + TSM_STREAM1_CFG);   	//320kb (5*64)
       ctrl_outl(0xa00,  tsm_io + TSM_STREAM2_CFG);   	//256kb (4*64)
@@ -1045,7 +1049,7 @@ void stm_tsm_init (int use_cimax)
       ctrl_outl(0x0, tsm_io + TSM_PROG_CNT0);
 
 //-if definied (UFS910) ???
-#if  !defined(TF7700) && !defined(UFS922) && !defined(FORTIS_HDBOX) && !defined(HL101) && !defined(VIP1_V2) && !defined(HOMECAST5101) && !defined(UFS912) && !defined(UFS913) && !defined(SPARK) && !defined(OCTAGON1008) && !defined(CUBEREVO) && !defined(CUBEREVO_MINI2) && !defined(CUBEREVO_MINI) && !defined(CUBEREVO_250HD) && !defined(CUBEREVO_2000HD) && !defined(CUBEREVO_9500HD) && !defined(CUBEREVO_MINI_FTA) && !defined(ATEVIO7500) && !defined(HS7810A) && !defined(HS7110) && !defined(WHITEBOX) && !defined(IPBOX9900)
+#if  !defined(TF7700) && !defined(UFS922) && !defined(FORTIS_HDBOX) && !defined(HL101) && !defined(CLASSIC) && !defined(VIP1_V2) && !defined(HOMECAST5101) && !defined(UFS912) && !defined(UFS913) && !defined(SPARK) && !defined(OCTAGON1008) && !defined(CUBEREVO) && !defined(CUBEREVO_MINI2) && !defined(CUBEREVO_MINI) && !defined(CUBEREVO_250HD) && !defined(CUBEREVO_2000HD) && !defined(CUBEREVO_9500HD) && !defined(CUBEREVO_MINI_FTA) && !defined(ATEVIO7500) && !defined(HS7810A) && !defined(HS7110) && !defined(WHITEBOX) && !defined(IPBOX9900)
 
       /* UFS910 stream configuration */
       /* route stream 2 to PTI */
@@ -1091,7 +1095,7 @@ void stm_tsm_init (int use_cimax)
       /* set stream 4 on */
       ret = ctrl_inl(tsm_io + TSM_STREAM4_CFG);
       ctrl_outl(ret | 0x80,tsm_io + TSM_STREAM4_CFG);
-#elif  defined(TF7700) || defined(UFS922) || defined(HL101) || defined(VIP1_V2)
+#elif  defined(TF7700) || defined(UFS922) || defined(HL101) || defined(CLASSIC) || defined(VIP1_V2)
 
       /* TF7700 stream configuration */
       /* route stream 1 to PTI */
@@ -1376,7 +1380,7 @@ void stm_tsm_init (int use_cimax)
       if (reinit) {
          printk("reinit\n");
       } else {
-#if	defined(SPARK) || defined(SPARK7162) || defined(HS7110) || defined(WHITEBOX)
+#if	defined(SPARK) || defined(SPARK7162) || defined(HS7110) || defined(WHITEBOX) || defined(HL101)
          tsm_io = ioremap (/* config->tsm_base_address */ TSMergerBaseAddress, 0x1000);
 #else // !defined(SPARK) && !defined(SPARK7162) && !defined(HS7110) && !defined(WHITEBOX)
          tsm_io = ioremap (/* config->tsm_base_address */ 0x19242000, 0x1000);

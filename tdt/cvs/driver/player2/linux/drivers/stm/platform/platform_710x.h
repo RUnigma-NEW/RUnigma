@@ -25,7 +25,7 @@ static struct platform_device *platform_7109[] __initdata = {
 #ifdef __TDT__
 static struct resource h264pp_resource_7100[] = {
         [0] = { .start = 0x19214000,
-                .end   = 0x19215000,
+                .end   = 0x1921FFFF, //0x19215000,
                 .flags = IORESOURCE_MEM,     },
         [1] = { .start = 149,
                 .end   = 149,
