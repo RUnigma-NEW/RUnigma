@@ -1872,7 +1872,7 @@ $(DEPDIR)/elementtree: bootstrap $(DEPENDS_elementtree)
 #
 BEGIN[[
 libxml2
-  2.9.1
+  2.9.0
   {PN}-{PV}
   extract:http://xmlsoft.org/sources/{PN}-{PV}.tar.gz
   patch:file://{PN}-{PV}.diff
