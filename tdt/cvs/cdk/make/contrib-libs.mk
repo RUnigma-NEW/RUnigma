@@ -155,7 +155,7 @@ PKGR_lirc = r3
 FILES_lirc = \
 /usr/bin/lircd \
 /usr/lib/*.so* \
-/etc/lircd*
+/etc/*lircd*
 
 $(DEPDIR)/lirc: bootstrap $(DEPENDS_lirc)
 	$(PREPARE_lirc)
