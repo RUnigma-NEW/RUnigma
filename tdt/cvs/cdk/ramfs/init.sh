@@ -29,6 +29,10 @@ root="/dev/sda1"
 echo "Активирую дисплей"
 insmod /drvko/proton.ko
 
+if [ `cat /proc/cmdline | grep -c STB=` -eq 0 ] ; then
+	reboot -f
+fi
+
 echo "Ожидание" > /dev/vfd
 while [ -e `fdisk -l | grep -i "Disk" | awk '{ print $1 }'` ]
 do
