@@ -16,7 +16,7 @@
  
  %build
  %host_setup
-@@ -38,11 +38,8 @@
+@@ -38,11 +40,8 @@
  
  for f in insmod lsmod modinfo modprobe rmmod; do
  	rm %{buildroot}%{_stm_host_bin_dir}/$f
@@ -28,7 +28,7 @@
  
  cd ..
  cp COPYING LICENSE
-@@ -58,9 +52,6 @@
+@@ -56,9 +55,6 @@
  %files -n %{_pkgname}
  %defattr(-,root,root)
  %attr(755,root,root)%{_stm_host_bin_dir}/depmod

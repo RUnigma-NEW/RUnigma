@@ -1,5 +1,5 @@
---- stm-cross-gcc.spec.orig	2013-08-09 03:05:04.000000000 +0200
-+++ stm-cross-gcc.spec	2013-08-17 13:23:44.062483000 +0200
+--- stm-cross-gcc.spec.orig
++++ stm-cross-gcc.spec
 @@ -12,6 +12,7 @@
  Source3: gcc-protoize.1
  
@@ -8,7 +8,7 @@
  Patch100: gcc-4.8.2-stm-140225.patch
  Patch101: gcc-4.7.0-sh-use-gnu-hash-style.patch
  Patch102: gcc-4.2.4-multilibpath.patch
-@@ -62,6 +63,9 @@
+@@ -52,6 +53,9 @@
  
  %define _gccdir %{_stm_cross_lib_dir}/gcc/%{_stm_target_config}/%{version}
  
@@ -18,7 +18,7 @@
  %description
  This is the GNU C compiler, a fairly portable optimizing compiler which
  supports multiple languages.  This package includes support for C, and
-@@ -152,6 +156,7 @@
+@@ -142,6 +146,7 @@
  
  # SH4 common patches
  %if %target_cpu sh
@@ -26,7 +26,7 @@
  %patch100 -p1
  %patch101 -p1
  %patch102 -p1
-@@ -185,7 +190,7 @@
+@@ -172,7 +177,7 @@
  echo 'STMicroelectronics/Linux Base %{version}-%{release}' > gcc/DEV-PHASE
  
  # Update configure in the gcc directory
@@ -35,7 +35,7 @@
  
  ##############################################################################
  
-@@ -270,15 +275,6 @@
+@@ -255,15 +260,6 @@
  %cross_setup
  %cross_makeinstall
  
@@ -51,7 +51,7 @@
  cd ..
  
  %compress_man %{buildroot}%{_stm_cross_info_dir}
-@@ -347,14 +343,16 @@
+@@ -327,14 +323,16 @@
  	\( -name "libmudflap*" -o -name "libssp*" \) -print | \
  	xargs --no-run-if-empty --verbose rm
  # Remove some installed files we don't ship, to keep rpm happy
@@ -73,7 +73,7 @@
  
  rm -rf %{buildroot}%{_stm_cross_targetconf_dir}/share/gcc-%{version}/python
  
-@@ -469,10 +467,6 @@
+@@ -457,10 +455,6 @@
  %{_stm_cross_targetconf_dir}/bin/cpp
  %{_stm_cross_sharedstate_dir}/locale/*/LC_MESSAGES/cpplib.mo
  
@@ -84,7 +84,7 @@
  %files -n %{_gpp_pkgname}
  %defattr(-,root,root)
  %{_stm_cross_bin_dir}/%{_stm_target_toolprefix}g++
-@@ -487,7 +481,6 @@
+@@ -475,7 +469,6 @@
  
  %files -n %{_gcc_pkgname}-doc
  %defattr(-,root,root)
@@ -92,7 +92,7 @@
  %{_stm_cross_man_dir}/man7/*
  
  %if %target_cpu sh
-@@ -504,22 +497,6 @@
+@@ -492,22 +485,6 @@
  %{_stm_cross_target_dir}/lib/m4-nofpu/libgcc_s-%{version}.so.1
  %endif
  
@@ -113,5 +113,5 @@
 -	%{_stm_cross_info_dir}/gcc.info
 -
  %changelog
- * Wed Jan 24 2014 Christian Bruel <christian.bruel@st.com> 129
- - [Add patch: gcc-4.8.2-stm-140124.patch] Maintenance release
+ * Wed Feb 12 2014 Christian Bruel <christian.bruel@st.com> 131
+ - [Add patch: gcc-4.8.2-stm-140225.patch]

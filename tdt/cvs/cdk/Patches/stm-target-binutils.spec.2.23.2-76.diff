@@ -1,6 +1,6 @@
 --- stm-target-binutils.spec.orig	2012-07-12 12:08:26.060242765 +0200
 +++ stm-target-binutils.spec	2012-07-12 12:08:26.008242763 +0200
-@@ -27,6 +27,7 @@
+@@ -23,6 +23,7 @@
  # SH4 patches
  Patch100: binutils-2.23.2-stm-130806.patch
  Patch101: binutils-2.23.2-config_bfd.patch
@@ -8,7 +8,7 @@
  
  # ST200 patches
  
-@@ -41,9 +42,6 @@
+@@ -38,9 +39,6 @@
  BuildRequires: texinfo
  %endif
  BuildRequires: %{_stm_pkg_prefix}-host-autoconf
@@ -18,7 +18,7 @@
  BuildRequires: %{_stm_pkg_prefix}-host-rpmconfig
  
  Group: Development/Languages
-@@ -88,6 +86,7 @@
+@@ -85,6 +83,7 @@
  %if %target_cpu sh
  %patch100 -p1
  %patch101 -p1
@@ -26,7 +26,7 @@
  %endif
  
  %if %target_cpu st200
-@@ -148,9 +147,6 @@
+@@ -146,9 +145,6 @@
  
  %make tooldir=%{_stm_target_prefix}
  
