@@ -560,7 +560,7 @@ $(DEPDIR)/$(USBUTILS): $(USBUTILS_RPM)
 
 UDEV := udev
 UDEV_DEV := udev-dev
-UDEV_VERSION := 162-38
+UDEV_VERSION := 162-39
 PKGR_udev := r0
 UDEV_SPEC := stm-target-$(UDEV).spec
 UDEV_SPEC_PATCH := stm-target-udev.spec.diff
