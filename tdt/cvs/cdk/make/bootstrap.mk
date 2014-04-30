@@ -217,19 +217,41 @@ $(DEPDIR)/$(HOST_PKGCONFIG): $(HOST_PKGCONFIG_RPM)
 	touch $@
 
 #
+# host-liblzo
+#
+BEGIN[[
+host-liblzo
+  2.06
+  lzo-{PV}
+  extract:http://www.oberhumer.com/opensource/{PN}/download/lzo-{PV}.tar.gz
+  make:install
+;
+]]END
+
+$(DEPDIR)/host-liblzo: $(DEPENDS_host-liblzo)
+	$(PREPARE_host-liblzo)
+	cd $(DIR_host-liblzo); \
+		./configure \
+			--prefix=$(hostprefix) && \
+		$(MAKE) all; \
+		$(INSTALL_host-liblzo)
+	$(DISTCLEANUP_host-liblzo)
+	touch $@
+
+#
 # HOST-MTD-UTILS
 #
 HOST_MTD_UTILS = host-mtd-utils
-HOST_MTD_UTILS_VERSION = 1.0.1-8
+HOST_MTD_UTILS_VERSION = 1.5.0-17
 HOST_MTD_UTILS_SPEC = stm-$(HOST_MTD_UTILS).spec
-HOST_MTD_UTILS_SPEC_PATCH =
-HOST_MTD_UTILS_PATCHES =
+HOST_MTD_UTILS_SPEC_PATCH = stm-$(HOST_MTD_UTILS).spec.diff
+HOST_MTD_UTILS_PATCHES = stm-$(HOST_MTD_UTILS).diff
 
 HOST_MTD_UTILS_RPM = RPMS/sh4/$(STLINUX)-$(HOST_MTD_UTILS)-$(HOST_MTD_UTILS_VERSION).sh4.rpm
 
 $(HOST_MTD_UTILS_RPM): \
 		$(addprefix Patches/,$(HOST_MTD_UTILS_SPEC_PATCH) $(HOST_MTD_UTILS_PATCHES)) \
-		$(archivedir)/stlinux23-$(HOST_MTD_UTILS)-$(HOST_MTD_UTILS_VERSION).src.rpm
+		$(archivedir)/stlinux24-$(HOST_MTD_UTILS)-$(HOST_MTD_UTILS_VERSION).src.rpm
 	rpm  $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(HOST_MTD_UTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(HOST_MTD_UTILS_SPEC) < $(buildprefix)/Patches/$(HOST_MTD_UTILS_SPEC_PATCH) ) &&) \
 	$(if $(HOST_MTD_UTILS_PATCHES),cp $(addprefix Patches/,$(HOST_MTD_UTILS_PATCHES)) SOURCES/ &&) \
@@ -570,6 +592,8 @@ bootstrap-host: | \
 	host_automake \
 	host-base-passwd \
 	host-distributionutils \
+	host-liblzo \
+	host-mtd-utils \
 	host-module-init-tools \
 	host-flex
 	touch .deps/$@

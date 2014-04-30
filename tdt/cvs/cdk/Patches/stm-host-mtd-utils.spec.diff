@@ -1,0 +1,22 @@
+--- stm-host-mtd-utils.spec.orig
++++ stm-host-mtd-utils.spec
+@@ -8,10 +8,10 @@
+ Patch0: mtd-utils-%{version}-static-lzo.patch
+ Patch1: mtd-utils-%{version}-endianness.patch
+ Patch2: mtd-utils-%{version}-fs_h.patch
++Patch3: stm-host-mtd-utils.diff
+ Buildroot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+ Prefix: %{_stm_install_prefix}
+ %define _docdir %{_stm_host_doc_dir}
+-BuildRequires: %{_stm_pkg_prefix}-host-rpmconfig %{_stm_pkg_prefix}-host-liblzo
+ Requires: %{_stm_pkg_prefix}-host-filesystem
+ 
+ %description
+@@ -31,6 +31,7 @@
+ %patch0 -p1
+ %patch1 -p1
+ %patch2 -p1
++%patch3 -p1
+ 
+ %build
+ %host_setup
