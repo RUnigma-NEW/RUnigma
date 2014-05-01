@@ -1,0 +1,18 @@
+--- stm-target-mtd-utils.spec.orig
++++ stm-target-mtd-utils.spec
+@@ -8,6 +8,7 @@
+ URL: http://git.infradead.org/mtd-utils.git
+ Patch0: mtd-utils-%{version}-nanddump-fix-buffer-overrun.patch
+ Patch1: mtd-utils-%{version}-flashcp-64bit-offset.patch
++Patch2: stm-target-mtd-utils.diff
+ Buildroot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-%{_stm_target_arch}-XXXXXX)
+ Prefix: %{_stm_cross_target_dir}
+ %define _docdir %{_stm_cross_target_dir}/%{_stm_target_doc_dir}
+@@ -51,6 +52,7 @@
+ %setup -q -n mtd-utils-%{version}
+ %patch0 -p1
+ %patch1 -p1
++%patch2 -p1
+ 
+ %build
+ %target_setup

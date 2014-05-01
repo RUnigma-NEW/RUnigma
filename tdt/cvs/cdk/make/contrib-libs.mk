@@ -4122,12 +4122,15 @@ $(DEPDIR)/lzo: $(DEPENDS_lzo)
 	$(PREPARE_lzo)
 	$(start_build)
 	cd $(DIR_lzo); \
-		$(BUILDENV) \
-		./configure \
-			--host=$(target) \
-			--prefix=/usr; \
-		$(MAKE) all; \
-		$(INSTALL_lzo)
+	$(BUILDENV) \
+	./configure \
+		--build=$(build) \
+		--host=$(target) \
+		--enable-shared \
+		--disable-static \
+		--prefix=/usr && \
+	$(MAKE) all; \
+	$(INSTALL_lzo)
 	$(tocdk_build)
 	$(toflash_build)
 	$(DISTCLEANUP_lzo)

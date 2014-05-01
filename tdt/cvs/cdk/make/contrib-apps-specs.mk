@@ -241,18 +241,20 @@ $(DEPDIR)/%$(DISTRIBUTIONUTILS_DOC): $(DISTRIBUTIONUTILS_DOC_RPM)
 # HOST-MTD-UTILS
 #
 MTD_UTILS := mtd-utils
-MTD_UTILS_VERSION := TODO
+FILES_mtd_utils = \
+/usr/sbin/*
+MTD_UTILS_VERSION := 1.5.0-18
 MTD_UTILS_SPEC := stm-target-$(MTD_UTILS).spec
-MTD_UTILS_SPEC_PATCH :=
-MTD_UTILS_PATCHES :=
+MTD_UTILS_SPEC_PATCH := stm-target-$(MTD_UTILS).spec.diff
+MTD_UTILS_PATCHES := stm-target-$(MTD_UTILS).diff
 
 MTD_UTILS_RPM := RPMS/sh4/$(STLINUX)-sh4-$(MTD_UTILS)-$(MTD_UTILS_VERSION).sh4.rpm
 
-$(MTD_UTILS_RPM): \
+$(MTD_UTILS_RPM): lzo \
 		$(addprefix Patches/,$(MTD_UTILS_SPEC_PATCH) $(MTD_UTILS_PATCHES)) \
-		$(archivedir)/$(STLINUX)-target-$(MTD_UTILS)-$(MTD_UTILS_VERSION).src.rpm libz
+		$(archivedir)/$(STLINUX)-target-$(MTD_UTILS)-$(MTD_UTILS_VERSION).src.rpm
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
-	$(if $(MTD_UTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(MTD_UTILS_SPEC) < $(buildprefix)/Patches/$(MTD_UTILS_PATCH) ) &&) \
+	$(if $(MTD_UTILS_SPEC_PATCH),( cd SPECS && patch -p1 $(MTD_UTILS_SPEC) < $(buildprefix)/Patches/$(MTD_UTILS_SPEC_PATCH) ) &&) \
 	$(if $(MTD_UTILS_PATCHES),cp $(addprefix Patches/,$(MTD_UTILS_PATCHES)) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
 	rpmbuild $(DRPMBUILD) -bb -v --clean --nodeps --target=sh4-linux SPECS/$(MTD_UTILS_SPEC)
@@ -260,6 +262,8 @@ $(MTD_UTILS_RPM): \
 $(DEPDIR)/$(MTD_UTILS): $(MTD_UTILS_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	$(start_build)
+	$(fromrpm_build)
 	touch $@
 
 #

@@ -1,0 +1,11 @@
+diff -Naur mtd-utils-1.5.0.orig/mkfs.jffs2.c mtd-utils-1.5.0/mkfs.jffs2.c
+--- mtd-utils-1.5.0.orig/mkfs.jffs2.c
++++ mtd-utils-1.5.0/mkfs.jffs2.c
+@@ -50,6 +50,7 @@
+ #define PROGRAM_NAME "mkfs.jffs2"
+ 
+ #define _GNU_SOURCE
++ #define WITHOUT_XATTR
+ #include <sys/types.h>
+ #include <stdio.h>
+ #include <sys/stat.h>

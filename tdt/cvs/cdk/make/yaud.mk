@@ -54,6 +54,7 @@ disk-utils: \
 	e2fsprogs \
 	$(XFSPROGS) \
 	util-linux \
+	mtd-utils \
 	jfsutils \
 	$(SG3)
 	touch $@
