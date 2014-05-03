@@ -1,5 +1,5 @@
---- Python-2.7.5.orig//Modules/_ctypes/libffi/configure.ac      2009-04-28 22:01:18.000000000 +0200
-+++ Python-2.7.5/Modules/_ctypes/libffi/configure.ac    2010-04-20 22:46:02.000000000 +0200
+--- Python-2.7.6.orig//Modules/_ctypes/libffi/configure.ac
++++ Python-2.7.6/Modules/_ctypes/libffi/configure.ac
 @@ -414,7 +414,6 @@
    fi)
  
@@ -8,10 +8,10 @@
      if test "x$sys_symbol_underscore" = xyes; then
          AC_DEFINE(SYMBOL_UNDERSCORE, 1, [Define if symbols are underscored.])
      fi
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.3/configure.ac
---- python-2.7.3.org/configure.ac	2012-04-10 01:07:36.000000000 +0200
-+++ python-2.7.3/configure.ac	2012-11-18 13:32:01.396962900 +0100
-@@ -764,6 +764,7 @@ fi  
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/configure.ac python-2.7.6/configure.ac
+--- python-2.7.6.org/configure.ac
++++ python-2.7.6/configure.ac
+@@ -868,6 +868,7 @@
  
  # Other platforms follow
  if test $enable_shared = "yes"; then
@@ -19,7 +19,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
    AC_DEFINE(Py_ENABLE_SHARED, 1, [Defined if Python is built as a shared library.])
    case $ac_sys_system in
      BeOS*)
-@@ -824,6 +825,7 @@ if test $enable_shared = "yes"; then
+@@ -928,6 +929,7 @@
  
    esac
  else # shared is disabled
@@ -27,7 +27,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
    case $ac_sys_system in
      CYGWIN*)
            BLDLIBRARY='$(LIBRARY)'
-@@ -1747,6 +1749,12 @@ AC_SUBST(LDCXXSHARED)
+@@ -1905,6 +1907,12 @@
  AC_SUBST(BLDSHARED)
  AC_SUBST(CCSHARED)
  AC_SUBST(LINKFORSHARED)
@@ -40,7 +40,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
  # SO is the extension of shared libraries `(including the dot!)
  # -- usually .so, .sl on HP-UX, .dll on Cygwin
  AC_MSG_CHECKING(SO)
-@@ -3139,7 +3139,7 @@
+@@ -3326,7 +3334,7 @@
  
  AC_MSG_RESULT($ac_cv_buggy_getaddrinfo)
  
@@ -49,7 +49,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
  then
  	if test $ipv6 = yes
  	then
-@@ -4222,7 +4222,7 @@
+@@ -4415,7 +4423,7 @@
    ]]])],
    [ac_cv_have_long_long_format=yes],
    [ac_cv_have_long_long_format=no],
@@ -58,7 +58,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
     if test x$GCC = xyes; then
      save_CFLAGS=$CFLAGS
      CFLAGS="$CFLAGS -Werror -Wformat"
-@@ -4287,7 +4287,7 @@
+@@ -4496,7 +4504,7 @@
  
  AC_CHECK_TYPE(socklen_t,,
    AC_DEFINE(socklen_t,int,
@@ -67,7 +67,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
  #ifdef HAVE_SYS_TYPES_H
  #include <sys/types.h>
  #endif
-@@ -4320,7 +4328,7 @@ done
+@@ -4529,7 +4537,7 @@
  AC_MSG_RESULT(done)
  
  # generate output files
@@ -76,10 +76,10 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/configure.ac python-2.7.
  AC_CONFIG_FILES([Modules/ld_so_aix], [chmod +x Modules/ld_so_aix])
  AC_OUTPUT
  
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Include/pyport.h python-2.7.3/Include/pyport.h
---- python-2.7.3.org/Include/pyport.h	2012-04-10 01:07:29.000000000 +0200
-+++ python-2.7.3/Include/pyport.h	2012-11-18 13:32:01.396962900 +0100
-@@ -846,7 +846,7 @@
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Include/pyport.h python-2.7.6/Include/pyport.h
+--- python-2.7.6.org/Include/pyport.h
++++ python-2.7.6/Include/pyport.h
+@@ -883,7 +883,7 @@
   * rather than waiting for integer multiplication to trigger bogus
   * overflows.
   */
@@ -88,10 +88,10 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Include/pyport.h python-
  #endif
  
  #ifdef __cplusplus
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/distutils/command/build_ext.py python-2.7.3/Lib/distutils/command/build_ext.py
---- python-2.7.3.org/Lib/distutils/command/build_ext.py	2012-04-10 01:07:29.000000000 +0200
-+++ python-2.7.3/Lib/distutils/command/build_ext.py	2012-11-18 13:32:01.396962900 +0100
-@@ -437,7 +437,8 @@
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Lib/distutils/command/build_ext.py python-2.7.6/Lib/distutils/command/build_ext.py
+--- python-2.7.6.org/Lib/distutils/command/build_ext.py
++++ python-2.7.6/Lib/distutils/command/build_ext.py
+@@ -435,7 +435,8 @@
          # "build" tree.
          outputs = []
          for ext in self.extensions:
@@ -101,7 +101,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/distutils/command/bu
          return outputs
  
      def build_extensions(self):
-@@ -456,9 +457,22 @@
+@@ -454,9 +455,22 @@
                     "a list of source filenames") % ext.name
          sources = list(sources)
  
@@ -126,7 +126,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/distutils/command/bu
              log.debug("skipping '%s' extension (up-to-date)", ext.name)
              return
          else:
-@@ -519,7 +533,7 @@
+@@ -517,7 +531,7 @@
          language = ext.language or self.compiler.detect_language(sources)
  
          self.compiler.link_shared_object(
@@ -135,7 +135,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/distutils/command/bu
              libraries=self.get_libraries(ext),
              library_dirs=ext.library_dirs,
              runtime_library_dirs=ext.runtime_library_dirs,
-@@ -530,7 +544,7 @@
+@@ -528,7 +542,7 @@
              target_lang=language)
  
  
@@ -144,9 +144,9 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/distutils/command/bu
  
          """Walk the list of source files in 'sources', looking for SWIG
          interface (.i) files.  Run SWIG on all that are found, and
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/plat-linux3/regen python-2.7.3/Lib/plat-linux3/regen
---- python-2.7.3.org/Lib/plat-linux3/regen	1970-01-01 01:00:00.000000000 +0100
-+++ python-2.7.3/Lib/plat-linux3/regen	2012-11-18 13:32:01.396962900 +0100
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Lib/plat-linux3/regen python-2.7.6/Lib/plat-linux3/regen
+--- python-2.7.6.org/Lib/plat-linux3/regen
++++ python-2.7.6/Lib/plat-linux3/regen
 @@ -0,0 +1,8 @@
 +#! /bin/sh
 +case `uname` in
@@ -156,9 +156,9 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/plat-linux3/regen py
 +esac
 +set -v
 +h2py -i '(u_long)' /usr/include/sys/types.h /usr/include/netinet/in.h /usr/include/dlfcn.h
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/sitecustomize.py python-2.7.3/Lib/sitecustomize.py
---- python-2.7.3.org/Lib/sitecustomize.py	1970-01-01 01:00:00.000000000 +0100
-+++ python-2.7.3/Lib/sitecustomize.py	2012-11-18 13:32:01.396962900 +0100
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Lib/sitecustomize.py python-2.7.6/Lib/sitecustomize.py
+--- python-2.7.6.org/Lib/sitecustomize.py
++++ python-2.7.6/Lib/sitecustomize.py
 @@ -0,0 +1,45 @@
 +# OpenEmbedded sitecustomize.py (C) 2002-2008 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
 +# GPLv2 or later
@@ -205,27 +205,28 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Lib/sitecustomize.py pyt
 +    __enableDefaultEncoding()
 +    __registerExitHandler()
 +    __enableReadlineSupport()
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2.7.3/Makefile.pre.in
---- python-2.7.3.org/Makefile.pre.in	2012-04-10 01:07:33.000000000 +0200
-+++ python-2.7.3/Makefile.pre.in	2012-11-18 13:32:01.396962900 +0100
-@@ -182,6 +182,7 @@
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Makefile.pre.in python-2.7.6/Makefile.pre.in
+--- python-2.7.6.org/Makefile.pre.in
++++ python-2.7.6/Makefile.pre.in
+@@ -191,6 +191,8 @@
  
  PYTHON=		python$(EXE)
  BUILDPYTHON=	python$(BUILDEXE)
 +HOSTPYTHON=./hostpython
++HOSTPGEN="./hostpgen
  
- # The task to run while instrument when building the profile-opt target
- PROFILE_TASK=	$(srcdir)/Tools/pybench/pybench.py -n 2 --with-gc --with-syscheck
-@@ -215,6 +216,8 @@
- # Parser
- PGEN=		Parser/pgen$(EXE)
+ PYTHON_FOR_BUILD=@PYTHON_FOR_BUILD@
+ _PYTHON_HOST_PLATFORM=@_PYTHON_HOST_PLATFORM@
+@@ -245,6 +247,8 @@
+ 		Parser/grammar.c \
+ 		Parser/pgen.c
  
 +HOSTPGEN=	$(PGEN)
 +
  POBJS=		\
  		Parser/acceler.o \
  		Parser/grammar1.o \
-@@ -366,7 +366,7 @@
+@@ -405,7 +409,7 @@
  
  # Default target
  all:		build_all
@@ -234,7 +235,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  
  # Compile a binary with gcc profile guided optimization.
  profile-opt:
-@@ -408,7 +411,7 @@
+@@ -456,7 +460,7 @@
  # Under BSD make, MAKEFLAGS might be " -s -v x=y".
  sharedmods: $(BUILDPYTHON) pybuilddir.txt
  	@case "$$MAKEFLAGS" in \
@@ -243,7 +244,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  	    *) quiet="";; \
  	esac; \
  	$(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' \
-@@ -543,7 +546,7 @@
+@@ -598,7 +602,7 @@
  $(GRAMMAR_H): $(GRAMMAR_INPUT) $(PGENSRCS)
  		@$(MKDIR_P) Include
  		$(MAKE) $(PGEN)
@@ -252,7 +253,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  $(GRAMMAR_C): $(GRAMMAR_H) $(GRAMMAR_INPUT) $(PGENSRCS)
  		$(MAKE) $(GRAMMAR_H)
  		touch $(GRAMMAR_C)
-@@ -938,27 +941,27 @@
+@@ -1006,27 +1010,27 @@
  			$(DESTDIR)$(LIBDEST)/distutils/tests ; \
  	fi
  	PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
@@ -286,8 +287,8 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  
  # Create the PLATDIR source directory, if one wasn't distributed..
  $(srcdir)/Lib/$(PLATDIR):
-@@ -969,10 +969,12 @@ $(srcdir)/Lib/$(PLATDIR):
- 	export EXE; EXE="$(BUILDEXE)"; \
+@@ -1045,10 +1049,12 @@
+ 	fi; \
  	cd $(srcdir)/Lib/$(PLATDIR); $(RUNSHARED) ./regen
  
 -python-config: $(srcdir)/Misc/python-config.in
@@ -301,7 +302,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  
  # Install the include files
  INCLDIRSTOMAKE=$(INCLUDEDIR) $(CONFINCLUDEDIR) $(INCLUDEPY) $(CONFINCLUDEPY)
-@@ -1030,8 +1032,8 @@ libainstall:	all python-config
+@@ -1106,8 +1112,8 @@
  	$(INSTALL_DATA) Misc/python.pc $(DESTDIR)$(LIBPC)/python-$(VERSION).pc
  	$(INSTALL_SCRIPT) $(srcdir)/Modules/makesetup $(DESTDIR)$(LIBPL)/makesetup
  	$(INSTALL_SCRIPT) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
@@ -311,17 +312,15 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  	@if [ -s Modules/python.exp -a \
  		"`echo $(MACHDEP) | sed 's/^\(...\).*/\1/'`" = "aix" ]; then \
  		echo; echo "Installing support files for building shared extension modules on AIX:"; \
-@@ -1062,7 +1065,8 @@
+@@ -1138,6 +1144,7 @@
  # Install the dynamically loadable modules
  # This goes into $(exec_prefix)
  sharedinstall: sharedmods
--	$(RUNSHARED) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py install \
 +	CC='$(CC)' LDSHARED='$(BLDSHARED)' LDFLAGS='$(LDFLAGS)' OPT='$(OPT)' CROSS_COMPILE='$(CROSS_COMPILE)' \
-+	$(RUNSHARED) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py install \
+ 	$(RUNSHARED) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py install \
  	   	--prefix=$(prefix) \
  		--install-scripts=$(BINDIR) \
- 		--install-platlib=$(DESTSHARED) \
-@@ -1206,6 +1208,7 @@ clobber: clean profile-removal
+@@ -1287,6 +1294,7 @@
  		config.cache config.log pyconfig.h Modules/config.c
  	-rm -rf build platform
  	-rm -rf $(PYTHONFRAMEWORKDIR)
@@ -329,9 +328,9 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Makefile.pre.in python-2
  
  # Make things extra clean, before making a distribution:
  # remove all generated files, even Makefile[.pre]
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Python/compile.c python-2.7.3/Python/compile.c
---- python-2.7.3.org/Python/compile.c	2012-04-10 01:07:35.000000000 +0200
-+++ python-2.7.3/Python/compile.c	2012-11-16 23:07:56.635237310 +0100
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/Python/compile.c python-2.7.6/Python/compile.c
+--- python-2.7.6.org/Python/compile.c
++++ python-2.7.6/Python/compile.c
 @@ -32,7 +32,7 @@
  #include "symtable.h"
  #include "opcode.h"
@@ -341,9 +340,9 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/Python/compile.c python-
  
  #define DEFAULT_BLOCK_SIZE 16
  #define DEFAULT_BLOCKS 8
-diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/setup.py
---- python-2.7.3.org/setup.py	2012-04-10 01:07:36.000000000 +0200
-+++ python-2.7.3/setup.py	2012-11-16 23:27:30.519285978 +0100
+diff -Nur '--exclude-from=diff-ignore' python-2.7.6.org/setup.py python-2.7.6/setup.py
+--- python-2.7.6.org/setup.py
++++ python-2.7.6/setup.py
 @@ -159,6 +159,7 @@
      def __init__(self, dist):
          build_ext.__init__(self, dist)
@@ -367,8 +366,8 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          # Workaround for Mac OS X: The Carbon-based modules cannot be
          # reliably imported into a command-line Python
          if 'Carbon' in ext.extra_link_args:
-@@ -322,6 +322,8 @@
-             self.announce('WARNING: skipping import check for cross compiled "%s"'
+@@ -318,6 +327,8 @@
+             self.announce('WARNING: skipping import check for Cygwin-based "%s"'
                  % ext.name)
              return
 +        if os.environ.get('CROSS_COMPILE_TARGET') == 'yes':
@@ -376,7 +375,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          ext_filename = os.path.join(
              self.build_lib,
              self.get_ext_filename(self.get_ext_fullname(ext.name)))
-@@ -333,27 +333,31 @@
+@@ -329,27 +340,31 @@
          try:
              imp.load_dynamic(ext.name, ext_filename)
          except ImportError, why:
@@ -429,7 +428,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          except:
              exc_type, why, tb = sys.exc_info()
              self.announce('*** WARNING: importing extension "%s" '
-@@ -437,6 +437,12 @@
+@@ -442,6 +457,12 @@
              add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
          if cross_compiling:
              self.add_gcc_paths()
@@ -442,7 +441,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          self.add_multiarch_paths()
  
          # Add paths specified in the environment variables LDFLAGS and
-@@ -478,6 +478,10 @@
+@@ -456,6 +477,10 @@
                  ('CPPFLAGS', '-I', self.compiler.include_dirs)):
              env_val = sysconfig.get_config_var(env_var)
              if env_val:
@@ -453,7 +452,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
                  # To prevent optparse from raising an exception about any
                  # options in env_val that it doesn't know about we strip out
                  # all double dashes and any dashes followed by a character
-@@ -476,16 +495,16 @@
+@@ -478,16 +503,16 @@
                      for directory in reversed(options.dirs):
                          add_dir_to_list(dir_list, directory)
  
@@ -480,7 +479,7 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
  
          try:
              have_unicode = unicode
-@@ -426,6 +437,9 @@
+@@ -509,6 +534,9 @@
                  '/lib', '/usr/lib',
                  ):
                  add_dir_to_list(lib_dirs, d)
@@ -490,8 +489,8 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          exts = []
          missing = []
  
-@@ -440,6 +460,18 @@
-         platform = self.get_platform()
+@@ -517,6 +545,18 @@
+ 
          srcdir = sysconfig.get_config_var('srcdir')
  
 +        # add paths from CFLAGS and LDFLAGS
@@ -507,9 +506,9 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
 +        print (inc_dirs)
 +
          # Check for AtheOS which has libraries in non-standard locations
-         if platform == 'atheos':
+         if host_platform == 'atheos':
              lib_dirs += ['/system/libs', '/atheos/autolnk/lib']
-@@ -1060,6 +1060,9 @@
+@@ -1106,6 +1146,9 @@
          MIN_SQLITE_VERSION = ".".join([str(x)
                                      for x in MIN_SQLITE_VERSION_NUMBER])
  
@@ -519,13 +518,13 @@ diff -Nur '--exclude-from=diff-ignore' python-2.7.3.org/setup.py python-2.7.3/se
          # Scan the default include directories before the SQLite specific
          # ones. This allows one to override the copy of sqlite on OSX,
          # where /usr/include contains an old version of sqlite.
-@@ -2034,8 +2034,11 @@
+@@ -2013,8 +2056,11 @@
                                           ffi_configfile):
                  from distutils.dir_util import mkpath
                  mkpath(ffi_builddir)
-+                if os.environ.get('CROSS_COMPILING') != 'yes':
 -                config_args = [arg for arg in sysconfig.get_config_var("CONFIG_ARGS").split()
 -                               if (('--host=' in arg) or ('--build=' in arg))]
++                if os.environ.get('CROSS_COMPILING') != 'yes':
 +                    config_args = [arg for arg in sysconfig.get_config_var("CONFIG_ARGS").split()
 +                                   if (('--host=' in arg) or ('--build=' in arg))]
 +                else:
@@ -554,10 +553,10 @@ diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
  
  # Path to the base directory of the project. On Windows the binary may
  # live in project/PCBuild9.  If we're dealing with an x64 Windows build,
-Index: Python-2.7.3/Misc/python-config.sh.in
+Index: Python-2.7.6/Misc/python-config.sh.in
 ===================================================================
 --- /dev/null
-+++ Python-2.7.3/Misc/python-config.sh.in
++++ Python-2.7.6/Misc/python-config.sh.in
 @@ -0,0 +1,101 @@
 +#!/bin/sh
 +

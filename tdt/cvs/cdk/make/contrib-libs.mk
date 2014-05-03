@@ -2522,7 +2522,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 	$(start_build)
 	( cd $(DIR_python); \
 		CONFIG_SITE= \
-		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
+		autoreconf --verbose --install --force ./Modules/_ctypes/libffi ; \
 		autoconf; \
 		$(BUILDENV) \
 		./configure \
@@ -2533,31 +2533,20 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			--sysconfdir=/etc \
 			--enable-shared \
 			--disable-ipv6 \
-			--without-cxx-main \
-			--with-threads \
-			--with-pymalloc \
-			--with-system-expat \
-			--with-system-ffi \
 			--enable-unicode=ucs4 \
-			--with-signal-module \
-			--with-wctype-functions \
-			ac_cv_have_chflags=no \
-			ac_cv_have_lchflags=no \
-			ac_cv_have_long_long_format=yes \
-			ac_cv_buggy_getaddrinfo=no \
 			ac_cv_file__dev_ptmx=yes \
 			ac_cv_file__dev_ptc=no \
-			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			OPT="$(TARGET_CFLAGS)"; \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
+			PYTHON_DISABLE_MODULES="_tkinter" \
 			PYTHON_MODULES_INCLUDE="$(prefix)/$*cdkroot/usr/include" \
 			PYTHON_MODULES_LIB="$(prefix)/$*cdkroot/usr/lib" \
-			LDFLAGS="$(TARGET_LDFLAGS) -L$(prefix)/$*cdkroot/usr/lib -L$(DIR_python)" \
 			CROSS_COMPILE_TARGET=yes \
 			CROSS_COMPILE=$(target) \
 			HOSTARCH=sh4-linux \
 			CFLAGS="$(TARGET_CFLAGS) -fno-inline" \
+			LDFLAGS="$(TARGET_LDFLAGS)" \
 			LD="$(target)-gcc" \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
