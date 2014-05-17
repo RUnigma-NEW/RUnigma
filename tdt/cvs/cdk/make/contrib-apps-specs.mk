@@ -238,11 +238,20 @@ $(DEPDIR)/%$(DISTRIBUTIONUTILS_DOC): $(DISTRIBUTIONUTILS_DOC_RPM)
 	touch $@
 
 #
-# HOST-MTD-UTILS
+# MTD-UTILS
 #
 MTD_UTILS := mtd-utils
 FILES_mtd_utils = \
-/usr/sbin/*
+/usr/sbin/mkfs.jffs2 \
+/usr/sbin/nanddump \
+/usr/sbin/flash_erase \
+/usr/sbin/flashcp \
+/usr/sbin/mtdinfo \
+/usr/sbin/nandwrite \
+/usr/sbin/flash_eraseall \
+/usr/sbin/flash_lock \
+/usr/sbin/flash_unlock \
+/usr/sbin/flashcp
 MTD_UTILS_VERSION := 1.5.0-18
 MTD_UTILS_SPEC := stm-target-$(MTD_UTILS).spec
 MTD_UTILS_SPEC_PATCH := stm-target-$(MTD_UTILS).spec.diff
@@ -553,7 +562,7 @@ $(DEPDIR)/$(UTIL_LINUX_BSDUTILS): $(UTIL_LINUX_BSDUTILS_RPM)
 # 
 IPTABLES := iptables
 IPTABLES_DEV := iptables-dev
-IPTABLES_VERSION := 1.4.10-15
+IPTABLES_VERSION := 1.4.15-17
 PKGR_dev := r0
 IPTABLES_SPEC := stm-target-$(IPTABLES).spec
 IPTABLES_SPEC_PATCH :=
@@ -576,8 +585,8 @@ $(IPTABLES_RPM) $(IPTABLES_DEV_RPM) : \
 $(DEPDIR)/$(IPTABLES_DEV): $(DEPDIR)/%$(IPTABLES_DEV): $(IPTABLES_DEV_RPM)
 	@rpm --dbpath $(prefix)/$*cdkroot-rpmdb $(DRPM) --ignorearch --nodeps --force -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
-	$(start_build)
-	$(fromrpm_build)
+	#$(start_build)
+	#$(fromrpm_build)
 	touch $@
 
 $(DEPDIR)/$(IPTABLES): $(DEPDIR)/%$(IPTABLES): $(IPTABLES_RPM)
