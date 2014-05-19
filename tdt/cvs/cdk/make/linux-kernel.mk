@@ -212,10 +212,6 @@ FILES_linux_kernel = \
 /boot/uImage
 
 define postinst_linux_kernel
-#!/bin/sh
-flash_eraseall /dev/mtd5
-nandwrite -p /dev/mtd5 /boot/uImage
-rm /boot/uImage
 depmod
 endef
 
@@ -272,6 +268,7 @@ $(DEPDIR)/driver: $(DEPENDS_driver) $(driverdir)/Makefile glibc-dev linux-kernel
 	$(if $(PLAYER191),cp $(driverdir)/stgfb/stmfb/linux/drivers/video/stmfb.h $(targetprefix)/usr/include/linux)
 	cp $(driverdir)/player2/linux/include/linux/dvb/stm_ioctls.h $(targetprefix)/usr/include/linux/dvb
 	$(LN_SF) $(driverdir)/wireless/rtl8192cu/autoconf_rtl8192c_usb_linux.h $(buildprefix)/
+	$(LN_SF) $(driverdir)/wireless/rtl8188eu/autoconf_rtl8188e_usb_linux.h $(buildprefix)/
 	$(MAKE) -C $(driverdir) ARCH=sh \
 		CONFIG_MODULES_PATH=$(targetprefix) \
 		KERNEL_LOCATION=$(buildprefix)/$(KERNEL_DIR) \
