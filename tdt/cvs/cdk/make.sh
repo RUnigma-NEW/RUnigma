@@ -81,7 +81,7 @@ esac
 case "$REPLY" in
 	1) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
 	2) KERNEL="--enable-stm24 --enable-p0214";STMFB="stm24";;
-	*) KERNEL="--enable-stm24 --enable-p0211";STMFB="stm24";;
+	*) KERNEL="--enable-stm24 --enable-p0214";STMFB="stm24";;
 esac
 #KERNEL="--enable-stm24 --enable-p0211"
 #STMFB="stm24"

@@ -2536,6 +2536,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			--enable-unicode=ucs4 \
 			ac_cv_file__dev_ptmx=yes \
 			ac_cv_file__dev_ptc=no \
+			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			OPT="$(TARGET_CFLAGS)"; \
 		$(MAKE) $(MAKE_ARGS) \
 			TARGET_OS=$(target) \
