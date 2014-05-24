@@ -2062,7 +2062,7 @@ $(DEPDIR)/gdata: bootstrap setuptools $(DEPENDS_gdata)
 #
 BEGIN[[
 twisted
-  13.2.0
+  14.0.0
   Twisted-{PV}
   extract:https://pypi.python.org/packages/source/T/Twisted/Twisted-{PV}.tar.bz2
 ;
