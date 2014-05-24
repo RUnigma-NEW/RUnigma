@@ -2149,9 +2149,9 @@ $(DEPDIR)/twistedweb2: bootstrap setuptools twisted $(DEPENDS_twistedweb2)
 #
 BEGIN[[
 twistedweb
-  13.2.0
+  14.0.0
   TwistedWeb-{PV}
-  extract:http://twistedmatrix.com/Releases/Web/13.2/TwistedWeb-{PV}.tar.bz2
+  extract:http://twistedmatrix.com/Releases/Web/14.0/TwistedWeb-{PV}.tar.bz2
 ;
 ]]END
 
