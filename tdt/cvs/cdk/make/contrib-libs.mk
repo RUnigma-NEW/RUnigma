@@ -2428,6 +2428,34 @@ $(DEPDIR)/six: bootstrap $(DEPENDS_six)
 	touch $@
 
 #
+# pip
+#
+BEGIN[[
+pip
+  1.5.6
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/p/{PN}/{PN}-{PV}.tar.gz
+;
+]]END
+
+DESCRIPTION_pip = "pip"
+FILES_pip = \
+$(PYTHON_DIR)/site-packages/pip/*
+
+$(DEPDIR)/pip: bootstrap $(DEPENDS_pip)
+	$(PREPARE_pip)
+	$(start_build)
+	cd $(DIR_pip); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		PYTHONIOENCODING=utf8 \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_pip)
+	touch $@
+
+#
 # python
 #
 ifdef ENABLE_PY273
