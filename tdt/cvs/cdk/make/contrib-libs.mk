@@ -2621,7 +2621,7 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			CROSS_COMPILE=$(target) \
 			HOSTARCH=sh4-linux \
 			CFLAGS="$(TARGET_CFLAGS) -fno-inline" \
-			LDFLAGS="$(TARGET_LDFLAGS)" \
+			LDFLAGS="-L$(DIR_python)" \
 			LD="$(target)-gcc" \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
 			HOSTPGEN=$(hostprefix)/bin/pgen \
@@ -2873,7 +2873,7 @@ $(DEPDIR)/pythoncheetah: bootstrap setuptools $(DEPENDS_pythoncheetah)
 #
 BEGIN[[
 zope_interface
-  4.1.0
+  4.1.1
   zope.interface-{PV}
   extract:http://pypi.python.org/packages/source/z/zope.interface/zope.interface-{PV}.tar.gz
 ;
