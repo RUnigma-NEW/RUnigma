@@ -1844,10 +1844,10 @@ $(DEPDIR)/libflac: bootstrap $(DEPENDS_libflac)
 #
 BEGIN[[
 elementtree
-  1.2.6-20050316
+  1.2.7-20070827-preview
   {PN}-{PV}
-  extract:http://effbot.org/media/downloads/{PN}-{PV}.tar.gz
-  patch:file://elementtree3.patch
+  extract:http://effbot.org/media/downloads/{PN}-{PV}.zip
+  #patch:file://elementtree3.patch
 ;
 ]]END
 
