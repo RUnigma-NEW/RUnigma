@@ -2897,13 +2897,13 @@ $(DEPDIR)/zope_interface: bootstrap python setuptools $(DEPENDS_zope_interface)
 	touch $@
 
 #
-# zope interface
+# zope_component
 #
 BEGIN[[
 zope_component
-  4.1.0
+  4.2.1
   zope.component-{PV}
-  extract:https://pypi.python.org/packages/source/z/zope.component/zope.component-4.1.0.zip
+  extract:https://pypi.python.org/packages/source/z/zope.component/zope.component-4.2.1.tar.gz
 ;
 ]]END
 
