@@ -2401,6 +2401,33 @@ $(DEPDIR)/service_identity: bootstrap $(DEPENDS_service_identity)
 	touch $@
 
 #
+# six
+#
+BEGIN[[
+six
+  1.6.1
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/s/{PN}/{PN}-{PV}.tar.gz
+;
+]]END
+
+DESCRIPTION_six = "six"
+FILES_six = \
+$(PYTHON_DIR)/site-packages/six.*
+
+$(DEPDIR)/six: bootstrap $(DEPENDS_six)
+	$(PREPARE_six)
+	$(start_build)
+	cd $(DIR_six); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_six)
+	touch $@
+
+#
 # python
 #
 ifdef ENABLE_PY273
