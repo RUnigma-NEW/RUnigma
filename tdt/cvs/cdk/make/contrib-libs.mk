@@ -2194,9 +2194,9 @@ endif
 #
 BEGIN[[
 twistedmail
-  13.2.0
+  14.0.0
   TwistedMail-{PV}
-  extract:http://twistedmatrix.com/Releases/Mail/13.2/TwistedMail-{PV}.tar.bz2
+  extract:http://twistedmatrix.com/Releases/Mail/14.0/TwistedMail-{PV}.tar.bz2
 ;
 ]]END
 DESCRIPTION_twistedmail = "twistedmail"
