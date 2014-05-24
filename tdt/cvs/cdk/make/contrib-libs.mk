@@ -2374,6 +2374,33 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 	touch $@
 
 #
+# service_identity
+#
+BEGIN[[
+service_identity
+  0.2
+  service_identity-{PV}
+  extract:https://pypi.python.org/packages/source/s/service_identity/service_identity-{PV}.tar.gz
+;
+]]END
+
+DESCRIPTION_service_identity = "service_identity"
+FILES_service_identity = \
+$(PYTHON_DIR)/site-packages/service_identity/*
+
+$(DEPDIR)/service_identity: bootstrap $(DEPENDS_service_identity)
+	$(PREPARE_service_identity)
+	$(start_build)
+	cd $(DIR_service_identity); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_service_identity)
+	touch $@
+
+#
 # python
 #
 ifdef ENABLE_PY273
