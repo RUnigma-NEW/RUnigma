@@ -2256,7 +2256,7 @@ $(DEPDIR)/pilimaging: bootstrap python $(DEPENDS_pilimaging)
 #
 BEGIN[[
 Pillow
-  2.3.0
+  2.4.0
   {PN}-{PV}
   extract:https://pypi.python.org/packages/source/P/{PN}/{PN}-{PV}.zip
   patch:file://Pillow-fix-search-paths.patch
@@ -2265,7 +2265,7 @@ Pillow
 
 DESCRIPTION_Pillow = "Pillow"
 FILES_Pillow = \
-$(PYTHON_DIR)/site-packages \
+$(PYTHON_DIR)/site-packages/PIL/* \
 /usr/bin/*
 
 $(DEPDIR)/Pillow: bootstrap python $(DEPENDS_Pillow)
