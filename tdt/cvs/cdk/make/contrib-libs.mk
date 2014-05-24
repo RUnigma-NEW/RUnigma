@@ -1963,7 +1963,7 @@ $(DEPDIR)/libxslt: bootstrap libxml2 $(DEPENDS_libxslt)
 #
 BEGIN[[
 lxml
-  3.3.0
+  3.3.5
   {PN}-{PV}
   extract:https://pypi.python.org/packages/source/l/lxml/{PN}-{PV}.tar.gz
 ;
