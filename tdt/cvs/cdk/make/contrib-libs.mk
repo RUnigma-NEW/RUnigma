@@ -1989,6 +1989,7 @@ $(DEPDIR)/lxml: bootstrap python $(DEPENDS_lxml)
 #
 # setuptools
 #
+BEGIN[[
 ifdef ENABLE_PY332
 setuptools
   3.6
@@ -2005,6 +2006,7 @@ endif
 ]]END
 
 DESCRIPTION_setuptools = "setuptools"
+DEPENDS_setuptools += python
 
 FILES_setuptools = \
 $(PYTHON_DIR)/site-packages/*.py \
