@@ -2379,6 +2379,33 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 	touch $@
 
 #
+# pycparser
+#
+BEGIN[[
+pycparser
+  2.10
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/p/pycparser/pycparser-2.10.tar.gz
+;
+]]END
+
+DESCRIPTION_pycparser = "Python pycparser"
+FILES_pycparser = \
+$(PYTHON_DIR)/site-packages/pycparser/*
+
+$(DEPDIR)/pycparser: bootstrap setuptools $(DEPENDS_pycparser)
+	$(PREPARE_pycparser)
+	$(start_build)
+	cd $(DIR_pycparser); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_pycparser)
+	touch $@
+
+#
 # service_identity
 #
 BEGIN[[
