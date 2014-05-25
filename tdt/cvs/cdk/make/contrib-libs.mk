@@ -2379,6 +2379,35 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 	touch $@
 
 #
+# cffi
+#
+BEGIN[[
+cffi
+  0.8.2
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/c/cffi/cffi-0.8.2.tar.gz
+;
+]]END
+
+DESCRIPTION_cffi = "Python cffi"
+FILES_cffi = \
+$(PYTHON_DIR)/site-packages/*.so \
+$(PYTHON_DIR)/site-packages/cffi/*
+
+$(DEPDIR)/cffi: bootstrap setuptools pycparser $(DEPENDS_cffi)
+	$(PREPARE_cffi)
+	$(start_build)
+	cd $(DIR_cffi); \
+		PKG_CONFIG_PATH='$(targetprefix)/usr/lib/pkgconfig/' \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		ARCHFLAGS="-sh4-linux" $(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_cffi)
+	touch $@
+
+#
 # pycparser
 #
 BEGIN[[
