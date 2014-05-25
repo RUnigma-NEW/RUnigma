@@ -81,7 +81,7 @@ $(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fo
 else
 $(DIR_enigma2_pli)/config.status: bootstrap opkg ethtool libfreetype libexpat fontconfig libpng libjpeg libgif libmme_host libmmeimage libfribidi libid3tag libmad libsigc libreadline font-valis-enigma \
 		enigma2-pli-nightly.do_prepare \
-		libdvbsipp python libxml2 libxslt elementtree zope_interface service_identity pycparser cffi six twisted twistedweb2 twistedweb twistedmail pycrypto pyusb Pillow pyopenssl pythonwifi lxml libxmlccwrap \
+		libdvbsipp python libxml2 libxslt elementtree zope_interface service_identity pycparser cffi six cryptography twisted twistedweb2 twistedweb twistedmail pycrypto pyusb Pillow pyopenssl pythonwifi lxml libxmlccwrap \
 		ncurses-dev libdreamdvd2 tuxtxt32bpp sdparm hotplug_e2 $(MEDIAFW_DEP) $(EXTERNALLCD_DEP)
 	cd $(DIR_enigma2_pli) && \
 		$(BUILDENV) \

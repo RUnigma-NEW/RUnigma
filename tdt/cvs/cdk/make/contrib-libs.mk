@@ -2364,7 +2364,7 @@ FILES_pyopenssl = \
 $(PYTHON_DIR)/site-packages/OpenSSL/*py \
 $(PYTHON_DIR)/site-packages/OpenSSL/*so
 
-$(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
+$(DEPDIR)/pyopenssl: bootstrap setuptools cryptography $(DEPENDS_pyopenssl)
 	$(PREPARE_pyopenssl)
 	$(start_build)
 	cd $(DIR_pyopenssl); \
@@ -2376,6 +2376,33 @@ $(DEPDIR)/pyopenssl: bootstrap setuptools $(DEPENDS_pyopenssl)
 	$(remove_pyo)
 	$(toflash_build)
 	$(DISTCLEANUP_pyopenssl)
+	touch $@
+
+#
+# cryptography
+#
+BEGIN[[
+cryptography
+  0.4
+  {PN}-{PV}
+  extract:https://pypi.python.org/packages/source/c/{PN}/{PN}-{PV}.tar.gz
+;
+]]END
+
+DESCRIPTION_cryptography = "Python cryptography"
+FILES_cryptography = \
+$(PYTHON_DIR)/site-packages/*
+
+$(DEPDIR)/cryptography: bootstrap pycparser cffi six $(DEPENDS_cryptography)
+	$(PREPARE_cryptography)
+	$(start_build)
+	cd $(DIR_cryptography); \
+		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
+		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
+		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
+	$(tocdk_build)
+	$(toflash_build)
+	$(DISTCLEANUP_cryptography)
 	touch $@
 
 #
