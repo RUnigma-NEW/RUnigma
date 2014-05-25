@@ -2280,9 +2280,7 @@ $(DEPDIR)/Pillow: bootstrap python $(DEPENDS_Pillow)
 	$(start_build)
 	cd $(DIR_Pillow); \
 		sed -ie "s|"darwin"|"darwinNot"|g" "setup.py"; \
-		echo 'JPEG_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' > setup_site.py; \
-		echo 'ZLIB_ROOT = "$(targetprefixIR)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
-		echo 'FREETYPE_ROOT = "$(targetprefix)/usr/lib", "$(targetprefix)/usr/include"' >> setup_site.py; \
+		sed -ie "s|ZLIB_ROOT = None|ZLIB_ROOT = (\"$(targetprefix)/usr/include\")|" "setup.py"; \
 		CC='$(target)-gcc' LDSHARED='$(target)-gcc -shared' \
 		PYTHONPATH=$(targetprefix)$(PYTHON_DIR)/site-packages \
 		$(hostprefix)/bin/python$(PYTHON_VERSION) ./setup.py install --root=$(PKDIR) --prefix=/usr
@@ -2447,7 +2445,8 @@ pip
 
 DESCRIPTION_pip = "pip"
 FILES_pip = \
-$(PYTHON_DIR)/site-packages/pip/*
+$(PYTHON_DIR)/site-packages/pip/* \
+/usr/bin/*
 
 $(DEPDIR)/pip: bootstrap $(DEPENDS_pip)
 	$(PREPARE_pip)
