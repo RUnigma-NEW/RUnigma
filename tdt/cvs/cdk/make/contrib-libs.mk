@@ -656,10 +656,10 @@ $(DEPDIR)/libvorbisidec: bootstrap $(DEPENDS_libvorbisidec)
 #
 BEGIN[[
 libffi
-  3.0.13
+  3.1
   {PN}-{PV}
   extract:ftp://sourceware.org/pub/{PN}/{PN}-{PV}.tar.gz
-  patch:file://libffi-3.0.11.patch
+  patch:file://{PN}-{PV}.patch
   make:install:DESTDIR=PKDIR
 ;
 ]]END

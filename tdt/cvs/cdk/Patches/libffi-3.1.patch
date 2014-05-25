@@ -10,7 +10,7 @@ diff --git a/include/Makefile.am b/include/Makefile.am
  nodist_includes_HEADERS = ffi.h ffitarget.h
 --- libffi.orig/include/Makefile.in	2011-08-23 16:28:35.000000000 +0200
 +++ libffi/include/Makefile.in	2012-03-29 19:57:53.919343783 +0200
-@@ -221,7 +221,7 @@
+@@ -314,7 +314,7 @@
  AUTOMAKE_OPTIONS = foreign
  DISTCLEANFILES = ffitarget.h
  EXTRA_DIST = ffi.h.in ffi_common.h
@@ -21,17 +21,17 @@ diff --git a/include/Makefile.am b/include/Makefile.am
  
 --- libffi.orig/libffi.pc.in	2011-08-22 20:38:12.000000000 +0200
 +++ libffi/libffi.pc.in	2012-03-29 19:57:18.263549738 +0200
-@@ -1,10 +1,10 @@
- prefix=@prefix@
+@@ -2,10 +2,10 @@
  exec_prefix=@exec_prefix@
  libdir=@libdir@
+ toolexeclibdir=@toolexeclibdir@
 -includedir=${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include
 +includedir=@includedir@
  
  Name: @PACKAGE_NAME@
  Description: Library supporting Foreign Function Interfaces
  Version: @PACKAGE_VERSION@
--Libs: -L${libdir} -lffi
+-Libs: -L${toolexeclibdir} -lffi
 -Cflags: -I${includedir}
 +Libs: -lffi
 +Cflags:
