@@ -2696,7 +2696,11 @@ $(DEPDIR)/python: bootstrap host_python libffi openssl-dev libreadline sqlite bz
 			--sysconfdir=/etc \
 			--enable-shared \
 			--disable-ipv6 \
-			--enable-unicode=ucs4 \
+			--without-cxx-main \
+			--with-threads \
+			--with-pymalloc \
+			--with-signal-module \
+			--with-wctype-functions \
 			ac_cv_file__dev_ptmx=yes \
 			ac_cv_file__dev_ptc=no \
 			HOSTPYTHON=$(hostprefix)/bin/python$(PYTHON_VERSION) \
