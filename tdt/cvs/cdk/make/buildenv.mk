@@ -16,6 +16,10 @@ ifdef ENABLE_P0215
 KERNELVERSION := 2.6.32.61_stm24_0215
 endif
 
+ifdef ENABLE_P0308
+KERNELVERSION := 3.4.58_stm24_0308
+endif
+
 KERNEL_DIR := linux-sh4-$(KERNELVERSION)
 KERNELSTMLABEL := _$(word 2,$(subst _, ,$(KERNELVERSION)))_$(word 3,$(subst _, ,$(KERNELVERSION)))
 KERNELLABEL := $(shell x=$(KERNELVERSION); echo $${x: -3})
