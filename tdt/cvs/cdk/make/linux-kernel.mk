@@ -4,8 +4,8 @@ ifdef ENABLE_P0211
 PATCH_STR=_0211
 endif
 
-ifdef ENABLE_P0214
-PATCH_STR=_0214
+ifdef ENABLE_P0215
+PATCH_STR=_0215
 endif
 
 STM24_DVB_PATCH = linux-sh4-linuxdvb_stm24$(PATCH_STR).patch
@@ -33,7 +33,7 @@ HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		linux-sh4-stmmac_stm24$(PATCH_STR).patch \
 		linux-sh4-i2c-st40-pio_stm24$(PATCH_STR).patch \
 		linux-sh4-hl101_i2c_st40_stm24.patch \
-		$(if $(P0214),gpio$(PATCH_STR).patch)
+		$(if $(P0215),gpio$(PATCH_STR).patch)
 
 KERNELPATCHES_24 =  \
 		$(if $(HL101),$(HL101_PATCHES_24))
@@ -56,7 +56,7 @@ KERNELHEADERS := linux-kernel-headers
 ifdef ENABLE_P0211
 KERNELHEADERS_VERSION := 2.6.32.46-48
 else
-ifdef ENABLE_P0214
+ifdef ENABLE_P0215
 KERNELHEADERS_VERSION := 2.6.32.46-48
 endif
 endif
@@ -101,7 +101,7 @@ HOST_KERNEL := host-kernel
 ifdef ENABLE_P0211
 HOST_KERNEL_VERSION = 2.6.32.59$(KERNELSTMLABEL)-$(KERNELLABEL)
 else
-ifdef ENABLE_P0214
+ifdef ENABLE_P0215
 HOST_KERNEL_VERSION = 2.6.32.61$(KERNELSTMLABEL)-$(KERNELLABEL)
 endif
 endif

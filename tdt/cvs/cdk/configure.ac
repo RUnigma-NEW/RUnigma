@@ -81,13 +81,13 @@ AC_ARG_ENABLE(p0211,
 TDT_CONDITIONAL(ENABLE_P0211,test "$enable_p0211" = "yes")
 AC_SUBST(P0211)
 
-AC_ARG_ENABLE(p0214,
-	AS_HELP_STRING(--enable-p0214,  set up the CDK to use the STLinux 2.4 with patchlevel 0214),
+AC_ARG_ENABLE(p0215,
+	AS_HELP_STRING(--enable-p0215,  set up the CDK to use the STLinux 2.4 with patchlevel 0215),
 	[case "${enableval}" in
-		yes) P0214=p0214 ;;
-	esac], [enable_p0214=no])
-TDT_CONDITIONAL(ENABLE_P0214,test "$enable_p0214" = "yes")
-AC_SUBST(P0214)
+		yes) P0215=p0215 ;;
+	esac], [enable_p0215=no])
+TDT_CONDITIONAL(ENABLE_P0215,test "$enable_p0215" = "yes")
+AC_SUBST(P0215)
 
 AC_ARG_ENABLE(debug,
 	AS_HELP_STRING(--enable-debug,	set up the CDK to use debug kernel configs),
@@ -559,7 +559,7 @@ summary:
 target cpu                  : $CPU_MODEL
 STLinux 2.4                 : $enable_stm24
 Patchlevel P0211            : $enable_p0211
-Patchlevel P0214            : $enable_p0214
+Patchlevel P0215            : $enable_p0215
 ccache                      : $enable_ccache
 target prefix               : $targetprefix
 boot prefix                 : $bootprefix
