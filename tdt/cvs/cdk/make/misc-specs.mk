@@ -86,7 +86,7 @@ FILES_openssl_dev = \
 FILES_openssl = \
 /usr/lib/*.so*
 
-OPENSSL_VERSION := 1.0.1g-30
+OPENSSL_VERSION := 1.0.1h-31
 OPENSSL_SPEC := stm-target-$(OPENSSL).spec
 OPENSSL_SPEC_PATCH :=
 OPENSSL_PATCHES :=
