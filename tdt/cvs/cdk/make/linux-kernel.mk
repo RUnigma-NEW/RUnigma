@@ -1,4 +1,5 @@
 ############ Patches Kernel 24 ###############
+KERNEL_VER = P02xx
 
 ifdef ENABLE_P0211
 PATCH_STR=_0211
@@ -10,6 +11,7 @@ endif
 
 ifdef ENABLE_P0308
 PATCH_STR=_0308
+KERNEL_VER = P03xx
 endif
 
 STM24_DVB_PATCH = linux-sh4-linuxdvb_stm24$(PATCH_STR).patch
@@ -48,12 +50,12 @@ KERNELPATCHES_24 =  \
 # KERNEL-HEADERS
 #
 $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
-if [ $(KERNEL_VER) == P03xx ]; then \
+	if [ $(KERNEL_VER) == P03xx ]; then \
 	cd $(KERNEL_DIR); \
 		$(INSTALL) -d $(targetprefix)/usr/include; \
 		cp -a include/linux $(targetprefix)/usr/include; \
 		cp -ar include/asm-generic $(targetprefix)/usr/include; \
-		cp -ar arch/sh/include/asm $(targetprefix)/usr/include; \ 
+		cp -ar arch/sh/include/asm $(targetprefix)/usr/include; \
 		mkdir -p $(buildprefix)/$(KERNEL_DIR)-Header; \
 		$(MAKE) -C $(KERNEL_DIR_FULL) ARCH=sh headers_install INSTALL_HDR_PATH=$(buildprefix)/$(KERNEL_DIR)-Header; \
 		cp -r --remove-destination  $(buildprefix)/$(KERNEL_DIR)-Header/include/* $(targetprefix)/usr/include/; \
@@ -63,14 +65,15 @@ if [ $(KERNEL_VER) == P03xx ]; then \
 		ln -sf $(targetprefix)/usr/include/asm-generic/* $(targetprefix)/usr/include/asm/; \
 		cp --remove-destination $(buildprefix)/$(KERNEL_DIR)-Header/include/asm/*  $(targetprefix)/usr/include/asm/; \
 		patch -p0 < $(buildprefix)/Patches/linux-headers-308.diff; \
-else \
+	else \
 	cd $(KERNEL_DIR); \
-		$(INSTALL) -d $(targetprefix)/usr/include && \
-		cp -a include/linux $(targetprefix)/usr/include && \
-		cp -a include/asm-sh $(targetprefix)/usr/include/asm && \
-		cp -a include/asm-generic $(targetprefix)/usr/include && \
-		cp -a include/mtd $(targetprefix)/usr/include
-fi \
+		$(INSTALL) -d $(targetprefix)/usr/include; \
+		cp -a include/linux $(targetprefix)/usr/include; \
+		cp -a include/asm-sh $(targetprefix)/usr/include/asm; \
+		cp -a include/asm-generic $(targetprefix)/usr/include; \
+		cp -a include/mtd $(targetprefix)/usr/include; \
+	fi
+	cd $(buildprefix); \
 	touch $@
 
 KERNELHEADERS := linux-kernel-headers
@@ -106,7 +109,7 @@ $(KERNELHEADERS_RPM): \
 	$(if $(KERNELHEADERS_SPEC_PATCH),( cd SPECS && patch -p1 $(KERNELHEADERS_SPEC) < $(buildprefix)/Patches/$(KERNELHEADERS_SPEC_PATCH) ) &&) \
 	$(if $(KERNELHEADERS_PATCHES),cp $(KERNELHEADERS_PATCHES:%=Patches/%) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(KERNELHEADERS_SPEC)
+	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(KERNELHEADERS_SPEC); \
 	fi
 
 $(DEPDIR)/max-$(KERNELHEADERS) \
@@ -115,8 +118,8 @@ $(DEPDIR)/%$(KERNELHEADERS): $(KERNELHEADERS_RPM)
 	if [ $(KERNEL_VER) == P03xx ]; then \
 	echo no extra Kernel-Header-File;  \
 	else \
-	@rpm $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	rpm $(DRPM) --ignorearch --nodeps -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^); \
 	fi
 	touch $@
 
@@ -163,7 +166,7 @@ $(HOST_KERNEL_RPM): \
 	if [ $(KERNEL_VER) != P03xx ]; then \
 	rpm $(DRPM) --nosignature --nodeps -Uhv $(lastword $^) && \
 	$(if $(HOST_KERNEL_SPEC_PATCH),( cd SPECS; patch -p1 $(HOST_KERNEL_SPEC) < $(buildprefix)/Patches/$(HOST_KERNEL_SPEC_PATCH) ) &&) \
-	rpmbuild $(DRPMBUILD) -ba -v --clean --target=sh4-linux SPECS/$(HOST_KERNEL_SPEC)
+	rpmbuild $(DRPMBUILD) -ba -v --clean --target=sh4-linux SPECS/$(HOST_KERNEL_SPEC); \
 	fi
 
 $(DEPDIR)/linux-kernel.do_prepare: \
@@ -171,9 +174,9 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 		$(HOST_KERNEL_RPM)
 	if [ $(KERNEL_VER) == P03xx ]; then \
 	if [ -d $(archivedir)/linux-sh4-3.4.58-0308 ]; then echo GIT already exists; \
-	else git clone -b stmicro git://git.stlinux.com/stm/linux-stm.git $(archivedir)/linux-sh4-3.4.58-0308; fi && \
-	cd $(archivedir)/linux-sh4-3.4.58-0308 && \
-	GIT_VER=`git show | grep commit` && \
+	else git clone -b stmicro git://git.stlinux.com/stm/linux-stm.git $(archivedir)/linux-sh4-3.4.58-0308; fi; \
+	cd $(archivedir)/linux-sh4-3.4.58-0308; \
+	GIT_VER=`git show | grep commit`; \
 	if [ "$$GIT_VER" == "$(GIT_VER_P0308)" ]; then echo GIT-Version already 308-rc3; \
 	else git checkout stlinux24_0308-rc3; fi; \
 	echo 'Copy Files .... (This can take a while)'; \
@@ -195,19 +198,19 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 	$(MAKE) -C $(KERNEL_DIR_FULL) ARCH=sh include/linux/version.h; \
 	rm $(KERNEL_DIR_FULL)/.config && cd $(buildprefix); \
 	else \
-	@rpm $(DRPM) -ev $(HOST_KERNEL_SRC_RPM:%.src.rpm=%) || true; \
+	rpm $(DRPM) -ev $(HOST_KERNEL_SRC_RPM:%.src.rpm=%) || true; \
 	rm -rf $(KERNEL_DIR); \
 	rm -rf linux{,-sh4}; \
 	rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^); \
-	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR) && cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1); \
-	$(INSTALL) -m644 Patches/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config; \
-	-rm $(KERNEL_DIR)/localversion*; \
-	echo "$(KERNELSTMLABEL)" > $(KERNEL_DIR)/localversion-stm
-	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" $(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> $(KERNEL_DIR)/.config; fi
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h; \
-	rm $(KERNEL_DIR)/.config; \
+	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR); cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1); \
+	$(INSTALL) -m644 ../Patches/$(HOST_KERNEL_CONFIG) ../$(KERNEL_DIR)/.config; \
+	rm ../$(KERNEL_DIR)/localversion*; \
+	echo "$(KERNELSTMLABEL)" > ../$(KERNEL_DIR)/localversion-stm; \
+	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" ../$(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> ../$(KERNEL_DIR)/.config; fi; \
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh oldconfig; \
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/asm; \
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/linux/version.h; \
+	rm ../$(KERNEL_DIR)/.config; \
 	fi
 	touch $@
 
@@ -361,7 +364,7 @@ $(DEPDIR)/driver: $(DEPENDS_driver) $(driverdir)/Makefile glibc-dev linux-kernel
 		HL101=$(HL101) \
 		PLAYER191=$(PLAYER191) \
 		install
-	if [ $(KERNELVERSION) != "3.4.58_stm24_0308"; then \
+	if [ $(KERNELVERSION) != 3.4.58_stm24_0308 ]; then \
 	$(DEPMOD) -ae -b $(PKDIR) -F $(buildprefix)/$(KERNEL_DIR)/System.map -r $(KERNELVERSION); \
 	else \
 	$(DEPMOD) -ae -b $(PKDIR) -F $(buildprefix)/$(KERNEL_DIR)/System.map -r $(KERNELVERSION)+; \
