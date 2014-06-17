@@ -58,14 +58,10 @@ $(DEPDIR)/libz: bootstrap $(DEPENDS_libz) $(if $(LIBZ_ORDER),| $(LIBZ_ORDER))
 #
 BEGIN[[
 libreadline
-  6.2
+  6.3
   readline-{PV}
   extract:ftp://ftp.cwru.edu/pub/bash/readline-{PV}.tar.gz
-  #patch:file://readline62.patch
-  patch:file://readline62-001.patch
-  patch:file://readline62-002.patch
-  patch:file://readline62-003.patch
-  patch:file://readline62-004.patch
+  patch:file://readline-6.3.diff
   make:install:DESTDIR=PKDIR
 ;
 ]]END

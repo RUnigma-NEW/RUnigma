@@ -1,0 +1,127 @@
+*** readline-6.3/readline.c
+--- readline-6.3/readline.c
+***************
+*** 745,749 ****
+  
+    RL_CHECK_SIGNALS ();
+!   if (r == 0)			/* success! */
+      {
+        _rl_keyseq_chain_dispose ();
+--- 745,750 ----
+  
+    RL_CHECK_SIGNALS ();
+!   /* We only treat values < 0 specially to simulate recursion. */
+!   if (r >= 0 || (r == -1 && (cxt->flags & KSEQ_SUBSEQ) == 0))	/* success! or failure! */
+      {
+        _rl_keyseq_chain_dispose ();
+
+***************
+*** 965,969 ****
+    if (rl_editing_mode == vi_mode && _rl_keymap == vi_movement_keymap &&
+        key != ANYOTHERKEY &&
+!       rl_key_sequence_length == 1 &&	/* XXX */
+        _rl_vi_textmod_command (key))
+      _rl_vi_set_last (key, rl_numeric_arg, rl_arg_sign);
+--- 965,969 ----
+    if (rl_editing_mode == vi_mode && _rl_keymap == vi_movement_keymap &&
+        key != ANYOTHERKEY &&
+!       _rl_dispatching_keymap == vi_movement_keymap &&
+        _rl_vi_textmod_command (key))
+      _rl_vi_set_last (key, rl_numeric_arg, rl_arg_sign);
+*** readline-6.3/util.c
+--- readline-6.3/util.c
+***************
+*** 477,480 ****
+--- 479,483 ----
+  }
+  
++ #if defined (DEBUG)
+  #if defined (USE_VARARGS)
+  static FILE *_rl_tracefp;
+***************
+*** 539,542 ****
+--- 542,546 ----
+  }
+  #endif
++ #endif /* DEBUG */
+  
+  
+*** readline-6.3-patched/display.c
+--- readline-6.3/display.c
+***************
+*** 2678,2682 ****
+    if (_rl_echoing_p)
+      {
+!       _rl_move_vert (_rl_vis_botlin);
+        _rl_vis_botlin = 0;
+        fflush (rl_outstream);
+--- 2678,2683 ----
+    if (_rl_echoing_p)
+      {
+!       if (_rl_vis_botlin > 0)	/* minor optimization plus bug fix */
+! 	_rl_move_vert (_rl_vis_botlin);
+        _rl_vis_botlin = 0;
+        fflush (rl_outstream);
+*** readline-6.3-patched/rltypedefs.h
+--- readline-6.3/rltypedefs.h
+***************
+*** 27,30 ****
+--- 27,49 ----
+  #endif
+  
++ /* Old-style, attempt to mark as deprecated in some way people will notice. */
++ 
++ #if !defined (_FUNCTION_DEF)
++ #  define _FUNCTION_DEF
++ 
++ #if defined(__GNUC__) || defined(__clang__)
++ typedef int Function () __attribute__ ((deprecated));
++ typedef void VFunction () __attribute__ ((deprecated));
++ typedef char *CPFunction () __attribute__ ((deprecated));
++ typedef char **CPPFunction () __attribute__ ((deprecated));
++ #else
++ typedef int Function ();
++ typedef void VFunction ();
++ typedef char *CPFunction ();
++ typedef char **CPPFunction ();
++ #endif
++ 
++ #endif /* _FUNCTION_DEF */
++ 
+  /* New style. */
+  
+*** readline-6.3-patched/display.c
+--- readline-6.3/display.c
+***************
+*** 1638,1642 ****
+       the spot of first difference is before the end of the invisible chars,
+       lendiff needs to be adjusted. */
+!   if (current_line == 0 && !_rl_horizontal_scroll_mode &&
+        current_invis_chars != visible_wrap_offset)
+      {
+--- 1638,1642 ----
+       the spot of first difference is before the end of the invisible chars,
+       lendiff needs to be adjusted. */
+!   if (current_line == 0 && /* !_rl_horizontal_scroll_mode && */
+        current_invis_chars != visible_wrap_offset)
+      {
+***************
+*** 1826,1831 ****
+  		_rl_last_c_pos += bytes_to_insert;
+  
+  	      if (_rl_horizontal_scroll_mode && ((oe-old) > (ne-new)))
+! 		goto clear_rest_of_line;
+  	    }
+  	}
+--- 1826,1836 ----
+  		_rl_last_c_pos += bytes_to_insert;
+  
++ 	      /* XXX - we only want to do this if we are at the end of the line
++ 		 so we move there with _rl_move_cursor_relative */
+  	      if (_rl_horizontal_scroll_mode && ((oe-old) > (ne-new)))
+! 		{
+! 		  _rl_move_cursor_relative (ne-new, new);
+! 		  goto clear_rest_of_line;
+! 		}
+  	    }
+  	}
