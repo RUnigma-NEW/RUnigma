@@ -1,5 +1,4 @@
 ############ Patches Kernel 24 ###############
-KERNEL_VER = P02xx
 
 ifdef ENABLE_P0211
 PATCH_STR=_0211
@@ -11,7 +10,6 @@ endif
 
 ifdef ENABLE_P0308
 PATCH_STR=_0308
-KERNEL_VER = P03xx
 endif
 
 STM24_DVB_PATCH = linux-sh4-linuxdvb_stm24$(PATCH_STR).patch
@@ -30,12 +28,15 @@ COMMONPATCHES_24 = \
 		linux-sh4-lzma-fix_stm24$(PATCH_STR).patch \
 		linux-tune_stm24.patch \
 		linux-sh4-mmap_stm24.patch \
-		linux-sh4-permit_gcc_command_line_sections_stm24.patch \
-		linux-sh4-remove_pcm_reader_stm24.patch
+		$(if $(P0211)$(P0215),linux-sh4-permit_gcc_command_line_sections_stm24.patch) \
+		$(if $(P0308),linux-sh4-permit_gcc_command_line_sections_stm24$(PATCH_STR).patch) \
+		$(if $(P0211)$(P0215),linux-sh4-remove_pcm_reader_stm24.patch) \
+		$(if $(P0308),linux-sh4-remove_pcm_reader_stm24$(PATCH_STR).patch)
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		linux-sh4-hl101_setup_stm24$(PATCH_STR).patch \
-		linux-usbwait123_stm24.patch \
+		$(if $(P0211)$(P0215),linux-usbwait123_stm24.patch) \
+		$(if $(P0308),linux-usbwait123_stm24$(PATCH_STR).patch) \
 		linux-sh4-stmmac_stm24$(PATCH_STR).patch \
 		linux-sh4-i2c-st40-pio_stm24$(PATCH_STR).patch \
 		linux-sh4-hl101_i2c_st40_stm24.patch \
@@ -45,12 +46,11 @@ KERNELPATCHES_24 =  \
 		$(if $(HL101),$(HL101_PATCHES_24))
 
 ############ Patches Kernel 24 End ###############
-
 #
 # KERNEL-HEADERS
 #
+ifdef ENABLE_P0308
 $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
-	if [ $(KERNEL_VER) == P03xx ]; then \
 	cd $(KERNEL_DIR); \
 		$(INSTALL) -d $(targetprefix)/usr/include; \
 		cp -a include/linux $(targetprefix)/usr/include; \
@@ -65,16 +65,20 @@ $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
 		ln -sf $(targetprefix)/usr/include/asm-generic/* $(targetprefix)/usr/include/asm/; \
 		cp --remove-destination $(buildprefix)/$(KERNEL_DIR)-Header/include/asm/*  $(targetprefix)/usr/include/asm/; \
 		patch -p0 < $(buildprefix)/Patches/linux-headers-308.diff; \
-	else \
+		cd $(buildprefix)
+	touch $@
+
+else
+$(DEPDIR)/kernel-headers: linux-kernel.do_prepare
 	cd $(KERNEL_DIR); \
 		$(INSTALL) -d $(targetprefix)/usr/include; \
 		cp -a include/linux $(targetprefix)/usr/include; \
 		cp -a include/asm-sh $(targetprefix)/usr/include/asm; \
 		cp -a include/asm-generic $(targetprefix)/usr/include; \
 		cp -a include/mtd $(targetprefix)/usr/include; \
-	fi
-	cd $(buildprefix); \
 	touch $@
+
+endif
 
 KERNELHEADERS := linux-kernel-headers
 ifdef ENABLE_P0211
@@ -85,7 +89,6 @@ KERNELHEADERS_VERSION := 2.6.32.46-48
 else
 ifdef ENABLE_P0308
 KERNELHEADERS_VERSION := 2.6.32.46-48
-KERNEL_VER = P03xx
 endif
 endif
 endif
@@ -95,33 +98,39 @@ KERNELHEADERS_SPEC_PATCH :=
 KERNELHEADERS_PATCHES :=
 KERNELHEADERS_RPM := RPMS/noarch/$(STLINUX)-sh4-$(KERNELHEADERS)-$(KERNELHEADERS_VERSION).noarch.rpm
 
+ifdef ENABLE_P0308
 $(KERNELHEADERS_RPM): \
 		$(if $(KERNELHEADERS_SPEC_PATCH),Patches/$(KERNELHEADERS_SPEC_PATCH)) \
 		$(if $(KERNELHEADERS_PATCHES),$(KERNELHEADERS_PATCHES:%=Patches/%)) \
 		$(archivedir)/$(STLINUX)-target-$(KERNELHEADERS)-$(KERNELHEADERS_VERSION).src.rpm \
 		| linux-kernel.do_prepare
-	if [ $(KERNEL_VER) == P03xx ]; then \
 	$(if $(KERNELHEADERS_SPEC_PATCH),( cd SPECS && patch -p1 $(KERNELHEADERS_SPEC) < $(buildprefix)/Patches/$(KERNELHEADERS_SPEC_PATCH) ) &&) \
 	$(if $(KERNELHEADERS_PATCHES),cp $(KERNELHEADERS_PATCHES:%=Patches/%) SOURCES/ &&) \
-	export PATH=$(hostprefix)/bin:$(PATH); \
-	else \
+
+else
+$(KERNELHEADERS_RPM): \
+		$(if $(KERNELHEADERS_SPEC_PATCH),Patches/$(KERNELHEADERS_SPEC_PATCH)) \
+		$(if $(KERNELHEADERS_PATCHES),$(KERNELHEADERS_PATCHES:%=Patches/%)) \
+		$(archivedir)/$(STLINUX)-target-$(KERNELHEADERS)-$(KERNELHEADERS_VERSION).src.rpm \
+		| linux-kernel.do_prepare
 	rpm $(DRPM) --nosignature -Uhv $(lastword $^) && \
 	$(if $(KERNELHEADERS_SPEC_PATCH),( cd SPECS && patch -p1 $(KERNELHEADERS_SPEC) < $(buildprefix)/Patches/$(KERNELHEADERS_SPEC_PATCH) ) &&) \
 	$(if $(KERNELHEADERS_PATCHES),cp $(KERNELHEADERS_PATCHES:%=Patches/%) SOURCES/ &&) \
 	export PATH=$(hostprefix)/bin:$(PATH) && \
-	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(KERNELHEADERS_SPEC); \
-	fi
+	rpmbuild $(DRPMBUILD) -bb -v --clean --target=sh4-linux SPECS/$(KERNELHEADERS_SPEC)
 
-$(DEPDIR)/max-$(KERNELHEADERS) \
-$(DEPDIR)/$(KERNELHEADERS): \
-$(DEPDIR)/%$(KERNELHEADERS): $(KERNELHEADERS_RPM)
-	if [ $(KERNEL_VER) == P03xx ]; then \
-	echo no extra Kernel-Header-File;  \
-	else \
-	rpm $(DRPM) --ignorearch --nodeps -Uhv \
-		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^); \
-	fi
+endif
+
+ifdef ENABLE_P0308
+$(DEPDIR)/$(KERNELHEADERS): $(KERNELHEADERS_RPM)
+	echo no extra Kernel-Header-File
 	touch $@
+else
+$(DEPDIR)/$(KERNELHEADERS): $(KERNELHEADERS_RPM)
+	rpm $(DRPM) --ignorearch --nodeps -Uhv \
+		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
+	touch $@
+endif
 
 #
 # HOST-KERNEL
@@ -163,16 +172,13 @@ GIT_VER_P0308 = commit f6f54444a01c2d071eddde6f8a81bb6e3ea0ac6b
 $(HOST_KERNEL_RPM): \
 		$(if $(HOST_KERNEL_SPEC_PATCH),Patches/$(HOST_KERNEL_SPEC_PATCH)) \
 		$(archivedir)/$(HOST_KERNEL_SRC_RPM)
-	if [ $(KERNEL_VER) != P03xx ]; then \
-	rpm $(DRPM) --nosignature --nodeps -Uhv $(lastword $^) && \
+	rpm $(DRPM) --nosignature --nodeps -Uhv $(lastword $^); \
 	$(if $(HOST_KERNEL_SPEC_PATCH),( cd SPECS; patch -p1 $(HOST_KERNEL_SPEC) < $(buildprefix)/Patches/$(HOST_KERNEL_SPEC_PATCH) ) &&) \
-	rpmbuild $(DRPMBUILD) -ba -v --clean --target=sh4-linux SPECS/$(HOST_KERNEL_SPEC); \
-	fi
+	rpmbuild $(DRPMBUILD) -ba -v --clean --target=sh4-linux SPECS/$(HOST_KERNEL_SPEC)
 
+ifdef ENABLE_P0308
 $(DEPDIR)/linux-kernel.do_prepare: \
-		$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=Patches/%)) \
-		$(HOST_KERNEL_RPM)
-	if [ $(KERNEL_VER) == P03xx ]; then \
+		$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=Patches/%))
 	if [ -d $(archivedir)/linux-sh4-3.4.58-0308 ]; then echo GIT already exists; \
 	else git clone -b stmicro git://git.stlinux.com/stm/linux-stm.git $(archivedir)/linux-sh4-3.4.58-0308; fi; \
 	cd $(archivedir)/linux-sh4-3.4.58-0308; \
@@ -180,13 +186,13 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 	if [ "$$GIT_VER" == "$(GIT_VER_P0308)" ]; then echo GIT-Version already 308-rc3; \
 	else git checkout stlinux24_0308-rc3; fi; \
 	echo 'Copy Files .... (This can take a while)'; \
-	rm -rf $(KERNEL_DIR); \
-	rm -rf linux{,-sh4}; \
+	rm -rf $(buildprefix)/$(KERNEL_DIR); \
+	rm -rf $(buildprefix)/linux{,-sh4}; \
 	cp -Prf $(archivedir)/linux-sh4-3.4.58-0308 $(buildprefix)/; \
-	cp -Prf $(buildprefix)/Patches/Kernel_3xx/* $(buildprefix)/linux-sh4-3.4.58-0308/; \
 	cd $(buildprefix); \
 	ln -sf linux-sh4-3.4.58-0308 linux-sh4; \
 	cd $(buildprefix)/linux-sh4/; \
+	patch -p0 < $(buildprefix)/Patches/linux-sh4-3.4.58-0308_hl101.patch; \
 	patch -p0 < $(buildprefix)/Patches/linux-sh4-stx7100_mb442-p308.diff; \
 	echo ln -sf $(buildprefix)/include/generated/autoconf.h $(buildprefix)/include/linux/autoconf.h; \
 	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR_FULL) && cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1); \
@@ -196,23 +202,30 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" $(KERNEL_DIR_FULL)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> $(KERNEL_DIR_FULL)/.config; fi; \
 	$(MAKE) -C $(KERNEL_DIR_FULL) ARCH=sh oldconfig; \
 	$(MAKE) -C $(KERNEL_DIR_FULL) ARCH=sh include/linux/version.h; \
-	rm $(KERNEL_DIR_FULL)/.config && cd $(buildprefix); \
-	else \
-	rpm $(DRPM) -ev $(HOST_KERNEL_SRC_RPM:%.src.rpm=%) || true; \
-	rm -rf $(KERNEL_DIR); \
-	rm -rf linux{,-sh4}; \
-	rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^); \
-	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR); cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1); \
-	$(INSTALL) -m644 ../Patches/$(HOST_KERNEL_CONFIG) ../$(KERNEL_DIR)/.config; \
-	rm ../$(KERNEL_DIR)/localversion*; \
-	echo "$(KERNELSTMLABEL)" > ../$(KERNEL_DIR)/localversion-stm; \
-	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" ../$(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> ../$(KERNEL_DIR)/.config; fi; \
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh oldconfig; \
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/asm; \
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/linux/version.h; \
-	rm ../$(KERNEL_DIR)/.config; \
-	fi
+	rm $(KERNEL_DIR_FULL)/.config; \
+	cd $(buildprefix)
 	touch $@
+
+else
+$(DEPDIR)/linux-kernel.do_prepare: \
+		$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=Patches/%)) \
+		$(HOST_KERNEL_RPM)
+	rpm $(DRPM) -ev $(HOST_KERNEL_SRC_RPM:%.src.rpm=%) || true
+	rm -rf $(KERNEL_DIR)
+	rm -rf linux{,-sh4}
+	rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^)
+	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR); cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1)
+	$(INSTALL) -m644 ../Patches/$(HOST_KERNEL_CONFIG) ../$(KERNEL_DIR)/.config
+	rm ../$(KERNEL_DIR)/localversion*
+	echo "$(KERNELSTMLABEL)" > ../$(KERNEL_DIR)/localversion-stm
+	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" ../$(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> ../$(KERNEL_DIR)/.config; fi
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh oldconfig
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/asm
+	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/linux/version.h
+	rm ../$(KERNEL_DIR)/.config
+	touch $@
+
+endif
 
 ifdef ENABLE_GRAPHICFWDIRECTFB
 GRAPHICFWDIRECTFB_SED_CONF=-i s"/^\# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set/CONFIG_BPA2_DIRECTFBOPTIMIZED=y/"
@@ -227,12 +240,12 @@ $(DEPDIR)/linux-kernel.do_compile: \
 		Patches/$(HOST_KERNEL_CONFIG) \
 		| $(HOST_U_BOOT_TOOLS)
 	-rm $(DEPDIR)/linux-kernel*.do_compile
-	cd $(KERNEL_DIR) && \
-		export PATH=$(hostprefix)/bin:$(PATH) && \
-		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- mrproper && \
-		@M4@ $(buildprefix)/Patches/$(HOST_KERNEL_CONFIG) > .config && \
-	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" .config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> .config; fi && \
-		sed $(GRAPHICFWDIRECTFB_SED_CONF) .config && \
+	cd $(KERNEL_DIR); \
+		export PATH=$(hostprefix)/bin:$(PATH); \
+		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- mrproper; \
+		@M4@ $(buildprefix)/Patches/$(HOST_KERNEL_CONFIG) > .config; \
+	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" .config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> .config; fi; \
+		sed $(GRAPHICFWDIRECTFB_SED_CONF) .config; \
 		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- uImage modules
 	touch $@
 
@@ -266,15 +279,15 @@ $(DEPDIR)/linux-kernel.%.do_compile: \
 		Patches/$(HOST_KERNEL_CONFIG) \
 		| $(DEPDIR)/$(HOST_U_BOOT_TOOLS)
 	-rm $(DEPDIR)/linux-kernel*.do_compile
-	cd $(KERNEL_DIR) && \
-		export PATH=$(hostprefix)/bin:$(PATH) && \
-		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- mrproper && \
+	cd $(KERNEL_DIR); \
+		export PATH=$(hostprefix)/bin:$(PATH); \
+		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- mrproper; \
 		@M4@ -Drootfs=$* --define=rootsize=$(ROOT_PARTITION_SIZE) --define=datasize=$(DATA_PARTITION_SIZE) ../$(word 3,$^) \
-					> drivers/mtd/maps/stboards.c && \
+					> drivers/mtd/maps/stboards.c; \
 		@M4@ --define=btldrdef=$* $(buildprefix)/Patches/$(HOST_KERNEL_CONFIG) \
-					> .config && \
-		sed $(NFS_FLASH_SED_CONF) -i .config && \
-		sed $(XFS_SED_CONF) $(NFSSERVER_SED_CONF) $(NTFS_SED_CONF) -i .config && \
+					> .config; \
+		sed $(NFS_FLASH_SED_CONF) -i .config; \
+		sed $(XFS_SED_CONF) $(NFSSERVER_SED_CONF) $(NTFS_SED_CONF) -i .config; \
 		$(MAKE) ARCH=sh CROSS_COMPILE=$(target)- uImage modules
 	touch $@
 
@@ -345,8 +358,7 @@ $(DEPDIR)/driver: $(DEPENDS_driver) $(driverdir)/Makefile glibc-dev linux-kernel
 	cp $(driverdir)/player2/linux/include/linux/dvb/stm_ioctls.h $(targetprefix)/usr/include/linux/dvb
 	$(LN_SF) $(driverdir)/wireless/rtl8192cu/autoconf_rtl8192c_usb_linux.h $(buildprefix)/
 	$(LN_SF) $(driverdir)/wireless/rtl8188eu/autoconf_rtl8188e_usb_linux.h $(buildprefix)/
-	if [ $(KERNEL_VER) == P03xx ]; then \
-	ln -sf $(buildprefix)/linux-sh4/include/generated/autoconf.h $(buildprefix)/linux-sh4/include/linux/autoconf.h; fi
+	$(if $(ENABLE_P0308),$(LN_SF) $(buildprefix)/linux-sh4/include/generated/autoconf.h $(buildprefix)/linux-sh4/include/linux/autoconf.h)
 	$(MAKE) -C $(driverdir) ARCH=sh \
 		CONFIG_MODULES_PATH=$(targetprefix) \
 		KERNEL_LOCATION=$(buildprefix)/$(KERNEL_DIR) \
@@ -368,7 +380,7 @@ $(DEPDIR)/driver: $(DEPENDS_driver) $(driverdir)/Makefile glibc-dev linux-kernel
 	$(DEPMOD) -ae -b $(PKDIR) -F $(buildprefix)/$(KERNEL_DIR)/System.map -r $(KERNELVERSION); \
 	else \
 	$(DEPMOD) -ae -b $(PKDIR) -F $(buildprefix)/$(KERNEL_DIR)/System.map -r $(KERNELVERSION)+; \
-	fi
+	fi; \
 	$(tocdk_build)
 	$(toflash_build)
 	touch $@
