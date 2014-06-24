@@ -1,0 +1,46 @@
+--- linux-sh4/drivers/stm/coproc-st200.c.org
++++ linux-sh4/drivers/stm/coproc-st200.c
+@@ -3,6 +3,13 @@
+ #include <linux/of.h>
+ #include <linux/stm/platform.h>
+ 
++#if defined CONFIG_CPU_SUBTYPE_STX7100
++#include <linux/stm/stx7100.h>
++#else
++#error Need to define the sysconf configuration for this CPU subtype
++#endif
++
++
+ #include "coprocessor.h"
+ 
+ #define DRIVER_NAME "stm-coproc-st200"
+--- linux-sh4/drivers/stm/coproc-st40.c.org
++++ linux-sh4/drivers/stm/coproc-st40.c
+@@ -7,6 +7,12 @@
+ 
+ #include "coprocessor.h"
+ 
++#if defined CONFIG_CPU_SUBTYPE_STX7100
++#include <linux/stm/stx7100.h>
++#else
++#error Need to define the sysconf configuration for this CPU subtype
++#endif
++
+ #define DRIVER_NAME "stm-coproc-st40"
+ 
+ struct coproc_st40 {
+--- linux-sh4/drivers/stm/soc.c.org
++++ linux-sh4/drivers/stm/soc.c
+@@ -14,6 +14,12 @@
+ #include <linux/stm/sysconf.h>
+ #include <asm/processor.h>
+ 
++#if defined CONFIG_CPU_SUBTYPE_STX7100
++#include <linux/stm/stx7100.h>
++#else
++#error Need to define the sysconf configuration for this CPU subtype
++#endif
++
+ unsigned long stm_soc_devid;
+ EXPORT_SYMBOL(stm_soc_devid);
+ 

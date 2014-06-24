@@ -1,0 +1,30 @@
+--- linux-sh4/sound/stm/Kconfig.orig
++++ linux-sh4/sound/stm/Kconfig
+@@ -25,11 +25,6 @@
+ 	depends on SND_STM
+ 	default n
+ 
+-config SND_STM_PCM_READER
+-	tristate
+-	depends on SND_STM
+-	default n
+-
+ config SND_STM_SPDIF_PLAYER
+ 	tristate
+ 	depends on SND_STM
+@@ -133,7 +128,6 @@
+ 	depends on SND_STM
+ 	default y if CPU_SUBTYPE_STX7108
+ 	select SND_STM_PCM_PLAYER
+-	select SND_STM_PCM_READER
+ 	select SND_STM_SPDIF_PLAYER
+ 	select SND_STM_CONV_DAC_SYSCONF
+ 	select SND_STM_CONV_I2S_TO_SPDIF
+@@ -148,7 +142,6 @@
+ 	depends on SND_STM
+ 	default y if CPU_SUBTYPE_STXH205
+ 	select SND_STM_PCM_PLAYER
+-	select SND_STM_PCM_READER
+ 	select SND_STM_SPDIF_PLAYER
+ 	select SND_STM_CONV_DAC_SYSCONF
+ 	select SND_STM_CONV_I2S_TO_SPDIF

@@ -1,0 +1,328 @@
+--- linux-sh4-3.4.58-0308_orig/arch/sh/boards/mach-mb442/setup.c
++++ linux-sh4/arch/sh/boards/mach-mb442/setup.c
+@@ -19,32 +19,119 @@
+ #include <linux/spi/spi.h>
+ #include <linux/mtd/mtd.h>
+ #include <linux/mtd/physmap.h>
++#include <linux/mtd/partitions.h>
+ #include <linux/stm/platform.h>
+ #include <linux/stm/stx7100.h>
++#include <linux/stm/pio.h>
+ #include <asm/irl.h>
++#include <linux/bpa2.h>
+ 
+-
+-
+-#define MB442_PIO_STE100P_RESET stm_gpio(2, 4)
+-#define MB442_PIO_SMC91X_RESET stm_gpio(2, 6)
++#define MB442_PIO_STE100P_RESET stm_gpio(3, 6)
+-#define MB442_PIO_FLASH_VPP stm_gpio(2, 7)
+ 
++const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
++const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", NULL };
+ 
++static struct bpa2_partition_desc bpa2_parts_table[] = {
++      {
++	      .name  = "LMI_VID",
++	      .start = 0x10800000,
++	      .size  = 0x05800000,
++	      .flags = 0,
++	      .aka   = LMI_VID_partalias
++      },
++      {
++	      .name  = "LMI_SYS",
++	      .start = 0,
++	      .size  = 0x00F00000,
++	      .flags = 0,
++	      .aka   = LMI_SYS_partalias
++      }
++};
++/* Nand Adressen bereich
++Bank # 1: CFI conformant FLASH (16 x 16)  Size: 8 MiB in 135 Sectors
++  AMD Standard command set, Manufacturer ID: 0x20, Device ID: 0xED
++  Erase timeout: 8192 ms, write timeout: 1 ms
++  Buffer write timeout: 1 ms, buffer size: 16 bytes
++
++  Sector Start Addresses:
++  A0000000   RO   A0010000   RO   A0020000   RO   A0030000        A0040000      
++  A0050000        A0060000        A0070000        A0080000        A0090000      
++  A00A0000        A00B0000        A00C0000        A00D0000        A00E0000      
++  A00F0000        A0100000        A0110000        A0120000        A0130000      
++  A0140000        A0150000        A0160000        A0170000        A0180000      
++  A0190000        A01A0000        A01B0000        A01C0000        A01D0000      
++  A01E0000        A01F0000        A0200000        A0210000        A0220000      
++  A0230000        A0240000        A0250000        A0260000        A0270000      
++  A0280000        A0290000        A02A0000        A02B0000        A02C0000      
++  A02D0000        A02E0000        A02F0000        A0300000        A0310000      
++  A0320000        A0330000        A0340000        A0350000        A0360000      
++  A0370000        A0380000        A0390000        A03A0000        A03B0000      
++  A03C0000        A03D0000        A03E0000        A03F0000        A0400000      
++  A0410000        A0420000        A0430000        A0440000        A0450000      
++  A0460000        A0470000        A0480000        A0490000        A04A0000      
++  A04B0000        A04C0000        A04D0000        A04E0000        A04F0000      
++  A0500000        A0510000        A0520000        A0530000        A0540000      
++  A0550000        A0560000        A0570000        A0580000        A0590000      
++  A05A0000        A05B0000        A05C0000        A05D0000        A05E0000      
++  A05F0000 E      A0600000 E      A0610000 E      A0620000 E      A0630000 E    
++  A0640000 E      A0650000        A0660000        A0670000        A0680000 E    
++  A0690000 E      A06A0000        A06B0000        A06C0000        A06D0000      
++  A06E0000        A06F0000   RO   A0700000 E RO   A0710000 E RO   A0720000 E RO 
++  A0730000 E RO   A0740000 E RO   A0750000 E RO   A0760000 E RO   A0770000 E RO 
++  A0780000 E RO   A0790000 E RO   A07A0000 E RO   A07B0000 E RO   A07C0000      
++  A07D0000        A07E0000        A07F0000 E      A07F2000 E      A07F4000 E    
++  A07F6000 E      A07F8000 E      A07FA000 E      A07FC000 E      A07FE000 E   */
++/* NAND Partitionen */
++static struct mtd_partition mtd_parts_table[4] =
++{
++ 	{
++ 		.name = "Bootloader (Nicht löschen oder beschreiben)",
++ 		.size =   0x00040000,	//u-boot 0x00000000-0xa005ffff (don't touch) 256k
++ 		.offset = 0x00000000,
++ 		mask_flags: 0
++ 	},
++ 	{
++ 		.name = "jffs2 (RW)",	// jffs2 Partition mit 6.4MB Free NAND Memory
++ 		.size =   0x00660000,	// Devices : /dev/mtd1 & /dev/mtdblock1 (Maximum)
++ 		.offset = 0x00040000,	// Mehr Infos mit "cat /proc/mtd" und "cat /usr/class/mtd/..."
++ 	},
++ 	{
++ 		.name = "NAND-END (Nicht löschen oder beschreiben)",
++ 		.size =   0x00100000, // 1.1 MB, End of Nand RO im Bootloader Makiert !!!
++ 		.offset = 0x00700000, // Es gibt noch End Marker die ich hier bewust weglasse
++ 	},	
++ 	{
++ 		.name = "Kompletter Nand Flash (RW) - Loeschen ohne neue Firmware - JTAG noetig",
++ 		.size =   0x00800000,	// nur fuer die Benutzung eines komplett
++ 		.offset = 0x00000000,	// Flash mit ILTV benutzen, nicht fuer E2, 
++ 	},				// das Loeschen ohne Flashen neuer passender
++};					// Firmware Toetet eure Box und kann NUR mit jtag
++					// rueckgaengig gemacht werden
++/* Consolen und Memory Map Init */
+ 
+ void __init mb442_setup(char** cmdline_p)
+ {
+-	printk("STMicroelectronics STb7100 Reference board initialisation\n");
++	printk("Edision Argus Reference board initialisation\n");
+ 
+ 	stx7100_early_device_init();
+ 
++	/* Smartcard reader benutzt ASC0 Baseaddress=0x18030000 und ASC1 Baseaddress=0x18031000
++	   Serial ASC2 Baseaddress=0x18032000 
++	   Serial ASC3 Baseaddress=0x18033000 
++	   Aktiviert ASC2 */
+ 	stx7100_configure_asc(2, &(struct stx7100_asc_config) {
+ 			.hw_flow_control = 0,
+-			.is_console = 1, });
++			.is_console = 0, });
++
++	/* Aktiviert ASC3 */
+ 	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
+ 			.hw_flow_control = 0,
+-			.is_console = 0, });
++			.is_console = 1, });
++
++  	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
+ }
+ 
++/* Netzwerk Karten Map */
+ static struct resource mb442_smc91x_resources[] = {
+ 	[0] = {
+ 		.start	= 0x02000300,
+@@ -65,25 +152,38 @@
+ 	.resource	= mb442_smc91x_resources,
+ };
+ 
+-static void mb442_set_vpp(struct map_info *info, int enable)
++/* Nand allgemein und Nand vpp enable/disable funktion */
++static struct stpio_pin *vpp_pio;
++
++static void set_vpp(struct map_info *info, int enable)
+ {
+-	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
++	  stpio_set_pin(vpp_pio, enable);
+ }
+ 
+-static struct platform_device mb442_physmap_flash = {
+-	.name		= "physmap-flash",
+-	.id		= -1,
+-	.num_resources	= 1,
+-	.resource	= (struct resource[]) {
+-		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
+-	},
+-	.dev.platform_data = &(struct physmap_flash_data) {
+-		.width		= 2,
+-		.set_vpp	= mb442_set_vpp,
+-	},
++static struct physmap_flash_data physmap_flash_data = {
++         .width          = 2,
++         .set_vpp        = set_vpp,
++         .nr_parts	= ARRAY_SIZE(mtd_parts_table),
++     	 .parts		= mtd_parts_table,
++};
++
++static struct resource physmap_flash_resource = {
++         .start          = 0x00000000,
++         .end            = 0x00800000 - 1,
++         .flags          = IORESOURCE_MEM,
++};
++
++static struct platform_device physmap_flash = {
++         .name           = "physmap-flash",
++         .id             = -1,
++	 .dev = {
++		.platform_data = &physmap_flash_data,
++	 },
++         .num_resources  = 1,
++         .resource       = &physmap_flash_resource,
+ };
+ 
+-
++/* Netzwerk Reset */
+ static int mb442_phy_reset(void* bus)
+ {
+ 	gpio_set_value(MB442_PIO_STE100P_RESET, 1);
+@@ -95,7 +195,8 @@
+ 	return 1;
+ }
+ 
+-#define STMMAC_PHY_ADDR 14
++/* MAC init ( werkelt aber nicht koreckt, findet keine MAC Adresse) */
++#define STMMAC_PHY_ADDR 2
+ static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
+ 	[STMMAC_PHY_ADDR] = IRL3_IRQ,
+ };
+@@ -106,38 +207,37 @@
+ 	.irqs = stmmac_phy_irqs,
+ };
+ 
++/* Init aller Funktionen */
+ static struct platform_device *mb442_devices[] __initdata = {
+ 	&mb442_smc91x_device,
+-	&mb442_physmap_flash,
++        &physmap_flash,
+ };
+ 
+ static int __init mb442_device_init(void)
+ {
+ 	stx7100_configure_sata();
+ 
++	/* das pwm will ich noch auf dem Vip1 und Opti für nen deepstandby testen */
+ /*	stx7100_configure_pwm(&(struct stx7100_pwm_config) {
+ 			.out0_enabled = 0,
+ 			.out1_enabled = 1, });*/
+ 
+-	stx7100_configure_ssc_i2c(0, NULL);
+-	stx7100_configure_ssc_spi(1, NULL);
+-	stx7100_configure_ssc_i2c(2, NULL);
++	/* I2C Init */
++	stx7100_configure_ssc_i2c(0);
++	stx7100_configure_ssc_i2c(1);
++	stx7100_configure_ssc_i2c(2);
+ 
++	/* USB Init */
+ 	stx7100_configure_usb();
+-
++	
++	/* Enable Lirc */
+ 	stx7100_configure_lirc(&(struct stx7100_lirc_config) {
+ 			.rx_mode = stx7100_lirc_rx_mode_ir,
+ 			.tx_enabled = 0,
+ 			.tx_od_enabled = 0, });
+-
+-	stx7100_configure_pata(&(struct stx7100_pata_config) {
+-			.emi_bank = 3,
+-			.pc_mode = 1,
+-			.irq = IRL1_IRQ, });
+-
+-	gpio_request(MB442_PIO_FLASH_VPP, "Flash VPP");
+-	gpio_direction_output(MB442_PIO_FLASH_VPP, 0);
+-
++	
++	/* Pio set Netzwerk und Nand */
++	vpp_pio = stpio_request_set_pin(4, 6, "NAND_VPP", STPIO_OUT, 0);
+ 	gpio_request(MB442_PIO_STE100P_RESET, "STE100P reset");
+ 	gpio_direction_output(MB442_PIO_STE100P_RESET, 1);
+ 
+@@ -149,14 +249,6 @@
+ 			.mdio_bus_data = &stmmac_mdio_bus,
+ 		});
+ 
+-	/* Reset the SMSC 91C111 Ethernet chip */
+-	gpio_request(MB442_PIO_SMC91X_RESET, "SMC91x reset");
+-	gpio_direction_output(MB442_PIO_SMC91X_RESET, 0);
+-	udelay(1);
+-	gpio_set_value(MB442_PIO_SMC91X_RESET, 1);
+-	udelay(1);
+-	gpio_set_value(MB442_PIO_SMC91X_RESET, 0);
+-
+ 	return platform_add_devices(mb442_devices,
+ 			ARRAY_SIZE(mb442_devices));
+ }
+--- linux-sh4-3.4.58-0308/drivers/net/phy/phy_device.c.orig
++++ linux-sh4-3.4.58-0308/drivers/net/phy/phy_device.c
+@@ -1104,7 +1104,7 @@
+ 		return retval;
+ 	}
+ 
+-	pr_debug("%s: Registered new driver\n", new_driver->name);
++	pr_info("%s: Registered new driver (0x%08x)\n", new_driver->name, new_driver->phy_id);
+ 
+ 	return 0;
+ }
+--- linux-sh4-3.4.58-0308/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c.orig
++++ linux-sh4-3.4.58-0308/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -243,7 +243,13 @@
+ 			 * and no PHY number was provided to the MAC,
+ 			 * use the one probed here.
+ 			 */
+-			if (priv->plat->phy_addr == -1)
++			if ((priv->plat->phy_addr == -1) ||
++					(phydev->phy_id == 0x0181b880) || // Davicom DM9161E
++					(phydev->phy_id == 0x0181b8a0) || // Davicom DM9161A
++					(phydev->phy_id == 0x00181b80) || // Davicom DM9131
++					(phydev->phy_id == 0x1c040011) || // STe100p
++					(phydev->phy_id == 0x00061c50) || // STe101p
++					(phydev->phy_id == 0x001cc912))   // RTL821x
+ 				priv->plat->phy_addr = addr;
+ 
+ 			act = (priv->plat->phy_addr == addr);
+--- linux-sh4-3.4.58-0308_orig/include/linux/stm/stx7100.h
++++ linux-sh4/include/linux/stm/stx7100_orig.h
+@@ -35,15 +35,12 @@
+ void stx7100_configure_asc(int asc, struct stx7100_asc_config *config);
+ 
+ 
+-struct stx7100_ssc_i2c_config {
+-	unsigned int fastmode:1;
+-};
+ struct stx7100_ssc_spi_config {
+ 	void (*chipselect)(struct spi_device *spi, int is_on);
+ };
+ /* SSC configure functions return I2C/SPI bus number */
+-int stx7100_configure_ssc_i2c(int ssc, struct stx7100_ssc_i2c_config *config);
+-int stx7100_configure_ssc_spi(int ssc, struct stx7100_ssc_spi_config *config);
++int stx7100_configure_ssc_i2c(int ssc);
++int stx7100_configure_ssc_spi(int ssc, struct stx7100_ssc_spi_config *config);
+ 
+ 
+ struct stx7100_lirc_config {
+--- linux-sh4-3.4.58-0308/drivers/stm/stx7100_clock.c
++++ linux-sh4/drivers/stm/stx7100_clock-org.c
+@@ -21,13 +21,14 @@
+ 	/* alias not required because already registered as "emi_clk" */
+ 
+ 	/* fdmas clocks */
+-	clk_add_alias("fdma_slim_clk", NULL, "slim_clk", NULL);
++	clk_add_alias("fdma_slim_clk", NULL, "ic_100_clk"/*"slim_clk"*/, NULL);
+ 	clk_add_alias("fdma_hi_clk", NULL, "ic_100_clk",  NULL);
+ 	clk_add_alias("fdma_low_clk", NULL, "ic_clk", NULL);
+ 	clk_add_alias("fdma_ic_clk", NULL, "ic_100_clk", NULL);
+ 
+-	/* USB clocks */
+-	clk_add_alias("usb_ic_clk", NULL, "ic_100_clk", NULL);
++	/* USB clocks to 200mhz*/
++	clk_add_alias("usb_ic_clk", NULL, "ic_clk", NULL); 
++
+ 	/* usb_phy_clk generated internally to the wrapped system PLL */
+ 	/* usb_48_clk generated internally to the wrapped system PLL */
+ 

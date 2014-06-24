@@ -1,0 +1,11 @@
+*** linux-sh4-3.4.58-0308.orig/arch/sh/mm/init.c
+--- linux-sh4/arch/sh/mm/init.c
+@@ -188,6 +188,8 @@
+ 		j = 0;
+ 	}
+ }
++
++EXPORT_SYMBOL(init_mm);
+ #endif	/* CONFIG_MMU */
+ 
+ void __init allocate_pgdat(unsigned int nid)

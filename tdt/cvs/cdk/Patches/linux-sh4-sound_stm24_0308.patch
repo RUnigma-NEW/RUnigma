@@ -1,0 +1,173 @@
+*** linux-sh4-3.4.58-0308.orig/sound/core/oss/pcm_oss.c
+--- linux-sh4/sound/core/oss/pcm_oss.c
+@@ -219,6 +219,8 @@
+ 	return 0;
+ }
+ 
++EXPORT_SYMBOL_GPL(snd_pcm_hw_param_mask);
++
+ static int _snd_pcm_hw_param_min(struct snd_pcm_hw_params *params,
+ 				 snd_pcm_hw_param_t var, unsigned int val,
+ 				 int dir)
+@@ -278,6 +280,8 @@
+ 	return snd_pcm_hw_param_value_min(params, var, dir);
+ }
+ 
++EXPORT_SYMBOL_GPL(_snd_pcm_hw_param_min);
++
+ static int _snd_pcm_hw_param_max(struct snd_pcm_hw_params *params,
+ 				 snd_pcm_hw_param_t var, unsigned int val,
+ 				 int dir)
+@@ -469,6 +473,8 @@
+ 	return v;
+ }
+ 
++EXPORT_SYMBOL_GPL(snd_pcm_hw_param_near);
++
+ static int _snd_pcm_hw_param_set(struct snd_pcm_hw_params *params,
+ 				 snd_pcm_hw_param_t var, unsigned int val,
+ 				 int dir)
+@@ -545,6 +551,8 @@
+ 	return snd_pcm_hw_param_value(params, var, NULL);
+ }
+ 
++EXPORT_SYMBOL_GPL(snd_pcm_hw_param_set);
++
+ static int _snd_pcm_hw_param_setinteger(struct snd_pcm_hw_params *params,
+ 					snd_pcm_hw_param_t var)
+ {
+@@ -556,7 +564,9 @@
+ 	}
+ 	return changed;
+ }
+-	
++
++EXPORT_SYMBOL_GPL(_snd_pcm_hw_param_setinteger);
++
+ /*
+  * plugin
+  */
+*** linux-sh4-3.4.58-0308.orig/sound/core/pcm_lib.c
+--- linux-sh4/sound/core/pcm_lib.c
+@@ -505,6 +505,8 @@
+ 	return snd_pcm_update_hw_ptr0(substream, 0);
+ }
+ 
++EXPORT_SYMBOL(snd_pcm_update_hw_ptr);
++
+ /**
+  * snd_pcm_set_ops - set the PCM operators
+  * @pcm: the pcm instance
+*** linux-sh4-3.4.58-0308.orig/sound/core/pcm_native.c
+--- linux-sh4/sound/core/pcm_native.c
+@@ -903,6 +903,8 @@
+ 			      SNDRV_PCM_STATE_RUNNING);
+ }
+ 
++EXPORT_SYMBOL(snd_pcm_start);
++
+ /*
+  * stop callbacks
+  */
+@@ -1921,6 +1923,8 @@
+ 	return 0;
+ }
+ 
++EXPORT_SYMBOL_GPL(snd_pcm_hw_constraints_init);
++
+ int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
+ {
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+@@ -2004,6 +2008,8 @@
+ 	return 0;
+ }
+ 
++EXPORT_SYMBOL_GPL(snd_pcm_hw_constraints_complete);
++
+ static void pcm_release_private(struct snd_pcm_substream *substream)
+ {
+ 	snd_pcm_unlink(substream);
+*** linux-sh4-3.4.58-0308.orig/sound/core/sound.c
+--- linux-sh4/sound/core/sound.c
+@@ -331,6 +331,14 @@
+ 	return -1;
+ }
+ 
++int snd_get_minor(int type, int card, int dev)
++{
++      return find_snd_minor(type, snd_cards[card], dev);
++}
++
++EXPORT_SYMBOL(snd_get_minor);
++
++
+ /**
+  * snd_unregister_device - unregister the device on the given card
+  * @type: the device type, SNDRV_DEVICE_TYPE_XXX
+*** linux-sh4-3.4.58-0308.orig/sound/stm/common.h
+--- linux-sh4/sound/stm/common.h
+@@ -197,9 +197,23 @@
+ 						__FILE__, __LINE__, ##args); \
+ 		} while (0)
+ 
++#define snd_stm_assert(expr, args...) \
++		do { \
++			if (unlikely(!(expr))) { \
++				printk(KERN_ERR "snd-stm:%s:%d: BUG? " \
++						"(%s)\n", \
++						__snd_stm_component, \
++						__LINE__, \
++						__stringify(expr)); \
++				dump_stack(); \
++				args; \
++			} \
++		} while (0)
++
+ #else
+ 
+ #define snd_stm_printd(...) /* nothing */
++#define snd_stm_assert snd_assert
+ 
+ #endif
+ 
+*** linux-sh4-3.4.58-0308.orig/include/sound/core.h
+--- linux-sh4/include/sound/core.h
+@@ -368,6 +368,23 @@
+ 	__snd_printk(level, __FILE__, __LINE__, fmt, ##args)
+ 
+ /**
++ * snd_assert - run-time assertion macro
++ * @expr: expression
++ *
++ * This macro checks the expression in run-time and invokes the commands
++ * given in the rest arguments if the assertion is failed.
++ * When CONFIG_SND_DEBUG is not set, the expression is executed but
++ * not checked.
++ */
++#define snd_assert(expr, args...) do {					\
++	if (unlikely(!(expr))) {					\
++		snd_printk(KERN_ERR "BUG? (%s)\n", __ASTRING__(expr));	\
++		dump_stack();						\
++		args;							\
++	}								\
++} while (0)
++
++/**
+  * snd_BUG - give a BUG warning message and stack trace
+  *
+  * Calls WARN() if CONFIG_SND_DEBUG is set.
+@@ -396,6 +413,7 @@
+ 
+ #define snd_printd(fmt, args...)	do { } while (0)
+ #define _snd_printd(level, fmt, args...) do { } while (0)
++#define snd_assert(expr, args...)	(void)(expr)
+ #define snd_BUG()			do { } while (0)
+ static inline int __snd_bug_on(int cond)
+ {
+@@ -470,5 +488,6 @@
+ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
+ 			const struct snd_pci_quirk *list);
+ #endif
++int snd_get_minor(int type, int card, int dev);
+ 
+ #endif /* __SOUND_CORE_H */

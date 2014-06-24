@@ -1,0 +1,4348 @@
+diff --git a/arch/sh/boards/mach-mb442/Makefile b/arch/sh/boards/mach-mb442/Makefile
+new file mode 100644
+--- /dev/null
++++ arch/sh/boards/mach-mb442/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for STMicroelectronics STb7100 Reference board
++#
++
++obj-y := setup.o mach.o
+diff --git a/arch/sh/boards/mach-mb442/mach.c b/arch/sh/boards/mach-mb442/mach.c
+new file mode 100644
+--- /dev/null
++++ arch/sh/boards/mach-mb442/mach.c
+@@ -0,0 +1,60 @@
++/*
++ * arch/sh/boards/st/mb442/mach.c
++ *
++ * Copyright (C) 2005 STMicroelectronics Limited
++ * Author: Stuart Menefy (stuart.menefy@st.com)
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ *
++ * Machine vector for the STMicroelectronics STb7100 Reference board.
++ */
++
++#include <linux/init.h>
++#include <linux/irq.h>
++//#include <asm/system.h>
++#include <asm/io.h>
++#include <asm/machvec.h>
++#include <asm/irq-stx7100.h>
++
++static void __iomem *mb442_ioport_map(unsigned long port, unsigned int size)
++{
++#ifdef CONFIG_BLK_DEV_ST40IDE
++	/*
++	 * The IDE driver appears to use memory addresses with IO port
++	 * calls. This needs fixing.
++	 */
++	return (void __iomem *)port;
++#endif
++
++	/* However picking somewhere safe isn't as easy as you might think.
++	 * I used to use external ROM, but that can cause problems if you are
++	 * in the middle of updating Flash. So I'm now using the processor core
++	 * version register, which is guaranted to be available, and non-writable.
++	 */
++	return (void __iomem *)CCN_PVR;
++}
++
++static void __init mb442_init_irq(void)
++{
++	/* enable individual interrupt mode for externals */
++	plat_irq_setup_pins(IRQ_MODE_IRQ);
++
++	/* Set the ILC to route external interrupts to the the INTC */
++	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
++	/* Inputs sys-irq2 and 3 are unused (pulled high) */
++	ilc_route_external(ILC_EXT_IRQ0, 4, 0);		/* SMC Ethernet */
++	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
++	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
++	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
++}
++
++void __init mb442_setup(char**);
++
++static struct sh_machine_vector mv_mb442 __initmv = {
++	.mv_name		= "STb7100 Reference board",
++	.mv_setup		= mb442_setup,
++	.mv_nr_irqs		= NR_IRQS,
++	.mv_init_irq		= mb442_init_irq,
++	//.mv_ioport_map		= mb442_ioport_map,
++};
+diff --git a/arch/sh/boards/mach-mb442/setup.c b/arch/sh/boards/mach-mb442/setup.c
+new file mode 100644
+--- /dev/null
++++ arch/sh/boards/mach-mb442/setup.c
+@@ -0,0 +1,163 @@
++/*
++ * arch/sh/boards/st/mb442/setup.c
++ *
++ * Copyright (C) 2005 STMicroelectronics Limited
++ * Author: Stuart Menefy (stuart.menefy@st.com)
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ *
++ * STMicroelectronics STb7100 Reference board support.
++ */
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/gpio.h>
++#include <media/lirc.h>
++#include <linux/phy.h>
++#include <linux/delay.h>
++#include <linux/spi/spi.h>
++#include <linux/mtd/mtd.h>
++#include <linux/mtd/physmap.h>
++#include <linux/stm/platform.h>
++#include <linux/stm/stx7100.h>
++#include <asm/irl.h>
++
++
++
++#define MB442_PIO_STE100P_RESET stm_gpio(2, 4)
++#define MB442_PIO_SMC91X_RESET stm_gpio(2, 6)
++#define MB442_PIO_FLASH_VPP stm_gpio(2, 7)
++
++
++
++void __init mb442_setup(char** cmdline_p)
++{
++	printk("STMicroelectronics STb7100 Reference board initialisation\n");
++
++	stx7100_early_device_init();
++
++	stx7100_configure_asc(2, &(struct stx7100_asc_config) {
++			.hw_flow_control = 0,
++			.is_console = 1, });
++	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
++			.hw_flow_control = 0,
++			.is_console = 0, });
++}
++
++static struct resource mb442_smc91x_resources[] = {
++	[0] = {
++		.start	= 0x02000300,
++		.end	= 0x02000300 + 0xff,
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= IRL0_IRQ,
++		.end	= IRL0_IRQ,
++		.flags	= IORESOURCE_IRQ,
++	},
++};
++
++static struct platform_device mb442_smc91x_device = {
++	.name		= "smc91x",
++	.id		= 0,
++	.num_resources	= ARRAY_SIZE(mb442_smc91x_resources),
++	.resource	= mb442_smc91x_resources,
++};
++
++static void mb442_set_vpp(struct map_info *info, int enable)
++{
++	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
++}
++
++static struct platform_device mb442_physmap_flash = {
++	.name		= "physmap-flash",
++	.id		= -1,
++	.num_resources	= 1,
++	.resource	= (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
++	},
++	.dev.platform_data = &(struct physmap_flash_data) {
++		.width		= 2,
++		.set_vpp	= mb442_set_vpp,
++	},
++};
++
++
++static int mb442_phy_reset(void* bus)
++{
++	gpio_set_value(MB442_PIO_STE100P_RESET, 1);
++	udelay(1);
++	gpio_set_value(MB442_PIO_STE100P_RESET, 0);
++	udelay(1);
++	gpio_set_value(MB442_PIO_STE100P_RESET, 1);
++
++	return 1;
++}
++
++#define STMMAC_PHY_ADDR 14
++static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
++	[STMMAC_PHY_ADDR] = IRL3_IRQ,
++};
++static struct stmmac_mdio_bus_data stmmac_mdio_bus = {
++	
++	.phy_reset = mb442_phy_reset,
++	.phy_mask = 1,
++	.irqs = stmmac_phy_irqs,
++};
++
++static struct platform_device *mb442_devices[] __initdata = {
++	&mb442_smc91x_device,
++	&mb442_physmap_flash,
++};
++
++static int __init mb442_device_init(void)
++{
++	stx7100_configure_sata();
++
++/*	stx7100_configure_pwm(&(struct stx7100_pwm_config) {
++			.out0_enabled = 0,
++			.out1_enabled = 1, });*/
++
++	stx7100_configure_ssc_i2c(0, NULL);
++	stx7100_configure_ssc_spi(1, NULL);
++	stx7100_configure_ssc_i2c(2, NULL);
++
++	stx7100_configure_usb();
++
++	stx7100_configure_lirc(&(struct stx7100_lirc_config) {
++			.rx_mode = stx7100_lirc_rx_mode_ir,
++			.tx_enabled = 0,
++			.tx_od_enabled = 0, });
++
++	stx7100_configure_pata(&(struct stx7100_pata_config) {
++			.emi_bank = 3,
++			.pc_mode = 1,
++			.irq = IRL1_IRQ, });
++
++	gpio_request(MB442_PIO_FLASH_VPP, "Flash VPP");
++	gpio_direction_output(MB442_PIO_FLASH_VPP, 0);
++
++	gpio_request(MB442_PIO_STE100P_RESET, "STE100P reset");
++	gpio_direction_output(MB442_PIO_STE100P_RESET, 1);
++
++	stx7100_configure_ethernet(&(struct stx7100_ethernet_config) {
++			.mode = stx7100_ethernet_mode_mii,
++			.ext_clk = 0,
++			.phy_bus = 0,
++			.phy_addr = STMMAC_PHY_ADDR,
++			.mdio_bus_data = &stmmac_mdio_bus,
++		});
++
++	/* Reset the SMSC 91C111 Ethernet chip */
++	gpio_request(MB442_PIO_SMC91X_RESET, "SMC91x reset");
++	gpio_direction_output(MB442_PIO_SMC91X_RESET, 0);
++	udelay(1);
++	gpio_set_value(MB442_PIO_SMC91X_RESET, 1);
++	udelay(1);
++	gpio_set_value(MB442_PIO_SMC91X_RESET, 0);
++
++	return platform_add_devices(mb442_devices,
++			ARRAY_SIZE(mb442_devices));
++}
++device_initcall(mb442_device_init);
+diff --git a/arch/sh/kernel/cpu/sh4/clock-stx7100.c b/arch/sh/kernel/cpu/sh4/clock-stx7100.c
+new file mode 100644
+--- /dev/null
++++ arch/sh/kernel/cpu/sh4/clock-stx7100.c
+@@ -0,0 +1,27 @@
++/*
++ * Copyright (C) 2010 STMicroelectronics Limited
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ *
++ * Code to handle the arch clocks on the STx7100.
++ */
++
++#include <linux/init.h>
++#include <linux/stm/clk.h>
++#include <linux/stm/stx7100.h>
++
++int __init arch_clk_init(void)
++{
++	int ret;
++
++	ret = stx7100_plat_clk_init();
++	if (ret)
++		return ret;
++
++	ret = stx7100_plat_clk_alias_init();
++	if (ret)
++		return ret;
++
++	return ret;
++}
+diff --git a/arch/sh/kernel/cpu/sh4/setup-stx7100.c b/arch/sh/kernel/cpu/sh4/setup-stx7100.c
+new file mode 100644
+--- /dev/null
++++ arch/sh/kernel/cpu/sh4/setup-stx7100.c
+@@ -0,0 +1,256 @@
++/*
++ * STx7100/STx7109 SH-4 Setup
++ *
++ * Copyright (C) 2007 STMicroelectronics Limited
++ * Author: Stuart Menefy <stuart.menefy@st.com>
++ *
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file "COPYING" in the main directory of this archive
++ * for more details.
++ */
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/io.h>
++#include <linux/stm/stx7100.h>
++#include <linux/stm/sysconf.h>
++#include <asm/irq-ilc.h>
++
++
++
++/* SH4-only resources ----------------------------------------------------- */
++
++struct platform_device stx7100_sh4_wdt_device = {
++	.name = "wdt",
++	.id = -1,
++	.num_resources = 1,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0xffc00008, 8),
++	},
++};
++
++static struct platform_device stx7100_sh4_ilc3_device = {
++	.name = "ilc3",
++	.id = -1,
++	.num_resources = 1,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18000000, 0x900),
++	},
++};
++
++static struct platform_device *stx7100_sh4_devices[] __initdata = {
++	&stx7100_sh4_wdt_device,
++	&stx7100_sh4_ilc3_device,
++};
++
++static int __init stx7100_sh4_devices_setup(void)
++{
++	return platform_add_devices(stx7100_sh4_devices,
++			ARRAY_SIZE(stx7100_sh4_devices));
++}
++core_initcall(stx7100_sh4_devices_setup);
++
++
++
++/* Interrupt initialisation ----------------------------------------------- */
++
++enum {
++	UNUSED = 0,
++
++	/* interrupt sources */
++	IRL0, IRL1, IRL2, IRL3, /* only IRLM mode described here */
++	TMU0, TMU1, TMU2, RTC, SCIF, WDT, HUDI,
++
++	SATA_DMAC, SATA_HOSTC,
++	PIO0, PIO1, PIO2,
++	PIO5, PIO4, PIO3, MTP,			/* Group 0 */
++	SSC2, SSC1, SSC0,			/* Group 1 */
++	UART3, UART2, UART1, UART0,		/* Group 2 */
++	IRB_WAKEUP, IRB, PWM, MAFE,		/* Group 3 */
++	DISEQC, DAA, TTXT,			/* Group 4 */
++	EMPI, ETH_MAC, TS_MERGER,		/* Group 5 */
++	ST231_DELTA, ST231_AUD, DCXO, PTI1,	/* Group 6 */
++	FDMA_MBOX, FDMA_GP0, I2S2SPDIF, CPXM,	/* Group 7 */
++	PCMPLYR0, PCMPLYR1, PCMRDR, SPDIFPLYR,	/* Group 8 */
++	MPEG2, DELTA_PRE0, DELTA_PRE1, DELTA_MBE,	/* Group 9 */
++	VDP_FIFO_EMPTY, VDP_END_PROC, VTG1, VTG2,	/* Group 10 */
++	BDISP_AQ1, DVP, HDMI, HDCP,			/* Group 11 */
++	PTI, PDES_ESA0, PDES, PRES_READ_CW,		/* Group 12 */
++	SIG_CHK, TKDMA, CRIPTO_SIG_DMA, CRIPTO_SIG_CHK,	/* Group 13 */
++	OHCI, EHCI, SATA, BDISP_CQ1,			/* Group 14 */
++	ICAM3_KTE, ICAM3, MES_LMI_VID, MES_LMI_SYS,	/* Group 15 */
++
++	/* interrupt groups */
++	SATA_SPLIT,
++	GROUP0, GROUP1, GROUP2, GROUP3,
++	GROUP4, GROUP5, GROUP6, GROUP7,
++	GROUP8, GROUP9, GROUP10, GROUP11,
++	GROUP12, GROUP13, GROUP14, GROUP15,
++};
++
++static struct intc_vect vectors[] = {
++	INTC_VECT(TMU0, 0x400),
++	INTC_VECT(TMU1, 0x420),
++	INTC_VECT(TMU2, 0x440), INTC_VECT(TMU2, 0x460),
++	INTC_VECT(RTC, 0x480), INTC_VECT(RTC, 0x4a0), INTC_VECT(RTC, 0x4c0),
++	INTC_VECT(SCIF, 0x4e0), INTC_VECT(SCIF, 0x500),
++		INTC_VECT(SCIF, 0x520), INTC_VECT(SCIF, 0x540),
++	INTC_VECT(WDT, 0x560),
++	INTC_VECT(HUDI, 0x600),
++
++	INTC_VECT(SATA_DMAC, 0xa20), INTC_VECT(SATA_HOSTC, 0xa40),
++	INTC_VECT(PIO0, 0xc00), INTC_VECT(PIO1, 0xc80), INTC_VECT(PIO2, 0xd00),
++	INTC_VECT(MTP, 0x1000), INTC_VECT(PIO5, 0x1020),
++	INTC_VECT(PIO4, 0x1040), INTC_VECT(PIO3, 0x1060),
++	INTC_VECT(SSC2, 0x10a0),
++	INTC_VECT(SSC1, 0x10c0), INTC_VECT(SSC0, 0x10e0),
++	INTC_VECT(UART3, 0x1100), INTC_VECT(UART2, 0x1120),
++	INTC_VECT(UART1, 0x1140), INTC_VECT(UART0, 0x1160),
++	INTC_VECT(IRB_WAKEUP, 0x1180), INTC_VECT(IRB, 0x11a0),
++	INTC_VECT(PWM, 0x11c0), INTC_VECT(MAFE, 0x11e0),
++	INTC_VECT(DISEQC, 0x1220),
++	INTC_VECT(DAA, 0x1240), INTC_VECT(TTXT, 0x1260),
++	INTC_VECT(EMPI, 0x1280), INTC_VECT(ETH_MAC, 0x12a0),
++	INTC_VECT(TS_MERGER, 0x12c0),
++	INTC_VECT(ST231_DELTA, 0x1300), INTC_VECT(ST231_AUD, 0x1320),
++	INTC_VECT(DCXO, 0x1340), INTC_VECT(PTI1, 0x1360),
++	INTC_VECT(FDMA_MBOX, 0x1380), INTC_VECT(FDMA_GP0, 0x13a0),
++	INTC_VECT(I2S2SPDIF, 0x13c0), INTC_VECT(CPXM, 0x13e0),
++	INTC_VECT(PCMPLYR0, 0x1400), INTC_VECT(PCMPLYR1, 0x1420),
++	INTC_VECT(PCMRDR, 0x1440), INTC_VECT(SPDIFPLYR, 0x1460),
++	INTC_VECT(MPEG2, 0x1480), INTC_VECT(DELTA_PRE0, 0x14a0),
++	INTC_VECT(DELTA_PRE1, 0x14c0), INTC_VECT(DELTA_MBE, 0x14e0),
++	INTC_VECT(VDP_FIFO_EMPTY, 0x1500), INTC_VECT(VDP_END_PROC, 0x1520),
++	INTC_VECT(VTG1, 0x1540), INTC_VECT(VTG2, 0x1560),
++	INTC_VECT(BDISP_AQ1, 0x1580), INTC_VECT(DVP, 0x15a0),
++	INTC_VECT(HDMI, 0x15c0), INTC_VECT(HDCP, 0x15e0),
++	INTC_VECT(PTI, 0x1600), INTC_VECT(PDES_ESA0, 0x1620),
++	INTC_VECT(PDES, 0x1640), INTC_VECT(PRES_READ_CW, 0x1660),
++	INTC_VECT(SIG_CHK, 0x1680), INTC_VECT(TKDMA, 0x16a0),
++	INTC_VECT(CRIPTO_SIG_DMA, 0x16c0), INTC_VECT(CRIPTO_SIG_CHK, 0x16e0),
++	INTC_VECT(OHCI, 0x1700), INTC_VECT(EHCI, 0x1720),
++	INTC_VECT(SATA, 0x1740), INTC_VECT(BDISP_CQ1, 0x1760),
++	INTC_VECT(ICAM3_KTE, 0x1780), INTC_VECT(ICAM3, 0x17a0),
++	INTC_VECT(MES_LMI_VID, 0x17c0), INTC_VECT(MES_LMI_SYS, 0x17e0)
++};
++
++static struct intc_group groups[] = {
++	INTC_GROUP(SATA_SPLIT, SATA_DMAC, SATA_HOSTC),
++	INTC_GROUP(GROUP0, PIO5, PIO4, PIO3, MTP),
++	INTC_GROUP(GROUP1, SSC2, SSC1, SSC0),
++	INTC_GROUP(GROUP2, UART3, UART2, UART1, UART0),
++	INTC_GROUP(GROUP3, IRB_WAKEUP, IRB, PWM, MAFE),
++	INTC_GROUP(GROUP4, DISEQC, DAA, TTXT),
++	INTC_GROUP(GROUP5, EMPI, ETH_MAC, TS_MERGER),
++	INTC_GROUP(GROUP6, ST231_DELTA, ST231_AUD, DCXO, PTI1),
++	INTC_GROUP(GROUP7, FDMA_MBOX, FDMA_GP0, I2S2SPDIF, CPXM),
++	INTC_GROUP(GROUP8, PCMPLYR0, PCMPLYR1, PCMRDR, SPDIFPLYR),
++	INTC_GROUP(GROUP9, MPEG2, DELTA_PRE0, DELTA_PRE1, DELTA_MBE),
++	INTC_GROUP(GROUP10, VDP_FIFO_EMPTY, VDP_END_PROC, VTG1, VTG2),
++	INTC_GROUP(GROUP11, BDISP_AQ1, DVP, HDMI, HDCP),
++	INTC_GROUP(GROUP12, PTI, PDES_ESA0, PDES, PRES_READ_CW),
++	INTC_GROUP(GROUP13, SIG_CHK, TKDMA, CRIPTO_SIG_DMA, CRIPTO_SIG_CHK),
++	INTC_GROUP(GROUP14, OHCI, EHCI, SATA, BDISP_CQ1),
++	INTC_GROUP(GROUP15, ICAM3_KTE, ICAM3, MES_LMI_VID, MES_LMI_SYS),
++};
++
++static struct intc_prio_reg prio_registers[] = {
++					   /*   15-12, 11-8,  7-4,   3-0 */
++	{ 0xffd00004, 0, 16, 4, /* IPRA */     { TMU0, TMU1, TMU2,   RTC } },
++	{ 0xffd00008, 0, 16, 4, /* IPRB */     {  WDT,    0, SCIF,     0 } },
++	{ 0xffd0000c, 0, 16, 4, /* IPRC */     {    0,    0,    0,  HUDI } },
++	{ 0xffd00010, 0, 16, 4, /* IPRD */     { IRL0, IRL1,  IRL2, IRL3 } },
++				/* 31-28,   27-24,   23-20,   19-16 */
++				/* 15-12,    11-8,     7-4,     3-0 */
++	{ 0x00000300, 0, 32, 4,
++		/* INTPRI00 */ {       0,       0,    PIO2,    PIO1,
++				    PIO0,       0, SATA_SPLIT,    0 } },
++	{ 0x00000304, 0, 32, 4,
++		/* INTPRI04 */ {  GROUP7,  GROUP6,  GROUP5,  GROUP4,
++				  GROUP3,  GROUP2,  GROUP1,  GROUP0 } },
++	{ 0x00000308, 0, 32, 4,
++		/* INTPRI08 */ { GROUP15, GROUP14, GROUP13, GROUP12,
++				 GROUP11, GROUP10,  GROUP9,  GROUP8 } },
++};
++
++static struct intc_mask_reg mask_registers[] = {
++	{ 0x00000340, 0x00000360, 32, /* INTMSK00 / INTMSKCLR00 */
++	  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,	/* 31..16 */
++	    0, PIO2, PIO1, PIO0,				/* 15..12 */
++	    0, 0, 0, 0,						/* 11...8 */
++	    0, 0, 0, 0,						/*  7...4 */
++	    0, SATA_HOSTC, SATA_DMAC, 0 } },			/*  3...0 */
++	{ 0x00000344, 0x00000364, 32, /* INTMSK04 / INTMSKCLR04 */
++	  { CPXM, I2S2SPDIF, FDMA_GP0, FDMA_MBOX,		/* 31..28 */
++	    PTI1, DCXO, ST231_AUD, ST231_DELTA,			/* 27..24 */
++	    0, TS_MERGER, ETH_MAC, EMPI,			/* 23..20 */
++	    TTXT, DAA, DISEQC, 0,				/* 19..16 */
++	    MAFE, PWM, IRB, IRB_WAKEUP, 			/* 15..12 */
++	    UART0, UART1, UART2, UART3,				/* 11...8 */
++	    SSC0, SSC1, SSC2, 0,				/*  7...4 */
++	    PIO3, PIO4, PIO5, MTP } },				/*  3...0 */
++	{ 0x00000348, 0x00000368, 32, /* INTMSK08 / INTMSKCLR08 */
++	  { MES_LMI_SYS, MES_LMI_VID, ICAM3, ICAM3_KTE, 	/* 31..28 */
++	    BDISP_CQ1, SATA, EHCI, OHCI,			/* 27..24 */
++	    CRIPTO_SIG_CHK, CRIPTO_SIG_DMA, TKDMA, SIG_CHK,	/* 23..20 */
++	    PRES_READ_CW, PDES, PDES_ESA0, PTI,			/* 19..16 */
++	    HDCP, HDMI, DVP, BDISP_AQ1,				/* 15..12 */
++	    VTG2, VTG1, VDP_END_PROC, VDP_FIFO_EMPTY,		/* 11...8 */
++	    DELTA_MBE, DELTA_PRE1, DELTA_PRE0, MPEG2,		/*  7...4 */
++	    SPDIFPLYR, PCMRDR, PCMPLYR1, PCMPLYR0 } }		/*  3...0 */
++};
++
++static DECLARE_INTC_DESC(intc_desc, "stx7100", vectors, groups,
++			 mask_registers, prio_registers, NULL);
++
++static struct intc_vect vectors_irlm[] = {
++	INTC_VECT(IRL0, 0x240), INTC_VECT(IRL1, 0x2a0),
++	INTC_VECT(IRL2, 0x300), INTC_VECT(IRL3, 0x360),
++};
++
++static DECLARE_INTC_DESC(intc_desc_irlm, "stx7100_irlm", vectors_irlm, NULL,
++			 NULL, prio_registers, NULL);
++
++void __init plat_irq_setup(void)
++{
++	struct sysconf_field *sc;
++	void __iomem *intc2_base = ioremap(0x19001000, 0x400);
++	int i;
++
++	ilc_early_init(&stx7100_sh4_ilc3_device);
++
++	for (i = 4; i <= 6; i++)
++		prio_registers[i].set_reg += (unsigned long) intc2_base;
++	for (i = 0; i <= 2; i++) {
++		mask_registers[i].set_reg += (unsigned long) intc2_base;
++		mask_registers[i].clr_reg += (unsigned long) intc2_base;
++	}
++
++	/* Configure the external interrupt pins as inputs */
++	sc = sysconf_claim(SYS_CFG, 10, 0, 3, "irq");
++	sysconf_write(sc, 0xf);
++
++	register_intc_controller(&intc_desc);
++}
++
++#define INTC_ICR	0xffd00000UL
++#define INTC_ICR_IRLM   (1<<7)
++
++void __init plat_irq_setup_pins(int mode)
++{
++/*	switch (mode) {
++	case IRQ_MODE_IRQ: // individual interrupt mode for IRL3-0
++		register_intc_controller(&intc_desc_irlm);
++		ctrl_outw(ctrl_inw(INTC_ICR) | INTC_ICR_IRLM, INTC_ICR);
++		break;
++	default:
++		BUG();
++	}*/
++	switch (mode) {
++	case IRQ_MODE_IRQ: /* individual interrupt mode for IRL3-0 */
++		__raw_writew(__raw_readw(INTC_ICR) | INTC_ICR_IRLM, INTC_ICR);
++		register_intc_controller(&intc_desc_irlm);
++		break;
++	default:
++		BUG();
++	}
++}
+diff --git a/arch/sh/kernel/cpu/sh4/suspend-stx7100.c b/arch/sh/kernel/cpu/sh4/suspend-stx7100.c
+new file mode 100644
+--- /dev/null
++++ arch/sh/kernel/cpu/sh4/suspend-stx7100.c
+@@ -0,0 +1,311 @@
++/*
++ * -------------------------------------------------------------------------
++ * Copyright (C) 2009  STMicroelectronics
++ * Copyright (C) 2010  STMicroelectronics
++ * Author: Francesco M. Virlinzi  <francesco.virlinzi@st.com>
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License V.2 ONLY.  See linux/COPYING for more information.
++ *
++ * ------------------------------------------------------------------------- */
++
++#include <linux/init.h>
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/suspend.h>
++#include <linux/errno.h>
++#include <linux/time.h>
++#include <linux/delay.h>
++#include <linux/irqflags.h>
++#include <linux/io.h>
++
++#include <linux/stm/stx7100.h>
++#include <linux/stm/sysconf.h>
++#include <linux/stm/clk.h>
++
++
++#include <asm/irq.h>
++#include <asm/system.h>
++
++#include "stm_suspend.h"
++#include <linux/stm/poke_table.h>
++
++#define SYSSTA(x)		(4 * (x) + 0xb9001000 + 0x008)
++#define SYSCONF(x)		(4 * (x) + 0xb9001000 + 0x100)
++
++#define CGA			0xb9213000	/* Clockgen A */
++
++
++#define CLKA_GEN_LOCK			(0x00)
++#define CLKA_PLL(x)			(0x08 + (x) * (0x24 - 0x8))
++#define   CLKA_PLL0_BYPASS		(1 << 20)
++#define   CLKA_PLL_ENABLE		(1 << 19)
++
++#define CLKA_PLL_LOCK(x)		(0x10 + (x) * (0x2C - 0x10))
++#define   CLKA_PLL_LOCK_LOCKED		0x01
++
++#define CLKA_ST40			(0x14)
++#define CLKA_ST40_IC			(0x18)
++#define CLKA_ST40_PER			(0x1c)
++
++#define CLKA_CLK_DIV			(0x30)
++#define CLKA_CLK_EN			(0x34)
++#define CLKA_CLK_EN_DEFAULT	((1 << 0) | (1 << 1) | (1 << 4) | (1 << 5))
++
++#define CLKA_PLL1_BYPASS		(0x3c)
++
++
++#define   CLKA_PLL0_SUSPEND	((5 << 16) | (5 << 8) | 	\
++		(CONFIG_SH_EXTERNAL_CLOCK / 1000000))
++
++static struct clk *comms_clk;
++static unsigned long comms_clk_rate;
++static void __iomem *cga;
++
++/* *************************
++ * STANDBY INSTRUCTION TABLE
++ * *************************
++ */
++static unsigned long stx7100_standby_table[] __cacheline_aligned = {
++POKE32(CGA + CLKA_GEN_LOCK, 0xc0de),
++
++POKE32(CGA + CLKA_ST40_PER, 0x5),
++POKE32(CGA + CLKA_ST40_IC, 0x5),
++POKE32(CGA + CLKA_ST40, 0x3),
++
++END_MARKER,
++
++POKE32(CGA + CLKA_ST40, 0x0),
++POKE32(CGA + CLKA_ST40_IC, 0x1),
++POKE32(CGA + CLKA_ST40_PER, 0x0),
++
++POKE32(CGA + CLKA_GEN_LOCK, 0x0),
++
++END_MARKER
++};
++
++/* *********************
++ * MEM INSTRUCTION TABLE
++ * *********************
++ */
++static unsigned long stx7100_mem_table[] __cacheline_aligned = {
++/* Enables the DDR self refresh mode */
++OR32(SYSCONF(11), (1 << 28) | (1 << 30)),
++WHILE_NE32(SYSSTA(12), (1 << 28), (1 << 28)),
++WHILE_NE32(SYSSTA(13), (1 << 28), (1 << 28)),
++
++POKE32(CGA + CLKA_GEN_LOCK, 0xc0de),
++
++/* PLL1 on External oscillator */
++OR32(CGA + CLKA_PLL1_BYPASS, 2),
++UPDATE32(CGA + CLKA_PLL(1), ~CLKA_PLL_ENABLE, 0x0),
++
++/* Turn-off the LMI clocks and the ST231 clocks */
++UPDATE32(CGA + CLKA_CLK_EN, ~CLKA_CLK_EN_DEFAULT, 0x0),
++
++POKE32(CGA + CLKA_ST40_PER, 0x5),
++POKE32(CGA + CLKA_ST40_IC,  0x5),
++POKE32(CGA + CLKA_ST40, 0x3),
++
++END_MARKER,
++
++/* Restore the highest frequency cpu/bus/per ratios */
++POKE32(CGA + CLKA_ST40, 0x0),
++POKE32(CGA + CLKA_ST40_IC, 0x1),
++POKE32(CGA + CLKA_ST40_PER, 0x0),
++
++/* Turn-on the LMI clocks and the ST231 clocks */
++OR32(CGA + CLKA_CLK_EN, CLKA_CLK_EN_DEFAULT),
++
++/* PLL1 at the standard frequency */
++OR32(CGA + CLKA_PLL(1), CLKA_PLL_ENABLE),
++WHILE_NE32(CGA + CLKA_PLL_LOCK(1), CLKA_PLL_LOCK_LOCKED, CLKA_PLL_LOCK_LOCKED),
++UPDATE32(CGA + CLKA_PLL1_BYPASS, ~2, 0x0),
++
++DELAY(2),
++
++/* Disables DDR self refresh */
++UPDATE32(SYSCONF(11), ~((1 << 28) | (1 << 30)), 0x0),
++
++WHILE_NE32(SYSSTA(12), (1 << 28), 0x0),
++WHILE_NE32(SYSSTA(13), (1 << 28), 0x0),
++
++POKE32(CGA + CLKA_GEN_LOCK, 0x0),
++
++DELAY(2),
++
++END_MARKER
++};
++
++static int stx7100_suspend_begin(suspend_state_t state)
++{
++	comms_clk_rate = clk_get_rate(comms_clk);
++	comms_clk->rate = CONFIG_SH_EXTERNAL_CLOCK / 4; /* 6.75 Mhz ~ 7.5 Mhz */
++	return 0;
++}
++
++static int stx7100_suspend_core(suspend_state_t state, int suspending)
++{
++	static unsigned long cga_pll0_cfg;
++	unsigned long tmp;
++#ifdef CONFIG_32BIT
++	unsigned int i, tmp_addr, tmp_data;
++	static int pmb_addr_14, pmb_data_14, invalidated;
++#endif
++	if (!suspending)
++		goto on_resuming;
++
++	cga_pll0_cfg = ioread32(cga + CLKA_PLL(0)) & 0x7ffff;
++
++	/* CGA.PLL0 management */
++	iowrite32(0xc0de, cga + CLKA_GEN_LOCK);	/* unlock */
++	tmp = ioread32(cga + CLKA_PLL(0));
++	iowrite32(tmp | CLKA_PLL0_BYPASS, cga + CLKA_PLL(0));
++
++	tmp &= ~0x7ffff; /* reset pdiv, ndiv, mdiv */
++
++	tmp |= CLKA_PLL0_SUSPEND | CLKA_PLL_ENABLE;
++	iowrite32(tmp | CLKA_PLL0_BYPASS, cga + CLKA_PLL(0));
++
++	while ((ioread32(cga + CLKA_PLL_LOCK(0)) & CLKA_PLL_LOCK_LOCKED) !=
++		CLKA_PLL_LOCK_LOCKED)
++		;
++
++	iowrite32(tmp, cga + CLKA_PLL(0));
++	iowrite32(0, cga + CLKA_GEN_LOCK);		/* lock */
++
++#ifdef CONFIG_32BIT
++	invalidated = 0;
++	/*
++	 * Invalidate all the entries [2, 14]
++	 * to avoid multi hit on the PMB
++	 */
++	for (i = 2; i < 14; ++i) {
++		tmp_addr = ctrl_inl(PMB_ADDR | (i << PMB_E_SHIFT));
++		tmp_data = ctrl_inl(PMB_DATA | (i << PMB_E_SHIFT));
++		if ((tmp_addr & PMB_V) || (tmp_data & PMB_V)) {
++			invalidated |= (1 << i);
++			ctrl_outl(tmp_addr & ~PMB_V,
++					PMB_ADDR | (i << PMB_E_SHIFT));
++			ctrl_outl(tmp_data & ~PMB_V,
++					PMB_DATA | (i << PMB_E_SHIFT));
++
++		}
++	}
++	pmb_addr_14 = ctrl_inl(PMB_ADDR | (14 << PMB_E_SHIFT));
++	pmb_data_14 = ctrl_inl(PMB_DATA | (14 << PMB_E_SHIFT));
++
++	/* Create an entry ad-hoc to simulate the P2 area */
++	ctrl_outl(pmb_addr_14 & ~PMB_V, PMB_ADDR | (14 << PMB_E_SHIFT));
++	ctrl_outl(pmb_data_14 & ~PMB_V, PMB_DATA | (14 << PMB_E_SHIFT));
++
++	ctrl_outl(0xb8000000, PMB_ADDR | (14 << PMB_E_SHIFT));
++	ctrl_outl(0x18000000 | PMB_V | PMB_SZ_64M | PMB_UB | PMB_WT,
++			PMB_DATA | (14 << PMB_E_SHIFT));
++#endif
++
++	comms_clk->rate = comms_clk_rate;
++
++	return 0;
++
++on_resuming:
++#ifdef CONFIG_32BIT
++	tmp_addr = ctrl_inl(PMB_ADDR | (14 << PMB_E_SHIFT));
++	tmp_data = ctrl_inl(PMB_DATA | (14 << PMB_E_SHIFT));
++	ctrl_outl(tmp_addr & ~PMB_V, PMB_ADDR | (14 << PMB_E_SHIFT));
++	ctrl_outl(tmp_data & ~PMB_V, PMB_DATA | (14 << PMB_E_SHIFT));
++
++	/*
++	 * restore the 14-th entry as it was
++	 */
++	ctrl_outl(pmb_addr_14, PMB_ADDR | (14 << PMB_E_SHIFT));
++	ctrl_outl(pmb_data_14, PMB_DATA | (14 << PMB_E_SHIFT));
++	ctrl_inl(PMB_ADDR | (14 << PMB_E_SHIFT));
++	ctrl_inl(PMB_DATA | (14 << PMB_E_SHIFT));
++	/*
++	 * restore all the other entries
++	 */
++	for (i = 2; i < 14; ++i)
++		if (invalidated & (1 << i)) {
++			tmp_data = ctrl_inl(PMB_DATA | (i << PMB_E_SHIFT));
++			ctrl_outl(tmp_data | PMB_V, PMB_DATA |
++				(i << PMB_E_SHIFT));
++			ctrl_inl(PMB_DATA | (i << PMB_E_SHIFT));
++		}
++#endif
++	/* CGA.PLL0 management */
++	iowrite32(0xc0de, cga + CLKA_GEN_LOCK);
++	tmp = ioread32(cga + CLKA_PLL(0));
++	iowrite32(tmp | CLKA_PLL0_BYPASS, cga + CLKA_PLL(0));
++	tmp &= ~0x7ffff;
++	tmp |= cga_pll0_cfg | CLKA_PLL_ENABLE;
++	iowrite32(tmp | CLKA_PLL0_BYPASS, cga + CLKA_PLL(0));
++
++	while ((ioread32(cga + CLKA_PLL_LOCK(0)) & CLKA_PLL_LOCK_LOCKED) !=
++		CLKA_PLL_LOCK_LOCKED)
++		;
++
++	iowrite32(tmp, cga + CLKA_PLL(0));
++	iowrite32(0, cga + CLKA_GEN_LOCK);
++	return 0;
++}
++
++static int stx7100_suspend_pre_enter(suspend_state_t state)
++{
++	return stx7100_suspend_core(state, 1);;
++}
++
++static int stx7100_suspend_post_enter(suspend_state_t state)
++{
++	return stx7100_suspend_core(state, 0);
++}
++
++static int stx7100_evttoirq(unsigned long evt)
++{
++	return evt2irq(evt);
++}
++
++static struct stm_platform_suspend_t stx7100_suspend __cacheline_aligned = {
++	.ops.begin = stx7100_suspend_begin,
++
++	.evt_to_irq = stx7100_evttoirq,
++	.pre_enter = stx7100_suspend_pre_enter,
++	.post_enter = stx7100_suspend_post_enter,
++
++	.stby_tbl = (unsigned long)stx7100_standby_table,
++	.stby_size = DIV_ROUND_UP(ARRAY_SIZE(stx7100_standby_table) *
++			sizeof(long), L1_CACHE_BYTES),
++
++	.mem_tbl =  (unsigned long)stx7100_mem_table,
++	.mem_size = DIV_ROUND_UP(ARRAY_SIZE(stx7100_mem_table) *
++			sizeof(long), L1_CACHE_BYTES),
++};
++
++static int __init stx7100_suspend_setup(void)
++{
++	struct sysconf_field *sc[4];
++	int i;
++
++	cga = ioremap(0x19213000, 0x1000); /* used to manage CGA.PLL0 */
++
++	sc[0] = sysconf_claim(SYS_STA, 12, 28, 28, "PM");
++	sc[1] = sysconf_claim(SYS_STA, 13, 28, 28, "PM");
++	sc[2] = sysconf_claim(SYS_CFG, 11, 28, 28, "PM");
++	sc[3] = sysconf_claim(SYS_CFG, 11, 30, 30, "PM");
++
++	for (i = ARRAY_SIZE(sc)-1; i; --i)
++		if (!sc[i])
++			goto error;
++
++	comms_clk = clk_get(NULL, "comms_clk");
++
++	return stm_suspend_register(&stx7100_suspend);
++
++error:
++	for (i = ARRAY_SIZE(sc)-1; i; --i)
++		if (sc[i])
++			sysconf_release(sc[i]);
++	return 0;
++}
++
++module_init(stx7100_suspend_setup);
+diff --git a/drivers/stm/clocks/clock-stx7100.c b/drivers/stm/clocks/clock-stx7100.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/clocks/clock-stx7100.c
+@@ -0,0 +1,421 @@
++/*
++ * Copyright (C) 2005 STMicroelectronics Limited
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ *
++ * Code to handle the clockgen hardware on the STx7100.
++ */
++
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/gfp.h>
++#include <linux/slab.h>
++#include <linux/stm/clk.h>
++#include <linux/io.h>
++#include <asm-generic/div64.h>
++
++#include "clock-oslayer.h"
++#include "clock-common.h"
++
++static void __iomem *clkgena_base;
++static void __iomem *clkgenc_base;
++
++#define CLOCKGEN_PLL0_CFG	0x08
++#define CLOCKGEN_PLL0_CLK1_CTRL	0x14
++#define CLOCKGEN_PLL0_CLK2_CTRL	0x18
++#define CLOCKGEN_PLL0_CLK3_CTRL	0x1c
++#define CLOCKGEN_PLL0_CLK4_CTRL	0x20
++#define CLOCKGEN_PLL1_CFG	0x24
++
++/* to enable/disable and reduce the coprocessor clock*/
++#define CLOCKGEN_CLK_DIV	0x30
++#define CLOCKGEN_CLK_EN		0x34
++
++			        /* 0  1  2  3  4  5  6  7  */
++static unsigned char ratio1[8] = { 1, 2, 3, 4, 6, 8, 0, 0 };
++static unsigned char ratio2[8] = { 1, 2, 3, 4, 6, 8, 0, 0 };
++static unsigned char ratio3[8] = { 4, 2, 4, 4, 6, 8, 0, 0 };
++static unsigned char ratio4[8] = { 1, 2, 3, 4, 6, 8, 0, 0 };
++
++static int pll_freq(unsigned long addr)
++{
++	unsigned long freq, data, ndiv, pdiv, mdiv;
++
++	data = readl(clkgena_base+addr);
++	mdiv = (data >>  0) & 0xff;
++	ndiv = (data >>  8) & 0xff;
++	pdiv = (data >> 16) & 0x7;
++	freq = (((2 * (CONFIG_SH_EXTERNAL_CLOCK / 1000) * ndiv) / mdiv) /
++		(1 << pdiv)) * 1000;
++
++	return freq;
++}
++
++static int pll_clk_init(struct clk *clk)
++{
++	clk->rate = pll_freq(
++		(strcmp(clk->name, "pll0_clk") ?
++		CLOCKGEN_PLL1_CFG : CLOCKGEN_PLL0_CFG));
++	return 0;
++}
++
++static struct clk_ops pll_clk_ops = {
++	.init = pll_clk_init,
++};
++
++static struct clk pll_clk[] = {
++	{
++		.name		= "pll0_clk",
++		.ops		= &pll_clk_ops,
++	}, {
++		.name		= "pll1_clk",
++		.ops		= &pll_clk_ops,
++	}
++};
++
++struct clokgenA {
++	unsigned long ctrl_reg;
++	unsigned int div;
++	unsigned char *ratio;
++};
++
++
++enum clockgenA_ID {
++	SH4_CLK_ID = 0,
++	SH4IC_CLK_ID,
++	MODULE_ID,
++	SLIM_ID,
++	LX_AUD_ID,
++	LX_VID_ID,
++	LMISYS_ID,
++	LMIVID_ID,
++	IC_ID,
++	IC_100_ID,
++	EMI_ID
++};
++
++static int clockgenA_clk_recalc(struct clk *clk)
++{
++	struct clokgenA *cga = (struct clokgenA *)clk->private_data;
++	clk->rate = clk->parent->rate / cga->div;
++	return 0;
++}
++
++static int clockgenA_clk_set_rate(struct clk *clk, unsigned long value)
++{
++	unsigned long data = readl(clkgena_base + CLOCKGEN_CLK_DIV);
++	unsigned long val = 1 << (clk->id - 5);
++
++	if (clk->id != LMISYS_ID && clk->id != LMIVID_ID)
++		return -1;
++	writel(0xc0de, clkgena_base);
++	if (clk->rate > value) {/* downscale */
++		writel(data | val, clkgena_base + CLOCKGEN_CLK_DIV);
++		clk->rate /= 1024;
++	} else {/* upscale */
++		writel(data & ~val, clkgena_base + CLOCKGEN_CLK_DIV);
++		clk->rate *= 1024;
++	}
++	writel(0x0, clkgena_base);
++	return 0;
++}
++
++static int clockgenA_clk_init(struct clk *clk)
++{
++	struct clokgenA *cga = (struct clokgenA *)clk->private_data;
++	if (cga->ratio) {
++		unsigned long data = readl(clkgena_base + cga->ctrl_reg) & 0x7;
++		unsigned char ratio = cga->ratio[data];
++		BUG_ON(!ratio);
++		cga->div = 2*ratio;
++	}
++	clk->rate = clk->parent->rate / cga->div;
++	return 0;
++}
++
++static int clockgenA_clk_XXable(struct clk *clk, int enable)
++{
++	unsigned long tmp, value;
++	struct clokgenA *cga = (struct clokgenA *)clk->private_data;
++
++	if (clk->id != LMISYS_ID && clk->id != LMIVID_ID)
++		return 0;
++
++	tmp   = readl(clkgena_base+cga->ctrl_reg) ;
++	value = 1 << (clk->id - 5);
++	writel(0xc0de, clkgena_base);
++	if (enable) {
++		writel(tmp | value, clkgena_base + cga->ctrl_reg);
++		clockgenA_clk_init(clk); /* to evaluate the rate */
++	} else {
++		writel(tmp & ~value, clkgena_base + cga->ctrl_reg);
++		clk->rate = 0;
++	}
++	writel(0x0, clkgena_base);
++	return 0;
++}
++
++static int clockgenA_clk_enable(struct clk *clk)
++{
++	return clockgenA_clk_XXable(clk, 1);
++}
++
++static int clockgenA_clk_disable(struct clk *clk)
++{
++	return clockgenA_clk_XXable(clk, 0);
++}
++
++static struct clk_ops clokgenA_ops = {
++	.init		= clockgenA_clk_init,
++	.recalc		= clockgenA_clk_recalc,
++	.set_rate	= clockgenA_clk_set_rate,
++	.enable		= clockgenA_clk_enable,
++	.disable	= clockgenA_clk_disable,
++};
++
++#define CLKGENA(_id, clock, pll, _ctrl_reg, _div, _ratio)	\
++[_id] = {							\
++	.name	= #clock "_clk",				\
++	.parent	= &(pll),					\
++	.ops	= &clokgenA_ops,				\
++	.id	= (_id),					\
++	.private_data = &(struct clokgenA){			\
++		.div = (_div),					\
++		.ctrl_reg = (_ctrl_reg),			\
++		.ratio = (_ratio)				\
++		},						\
++	}
++
++static struct clk clkgena_clks[] = {
++CLKGENA(SH4_CLK_ID,   st40, pll_clk[0], CLOCKGEN_PLL0_CLK1_CTRL, 1, ratio1),
++CLKGENA(SH4IC_CLK_ID, st40_ic, pll_clk[0], CLOCKGEN_PLL0_CLK2_CTRL, 1, ratio2),
++CLKGENA(MODULE_ID,    st40_per, pll_clk[0], CLOCKGEN_PLL0_CLK3_CTRL, 1, ratio3),
++CLKGENA(SLIM_ID,      slim,     pll_clk[0], CLOCKGEN_PLL0_CLK4_CTRL, 1, ratio4),
++
++CLKGENA(LX_AUD_ID,	st231aud, pll_clk[1], CLOCKGEN_CLK_EN, 1, NULL),
++CLKGENA(LX_VID_ID,	st231vid, pll_clk[1], CLOCKGEN_CLK_EN, 1, NULL),
++CLKGENA(LMISYS_ID,	lmisys,   pll_clk[1], 0, 1, NULL),
++CLKGENA(LMIVID_ID,	lmivid,   pll_clk[1], 0, 1, NULL),
++CLKGENA(IC_ID,	ic,	pll_clk[1], 0, 2, NULL),
++CLKGENA(IC_100_ID,	ic_100,   pll_clk[1], 0, 4, NULL),
++CLKGENA(EMI_ID,	emi,    pll_clk[1], 0, 4, NULL)
++};
++
++
++/*
++ * Audio Clock Stuff
++ */
++enum clockgenC_ID {
++	CLKC_REF,
++	CLKC_FS0_CH1,
++	CLKC_FS0_CH2,
++	CLKC_FS0_CH3,
++	CLKC_FS0_CH4,
++};
++
++/* --- Audio config registers --- */
++#define CKGC_FS_CFG(_bk)		(0x100 * (_bk))
++#define CKGC_FS_MD(_bk, _chan)	  		\
++		(0x100 * (_bk) + 0x10 + 0x10 * (_chan))
++#define CKGC_FS_PE(_bk, _chan)		(0x4 + CKGC_FS_MD(_bk, _chan))
++#define CKGC_FS_SDIV(_bk, _chan)	(0x8 + CKGC_FS_MD(_bk, _chan))
++#define CKGC_FS_EN_PRG(_bk, _chan)      (0xc + CKGC_FS_MD(_bk, _chan))
++
++static int clkgenc_fsyn_recalc(clk_t *clk_p)
++{
++	unsigned long cfg, dig_bit, en_bit;
++	unsigned long pe, md, sdiv;
++	static const unsigned char dig_table[] = {10, 11, 12, 13};
++	static const unsigned char en_table[] = {6, 7, 8, 9};
++	int channel;
++	int err;
++
++	/* Is FSYN analog UP ? */
++	cfg = CLK_READ(clkgenc_base + CKGC_FS_CFG(0));
++	if (!(cfg & (1 << 14))) {       /* Analog power down */
++		clk_p->rate = 0;
++		return 0;
++	}
++
++	/* Is FSYN digital part UP & enabled ? */
++	dig_bit = dig_table[clk_p->id - CLKC_FS0_CH1];
++	en_bit = en_table[clk_p->id - CLKC_FS0_CH1];
++
++	if ((cfg & (1 << dig_bit)) == 0) {      /* digital part in standby */
++		clk_p->rate = 0;
++		return 0;
++	}
++	if ((cfg & (1 << en_bit)) == 0) {       /* disabled */
++		clk_p->rate = 0;
++		return 0;
++	}
++
++	/* FSYN up & running.
++	   Computing frequency */
++	channel = (clk_p->id - CLKC_FS0_CH1) % 4;
++	pe = CLK_READ(clkgenc_base + CKGC_FS_PE(0, channel));
++	md = CLK_READ(clkgenc_base + CKGC_FS_MD(0, channel));
++	sdiv = CLK_READ(clkgenc_base + CKGC_FS_SDIV(0, channel));
++	err = clk_fs216c65_get_rate(clk_p->parent->rate, pe, md,
++				sdiv, &clk_p->rate);
++
++	return err;
++}
++
++static int clkgenc_set_rate(clk_t *clk_p, unsigned long freq)
++{
++	unsigned long md, pe, sdiv;
++	unsigned long reg_value = 0;
++	int channel;
++	static const unsigned char set_rate_table[] = {
++		0x06, 0x0A, 0x12, 0x22 };
++
++	if (!clk_p)
++		return CLK_ERR_BAD_PARAMETER;
++	if (clk_p->id == CLKC_REF)
++		return CLK_ERR_BAD_PARAMETER;
++
++	/* Computing FSyn params. Should be common function with FSyn type */
++	if (clk_fs216c65_get_params(clk_p->parent->rate, freq, &md, &pe, &sdiv))
++		return CLK_ERR_BAD_PARAMETER;
++
++	reg_value = CLK_READ(clkgenc_base + CKGC_FS_CFG(0));
++	channel = (clk_p->id - CLKC_FS0_CH1) % 4;
++	reg_value |= set_rate_table[clk_p->id - CLKC_FS0_CH1];
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x00);
++	/* Select FS clock only for the clock specified */
++	CLK_WRITE(clkgenc_base + CKGC_FS_CFG(0), reg_value);
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_PE(0, channel), pe);
++	CLK_WRITE(clkgenc_base + CKGC_FS_MD(0, channel), md);
++	CLK_WRITE(clkgenc_base + CKGC_FS_SDIV(0, channel), sdiv);
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x01);
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x00);
++
++	return clkgenc_fsyn_recalc(clk_p);
++}
++
++static int clkgenc_xable_fsyn(clk_t *clk_p, unsigned long enable)
++{
++	unsigned long val;
++	int channel;
++	/* Digital standby bits table.
++	   Warning: enum order: CLKC_FS0_CH1 ... CLKC_FS0_CH3 */
++	static const unsigned char dig_bit[] = {10, 11, 12, 13};
++	static const unsigned char en_bit[] = {6, 7, 8, 9};
++
++	if (!clk_p || clk_p->id ==  CLKC_REF)
++		return CLK_ERR_BAD_PARAMETER;
++
++	val = CLK_READ(clkgenc_base + CKGC_FS_CFG(0));
++
++	/* Powering down/up digital part */
++	if (enable) {
++		val |= (1 << dig_bit[clk_p->id - CLKC_FS0_CH1]);
++		val |= (1 << en_bit[clk_p->id - CLKC_FS0_CH1]);
++	} else {
++		val &= ~(1 << dig_bit[clk_p->id - CLKC_FS0_CH1]);
++		val &= ~(1 << en_bit[clk_p->id - CLKC_FS0_CH1]);
++	}
++
++	/* Powering down/up analog part */
++	if (enable)
++		val |= (1 << 14);
++	else {
++		/* If all channels are off then power down FS0 */
++		if ((val & 0x3fc0) == 0)
++			val &= ~(1 << 14);
++	}
++
++	channel = (clk_p->id - CLKC_FS0_CH1) % 4;
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x00);
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_CFG(0), val);
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x10);
++	CLK_WRITE(clkgenc_base + CKGC_FS_EN_PRG(0, channel), 0x00);
++
++	/* Freq recalc required only if a channel is enabled */
++	if (enable)
++		return clkgenc_fsyn_recalc(clk_p);
++	else
++		clk_p->rate = 0;
++	return 0;
++}
++
++static int clkgenc_enable(clk_t *clk_p)
++{
++	return clkgenc_xable_fsyn(clk_p, 1);
++}
++
++static int clkgenc_disable(clk_t *clk_p)
++{
++	return clkgenc_xable_fsyn(clk_p, 0);
++}
++
++_CLK_OPS(clkgenc,
++	"Clockgen C/Audio",
++	NULL,
++	NULL,
++	clkgenc_set_rate,
++	NULL,
++	clkgenc_enable,
++	clkgenc_disable,
++	NULL,
++	NULL,
++	NULL
++);
++
++static clk_t audio_clk_clocks[] = {
++/* Clockgen C (AUDIO) */
++_CLK_F(CLKC_REF, 30000000),
++_CLK_P(CLKC_FS0_CH1, &clkgenc, 0, 0, &audio_clk_clocks[CLKC_REF]),
++_CLK_P(CLKC_FS0_CH2, &clkgenc, 0, 0, &audio_clk_clocks[CLKC_REF]),
++_CLK_P(CLKC_FS0_CH3, &clkgenc, 0, 0, &audio_clk_clocks[CLKC_REF]),
++_CLK_P(CLKC_FS0_CH4, &clkgenc, 0, 0, &audio_clk_clocks[CLKC_REF]),
++};
++
++int __init stx7100_plat_clk_init(void)
++{
++	int ret;
++	unsigned long data;
++
++	/**************/
++	/* Clockgen A */
++	/**************/
++	clkgena_base = ioremap(0x19213000, 0x100);
++	if (!clkgena_base)
++		return -ENOMEM;
++
++	clkgenc_base = ioremap(0x19210000, 0x100);
++	if (!clkgenc_base)
++		return -ENOMEM;
++
++	ret = clk_register_table(pll_clk, ARRAY_SIZE(pll_clk), 1);
++	if (ret)
++		return ret;
++
++	ret = clk_register_table(clkgena_clks, ARRAY_SIZE(clkgena_clks), 1);
++	if (ret)
++		return ret;
++
++	/*
++	 * Setup Audio Clock
++	 */
++	data = CLK_READ(clkgenc_base + CKGC_FS_CFG(0));
++	data &= ~(1  << 23); /* reference from Sata */
++	data |= (0xf <<  2); /* IP clocks from Fsynth */
++	data &= ~(1  << 15); /* NDIV @ 27/30 MHz */
++	data |= (0x3 << 16); /* BW_SEL very good */
++	data &= ~1;	     /* Reset Out */
++
++	CLK_WRITE(clkgenc_base + CKGC_FS_CFG(0), data);
++
++	ret = clk_register_table(audio_clk_clocks,
++		ARRAY_SIZE(audio_clk_clocks), 0);
++
++	return ret;
++}
+diff --git a/drivers/stm/stx7100.c b/drivers/stm/stx7100.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/stx7100.c
+@@ -0,0 +1,528 @@
++/*
++ * (c) 2010 STMicroelectronics Limited
++ *
++ * Author: Pawel Moll <pawel.moll@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/ethtool.h>
++#include <linux/dma-mapping.h>
++#include <linux/ata_platform.h>
++#include <linux/mtd/partitions.h>
++#include <linux/stm/pad.h>
++#include <linux/stm/sysconf.h>
++#include <linux/stm/emi.h>
++#include <linux/stm/device.h>
++#include <linux/stm/platform.h>
++#include <linux/stm/stx7100.h>
++#include <asm/irq-ilc.h>
++
++
++
++/* EMI resources ---------------------------------------------------------- */
++
++static int __initdata stx7100_emi_bank_configured[EMI_BANKS];
++
++static void stx7100_emi_power(struct stm_device_state *device_state,
++		enum stm_device_power_state power)
++{
++	int i;
++	int value = (power == stm_device_power_on) ? 0 : 1;
++
++	stm_device_sysconf_write(device_state, "EMI_PWR", value);
++	for (i = 5; i; --i) {
++		if (stm_device_sysconf_read(device_state, "EMI_ACK")
++		    == value)
++			break;
++                mdelay(10);
++	}
++
++	return;
++}
++
++static struct platform_device stx7100_emi = {
++	.name = "emi",
++	.id = -1,
++	.num_resources = 3,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM_NAMED("emi memory", 0, 64 * 1024 * 1024),
++		STM_PLAT_RESOURCE_MEM_NAMED("emi4 config", 0x1a100000, 0x874),
++		STM_PLAT_RESOURCE_MEM_NAMED("emiss config", 0x19401000, 0x80),
++	},
++	.dev.platform_data = &(struct stm_device_config){
++		.sysconfs_num = 2,
++		.sysconfs = (struct stm_device_sysconf []){
++			STM_DEVICE_SYS_CFG(32, 1, 1, "EMI_PWR"),
++			STM_DEVICE_SYS_STA(15, 0, 0, "EMI_ACK"),
++		},
++		.power = stx7100_emi_power,
++	}
++};
++
++
++
++/* PATA resources --------------------------------------------------------- */
++
++/* EMI A21 = CS1 (active low)
++ * EMI A20 = CS0 (active low)
++ * EMI A19 = DA2
++ * EMI A18 = DA1
++ * EMI A17 = DA0 */
++static struct resource stx7100_pata_resources[] = {
++	/* I/O base: CS1=N, CS0=A */
++	[0] = STM_PLAT_RESOURCE_MEM(1 << 21, 8 << 17),
++	/* CTL base: CS1=A, CS0=N, DA2=A, DA1=A, DA0=N */
++	[1] = STM_PLAT_RESOURCE_MEM((1 << 20) + (6 << 17), 4),
++	/* IRQ */
++	[2] = STM_PLAT_RESOURCE_IRQ(-1, -1),
++};
++
++static struct platform_device stx7100_pata_device = {
++	.name		= "pata_platform",
++	.id		= -1,
++	.num_resources	= ARRAY_SIZE(stx7100_pata_resources),
++	.resource	= stx7100_pata_resources,
++	.dev.platform_data = &(struct pata_platform_info) {
++		.ioport_shift	= 17,
++	},
++};
++
++void __init stx7100_configure_pata(struct stx7100_pata_config *config)
++{
++	unsigned long bank_base;
++
++	if (!config) {
++		BUG();
++		return;
++	}
++
++	BUG_ON(config->emi_bank < 0 || config->emi_bank >= EMI_BANKS);
++	BUG_ON(stx7100_emi_bank_configured[config->emi_bank]);
++	stx7100_emi_bank_configured[config->emi_bank] = 1;
++
++	bank_base = emi_bank_base(config->emi_bank);
++
++	stx7100_pata_resources[0].start += bank_base;
++	stx7100_pata_resources[0].end += bank_base;
++	stx7100_pata_resources[1].start += bank_base;
++	stx7100_pata_resources[1].end += bank_base;
++	stx7100_pata_resources[2].start = config->irq;
++	stx7100_pata_resources[2].end = config->irq;
++
++	emi_config_pata(config->emi_bank, config->pc_mode);
++
++	platform_device_register(&stx7100_pata_device);
++}
++
++
++
++/* FDMA resources --------------------------------------------------------- */
++
++static struct stm_plat_fdma_fw_regs stm_fdma_firmware_7100 = {
++	.rev_id    = 0x8000 + (0x000 << 2), /* 0x8000 */
++	.cmd_statn = 0x8000 + (0x010 << 2), /* 0x8040 */
++	.ptrn      = 0x8000 + (0x460 << 2), /* 0x9180 */
++	.cntn      = 0x8000 + (0x462 << 2), /* 0x9188 */
++	.saddrn    = 0x8000 + (0x463 << 2), /* 0x918c */
++	.daddrn    = 0x8000 + (0x464 << 2), /* 0x9190 */
++};
++
++static struct stm_plat_fdma_hw stx7100_fdma_hw = {
++	.slim_regs = {
++		.id       = 0x0000 + (0x000 << 2), /* 0x0000 */
++		.ver      = 0x0000 + (0x001 << 2), /* 0x0004 */
++		.en       = 0x0000 + (0x002 << 2), /* 0x0008 */
++		.clk_gate = 0x0000 + (0x003 << 2), /* 0x000c */
++	},
++	.dmem = {
++		.offset   = 0x8000,
++		.size     = 0x600 << 2, /* 1536 * 4 = 6144 */
++	},
++	.periph_regs = {
++		.sync_reg = 0x8000 + (0xfe2 << 2), /* 0xbf88 */
++		.cmd_sta  = 0x8000 + (0xff0 << 2), /* 0xbfc0 */
++		.cmd_set  = 0x8000 + (0xff1 << 2), /* 0xbfc4 */
++		.cmd_clr  = 0x8000 + (0xff2 << 2), /* 0xbfc8 */
++		.cmd_mask = 0x8000 + (0xff3 << 2), /* 0xbfcc */
++		.int_sta  = 0x8000 + (0xff4 << 2), /* 0xbfd0 */
++		.int_set  = 0x8000 + (0xff5 << 2), /* 0xbfd4 */
++		.int_clr  = 0x8000 + (0xff6 << 2), /* 0xbfd8 */
++		.int_mask = 0x8000 + (0xff7 << 2), /* 0xbfdc */
++	},
++	.imem = {
++		.offset   = 0xc000,
++		.size     = 0xa00 << 2, /* 2560 * 4 = 10240 */
++	},
++};
++
++static struct stm_plat_fdma_data stx7100_fdma_platform_data = {
++	.hw = &stx7100_fdma_hw,
++	.fw = &stm_fdma_firmware_7100,
++};
++
++static struct stm_plat_fdma_fw_regs stm_fdma_firmware_7109c2 = {
++	.rev_id    = 0x8000 + (0x000 << 2), /* 0x8000 */
++	.cmd_statn = 0x8000 + (0x450 << 2), /* 0x9140 */
++	.req_ctln  = 0x8000 + (0x460 << 2), /* 0x9180 */
++	.ptrn      = 0x8000 + (0x500 << 2), /* 0x9400 */
++	.cntn      = 0x8000 + (0x502 << 2), /* 0x9408 */
++	.saddrn    = 0x8000 + (0x503 << 2), /* 0x940c */
++	.daddrn    = 0x8000 + (0x504 << 2), /* 0x9410 */
++};
++
++static struct stm_plat_fdma_hw stx7109c2_fdma_hw = {
++	.slim_regs = {
++		.id       = 0x0000 + (0x000 << 2), /* 0x0000 */
++		.ver      = 0x0000 + (0x001 << 2), /* 0x0004 */
++		.en       = 0x0000 + (0x002 << 2), /* 0x0008 */
++		.clk_gate = 0x0000 + (0x003 << 2), /* 0x000c */
++	},
++	.dmem = {
++		.offset = 0x8000,
++		.size   = 0x600 << 2, /* 1536 * 4 = 6144 */
++	},
++	.periph_regs = {
++		.sync_reg = 0x8000 + (0xfe2 << 2), /* 0xbf88 */
++		.cmd_sta  = 0x8000 + (0xff0 << 2), /* 0xbfc0 */
++		.cmd_set  = 0x8000 + (0xff1 << 2), /* 0xbfc4 */
++		.cmd_clr  = 0x8000 + (0xff2 << 2), /* 0xbfc8 */
++		.cmd_mask = 0x8000 + (0xff3 << 2), /* 0xbfcc */
++		.int_sta  = 0x8000 + (0xff4 << 2), /* 0xbfd0 */
++		.int_set  = 0x8000 + (0xff5 << 2), /* 0xbfd4 */
++		.int_clr  = 0x8000 + (0xff6 << 2), /* 0xbfd8 */
++		.int_mask = 0x8000 + (0xff7 << 2), /* 0xbfdc */
++	},
++	.imem = {
++		.offset = 0xc000,
++		.size   = 0xa00 << 2, /* 2560 * 4 = 10240 */
++	},
++};
++
++static struct stm_plat_fdma_data stx7109c2_fdma_platform_data = {
++	.hw = &stx7109c2_fdma_hw,
++	.fw = &stm_fdma_firmware_7109c2,
++};
++
++static struct stm_plat_fdma_fw_regs stm_fdma_firmware_7109c3 = {
++	.rev_id    = 0x8000 + (0x000 << 2), /* 0x8000 */
++	.cmd_statn = 0x8000 + (0x450 << 2), /* 0x9140 */
++	.req_ctln  = 0x8000 + (0x460 << 2), /* 0x9180 */
++	.ptrn      = 0x8000 + (0x500 << 2), /* 0x9400 */
++	.cntn      = 0x8000 + (0x502 << 2), /* 0x9408 */
++	.saddrn    = 0x8000 + (0x503 << 2), /* 0x940c */
++	.daddrn    = 0x8000 + (0x504 << 2), /* 0x9410 */
++};
++
++static struct stm_plat_fdma_hw stx7109c3_fdma_hw = {
++	.slim_regs = {
++		.id       = 0x0000 + (0x000 << 2), /* 0x0000 */
++		.ver      = 0x0000 + (0x001 << 2), /* 0x0004 */
++		.en       = 0x0000 + (0x002 << 2), /* 0x0008 */
++		.clk_gate = 0x0000 + (0x003 << 2), /* 0x000c */
++	},
++	.dmem = {
++		.offset = 0x8000,
++		.size   = 0x800 << 2, /* 2048 * 4 = 8192 */
++	},
++	.periph_regs = {
++		.sync_reg = 0x8000 + (0xfe2 << 2), /* 0xbf88 */
++		.cmd_sta  = 0x8000 + (0xff0 << 2), /* 0xbfc0 */
++		.cmd_set  = 0x8000 + (0xff1 << 2), /* 0xbfc4 */
++		.cmd_clr  = 0x8000 + (0xff2 << 2), /* 0xbfc8 */
++		.cmd_mask = 0x8000 + (0xff3 << 2), /* 0xbfcc */
++		.int_sta  = 0x8000 + (0xff4 << 2), /* 0xbfd0 */
++		.int_set  = 0x8000 + (0xff5 << 2), /* 0xbfd4 */
++		.int_clr  = 0x8000 + (0xff6 << 2), /* 0xbfd8 */
++		.int_mask = 0x8000 + (0xff7 << 2), /* 0xbfdc */
++	},
++	.imem = {
++		.offset = 0xc000,
++		.size   = 0x1000 << 2, /* 4096 * 4 = 16384 */
++	},
++};
++
++static struct stm_plat_fdma_data stx7109c3_fdma_platform_data = {
++	.hw = &stx7109c3_fdma_hw,
++	.fw = &stm_fdma_firmware_7109c3,
++};
++
++static struct platform_device stx7100_fdma_device = {
++	.name = "stm-fdma",
++	.id = -1,
++	.num_resources	= 2,
++	.resource = (struct resource[2]) {
++		STM_PLAT_RESOURCE_MEM(0x19220000, 0x10000),
++		STM_PLAT_RESOURCE_IRQ(140, -1),
++	},
++};
++
++static void stx7100_fdma_setup(void)
++{
++	switch (cpu_data->type) {
++	case CPU_STX7100:
++		stx7100_fdma_device.dev.platform_data =
++				&stx7100_fdma_platform_data;
++		break;
++	case CPU_STX7109:
++		switch (cpu_data->cut_major) {
++		case 1:
++			BUG();
++			break;
++		case 2:
++			stx7100_fdma_device.dev.platform_data =
++					&stx7109c2_fdma_platform_data;
++			break;
++		default:
++			stx7100_fdma_device.dev.platform_data =
++					&stx7109c3_fdma_platform_data;
++			break;
++		}
++		break;
++	default:
++		BUG();
++		break;
++	}
++}
++
++
++
++/* Hardware RNG resources ------------------------------------------------- */
++
++static struct platform_device stx7100_rng_hwrandom_device = {
++	.name = "stm-hwrandom",
++	.id = -1,
++	.num_resources = 1,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19250000, 0x1000),
++	}
++};
++
++static struct platform_device stx7100_rng_devrandom_device = {
++	.name = "stm-rng",
++	.id = -1,
++	.num_resources = 1,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19250000, 0x1000),
++	}
++};
++
++
++
++/* PIO ports resources ---------------------------------------------------- */
++
++static struct platform_device stx7100_pio_devices[] = {
++	[0] = {
++		.name = "stm-gpio",
++		.id = 0,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18020000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(80, -1),
++		},
++	},
++	[1] = {
++		.name = "stm-gpio",
++		.id = 1,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18021000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(84, -1),
++		},
++	},
++	[2] = {
++		.name = "stm-gpio",
++		.id = 2,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18022000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(88, -1),
++		},
++	},
++	[3] = {
++		.name = "stm-gpio",
++		.id = 3,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18023000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(115, -1),
++		},
++	},
++	[4] = {
++		.name = "stm-gpio",
++		.id = 4,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18024000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(114, -1),
++		},
++	},
++	[5] = {
++		.name = "stm-gpio",
++		.id = 5,
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18025000, 0x100),
++			STM_PLAT_RESOURCE_IRQ(113, -1),
++		},
++	},
++};
++
++static int stx7100_pio_config(unsigned gpio,
++		enum stm_pad_gpio_direction direction, int function, void *priv)
++{
++	switch (direction) {
++	case stm_pad_gpio_direction_in:
++		BUG_ON(function != -1);
++		stm_gpio_direction(gpio, STM_GPIO_DIRECTION_IN);
++		break;
++	case stm_pad_gpio_direction_out:
++		BUG_ON(function < 0);
++		BUG_ON(function > 1);
++		stm_gpio_direction(gpio, function ?
++				STM_GPIO_DIRECTION_ALT_OUT :
++				STM_GPIO_DIRECTION_OUT);
++		break;
++	case stm_pad_gpio_direction_bidir:
++		BUG_ON(function < 0);
++		BUG_ON(function > 1);
++		stm_gpio_direction(gpio, function ?
++				STM_GPIO_DIRECTION_ALT_BIDIR :
++				STM_GPIO_DIRECTION_BIDIR);
++		break;
++	default:
++		BUG();
++		break;
++	}
++
++	return 0;
++}
++
++
++
++/* sysconf resources ------------------------------------------------------ */
++
++static struct platform_device stx7100_sysconf_device = {
++	.name		= "stm-sysconf",
++	.id		= -1,
++	.num_resources	= 1,
++	.resource	= (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19001000, 0x194),
++	},
++	.dev.platform_data = &(struct stm_plat_sysconf_data) {
++		.groups_num = 3,
++		.groups = (struct stm_plat_sysconf_group []) {
++			PLAT_SYSCONF_GROUP(SYS_DEV, 0x000),
++			PLAT_SYSCONF_GROUP(SYS_STA, 0x008),
++			PLAT_SYSCONF_GROUP(SYS_CFG, 0x100),
++		},
++	},
++};
++
++
++
++/* Early initialisation-----------------------------------------------------*/
++
++/* Initialise devices which are required early in the boot process. */
++void __init stx7100_early_device_init(void)
++{
++	struct sysconf_field *sc;
++	unsigned long devid;
++	unsigned long chip_7109, chip_revision;
++
++	/* Create a PMB mapping so that the ioremap calls these drivers
++	 * will make can be satisfied without having to call get_vm_area
++	 * or cause a fault. Its probably also a good for efficiency as
++	 * there will be lots of devices in this range.
++	 */
++	ioremap_nocache(0x18000000, 0x04000000);
++
++	/* Initialise PIO and sysconf drivers */
++
++	sysconf_early_init(&stx7100_sysconf_device, 1);
++	stm_gpio_early_init(stx7100_pio_devices,
++			ARRAY_SIZE(stx7100_pio_devices), 176);
++	stm_pad_init(ARRAY_SIZE(stx7100_pio_devices) * STM_GPIO_PINS_PER_PORT,
++		     -1, 0, stx7100_pio_config);
++
++	sc = sysconf_claim(SYS_DEV, 0, 0, 31, "devid");
++	devid = sysconf_read(sc);
++	chip_7109 = (((devid >> 12) & 0x3ff) == 0x02c);
++	chip_revision = (devid >> 28) + 1;
++	boot_cpu_data.cut_major = chip_revision;
++
++	printk(KERN_INFO "%s version %ld.x\n",
++	       chip_7109 ? "STx7109" : "STx7100", chip_revision);
++
++	if (chip_7109) {
++		boot_cpu_data.type = CPU_STX7109;
++		sc = sysconf_claim(SYS_STA, 9, 0, 7, "devid");
++		devid = sysconf_read(sc);
++		printk(KERN_INFO "Chip version %ld.%ld\n",
++				(devid >> 4)+1, devid & 0xf);
++		boot_cpu_data.cut_minor = devid & 0xf;
++		if (devid == 0x24) {
++			/*
++			 * See ADCS 8135002 "STI7109 CUT 4.0 CHANGES
++			 * VERSUS CUT 3.X" for details of this change.
++			 */
++			printk(KERN_INFO "Setting version to 4.0 to match "
++			       "commercial branding\n");
++			boot_cpu_data.cut_major = 4;
++			boot_cpu_data.cut_minor = 0;
++		}
++	}
++
++	/* Configure the ST40 RTC to source its clock from clockgenB.
++	 * In theory this should be board specific, but so far nobody
++	 * has ever done this. */
++	sc = sysconf_claim(SYS_CFG, 8, 1, 1, "rtc");
++	sysconf_write(sc, 1);
++
++	/* We haven't configured the LPC, so the sleep instruction may
++	 * do bad things. Thus we disable it here. */
++	disable_hlt();
++}
++
++
++
++/* Pre-arch initialisation ------------------------------------------------ */
++
++static int __init stx7100_postcore_setup(void)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(stx7100_pio_devices); i++)
++		platform_device_register(&stx7100_pio_devices[i]);
++
++	return platform_device_register(&stx7100_emi);
++}
++postcore_initcall(stx7100_postcore_setup);
++
++
++
++/* Late initialisation ---------------------------------------------------- */
++
++static struct platform_device *stx7100_devices[] __initdata = {
++	&stx7100_fdma_device,
++	&stx7100_sysconf_device,
++	&stx7100_rng_hwrandom_device,
++	&stx7100_rng_devrandom_device,
++};
++
++static int __init stx7100_devices_setup(void)
++{
++	stx7100_fdma_setup();
++
++	return platform_add_devices(stx7100_devices,
++			ARRAY_SIZE(stx7100_devices));
++}
++device_initcall(stx7100_devices_setup);
+diff --git a/drivers/stm/stx7100_audio.c b/drivers/stm/stx7100_audio.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/stx7100_audio.c
+@@ -0,0 +1,227 @@
++/*
++ * Copyright (c) 2010-2011 STMicroelectronics Limited
++ *
++ * Author: Pawel Moll <pawel.moll@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/stm/platform.h>
++#include <linux/stm/stx7100.h>
++#include <sound/stm.h>
++
++
++
++/* Audio subsystem resources ---------------------------------------------- */
++
++/* Audio subsystem glue */
++
++static struct platform_device stx7100_glue = {
++	.name          = "snd_stx7100_glue",
++	.id            = -1,
++	.num_resources = 1,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19210200, 0x4),
++	},
++};
++
++/* Internal DAC */
++
++static struct snd_stm_conv_dac_mem_info stx7100_conv_dac_mem_info = {
++	/* .ver = see stx7100_configure_audio() */
++	.source_bus_id = "snd_pcm_player.1",
++	.channel_from = 0,
++	.channel_to = 1,
++};
++
++static struct platform_device stx7100_conv_dac_mem = {
++	.name          = "snd_conv_dac_mem",
++	.id            = -1,
++	.num_resources = 1,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19210100, 0x4),
++	},
++	.dev.platform_data = &stx7100_conv_dac_mem_info,
++};
++
++/* PCM players */
++
++struct snd_stm_pcm_player_info stx7100_pcm_player_0_info = {
++	.name = "PCM player #0 (HDMI)",
++	/* .ver = see stx7100_configure_audio() */
++	.card_device = 0,
++	.channels = 10,
++	.fdma_initiator = 1,
++	/* .fdma_request_line = see stx7100_configure_audio() */
++};
++
++static struct platform_device stx7100_pcm_player_0 = {
++	.name          = "snd_pcm_player",
++	.id            = 0,
++	.num_resources = 2,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18101000, 0x28),
++		STM_PLAT_RESOURCE_IRQ(144, -1),
++	},
++	.dev.platform_data = &stx7100_pcm_player_0_info,
++};
++
++struct snd_stm_pcm_player_info stx7100_pcm_player_1_info = {
++	.name = "PCM player #1",
++	/* .ver = see stx7100_configure_audio() */
++	.card_device = 1,
++	.channels = 2,
++	.fdma_initiator = 1,
++	/* .fdma_request_line = see stx7100_configure_audio() */
++};
++
++static struct platform_device stx7100_pcm_player_1 = {
++	.name          = "snd_pcm_player",
++	.id            = 1,
++	.num_resources = 2,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18101800, 0x28),
++		STM_PLAT_RESOURCE_IRQ(145, -1),
++	},
++	.dev.platform_data = &stx7100_pcm_player_1_info,
++};
++
++/* SPDIF player */
++
++struct snd_stm_spdif_player_info stx7100_spdif_player_info = {
++	.name = "SPDIF player (HDMI)",
++	/* .ver = see stx7100_configure_audio() */
++	.card_device = 2,
++	.fdma_initiator = 1,
++	/* .fdma_request_line = see stx7100_configure_audio() */
++};
++
++static struct platform_device stx7100_spdif_player = {
++	.name          = "snd_spdif_player",
++	.id            = -1,
++	.num_resources = 2,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18103000, 0x40),
++		STM_PLAT_RESOURCE_IRQ(147, -1),
++	},
++	.dev.platform_data = &stx7100_spdif_player_info,
++};
++
++/* HDMI-connected I2S to SPDIF converter */
++
++static struct snd_stm_conv_i2sspdif_info stx7100_conv_i2sspdif_info = {
++	/* .ver = see stx7100_configure_audio() */
++	.source_bus_id = "snd_pcm_player.0",
++	.channel_from = 0,
++	.channel_to = 1,
++};
++
++static struct platform_device stx7100_conv_i2sspdif = {
++	.name          = "snd_conv_i2sspdif",
++	.id            = -1,
++	.num_resources = 2,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18103800, 0x224),
++		STM_PLAT_RESOURCE_IRQ(142, -1),
++	},
++	.dev.platform_data = &stx7100_conv_i2sspdif_info,
++};
++
++/* PCM reader */
++
++struct snd_stm_pcm_reader_info stx7100_pcm_reader_info = {
++	.name = "PCM Reader",
++	/* .ver = see stx7100_configure_audio() */
++	.card_device = 3,
++	.channels = 2,
++	.fdma_initiator = 1,
++	/* .fdma_request_line = see stx7100_configure_audio() */
++};
++
++static struct platform_device stx7100_pcm_reader = {
++	.name          = "snd_pcm_reader",
++	.id            = -1,
++	.num_resources = 2,
++	.resource      = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18102000, 0x28),
++		STM_PLAT_RESOURCE_IRQ(146, -1),
++	},
++	.dev.platform_data = &stx7100_pcm_reader_info,
++};
++
++/* Devices */
++
++static struct platform_device *stx7100_audio_devices[] __initdata = {
++	&stx7100_glue,
++	&stx7100_pcm_player_0,
++	&stx7100_pcm_player_1,
++	&stx7100_conv_dac_mem,
++	&stx7100_spdif_player,
++	&stx7100_conv_i2sspdif,
++	&stx7100_pcm_reader,
++};
++
++static int __init stx7100_audio_devices_setup(void)
++{
++	switch (cpu_data->type) {
++	case CPU_STX7100:
++		/* FDMA request line configuration */
++		stx7100_pcm_player_0_info.fdma_request_line = 26;
++		stx7100_pcm_player_1_info.fdma_request_line = 27;
++		stx7100_spdif_player_info.fdma_request_line = 29;
++		stx7100_pcm_reader_info.fdma_request_line = 28;
++
++		/* IP versions */
++		stx7100_pcm_reader_info.ver = 1;
++		if (cpu_data->cut_major < 3) {
++			/* STx7100 cut < 3.0 */
++			stx7100_pcm_player_0_info.ver = 1;
++			stx7100_pcm_player_1_info.ver = 1;
++		} else {
++			/* STx7100 cut >= 3.0 */
++			stx7100_pcm_player_0_info.ver = 2;
++			stx7100_pcm_player_1_info.ver = 2;
++		}
++		stx7100_spdif_player_info.ver = 1;
++		stx7100_conv_i2sspdif_info.ver = 1;
++
++		break;
++
++	case CPU_STX7109:
++		/* FDMA request line configuration */
++		stx7100_pcm_player_0_info.fdma_request_line = 24;
++		stx7100_pcm_player_1_info.fdma_request_line = 25;
++		stx7100_spdif_player_info.fdma_request_line = 27;
++		stx7100_pcm_reader_info.fdma_request_line = 26;
++
++		/* IP versions */
++		stx7100_pcm_reader_info.ver = 2;
++		if (cpu_data->cut_major < 3) {
++			/* STx7109 cut < 3.0 */
++			stx7100_pcm_player_0_info.ver = 3;
++			stx7100_pcm_player_1_info.ver = 3;
++		} else {
++			/* STx7109 cut >= 3.0 */
++			stx7100_pcm_player_0_info.ver = 4;
++			stx7100_pcm_player_1_info.ver = 4;
++		}
++		stx7100_spdif_player_info.ver = 2;
++		stx7100_conv_i2sspdif_info.ver = 2;
++
++		break;
++
++	default:
++		BUG();
++		return -ENODEV;
++	}
++
++	return platform_add_devices(stx7100_audio_devices,
++			ARRAY_SIZE(stx7100_audio_devices));
++}
++device_initcall(stx7100_audio_devices_setup);
+diff --git a/drivers/stm/stx7100_clock.c b/drivers/stm/stx7100_clock.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/stx7100_clock.c
+@@ -0,0 +1,41 @@
++/*
++ * Copyright (C) 2011 STMicroelectronics Limited
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ *
++ * Code to handle the clock aliases on the STx7100.
++ */
++
++#include <linux/init.h>
++#include <linux/stm/clk.h>
++
++int __init stx7100_plat_clk_alias_init(void)
++{
++	/* core clocks */
++	clk_add_alias("cpu_clk", NULL, "st40_clk", NULL);
++	clk_add_alias("module_clk", NULL, "st40_per_clk", NULL);
++	clk_add_alias("comms_clk", NULL, "ic_100_clk", NULL);
++
++	/* EMI clock */
++	/* alias not required because already registered as "emi_clk" */
++
++	/* fdmas clocks */
++	clk_add_alias("fdma_slim_clk", NULL, "slim_clk", NULL);
++	clk_add_alias("fdma_hi_clk", NULL, "ic_100_clk",  NULL);
++	clk_add_alias("fdma_low_clk", NULL, "ic_clk", NULL);
++	clk_add_alias("fdma_ic_clk", NULL, "ic_100_clk", NULL);
++
++	/* USB clocks */
++	clk_add_alias("usb_ic_clk", NULL, "ic_100_clk", NULL);
++	/* usb_phy_clk generated internally to the wrapped system PLL */
++	/* usb_48_clk generated internally to the wrapped system PLL */
++
++	clk_add_alias("pcm_player_clk", "snd_pcm_player.0", "CLKC_FS0_CH1",
++		NULL);
++	clk_add_alias("pcm_player_clk", "snd_pcm_player.1", "CLKC_FS0_CH2",
++		NULL);
++	clk_add_alias("spdif_player_clk", NULL, "CLKC_FS0_CH3", NULL);
++
++	return 0;
++}
+diff --git a/drivers/stm/stx7100_comms.c b/drivers/stm/stx7100_comms.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/stx7100_comms.c
+@@ -0,0 +1,530 @@
++/*
++ * (c) 2010 STMicroelectronics Limited
++ *
++ * Author: Pawel Moll <pawel.moll@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/i2c.h>
++#include <linux/stm/pad.h>
++#include <linux/stm/emi.h>
++#include <linux/stm/platform.h>
++#include <linux/stm/stx7100.h>
++#include <asm/irq-ilc.h>
++
++
++
++/* ASC resources ---------------------------------------------------------- */
++
++static struct stm_pad_config stx7100_asc_pad_configs[] = {
++	[0] = {
++		.gpios_num = 4,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(0, 0, 1),	/* TX */
++			STM_PAD_PIO_IN(0, 1, -1),	/* RX */
++			STM_PAD_PIO_IN_NAMED(0, 4, -1, "CTS"),
++			STM_PAD_PIO_OUT_NAMED(0, 7, 1, "RTS"),
++		},
++	},
++	[1] = {
++		.gpios_num = 4,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(1, 0, 1),	/* TX */
++			STM_PAD_PIO_IN(1, 1, -1),	/* RX */
++			STM_PAD_PIO_IN_NAMED(1, 4, -1, "CTS"),
++			STM_PAD_PIO_OUT_NAMED(1, 5, 1, "RTS"),
++		},
++	},
++	[2] = {
++		.gpios_num = 4,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(4, 3, 1),	/* TX */
++			STM_PAD_PIO_IN(4, 2, -1),	/* RX */
++			STM_PAD_PIO_IN_NAMED(4, 4, -1, "CTS"),
++			STM_PAD_PIO_OUT_NAMED(4, 5, 1, "RTS"),
++		},
++		.sysconfs_num = 1,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SCIF_PIO_OUT_EN = 0 */
++			STM_PAD_SYS_CFG(7, 0, 0, 0),
++		},
++	},
++	[3] = {
++		.gpios_num = 4,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(5, 0, 1),	/* TX */
++			STM_PAD_PIO_IN(5, 1, -1),	/* RX */
++			STM_PAD_PIO_IN_NAMED(5, 2, -1, "CTS"),
++			STM_PAD_PIO_OUT_NAMED(5, 3, 1, "RTS"),
++		},
++	},
++};
++
++static struct platform_device stx7100_asc_devices[] = {
++	[0] = {
++		.name		= "stm-asc",
++		/* .id set in stx7100_configure_asc() */
++		.num_resources	= 4,
++		.resource	= (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18030000, 0x2c),
++			STM_PLAT_RESOURCE_IRQ(123, -1),
++			/* DMA Requests set in stx7100_configure_asc() */
++			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", -1),
++			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", -1),
++		},
++		.dev.platform_data = &(struct stm_plat_asc_data) {
++			.pad_config = &stx7100_asc_pad_configs[0],
++		},
++	},
++	[1] = {
++		.name		= "stm-asc",
++		/* .id set in stx7100_configure_asc() */
++		.num_resources	= 4,
++		.resource	= (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18031000, 0x2c),
++			STM_PLAT_RESOURCE_IRQ(122, -1),
++			/* DMA Requests set in stx7100_configure_asc() */
++			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", -1),
++			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", -1),
++		},
++		.dev.platform_data = &(struct stm_plat_asc_data) {
++			.pad_config = &stx7100_asc_pad_configs[1],
++		},
++	},
++	[2] = {
++		.name		= "stm-asc",
++		/* .id set in stx7100_configure_asc() */
++		.num_resources	= 4,
++		.resource	= (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18032000, 0x2c),
++			STM_PLAT_RESOURCE_IRQ(121, -1),
++			/* DMA Requests set in stx7100_configure_asc() */
++			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", -1),
++			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", -1),
++		},
++		.dev.platform_data = &(struct stm_plat_asc_data) {
++			.pad_config = &stx7100_asc_pad_configs[2],
++		},
++	},
++	[3] = {
++		.name		= "stm-asc",
++		/* .id set in stx7100_configure_asc() */
++		.num_resources	= 4,
++		.resource	= (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18033000, 0x2c),
++			STM_PLAT_RESOURCE_IRQ(120, -1),
++			/* DMA Requests set in stx7100_configure_asc() */
++			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", -1),
++			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", -1),
++		},
++		.dev.platform_data = &(struct stm_plat_asc_data) {
++			.pad_config = &stx7100_asc_pad_configs[3],
++		},
++	},
++};
++
++/* Note these three variables are global, and shared with the stasc driver
++ * for console bring up prior to platform initialisation. */
++
++/* the serial console device */
++//int __initdata stm_asc_console_device;
++
++/* Platform devices to register */
++unsigned int __initdata stm_asc_configured_devices_num = 0;
++struct platform_device __initdata
++		*stm_asc_configured_devices[ARRAY_SIZE(stx7100_asc_devices)];
++
++void __init stx7100_configure_asc(int asc, struct stx7100_asc_config *config)
++{
++	static int configured[ARRAY_SIZE(stx7100_asc_devices)];
++	static int tty_id;
++	struct stx7100_asc_config default_config = {};
++	struct platform_device *pdev;
++	struct stm_plat_asc_data *plat_data;
++	unsigned int fdma_requests_7100[][2] = {
++		[0] = { 14, 18 }, /* rx_half_full, tx_half_empty */
++		[1] = { 15, 19 },
++		[2] = { 16, 20 },
++		[3] = { 17, 21 },
++	};
++	unsigned int fdma_requests_7109[][2] = {
++		[0] = { 12, 16 }, /* rx_half_full, tx_half_empty */
++		[1] = { 13, 17 },
++		[2] = { 14, 18 },
++		[3] = { 15, 19 },
++	};
++
++	BUG_ON(asc < 0 || asc >= ARRAY_SIZE(stx7100_asc_devices));
++
++	BUG_ON(configured[asc]);
++	configured[asc] = 1;
++
++	if (!config)
++		config = &default_config;
++
++	if (!config->hw_flow_control) {
++		stm_pad_set_pio_ignored(&stx7100_asc_pad_configs[asc], "RTS");
++		stm_pad_set_pio_ignored(&stx7100_asc_pad_configs[asc], "CTS");
++	}
++
++	pdev = &stx7100_asc_devices[asc];
++	plat_data = pdev->dev.platform_data;
++
++	switch (cpu_data->type) {
++	case CPU_STX7100:
++		pdev->resource[2].start = fdma_requests_7100[asc][0];
++		pdev->resource[2].end = fdma_requests_7100[asc][0];
++		pdev->resource[3].start = fdma_requests_7100[asc][1];
++		pdev->resource[3].end = fdma_requests_7100[asc][1];
++		break;
++
++	case CPU_STX7109:
++		pdev->resource[2].start = fdma_requests_7109[asc][0];
++		pdev->resource[2].end = fdma_requests_7109[asc][0];
++		pdev->resource[3].start = fdma_requests_7109[asc][1];
++		pdev->resource[3].end = fdma_requests_7109[asc][1];
++		break;
++
++	default:
++		BUG();
++		break;
++	}
++
++	pdev->id = tty_id++;
++	plat_data->hw_flow_control = config->hw_flow_control;
++
++	if (config->is_console)
++		stm_asc_console_device = pdev->id;
++
++	stm_asc_configured_devices[stm_asc_configured_devices_num++] = pdev;
++}
++
++/* Add platform device as configured by board specific code */
++static int __init stx7100_add_asc(void)
++{
++	return platform_add_devices(stm_asc_configured_devices,
++			stm_asc_configured_devices_num);
++}
++arch_initcall(stx7100_add_asc);
++
++
++
++/* SSC resources ---------------------------------------------------------- */
++
++/* Pad configuration for I2C/SSC mode */
++static struct stm_pad_config stx7100_ssc_i2c_pad_configs[] = {
++	[0] = {
++		.gpios_num = 2,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_BIDIR_NAMED(2, 0, 1, "SCL"),
++			STM_PAD_PIO_BIDIR_NAMED(2, 1, 1, "SDA"),
++		},
++		.sysconfs_num = 2,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SSC0_MUX_SEL = 0 (default assignment) */
++			STM_PAD_SYS_CFG(7, 1, 1, 0),
++			/* DVO_OUT_ON = 0 (SSC not DVO) */
++			STM_PAD_SYS_CFG(7, 10, 10, 0),
++		},
++	},
++	[1] = {
++		.gpios_num = 2,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_BIDIR_NAMED(3, 0, 1, "SCL"),
++			STM_PAD_PIO_BIDIR_NAMED(3, 1, 1, "SDA"),
++		},
++		.sysconfs_num = 2,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SSC1_MUX_SEL = 0 (default assignment) */
++			STM_PAD_SYS_CFG(7, 2, 2, 0),
++			/* DVO_OUT_ON = 0 (SSC not DVO) */
++			STM_PAD_SYS_CFG(7, 10, 10, 0),
++		},
++	},
++	[2] = {
++		.gpios_num = 2,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_BIDIR_NAMED(4, 0, 1, "SCL"),
++			STM_PAD_PIO_BIDIR_NAMED(4, 1, 1, "SDA"),
++		},
++		.sysconfs_num = 1,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SSC2_MUX_SEL = 0 (separate PIOs) */
++			STM_PAD_SYS_CFG(7, 3, 3, 0),
++		},
++	},
++};
++
++/* Pad configuration for SPI/SSC mode */
++static struct stm_pad_config stx7100_ssc_spi_pad_configs[] = {
++	[0] = {
++		.gpios_num = 3,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(2, 0, 1),	/* SCK */
++			STM_PAD_PIO_OUT(2, 1, 1),	/* MOSI */
++			STM_PAD_PIO_IN(2, 2, -1),	/* MISO */
++		},
++		.sysconfs_num = 2,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SSC0_MUX_SEL = 0 (default assignment) */
++			STM_PAD_SYS_CFG(7, 1, 1, 0),
++			/* DVO_OUT_ON = 0 (SSC not DVO) */
++			STM_PAD_SYS_CFG(7, 10, 10, 0),
++		},
++	},
++	[1] = {
++		.gpios_num = 3,
++		.gpios = (struct stm_pad_gpio []) {
++			STM_PAD_PIO_OUT(3, 0, 1),	/* SCK */
++			STM_PAD_PIO_OUT(3, 1, 1),	/* MOSI */
++			STM_PAD_PIO_IN(3, 2, -1),	/* MISO */
++		},
++		.sysconfs_num = 2,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* SSC1_MUX_SEL = 0 (default assignment) */
++			STM_PAD_SYS_CFG(7, 2, 2, 0),
++			/* DVO_OUT_ON = 0 (SSC not DVO) */
++			STM_PAD_SYS_CFG(7, 10, 10, 0),
++		},
++	},
++};
++
++static struct platform_device stx7100_ssc_devices[] = {
++	[0] = {
++		/* .name & .id set in stx7100_configure_ssc_*() */
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18040000, 0x110),
++			STM_PLAT_RESOURCE_IRQ(119, -1),
++		},
++		.dev.platform_data = &(struct stm_plat_ssc_data) {
++			/* .pad_config_* set in stx7100_configure_ssc_*() */
++		},
++	},
++	[1] = {
++		/* .name & .id set in stx7100_configure_ssc_*() */
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18041000, 0x110),
++			STM_PLAT_RESOURCE_IRQ(118, -1),
++		},
++		.dev.platform_data = &(struct stm_plat_ssc_data) {
++			/* .pad_config_* set in stx7100_configure_ssc_*() */
++		},
++	},
++	[2] = {
++		/* .name & .id set in stx7100_configure_ssc_*() */
++		.num_resources = 2,
++		.resource = (struct resource[]) {
++			STM_PLAT_RESOURCE_MEM(0x18042000, 0x110),
++			STM_PLAT_RESOURCE_IRQ(117, -1),
++		},
++		.dev.platform_data = &(struct stm_plat_ssc_data) {
++			/* .pad_config_* set in stx7100_configure_ssc_*() */
++		},
++	},
++};
++
++static int __initdata stx7100_ssc_configured[ARRAY_SIZE(stx7100_ssc_devices)];
++
++int __init stx7100_configure_ssc_i2c(int ssc,
++		struct stx7100_ssc_i2c_config *config)
++{
++	static int i2c_busnum;
++	struct stm_plat_ssc_data *plat_data;
++
++	BUG_ON(ssc < 0 || ssc >= ARRAY_SIZE(stx7100_ssc_devices));
++
++	BUG_ON(stx7100_ssc_configured[ssc]);
++	stx7100_ssc_configured[ssc] = 1;
++
++	stx7100_ssc_devices[ssc].name = "i2c-stm";
++	stx7100_ssc_devices[ssc].id = i2c_busnum;
++
++	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
++	plat_data->pad_config = &stx7100_ssc_i2c_pad_configs[ssc];
++	if (config)
++		plat_data->i2c_fastmode = config->fastmode;
++
++	/* I2C bus number reservation (to prevent any hot-plug device
++	 * from using it) */
++	i2c_register_board_info(i2c_busnum, NULL, 0);
++
++	platform_device_register(&stx7100_ssc_devices[ssc]);
++
++	return i2c_busnum++;
++}
++
++int __init stx7100_configure_ssc_spi(int ssc,
++		struct stx7100_ssc_spi_config *config)
++{
++	static int spi_busnum;
++	struct stm_plat_ssc_data *plat_data;
++
++	BUG_ON(ssc < 0 || ssc >= ARRAY_SIZE(stx7100_ssc_devices));
++
++	BUG_ON(stx7100_ssc_configured[ssc]);
++	stx7100_ssc_configured[ssc] = 1;
++
++	/* SSC2 can't be used in SPI mode - there is no MRST pin available */
++	BUG_ON(ssc == 2);
++
++	stx7100_ssc_devices[ssc].name = "spi-stm";
++	stx7100_ssc_devices[ssc].id = spi_busnum;
++
++	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
++	if (config)
++		plat_data->spi_chipselect = config->chipselect;
++	plat_data->pad_config = &stx7100_ssc_spi_pad_configs[ssc];
++
++	platform_device_register(&stx7100_ssc_devices[ssc]);
++
++	return spi_busnum++;
++}
++
++
++
++/* LiRC resources --------------------------------------------------------- */
++
++static struct platform_device stx7100_lirc_device = {
++	.name = "lirc-stm",
++	.id = -1,
++	.num_resources = 2,
++	.resource = (struct resource []) {
++		STM_PLAT_RESOURCE_MEM(0x18018000, 0x234),
++		STM_PLAT_RESOURCE_IRQ(125, -1),
++	},
++	.dev.platform_data = &(struct stm_plat_lirc_data) {
++		/* The clock settings will be calculated by
++		 * the driver from the system clock */
++		.irbclock	= 0, /* use current_cpu data */
++		.irbclkdiv	= 0, /* automatically calculate */
++		.irbperiodmult	= 0,
++		.irbperioddiv	= 0,
++		.irbontimemult	= 0,
++		.irbontimediv	= 0,
++		.irbrxmaxperiod = 0x5000,
++		.sysclkdiv	= 1,
++		.rxpolarity	= 1,
++	},
++};
++
++void __init stx7100_configure_lirc(struct stx7100_lirc_config *config)
++{
++	static int configured;
++	struct stx7100_lirc_config default_config = {};
++	struct stm_plat_lirc_data *plat_data =
++			stx7100_lirc_device.dev.platform_data;
++	struct stm_pad_config *pad_config;
++
++	BUG_ON(configured);
++	configured = 1;
++
++	if (!config)
++		config = &default_config;
++
++	pad_config = stm_pad_config_alloc(3, 0);
++	BUG_ON(!pad_config);
++
++	plat_data->txenabled = config->tx_enabled || config->tx_od_enabled;
++	plat_data->dev_config = kzalloc(sizeof(struct stm_device_config),
++					GFP_KERNEL);
++//	plat_data->pads = pad_config;
++	plat_data->dev_config->pad_config = pad_config;
++
++	switch (config->rx_mode) {
++	case stx7100_lirc_rx_disabled:
++		/* Nothing to do */
++		break;
++	case stx7100_lirc_rx_mode_ir:
++		plat_data->rxuhfmode = 0;
++		stm_pad_config_add_pio_in(pad_config, 3, 3, -1);
++		break;
++	case stx7100_lirc_rx_mode_uhf:
++		plat_data->rxuhfmode = 1;
++		stm_pad_config_add_pio_in(pad_config, 3, 4, -1);
++		break;
++	default:
++		BUG();
++		break;
++	}
++
++	if (config->tx_enabled)
++		stm_pad_config_add_pio_out(pad_config, 3, 5, 1);
++
++	if (config->tx_od_enabled)
++		stm_pad_config_add_pio_out(pad_config, 3, 6, 1);
++
++	platform_device_register(&stx7100_lirc_device);
++}
++
++
++
++/* PWM resources ---------------------------------------------------------- */
++
++static struct stm_plat_pwm_data stx7100_pwm_platform_data = {
++//	.channel_pad_config = {
++	.pwm_pad_config = {
++		[0] = &(struct stm_pad_config) {
++			.gpios_num = 1,
++			.gpios = (struct stm_pad_gpio []) {
++				STM_PAD_PIO_OUT(4, 6, 1),
++			},
++			.sysconfs_num = 1,
++			.sysconfs = (struct stm_pad_sysconf []) {
++				/* SCIF_PIO_OUT_EN = 0
++				 * (regular PIO, not the SCIF output) */
++				STM_PAD_SYS_CFG(7, 0, 0, 0),
++			},
++		},
++		[1] = &(struct stm_pad_config) {
++			.gpios_num = 1,
++			.gpios = (struct stm_pad_gpio []) {
++				STM_PAD_PIO_OUT(4, 7, 1),
++			},
++		},
++	},
++};
++
++static struct platform_device stx7100_pwm_device = {
++	.name = "stm-pwm",
++	.id = -1,
++	.num_resources = 2,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18010000, 0x68),
++		STM_PLAT_RESOURCE_IRQ(126, -1),
++	},
++	.dev.platform_data = &stx7100_pwm_platform_data,
++};
++
++void __init stx7100_configure_pwm(struct stx7100_pwm_config *config)
++{
++	static int configured;
++	int channel;
++
++	BUG_ON(configured);
++	configured = 1;
++
++	/*if (config) {
++		stx7100_pwm_platform_data.channel_enabled[0] =
++				config->out0_enabled;
++		stx7100_pwm_platform_data.channel_enabled[1] =
++				config->out1_enabled;
++	}
++
++	platform_device_register(&stx7100_pwm_device);*/
++
++	for (channel = 0; channel < ARRAY_SIZE(config->pwm_channel_config); channel++)
++                stx7100_pwm_platform_data.pwm_channel_config[channel] =
++                        config->pwm_channel_config[channel];
++
++        platform_device_register(&stx7100_pwm_device);
++}
++
+diff --git a/drivers/stm/stx7100_hispeed.c b/drivers/stm/stx7100_hispeed.c
+new file mode 100644
+--- /dev/null
++++ drivers/stm/stx7100_hispeed.c
+@@ -0,0 +1,351 @@
++/*
++ * (c) 2010 STMicroelectronics Limited
++ *
++ * Author: Pawel Moll <pawel.moll@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/delay.h>
++#include <linux/ethtool.h>
++#include <linux/dma-mapping.h>
++#include <linux/phy.h>
++#include <linux/stm/pad.h>
++#include <linux/stm/device.h>
++#include <linux/stm/sysconf.h>
++#include <linux/stm/platform.h>
++#include <linux/stm/stx7100.h>
++#include <asm/irq-ilc.h>
++
++
++
++/* Ethernet MAC resources ------------------------------------------------- */
++
++static struct stm_pad_config stx7100_ethernet_pad_configs[] = {
++	[stx7100_ethernet_mode_mii] = {
++		.gpios_num = 1,
++		.gpios = (struct stm_pad_gpio []) {
++			/* Claimed only when config->ext_clk == 0 */
++			STM_PAD_PIO_OUT_NAMED(3, 7, 1, "PHYCLK"),
++		},
++		.sysconfs_num = 3,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* DVO_ETH_PAD_DISABLE and ETH_IF_ON */
++			STM_PAD_SYS_CFG(7, 16, 17, 3),
++			/* RMII_MODE */
++			STM_PAD_SYS_CFG(7, 18, 18, 0),
++			/*
++			 * PHY_CLK_EXT: PHY external clock
++			 * 0: PHY clock is provided by STx7109
++			 * 1: PHY clock is provided by an external source
++			 * Value assigned in stx7100_configure_ethernet()
++			 */
++			STM_PAD_SYS_CFG(7, 19, 19, -1),
++		},
++	},
++	[stx7100_ethernet_mode_rmii] = {
++		.gpios_num = 1,
++		.gpios = (struct stm_pad_gpio []) {
++			/* Claimed only when config->ext_clk == 0 */
++			STM_PAD_PIO_OUT_NAMED(3, 7, 1, "PHYCLK"),
++		},
++		.sysconfs_num = 3,
++		.sysconfs = (struct stm_pad_sysconf []) {
++			/* DVO_ETH_PAD_DISABLE and ETH_IF_ON */
++			STM_PAD_SYS_CFG(7, 16, 17, 3),
++			/* RMII_MODE */
++			STM_PAD_SYS_CFG(7, 18, 18, 1),
++			/* PHY_CLK_EXT */
++			STM_PAD_SYS_CFG(7, 19, 19, -1),
++		},
++	},
++};
++
++static struct stmmac_dma_cfg gmac_dma_setting = {
++        .pbl = 32,
++};
++
++static void stx7100_ethernet_fix_mac_speed(void *bsp_priv, unsigned int speed)
++{
++	struct sysconf_field *mac_speed_sel = bsp_priv;
++
++	sysconf_write(mac_speed_sel, (speed == SPEED_100) ? 1 : 0);
++}
++
++static struct plat_stmmacenet_data stx7100_ethernet_platform_data = {
++	.dma_cfg = &gmac_dma_setting,
++	.has_gmac = 0,
++	.enh_desc = 0,
++	.fix_mac_speed = stx7100_ethernet_fix_mac_speed,
++	.init = &stmmac_claim_resource,
++};
++
++static struct platform_device stx7100_ethernet_device = {
++	.name = "stmmaceth",
++	.id = 0,
++	.num_resources = 2,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x18110000, 0x10000),
++		STM_PLAT_RESOURCE_IRQ_NAMED("macirq", 133, -1),
++	},
++	.dev.platform_data = &stx7100_ethernet_platform_data,
++};
++
++void __init stx7100_configure_ethernet(struct stx7100_ethernet_config *config)
++{
++	static int configured;
++	struct stx7100_ethernet_config default_config;
++	struct stm_pad_config *pad_config;
++	int interface;
++
++	/* 7100 doesn't have a MAC */
++	if (cpu_data->type == CPU_STX7100)
++		return;
++
++	BUG_ON(configured);
++	configured = 1;
++
++	if (!config)
++		config = &default_config;
++
++	pad_config = &stx7100_ethernet_pad_configs[config->mode];
++
++	switch (config->mode) {
++	case stx7100_ethernet_mode_mii:
++		if (config->ext_clk)
++			stm_pad_set_pio_ignored(pad_config, "PHYCLK");
++		interface = PHY_INTERFACE_MODE_MII;
++		break;
++	case stx7100_ethernet_mode_rmii:
++		if (config->ext_clk)
++			stm_pad_set_pio_in(pad_config, "PHYCLK", -1);
++		interface = PHY_INTERFACE_MODE_RMII;
++		break;
++	default:
++		BUG();
++		break;
++	}
++	pad_config->sysconfs[2].value = (config->ext_clk ? 1 : 0);
++
++	stx7100_ethernet_platform_data.custom_cfg = (void *) pad_config;
++	stx7100_ethernet_platform_data.interface = interface;
++	stx7100_ethernet_platform_data.bus_id = config->phy_bus;
++	stx7100_ethernet_platform_data.phy_addr = config->phy_addr;
++	stx7100_ethernet_platform_data.mdio_bus_data = config->mdio_bus_data;
++
++	/* MAC_SPEED_SEL */
++	stx7100_ethernet_platform_data.bsp_priv =
++			sysconf_claim(SYS_CFG, 7, 20, 20, "stmmac");
++
++	/* Configure the ethernet MAC PBL depending on the cut of the chip */
++	/*stx7100_ethernet_platform_data.pbl =
++			(cpu_data->cut_major == 1) ? 1 : 32;*/
++
++
++	platform_device_register(&stx7100_ethernet_device);
++}
++
++
++/* USB resources ---------------------------------------------------------- */
++
++static int stx7100_usb_oc_gpio = -EINVAL;
++static int stx7100_usb_pwr_gpio = -EINVAL;
++
++static int stx7100_usb_pad_claim(struct stm_pad_state *state, void *priv)
++{
++	/* Work around for USB over-current detection chip being
++	 * active low, and the 710x being active high.
++	 *
++	 * This test is wrong for 7100 cut 3.0 (which needs the work
++	 * around), but as we can't reliably determine the minor
++	 * revision number, hard luck, this works for most people.
++	 */
++	if ((cpu_data->type == CPU_STX7109 && cpu_data->cut_major < 2) ||
++			(cpu_data->type == CPU_STX7100 &&
++			cpu_data->cut_major < 3)) {
++		stx7100_usb_oc_gpio =
++			stm_pad_gpio_request_output(state, "OC", 0);
++		BUG_ON(stx7100_usb_oc_gpio == STM_GPIO_INVALID);
++	}
++
++	/*
++	 * There have been two changes to the USB power enable signal:
++	 *
++	 * - 7100 upto and including cut 3.0 and 7109 1.0 generated an
++	 *   active high enables signal. From 7100 cut 3.1 and 7109 cut 2.0
++	 *   the signal changed to active low.
++	 *
++	 * - The 710x ref board (mb442) has always used power distribution
++	 *   chips which have active high enables signals (on rev A and B
++	 *   this was a TI TPS2052, rev C used the ST equivalent a ST2052).
++	 *   However rev A and B had a pull up on the enables signal, while
++	 *   rev C changed this to a pull down.
++	 *
++	 * The net effect of all this is that the easiest way to drive
++	 * this signal is ignore the USB hardware and drive it as a PIO
++	 * pin.
++	 *
++	 * (Note the USB over current input on the 710x changed from active
++	 * high to low at the same cuts, but board revs A and B had a resistor
++	 * option to select an inverted output from the TPS2052, so no
++	 * software work around is required.)
++	 */
++	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 1);
++	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
++
++	return 0;
++}
++
++static void stx7100_usb_pad_release(struct stm_pad_state *state, void *priv)
++{
++	if (gpio_is_valid(stx7100_usb_oc_gpio))
++		stm_pad_gpio_free(state, stx7100_usb_oc_gpio);
++	if (gpio_is_valid(stx7100_usb_pwr_gpio))
++		stm_pad_gpio_free(state, stx7100_usb_pwr_gpio);
++}
++
++#define USB_PWR "USB_PWR"
++
++static void stx7100_usb_power(struct stm_device_state *device_state,
++		enum stm_device_power_state power)
++{
++	stm_device_sysconf_write(device_state, USB_PWR, 
++		(power == stm_device_power_on) ? 0 : 1);
++	mdelay(30);
++}
++
++static struct stm_plat_usb_data stx7100_usb_platform_data = {
++	.flags = STM_PLAT_USB_FLAGS_STRAP_8BIT |
++			STM_PLAT_USB_FLAGS_STRAP_PLL, /*|
++			STM_PLAT_USB_FLAGS_OPC_MSGSIZE_CHUNKSIZE,*/
++	.device_config = &(struct stm_device_config){
++		.pad_config = &(struct stm_pad_config) {
++			.gpios_num = 2,
++			.gpios = (struct stm_pad_gpio []) {
++				STM_PAD_PIO_IN_NAMED(5, 6, -1, "OC"),
++				STM_PAD_PIO_OUT_NAMED(5, 7, 1, "PWR"),
++			},
++			.custom_claim = stx7100_usb_pad_claim,
++			.custom_release = stx7100_usb_pad_release,
++			.sysconfs_num = 1,
++			.sysconfs = (struct stm_pad_sysconf []) {
++				/* USB_AT */
++				STM_PAD_SYS_CFG(2, 1, 1, 0),
++			},
++		},
++		.sysconfs_num = 1,
++		.sysconfs = (struct stm_device_sysconf []) {
++			STM_DEVICE_SYS_CFG(2, 4, 5, USB_PWR),
++		},
++		.power = stx7100_usb_power,
++	},
++};
++
++static u64 stx7100_usb_dma_mask = DMA_BIT_MASK(32);
++
++static struct platform_device stx7100_usb_device = {
++	.name = "stm-usb",
++	.id = 0,
++	.dev = {
++		.dma_mask = &stx7100_usb_dma_mask,
++		.coherent_dma_mask = DMA_BIT_MASK(32),
++		.platform_data = &stx7100_usb_platform_data,
++	},
++	.num_resources = 6,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM_NAMED("ehci", 0x191ffe00, 0x100),
++		STM_PLAT_RESOURCE_IRQ_NAMED("ehci", 169, -1),
++		STM_PLAT_RESOURCE_MEM_NAMED("ohci", 0x191ffc00, 0x100),
++		STM_PLAT_RESOURCE_IRQ_NAMED("ohci", 168, -1),
++		STM_PLAT_RESOURCE_MEM_NAMED("wrapper", 0x19100000, 0x100),
++		STM_PLAT_RESOURCE_MEM_NAMED("protocol", 0x191fff00, 0x100),
++	},
++};
++
++void __init stx7100_configure_usb(void)
++{
++	static int configured;
++
++	BUG_ON(configured);
++	configured = 1;
++
++	platform_device_register(&stx7100_usb_device);
++}
++
++
++
++/* MiPHY resources -------------------------------------------------------- */
++
++static struct stm_plat_miphy_dummy_data stx7100_miphy_dummy_platform_data = {
++	.miphy_first = 0,
++	.miphy_count = 1,
++	.miphy_modes = (enum miphy_mode[1]) {SATA_MODE},
++};
++
++static struct platform_device stx7100_miphy_dummy_device = {
++	.name	= "stm-miphy-dummy",
++	.id	= 0,
++	.num_resources = 0,
++	.dev = {
++		.platform_data = &stx7100_miphy_dummy_platform_data,
++	}
++};
++
++static int __init stx7100_miphy_postcore_setup(void)
++{
++	return platform_device_register(&stx7100_miphy_dummy_device);
++}
++postcore_initcall(stx7100_miphy_postcore_setup);
++
++
++
++/* SATA resources --------------------------------------------------------- */
++static struct stm_plat_sata_data stx7100_sata_platform_data = {
++	/* filled in stx7100_configure_sata() */
++	.device_config = &(struct stm_device_config){},
++};
++
++static struct platform_device stx7100_sata_device = {
++	.name = "sata-stm",
++	.id = -1,
++	.dev.platform_data = &stx7100_sata_platform_data,
++	.num_resources = 2,
++	.resource = (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM(0x19209000, 0x1000),
++		STM_PLAT_RESOURCE_IRQ(170, -1),
++	},
++};
++
++void __init stx7100_configure_sata(void)
++{
++	static int configured;
++
++	BUG_ON(configured);
++	configured = 1;
++
++	if (cpu_data->type == CPU_STX7100 && cpu_data->cut_major == 1) {
++		/* 7100 cut 1.x */
++		stx7100_sata_platform_data.phy_init = 0x0013704A;
++	} else {
++		/* 7100 cut 2.x and cut 3.x and 7109 */
++		stx7100_sata_platform_data.phy_init = 0x388fc;
++	}
++
++	if ((cpu_data->type == CPU_STX7109 && cpu_data->cut_major == 1) ||
++			cpu_data->type == CPU_STX7100) {
++		stx7100_sata_platform_data.only_32bit = 1;
++		stx7100_sata_platform_data.pc_glue_logic_init = 0x1ff;
++	} else {
++		stx7100_sata_platform_data.only_32bit = 0;
++		stx7100_sata_platform_data.pc_glue_logic_init = 0x100ff;
++	}
++
++	platform_device_register(&stx7100_sata_device);
++}
++
+diff --git a/include/linux/stm/stm-dma.h b/include/linux/stm/stm-dma.h
+new file mode 100644
+--- /dev/null
++++ include/linux/stm/stm-dma.h
+@@ -0,0 +1,375 @@
++/*
++ * Copyright (C) 2005,7 STMicroelectronics Limited
++ * Authors: Mark Glaisher <Mark.Glaisher@st.com>
++ *          Stuart Menefy <stuart.menefy@st.com>
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ */
++
++#ifndef STM_DMA_H
++#define STM_DMA_H
++
++#include <asm/dma.h>
++#include <asm/io.h>
++#include <asm/string.h>
++#include <linux/module.h>
++
++
++/*DMA Modes */
++#define MODE_FREERUNNING   		0x01	/* FDMA, GPDMA */
++#define MODE_PACED  		 	0x02	/* FDMA */
++#define MODE_SRC_SCATTER		0x04
++#define MODE_DST_SCATTER		0x05
++
++/* DMA dimensions */
++#define DIM_SRC_SHIFT 0
++#define DIM_DST_SHIFT 2
++#define DIM_SRC(x) (((x) >> DIM_SRC_SHIFT) & 3)
++#define DIM_DST(x) (((x) >> DIM_DST_SHIFT) & 3)
++enum stm_dma_dimensions {
++	DIM_0_x_0 = (0 << DIM_SRC_SHIFT) | (0 << DIM_DST_SHIFT),
++	DIM_0_x_1 = (0 << DIM_SRC_SHIFT) | (1 << DIM_DST_SHIFT),
++	DIM_0_x_2 = (0 << DIM_SRC_SHIFT) | (2 << DIM_DST_SHIFT),
++	DIM_1_x_0 = (1 << DIM_SRC_SHIFT) | (0 << DIM_DST_SHIFT),
++	DIM_1_x_1 = (1 << DIM_SRC_SHIFT) | (1 << DIM_DST_SHIFT),
++	DIM_1_x_2 = (1 << DIM_SRC_SHIFT) | (2 << DIM_DST_SHIFT),
++	DIM_2_x_0 = (2 << DIM_SRC_SHIFT) | (0 << DIM_DST_SHIFT),
++	DIM_2_x_1 = (2 << DIM_SRC_SHIFT) | (1 << DIM_DST_SHIFT),
++	DIM_2_x_2 = (2 << DIM_SRC_SHIFT) | (2 << DIM_DST_SHIFT),
++};
++
++enum stm_dma_flags {
++	STM_DMA_INTER_NODE_PAUSE=0x800,
++	STM_DMA_NODE_COMP_INT=0x1000,
++	STM_DMA_CB_CONTEXT_ISR=0x2000,
++	STM_DMA_CB_CONTEXT_TASKLET=0x4000,
++	STM_DMA_CHANNEL_PAUSE_FLUSH=0x20000,
++	STM_DMA_CHANNEL_PAUSE_NOFLUSH=0x40000,
++	STM_DMA_NOBLOCK_MODE=0x80000,
++	STM_DMA_BLOCK_MODE=0x100000,
++	STM_DMA_LIST_CIRC=0x200000,
++	STM_DMA_LIST_OPEN=0x400000,
++};
++
++#define DMA_CHANNEL_STATUS_IDLE 		0
++#define DMA_CHANNEL_STATUS_RUNNING 		2
++#define DMA_CHANNEL_STATUS_PAUSED 		3
++
++/* Parameters to request_dma_bycap() */
++#define STM_DMAC_ID 			"fdma_dmac"
++#define STM_DMA_CAP_HIGH_BW		"STM_DMA_HIGH_BANDWIDTH"
++#define STM_DMA_CAP_LOW_BW		"STM_DMA_LOW_BANDWIDTH"
++#define STM_DMA_CAP_ETH_BUF		"STM_DMA_ETH_BUFFER"
++
++/* dma_extend() operations */
++#define STM_DMA_OP_FLUSH      1
++#define STM_DMA_OP_PAUSE      2
++#define STM_DMA_OP_UNPAUSE    3
++#define STM_DMA_OP_STOP       4
++#define STM_DMA_OP_COMPILE    5
++#define STM_DMA_OP_STATUS     6
++#define STM_DMA_OP_REQ_CONFIG 7
++#define STM_DMA_OP_REQ_FREE   8
++
++/* Generic DMA request line configuration */
++
++/* Read/Write */
++#define REQ_CONFIG_READ            0
++#define REQ_CONFIG_WRITE           1
++
++/* Opcodes */
++#define REQ_CONFIG_OPCODE_1        0x00
++#define REQ_CONFIG_OPCODE_2        0x01
++#define REQ_CONFIG_OPCODE_4        0x02
++#define REQ_CONFIG_OPCODE_8        0x03
++#define REQ_CONFIG_OPCODE_16       0x04
++#define REQ_CONFIG_OPCODE_32       0x05
++
++struct stm_dma_req_config
++{
++	unsigned char req_line;		/* Request line index number */
++	unsigned char rw;		/* Access type: Read or Write */
++	unsigned char opcode;		/* Size of word access */
++	unsigned char count;		/* Number of transfers per request */
++	unsigned char increment;	/* Whether to increment */
++	unsigned char hold_off;		/* Holdoff value between req signal samples (in clock cycles)*/
++	unsigned char initiator;	/* Which STBus initiatator to use */
++};
++
++struct stm_dma_req;
++
++/* Generic STM DMA params */
++
++struct stm_dma_params;
++
++struct params_ops {
++	int (*free_params)(struct stm_dma_params* params);
++};
++
++struct stm_dma_params {
++
++	/* Transfer mode eg MODE_DST_SCATTER */
++	unsigned long mode;
++
++	/* a pointer to a callback function of type void foo(void*)
++	 * which will be called on completion of the entire
++	 * transaction or after each transfer suceeds if
++	 * NODE_PAUSE_ISR is specifed */
++	void				(*comp_cb)(unsigned long);
++	unsigned long			comp_cb_parm;
++
++	/* a pointer to a callback function of type void foo(void*)
++	 * which will be called upon failure of a transfer or
++	 * transaction*/
++	void				(*err_cb)(unsigned long);
++	unsigned long			err_cb_parm;
++
++	/*Source location line stride for use in 0/1/2 x 2D modes*/
++	unsigned long			sstride;
++
++	/*Source location line stride for use in 2D x 0/1/2 modes*/
++	unsigned long			dstride;
++
++	/* Line length for any 2D modes */
++	unsigned long			line_len;
++
++	/*source addr - given in phys*/
++	unsigned long 			sar;
++
++	/*dest addr  - given in phys*/
++	unsigned long 			dar;
++
++	unsigned long 			node_bytes;
++
++	struct scatterlist * srcsg;
++	struct scatterlist * dstsg;
++	int sglen;
++
++	int err_cb_isr	:1;
++	int comp_cb_isr	:1;
++
++	int node_pause		:1;
++	int node_interrupt	:1;
++	int circular_llu        :1;
++
++	unsigned long dim;
++
++	/* Parameters for paced transfers */
++	struct stm_dma_req *req;
++
++	/* Pointer to compiled parameters
++	 * this includes the *template* llu node and
++	 * its assoc'd memory */
++	void* priv;
++
++	/* Next pointer for linked list of params */
++	struct stm_dma_params *next;
++
++	/* Pointer to DMAC specific operators on the parameters.
++	 * Filled in by dma_compile_list(). */
++	struct params_ops *params_ops;
++	void* params_ops_priv;
++
++	/* This is only used in the call to dma_compile_list(), so
++	 * shouldn't really be here, but it saves us packing and unpacking
++	 * the parameters into another struct. */
++	gfp_t context;
++};
++
++static inline void dma_params_init(struct stm_dma_params * p,
++				  unsigned long mode,
++				  unsigned long list_type)
++{
++	memset(p,0,sizeof(struct stm_dma_params));
++	p->mode = mode;
++	p->circular_llu = (STM_DMA_LIST_CIRC ==list_type ?1:0);
++};
++
++static inline int dma_get_status(unsigned int vchan)
++{
++	return dma_extend(vchan, STM_DMA_OP_STATUS, NULL);
++}
++
++/* Flush implies pause - I mean pause+flush */
++static inline int dma_flush_channel(unsigned int vchan)
++{
++	return dma_extend(vchan, STM_DMA_OP_FLUSH, NULL);
++}
++
++static inline int dma_pause_channel(unsigned int vchan)
++{
++	return dma_extend(vchan, STM_DMA_OP_PAUSE, NULL);
++}
++
++static inline void dma_unpause_channel(unsigned int vchan)
++{
++	dma_extend(vchan, STM_DMA_OP_UNPAUSE, NULL);
++}
++
++static inline int dma_stop_channel(unsigned int vchan)
++{
++	return dma_extend(vchan, STM_DMA_OP_STOP, NULL);
++}
++
++static inline int dma_params_free(struct stm_dma_params *params)
++{
++	return params->params_ops->free_params(params);
++}
++
++static inline int dma_compile_list(unsigned int vchan,
++				   struct stm_dma_params *params,
++				   gfp_t gfp_mask)
++{
++	params->context = gfp_mask;
++	return dma_extend(vchan, STM_DMA_OP_COMPILE, params);
++}
++
++static inline int dma_xfer_list(unsigned int vchan, struct stm_dma_params *p)
++{
++	/*TODO :- this is a bit 'orrible -
++	 * should really extend arch/sh/drivers/dma/dma-api.c
++	 * to include a 'set_dma_channel'*/
++	dma_configure_channel(vchan, (unsigned long)p);
++	return dma_xfer(vchan, 0, 0, 0, 0);
++}
++
++static inline struct stm_dma_req *dma_req_config(unsigned int vchan,
++	unsigned int req_line,
++	struct stm_dma_req_config* req_config)
++{
++	req_config->req_line = req_line;
++	return (struct stm_dma_req *)
++		dma_extend(vchan, STM_DMA_OP_REQ_CONFIG, req_config);
++}
++
++static inline void dma_req_free(unsigned int vchan, struct stm_dma_req *req)
++{
++	dma_extend(vchan, STM_DMA_OP_REQ_FREE, req);
++}
++
++static inline  void dma_params_sg(	struct stm_dma_params *p,
++					struct scatterlist * sg,
++					int nents)
++{
++	if(MODE_SRC_SCATTER==p->mode)
++		p->srcsg=sg;
++	else if (MODE_DST_SCATTER==p->mode)
++		p->dstsg = sg;
++	else
++		BUG();
++	p->sglen = nents;
++}
++
++static inline void dma_params_link(	struct stm_dma_params * parent,
++					struct stm_dma_params * child)
++{
++	parent->next=child;
++}
++
++static inline void dma_params_req(	struct stm_dma_params *p,
++					struct stm_dma_req *req)
++{
++	p->req = req;
++}
++
++static inline void dma_params_addrs(	struct stm_dma_params *p,
++					unsigned long src,
++					unsigned long dst,
++					unsigned long bytes)
++{
++	p->sar = src;
++	p->dar = dst;
++	p->node_bytes = bytes;
++}
++
++static inline void dma_params_interrupts(struct stm_dma_params *p,
++					unsigned long isrflag)
++{
++	if(isrflag & STM_DMA_INTER_NODE_PAUSE)
++		p->node_pause=1;
++	if(isrflag & STM_DMA_NODE_COMP_INT )
++		p->node_interrupt=1;
++
++}
++
++static inline void dma_params_comp_cb(	struct stm_dma_params *p,
++					void (*fn)(unsigned long param),
++					unsigned long param,
++					int isr_context)
++{
++	p->comp_cb = fn;
++	p->comp_cb_parm = param;
++	p->comp_cb_isr = (isr_context == STM_DMA_CB_CONTEXT_ISR ?1:0);
++}
++
++static inline void dma_params_err_cb(	struct stm_dma_params *p,
++					void (*fn)(unsigned long param),
++	      				unsigned long param,
++	      				int isr_context)
++{
++	p->err_cb = fn;
++	p->err_cb_parm = param;
++	p->err_cb_isr = (isr_context == STM_DMA_CB_CONTEXT_ISR ?1:0);
++}
++
++static inline void dma_params_dim(	struct stm_dma_params *p,
++					unsigned long line_len,
++					unsigned long sstride,
++					unsigned long dstride,
++					unsigned long dim)
++{
++	p->line_len = line_len;
++	p->sstride = sstride;
++	p->dstride = dstride;
++	p->dim =dim;
++}
++
++static inline void dma_params_DIM_0_x_0(struct stm_dma_params *p)
++{
++	dma_params_dim(p, 0,0,0, DIM_0_x_0);
++}
++
++static inline void dma_params_DIM_0_x_1(struct stm_dma_params *p)
++{
++	dma_params_dim(p, 0,0,0, DIM_0_x_1);
++}
++
++static inline void dma_params_DIM_0_x_2(struct stm_dma_params *p,
++					unsigned long line_len,
++					unsigned long dstride)
++{
++	dma_params_dim(p, line_len, 0, dstride, DIM_0_x_2);
++}
++
++static inline void dma_params_DIM_1_x_0(struct stm_dma_params *p)
++{
++	dma_params_dim(p, 0,0,0, DIM_1_x_0);
++}
++
++static inline void dma_params_DIM_1_x_1(struct stm_dma_params *p)
++{
++	dma_params_dim(p, 0,0,0, DIM_1_x_1);
++}
++
++static inline void dma_params_DIM_1_x_2(struct stm_dma_params *p,
++					unsigned long line_len,
++					unsigned long dstride)
++{
++	dma_params_dim(p, line_len, line_len, dstride, DIM_1_x_2);
++}
++
++static inline void dma_params_DIM_2_x_0(struct stm_dma_params *p,
++					unsigned long line_len,
++					unsigned long sstride)
++{
++	dma_params_dim(p, line_len, sstride, 0, DIM_2_x_0);
++}
++
++static inline void dma_params_DIM_2_x_1(struct stm_dma_params *p,
++					unsigned long line_len,
++					unsigned long sstride)
++{
++	dma_params_dim(p, line_len, sstride, line_len, DIM_2_x_1);
++}
++#endif
+diff --git a/include/linux/stm/stx7100.h b/include/linux/stm/stx7100.h
+new file mode 100644
+--- /dev/null
++++ include/linux/stm/stx7100.h
+@@ -0,0 +1,101 @@
++/*
++ * (c) 2010 STMicroelectronics Limited
++ *
++ * Author: Pawel Moll <pawel.moll@st.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++
++
++#ifndef __LINUX_STM_STX7100_H
++#define __LINUX_STM_STX7100_H
++
++#include <linux/device.h>
++#include <linux/spi/spi.h>
++#include <linux/stm/platform.h>
++
++
++/* Sysconfig groups */
++
++#define SYS_DEV 0
++#define SYS_STA 1
++#define SYS_CFG 2
++
++
++void stx7100_early_device_init(void);
++
++
++struct stx7100_asc_config {
++	int hw_flow_control;
++	int is_console;
++};
++void stx7100_configure_asc(int asc, struct stx7100_asc_config *config);
++
++
++struct stx7100_ssc_i2c_config {
++	unsigned int fastmode:1;
++};
++struct stx7100_ssc_spi_config {
++	void (*chipselect)(struct spi_device *spi, int is_on);
++};
++/* SSC configure functions return I2C/SPI bus number */
++int stx7100_configure_ssc_i2c(int ssc, struct stx7100_ssc_i2c_config *config);
++int stx7100_configure_ssc_spi(int ssc, struct stx7100_ssc_spi_config *config);
++
++
++struct stx7100_lirc_config {
++	enum {
++		stx7100_lirc_rx_disabled,
++		stx7100_lirc_rx_mode_ir,
++		stx7100_lirc_rx_mode_uhf
++	} rx_mode;
++	int tx_enabled;
++	int tx_od_enabled;
++};
++void stx7100_configure_lirc(struct stx7100_lirc_config *config);
++
++
++/*struct stx7100_pwm_config {
++	int out0_enabled;
++	int out1_enabled;*/
++
++struct stx7100_pwm_config {
++        struct stm_plat_pwm_channel_config pwm_channel_config[2];
++};
++void stx7100_configure_pwm(struct stx7100_pwm_config *config);
++
++
++struct stx7100_ethernet_config {
++	enum {
++		stx7100_ethernet_mode_mii,
++		stx7100_ethernet_mode_rmii,
++	} mode;
++	int ext_clk;
++	int phy_bus;
++	int phy_addr;
++	struct stmmac_mdio_bus_data *mdio_bus_data;
++};
++void stx7100_configure_ethernet(struct stx7100_ethernet_config *config);
++
++
++void stx7100_configure_usb(void);
++
++
++void stx7100_configure_sata(void);
++
++
++struct stx7100_pata_config {
++	int emi_bank;
++	int pc_mode;
++	unsigned int irq;
++};
++void stx7100_configure_pata(struct stx7100_pata_config *config);
++
++/* Clk Stuff */
++int stx7100_plat_clk_init(void);
++int stx7100_plat_clk_alias_init(void);
++
++#endif
+diff --git a/include/linux/sysdev.h b/include/linux/sysdev.h
+new file mode 100644
+--- /dev/null
++++ include/linux/sysdev.h
+@@ -0,0 +1,157 @@
++/**
++ * System devices follow a slightly different driver model. 
++ * They don't need to do dynammic driver binding, can't be probed, 
++ * and don't reside on any type of peripheral bus. 
++ * So, we represent and treat them a little differently.
++ * 
++ * We still have a notion of a driver for a system device, because we still
++ * want to perform basic operations on these devices. 
++ *
++ * We also support auxillary drivers binding to devices of a certain class.
++ * 
++ * This allows configurable drivers to register themselves for devices of
++ * a certain type. And, it allows class definitions to reside in generic
++ * code while arch-specific code can register specific drivers.
++ *
++ * Auxillary drivers registered with a NULL cls are registered as drivers
++ * for all system devices, and get notification calls for each device. 
++ */
++
++
++#ifndef _SYSDEV_H_
++#define _SYSDEV_H_
++
++#include <linux/kobject.h>
++#include <linux/module.h>
++#include <linux/pm.h>
++
++
++struct sys_device;
++
++struct sysdev_class {
++	const char *name;
++	struct list_head	drivers;
++
++	/* Default operations for these types of devices */
++	int	(*shutdown)(struct sys_device *);
++	int	(*suspend)(struct sys_device *, pm_message_t state);
++	int	(*resume)(struct sys_device *);
++	struct kset		kset;
++};
++
++struct sysdev_class_attribute {
++	struct attribute attr;
++	ssize_t (*show)(struct sysdev_class *, char *);
++	ssize_t (*store)(struct sysdev_class *, const char *, size_t);
++};
++
++#define _SYSDEV_CLASS_ATTR(_name,_mode,_show,_store) 		\
++{					 			\
++	.attr = {.name = __stringify(_name), .mode = _mode },	\
++	.show	= _show,					\
++	.store	= _store,					\
++}
++
++#define SYSDEV_CLASS_ATTR(_name,_mode,_show,_store) 		\
++	struct sysdev_class_attribute attr_##_name = 		\
++		_SYSDEV_CLASS_ATTR(_name,_mode,_show,_store)
++
++
++extern int sysdev_class_register(struct sysdev_class *);
++extern void sysdev_class_unregister(struct sysdev_class *);
++
++extern int sysdev_class_create_file(struct sysdev_class *,
++	struct sysdev_class_attribute *);
++extern void sysdev_class_remove_file(struct sysdev_class *,
++	struct sysdev_class_attribute *);
++/**
++ * Auxillary system device drivers.
++ */
++
++struct sysdev_driver {
++	struct list_head	entry;
++	int	(*add)(struct sys_device *);
++	int	(*remove)(struct sys_device *);
++	int	(*shutdown)(struct sys_device *);
++	int	(*suspend)(struct sys_device *, pm_message_t state);
++	int	(*resume)(struct sys_device *);
++};
++
++
++extern int sysdev_driver_register(struct sysdev_class *, struct sysdev_driver *);
++extern void sysdev_driver_unregister(struct sysdev_class *, struct sysdev_driver *);
++
++
++/**
++ * sys_devices can be simplified a lot from regular devices, because they're
++ * simply not as versatile. 
++ */
++
++struct sys_device {
++	u32		id;
++	struct sysdev_class	* cls;
++	struct kobject		kobj;
++};
++
++extern int sysdev_register(struct sys_device *);
++extern void sysdev_unregister(struct sys_device *);
++
++
++struct sysdev_attribute { 
++	struct attribute	attr;
++	ssize_t (*show)(struct sys_device *, struct sysdev_attribute *, char *);
++	ssize_t (*store)(struct sys_device *, struct sysdev_attribute *,
++			 const char *, size_t);
++};
++
++
++#define _SYSDEV_ATTR(_name, _mode, _show, _store)		\
++{								\
++	.attr = { .name = __stringify(_name), .mode = _mode },	\
++	.show	= _show,					\
++	.store	= _store,					\
++}
++
++#define SYSDEV_ATTR(_name, _mode, _show, _store)		\
++	struct sysdev_attribute attr_##_name =			\
++		_SYSDEV_ATTR(_name, _mode, _show, _store);
++
++extern int sysdev_create_file(struct sys_device *, struct sysdev_attribute *);
++extern void sysdev_remove_file(struct sys_device *, struct sysdev_attribute *);
++
++struct sysdev_ext_attribute {
++	struct sysdev_attribute attr;
++	void *var;
++};
++
++/*
++ * Support for simple variable sysdev attributes.
++ * The pointer to the variable is stored in a sysdev_ext_attribute
++ */
++
++/* Add more types as needed */
++
++extern ssize_t sysdev_show_ulong(struct sys_device *, struct sysdev_attribute *,
++				char *);
++extern ssize_t sysdev_store_ulong(struct sys_device *,
++			struct sysdev_attribute *, const char *, size_t);
++extern ssize_t sysdev_show_int(struct sys_device *, struct sysdev_attribute *,
++				char *);
++extern ssize_t sysdev_store_int(struct sys_device *,
++			struct sysdev_attribute *, const char *, size_t);
++
++#define _SYSDEV_ULONG_ATTR(_name, _mode, _var)				\
++	{ _SYSDEV_ATTR(_name, _mode, sysdev_show_ulong, sysdev_store_ulong), \
++	  &(_var) }
++#define SYSDEV_ULONG_ATTR(_name, _mode, _var)			\
++	struct sysdev_ext_attribute attr_##_name = 		\
++		_SYSDEV_ULONG_ATTR(_name, _mode, _var);
++#define _SYSDEV_INT_ATTR(_name, _mode, _var)				\
++	{ _SYSDEV_ATTR(_name, _mode, sysdev_show_int, sysdev_store_int), \
++	  &(_var) }
++#define SYSDEV_INT_ATTR(_name, _mode, _var)			\
++	struct sysdev_ext_attribute attr_##_name = 		\
++		_SYSDEV_INT_ATTR(_name, _mode, _var);
++
++#endif /* _SYSDEV_H_ */
++
+diff --git a/include/linux/videodev.h b/include/linux/videodev.h
+new file mode 100644
+--- /dev/null
++++ include/linux/videodev.h
+@@ -0,0 +1,341 @@
++/*
++ *	Video for Linux version 1 - OBSOLETE
++ *
++ *	Header file for v4l1 drivers and applications, for
++ *	Linux kernels 2.2.x or 2.4.x.
++ *
++ *	Provides header for legacy drivers and applications
++ *
++ *	See http://linuxtv.org for more info
++ *
++ */
++#ifndef __LINUX_VIDEODEV_H
++#define __LINUX_VIDEODEV_H
++
++#include <linux/types.h>
++#include <linux/ioctl.h>
++#include <linux/videodev2.h>
++
++#if defined(__MIN_V4L1) && defined (__KERNEL__)
++
++/*
++ * Used by those V4L2 core functions that need a minimum V4L1 support,
++ * in order to allow V4L1 Compatibilty code compilation.
++ */
++
++struct video_mbuf
++{
++	int	size;		/* Total memory to map */
++	int	frames;		/* Frames */
++	int	offsets[VIDEO_MAX_FRAME];
++};
++
++#define VIDIOCGMBUF		_IOR('v',20, struct video_mbuf)		/* Memory map buffer info */
++
++#else
++#if defined(CONFIG_VIDEO_V4L1_COMPAT) || !defined (__KERNEL__)
++
++#define VID_TYPE_CAPTURE	1	/* Can capture */
++#define VID_TYPE_TUNER		2	/* Can tune */
++#define VID_TYPE_TELETEXT	4	/* Does teletext */
++#define VID_TYPE_OVERLAY	8	/* Overlay onto frame buffer */
++#define VID_TYPE_CHROMAKEY	16	/* Overlay by chromakey */
++#define VID_TYPE_CLIPPING	32	/* Can clip */
++#define VID_TYPE_FRAMERAM	64	/* Uses the frame buffer memory */
++#define VID_TYPE_SCALES		128	/* Scalable */
++#define VID_TYPE_MONOCHROME	256	/* Monochrome only */
++#define VID_TYPE_SUBCAPTURE	512	/* Can capture subareas of the image */
++#define VID_TYPE_MPEG_DECODER	1024	/* Can decode MPEG streams */
++#define VID_TYPE_MPEG_ENCODER	2048	/* Can encode MPEG streams */
++#define VID_TYPE_MJPEG_DECODER	4096	/* Can decode MJPEG streams */
++#define VID_TYPE_MJPEG_ENCODER	8192	/* Can encode MJPEG streams */
++
++struct video_capability
++{
++	char name[32];
++	int type;
++	int channels;	/* Num channels */
++	int audios;	/* Num audio devices */
++	int maxwidth;	/* Supported width */
++	int maxheight;	/* And height */
++	int minwidth;	/* Supported width */
++	int minheight;	/* And height */
++};
++
++
++struct video_channel
++{
++	int channel;
++	char name[32];
++	int tuners;
++	__u32  flags;
++#define VIDEO_VC_TUNER		1	/* Channel has a tuner */
++#define VIDEO_VC_AUDIO		2	/* Channel has audio */
++	__u16  type;
++#define VIDEO_TYPE_TV		1
++#define VIDEO_TYPE_CAMERA	2
++	__u16 norm;			/* Norm set by channel */
++};
++
++struct video_tuner
++{
++	int tuner;
++	char name[32];
++	unsigned long rangelow, rangehigh;	/* Tuner range */
++	__u32 flags;
++#define VIDEO_TUNER_PAL		1
++#define VIDEO_TUNER_NTSC	2
++#define VIDEO_TUNER_SECAM	4
++#define VIDEO_TUNER_LOW		8	/* Uses KHz not MHz */
++#define VIDEO_TUNER_NORM	16	/* Tuner can set norm */
++#define VIDEO_TUNER_STEREO_ON	128	/* Tuner is seeing stereo */
++#define VIDEO_TUNER_RDS_ON      256     /* Tuner is seeing an RDS datastream */
++#define VIDEO_TUNER_MBS_ON      512     /* Tuner is seeing an MBS datastream */
++	__u16 mode;			/* PAL/NTSC/SECAM/OTHER */
++#define VIDEO_MODE_PAL		0
++#define VIDEO_MODE_NTSC		1
++#define VIDEO_MODE_SECAM	2
++#define VIDEO_MODE_AUTO		3
++	__u16 signal;			/* Signal strength 16bit scale */
++};
++
++struct video_picture
++{
++	__u16	brightness;
++	__u16	hue;
++	__u16	colour;
++	__u16	contrast;
++	__u16	whiteness;	/* Black and white only */
++	__u16	depth;		/* Capture depth */
++	__u16   palette;	/* Palette in use */
++#define VIDEO_PALETTE_GREY	1	/* Linear greyscale */
++#define VIDEO_PALETTE_HI240	2	/* High 240 cube (BT848) */
++#define VIDEO_PALETTE_RGB565	3	/* 565 16 bit RGB */
++#define VIDEO_PALETTE_RGB24	4	/* 24bit RGB */
++#define VIDEO_PALETTE_RGB32	5	/* 32bit RGB */
++#define VIDEO_PALETTE_RGB555	6	/* 555 15bit RGB */
++#define VIDEO_PALETTE_YUV422	7	/* YUV422 capture */
++#define VIDEO_PALETTE_YUYV	8
++#define VIDEO_PALETTE_UYVY	9	/* The great thing about standards is ... */
++#define VIDEO_PALETTE_YUV420	10
++#define VIDEO_PALETTE_YUV411	11	/* YUV411 capture */
++#define VIDEO_PALETTE_RAW	12	/* RAW capture (BT848) */
++#define VIDEO_PALETTE_YUV422P	13	/* YUV 4:2:2 Planar */
++#define VIDEO_PALETTE_YUV411P	14	/* YUV 4:1:1 Planar */
++#define VIDEO_PALETTE_YUV420P	15	/* YUV 4:2:0 Planar */
++#define VIDEO_PALETTE_YUV410P	16	/* YUV 4:1:0 Planar */
++#define VIDEO_PALETTE_PLANAR	13	/* start of planar entries */
++#define VIDEO_PALETTE_COMPONENT 7	/* start of component entries */
++};
++
++struct video_audio
++{
++	int	audio;		/* Audio channel */
++	__u16	volume;		/* If settable */
++	__u16	bass, treble;
++	__u32	flags;
++#define VIDEO_AUDIO_MUTE	1
++#define VIDEO_AUDIO_MUTABLE	2
++#define VIDEO_AUDIO_VOLUME	4
++#define VIDEO_AUDIO_BASS	8
++#define VIDEO_AUDIO_TREBLE	16
++#define VIDEO_AUDIO_BALANCE	32
++	char    name[16];
++#define VIDEO_SOUND_MONO	1
++#define VIDEO_SOUND_STEREO	2
++#define VIDEO_SOUND_LANG1	4
++#define VIDEO_SOUND_LANG2	8
++	__u16   mode;
++	__u16	balance;	/* Stereo balance */
++	__u16	step;		/* Step actual volume uses */
++};
++
++struct video_clip
++{
++	__s32	x,y;
++	__s32	width, height;
++	struct	video_clip *next;	/* For user use/driver use only */
++};
++
++struct video_window
++{
++	__u32	x,y;			/* Position of window */
++	__u32	width,height;		/* Its size */
++	__u32	chromakey;
++	__u32	flags;
++	struct	video_clip __user *clips;	/* Set only */
++	int	clipcount;
++#define VIDEO_WINDOW_INTERLACE	1
++#define VIDEO_WINDOW_CHROMAKEY	16	/* Overlay by chromakey */
++#define VIDEO_CLIP_BITMAP	-1
++/* bitmap is 1024x625, a '1' bit represents a clipped pixel */
++#define VIDEO_CLIPMAP_SIZE	(128 * 625)
++};
++
++struct video_capture
++{
++	__u32 	x,y;			/* Offsets into image */
++	__u32	width, height;		/* Area to capture */
++	__u16	decimation;		/* Decimation divider */
++	__u16	flags;			/* Flags for capture */
++#define VIDEO_CAPTURE_ODD		0	/* Temporal */
++#define VIDEO_CAPTURE_EVEN		1
++};
++
++struct video_buffer
++{
++	void	*base;
++	int	height,width;
++	int	depth;
++	int	bytesperline;
++};
++
++struct video_mmap
++{
++	unsigned	int frame;		/* Frame (0 - n) for double buffer */
++	int		height,width;
++	unsigned	int format;		/* should be VIDEO_PALETTE_* */
++};
++
++struct video_key
++{
++	__u8	key[8];
++	__u32	flags;
++};
++
++struct video_mbuf
++{
++	int	size;		/* Total memory to map */
++	int	frames;		/* Frames */
++	int	offsets[VIDEO_MAX_FRAME];
++};
++
++#define 	VIDEO_NO_UNIT	(-1)
++
++struct video_unit
++{
++	int 	video;		/* Video minor */
++	int	vbi;		/* VBI minor */
++	int	radio;		/* Radio minor */
++	int	audio;		/* Audio minor */
++	int	teletext;	/* Teletext minor */
++};
++
++struct vbi_format {
++	__u32	sampling_rate;	/* in Hz */
++	__u32	samples_per_line;
++	__u32	sample_format;	/* VIDEO_PALETTE_RAW only (1 byte) */
++	__s32	start[2];	/* starting line for each frame */
++	__u32	count[2];	/* count of lines for each frame */
++	__u32	flags;
++#define	VBI_UNSYNC	1	/* can distingues between top/bottom field */
++#define	VBI_INTERLACED	2	/* lines are interlaced */
++};
++
++/* video_info is biased towards hardware mpeg encode/decode */
++/* but it could apply generically to any hardware compressor/decompressor */
++struct video_info
++{
++	__u32	frame_count;	/* frames output since decode/encode began */
++	__u32	h_size;		/* current unscaled horizontal size */
++	__u32	v_size;		/* current unscaled veritcal size */
++	__u32	smpte_timecode;	/* current SMPTE timecode (for current GOP) */
++	__u32	picture_type;	/* current picture type */
++	__u32	temporal_reference;	/* current temporal reference */
++	__u8	user_data[256];	/* user data last found in compressed stream */
++	/* user_data[0] contains user data flags, user_data[1] has count */
++};
++
++/* generic structure for setting playback modes */
++struct video_play_mode
++{
++	int	mode;
++	int	p1;
++	int	p2;
++};
++
++/* for loading microcode / fpga programming */
++struct video_code
++{
++	char	loadwhat[16];	/* name or tag of file being passed */
++	int	datasize;
++	__u8	*data;
++};
++
++#define VIDIOCGCAP		_IOR('v',1,struct video_capability)	/* Get capabilities */
++#define VIDIOCGCHAN		_IOWR('v',2,struct video_channel)	/* Get channel info (sources) */
++#define VIDIOCSCHAN		_IOW('v',3,struct video_channel)	/* Set channel 	*/
++#define VIDIOCGTUNER		_IOWR('v',4,struct video_tuner)		/* Get tuner abilities */
++#define VIDIOCSTUNER		_IOW('v',5,struct video_tuner)		/* Tune the tuner for the current channel */
++#define VIDIOCGPICT		_IOR('v',6,struct video_picture)	/* Get picture properties */
++#define VIDIOCSPICT		_IOW('v',7,struct video_picture)	/* Set picture properties */
++#define VIDIOCCAPTURE		_IOW('v',8,int)				/* Start, end capture */
++#define VIDIOCGWIN		_IOR('v',9, struct video_window)	/* Get the video overlay window */
++#define VIDIOCSWIN		_IOW('v',10, struct video_window)	/* Set the video overlay window - passes clip list for hardware smarts , chromakey etc */
++#define VIDIOCGFBUF		_IOR('v',11, struct video_buffer)	/* Get frame buffer */
++#define VIDIOCSFBUF		_IOW('v',12, struct video_buffer)	/* Set frame buffer - root only */
++#define VIDIOCKEY		_IOR('v',13, struct video_key)		/* Video key event - to dev 255 is to all - cuts capture on all DMA windows with this key (0xFFFFFFFF == all) */
++#define VIDIOCGFREQ		_IOR('v',14, unsigned long)		/* Set tuner */
++#define VIDIOCSFREQ		_IOW('v',15, unsigned long)		/* Set tuner */
++#define VIDIOCGAUDIO		_IOR('v',16, struct video_audio)	/* Get audio info */
++#define VIDIOCSAUDIO		_IOW('v',17, struct video_audio)	/* Audio source, mute etc */
++#define VIDIOCSYNC		_IOW('v',18, int)			/* Sync with mmap grabbing */
++#define VIDIOCMCAPTURE		_IOW('v',19, struct video_mmap)		/* Grab frames */
++#define VIDIOCGMBUF		_IOR('v',20, struct video_mbuf)		/* Memory map buffer info */
++#define VIDIOCGUNIT		_IOR('v',21, struct video_unit)		/* Get attached units */
++#define VIDIOCGCAPTURE		_IOR('v',22, struct video_capture)	/* Get subcapture */
++#define VIDIOCSCAPTURE		_IOW('v',23, struct video_capture)	/* Set subcapture */
++#define VIDIOCSPLAYMODE		_IOW('v',24, struct video_play_mode)	/* Set output video mode/feature */
++#define VIDIOCSWRITEMODE	_IOW('v',25, int)			/* Set write mode */
++#define VIDIOCGPLAYINFO		_IOR('v',26, struct video_info)		/* Get current playback info from hardware */
++#define VIDIOCSMICROCODE	_IOW('v',27, struct video_code)		/* Load microcode into hardware */
++#define	VIDIOCGVBIFMT		_IOR('v',28, struct vbi_format)		/* Get VBI information */
++#define	VIDIOCSVBIFMT		_IOW('v',29, struct vbi_format)		/* Set VBI information */
++
++
++#define BASE_VIDIOCPRIVATE	192		/* 192-255 are private */
++
++/* VIDIOCSWRITEMODE */
++#define VID_WRITE_MPEG_AUD		0
++#define VID_WRITE_MPEG_VID		1
++#define VID_WRITE_OSD			2
++#define VID_WRITE_TTX			3
++#define VID_WRITE_CC			4
++#define VID_WRITE_MJPEG			5
++
++/* VIDIOCSPLAYMODE */
++#define VID_PLAY_VID_OUT_MODE		0
++	/* p1: = VIDEO_MODE_PAL, VIDEO_MODE_NTSC, etc ... */
++#define VID_PLAY_GENLOCK		1
++	/* p1: 0 = OFF, 1 = ON */
++	/* p2: GENLOCK FINE DELAY value */
++#define VID_PLAY_NORMAL			2
++#define VID_PLAY_PAUSE			3
++#define VID_PLAY_SINGLE_FRAME		4
++#define VID_PLAY_FAST_FORWARD		5
++#define VID_PLAY_SLOW_MOTION		6
++#define VID_PLAY_IMMEDIATE_NORMAL	7
++#define VID_PLAY_SWITCH_CHANNELS	8
++#define VID_PLAY_FREEZE_FRAME		9
++#define VID_PLAY_STILL_MODE		10
++#define VID_PLAY_MASTER_MODE		11
++	/* p1: see below */
++#define		VID_PLAY_MASTER_NONE	1
++#define		VID_PLAY_MASTER_VIDEO	2
++#define		VID_PLAY_MASTER_AUDIO	3
++#define VID_PLAY_ACTIVE_SCANLINES	12
++	/* p1 = first active; p2 = last active */
++#define VID_PLAY_RESET			13
++#define VID_PLAY_END_MARK		14
++
++#endif /* CONFIG_VIDEO_V4L1_COMPAT */
++#endif /* __MIN_V4L1 */
++
++#endif /* __LINUX_VIDEODEV_H */
++
++/*
++ * Local variables:
++ * c-basic-offset: 8
++ * End:
++ */
++
+diff --git a/sound/stm/stx7100.c b/sound/stm/stx7100.c
+new file mode 100644
+--- /dev/null
++++ sound/stm/stx7100.c
+@@ -0,0 +1,207 @@
++/*
++ *   STMicrolectronics STx7100/STx7109 audio glue driver
++ *
++ *   Copyright (c) 2005-2011 STMicroelectronics Limited
++ *
++ *   Author: Pawel Moll <pawel.moll@st.com>
++ *
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; either version 2 of the License, or
++ *   (at your option) any later version.
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the Free Software
++ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
++ *
++ */
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/io.h>
++#include <sound/core.h>
++
++#include "common.h"
++
++
++
++static int snd_stm_debug_level;
++module_param_named(debug, snd_stm_debug_level, int, S_IRUGO | S_IWUSR);
++
++
++
++/*
++ * Audio glue driver implementation
++ */
++
++#define IO_CTRL(base)		((base) + 0x00)
++#define PCM_CLK_EN		0
++#define PCM_CLK_EN__INPUT	(0 << PCM_CLK_EN)
++#define PCM_CLK_EN__OUTPUT	(1 << PCM_CLK_EN)
++#define DATA0_EN		1
++#define DATA0_EN__INPUT		(0 << DATA0_EN)
++#define DATA0_EN__OUTPUT	(1 << DATA0_EN)
++#define DATA1_EN		2
++#define DATA1_EN__INPUT		(0 << DATA1_EN)
++#define DATA1_EN__OUTPUT	(1 << DATA1_EN)
++#define SPDIN_EN		3
++#define SPDIF_EN__DISABLE	(0 << SPDIN_EN)
++#define SPDIF_EN__ENABLE	(1 << SPDIN_EN)
++
++struct snd_stm_stx7100_glue {
++	struct resource *mem_region;
++	void *base;
++
++	struct snd_info_entry *proc_entry;
++
++	snd_stm_magic_field;
++};
++
++static void snd_stm_stx7100_glue_dump_registers(struct snd_info_entry *entry,
++		struct snd_info_buffer *buffer)
++{
++	struct snd_stm_stx7100_glue *stx7100_glue = entry->private_data;
++
++	BUG_ON(!stx7100_glue);
++	BUG_ON(!snd_stm_magic_valid(stx7100_glue));
++
++	snd_iprintf(buffer, "--- snd_stx7100_glue ---\n");
++	snd_iprintf(buffer, "IO_CTRL (0x%p) = 0x%08x\n",
++			IO_CTRL(stx7100_glue->base),
++			readl(IO_CTRL(stx7100_glue->base)));
++
++	snd_iprintf(buffer, "\n");
++}
++
++static int __init snd_stm_stx7100_glue_probe(struct platform_device *pdev)
++{
++	int result = 0;
++	struct snd_stm_stx7100_glue *stx7100_glue;
++
++	snd_stm_printd(0, "%s('%s')\n", __func__, dev_name(&pdev->dev));
++
++	stx7100_glue = kzalloc(sizeof(*stx7100_glue), GFP_KERNEL);
++	if (!stx7100_glue) {
++		snd_stm_printe("Can't allocate memory "
++				"for a device description!\n");
++		result = -ENOMEM;
++		goto error_alloc;
++	}
++	snd_stm_magic_set(stx7100_glue);
++
++	result = snd_stm_memory_request(pdev, &stx7100_glue->mem_region,
++			&stx7100_glue->base);
++	if (result < 0) {
++		snd_stm_printe("Memory region request failed!\n");
++		goto error_memory_request;
++	}
++
++	/* Enable audio outputs */
++	writel(SPDIF_EN__ENABLE | DATA1_EN__OUTPUT | DATA0_EN__OUTPUT |
++			PCM_CLK_EN__OUTPUT, IO_CTRL(stx7100_glue->base));
++
++	/* Additional procfs info */
++	snd_stm_info_register(&stx7100_glue->proc_entry, "stx7100_glue",
++			snd_stm_stx7100_glue_dump_registers, stx7100_glue);
++
++	platform_set_drvdata(pdev, stx7100_glue);
++
++	return result;
++
++error_memory_request:
++	snd_stm_magic_clear(stx7100_glue);
++	kfree(stx7100_glue);
++error_alloc:
++	return result;
++}
++
++static int __exit snd_stm_stx7100_glue_remove(struct platform_device *pdev)
++{
++	struct snd_stm_stx7100_glue *stx7100_glue =
++			platform_get_drvdata(pdev);
++
++	snd_stm_printd(0, "%s('%s')\n", __func__, dev_name(&pdev->dev));
++
++	BUG_ON(!stx7100_glue);
++	BUG_ON(!snd_stm_magic_valid(stx7100_glue));
++
++	/* Remove procfs entry */
++	snd_stm_info_unregister(stx7100_glue->proc_entry);
++
++	/* Disable audio outputs */
++	writel(SPDIF_EN__DISABLE | DATA1_EN__INPUT | DATA0_EN__INPUT |
++			PCM_CLK_EN__INPUT, IO_CTRL(stx7100_glue->base));
++
++	snd_stm_memory_release(stx7100_glue->mem_region, stx7100_glue->base);
++
++	snd_stm_magic_clear(stx7100_glue);
++	kfree(stx7100_glue);
++
++	return 0;
++}
++
++static struct platform_driver snd_stm_stx7100_glue_driver = {
++	.driver.name = "snd_stx7100_glue",
++	.probe = snd_stm_stx7100_glue_probe,
++	.remove = snd_stm_stx7100_glue_remove,
++};
++
++
++
++/*
++ * Audio initialization
++ */
++
++static int __init snd_stm_stx7100_init(void)
++{
++	int result;
++
++	snd_stm_printd(0, "%s()\n", __func__);
++
++	if (cpu_data->type != CPU_STX7100 && cpu_data->type != CPU_STX7109) {
++		snd_stm_printe("Not supported (other than STx7100 or STx7109)"
++				" SOC detected!\n");
++		result = -EINVAL;
++		goto error_soc_type;
++	}
++
++	result = platform_driver_register(&snd_stm_stx7100_glue_driver);
++	if (result != 0) {
++		snd_stm_printe("Failed to register audio glue driver!\n");
++		goto error_glue_driver_register;
++	}
++
++//	result = snd_stm_card_register();
++	result = snd_stm_card_register(SND_STM_CARD_TYPE_AUDIO);
++	if (result != 0) {
++		snd_stm_printe("Failed to register ALSA cards!\n");
++		goto error_card_register;
++	}
++
++	return 0;
++
++error_card_register:
++	platform_driver_unregister(&snd_stm_stx7100_glue_driver);
++error_glue_driver_register:
++error_soc_type:
++	return result;
++}
++
++static void __exit snd_stm_stx7100_exit(void)
++{
++	snd_stm_printd(0, "%s()\n", __func__);
++
++	platform_driver_unregister(&snd_stm_stx7100_glue_driver);
++}
++
++MODULE_AUTHOR("Pawel Moll <pawel.moll@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics STx7100/STx7109 audio driver");
++MODULE_LICENSE("GPL");
++
++module_init(snd_stm_stx7100_init);
++module_exit(snd_stm_stx7100_exit);
+diff --git a/include/linux/stm/coprocessor.h b/include/linux/stm/coprocessor.h
+new file mode 100644
+--- /dev/null
++++ include/linux/stm/coprocessor.h
+@@ -0,0 +1,116 @@
++/*
++ * Copyright (C) 2003-2004 Giuseppe Cavallaro (peppe.cavallaro@st.com)
++ *
++ * May be copied or modified under the terms of the GNU General Public
++ * License.  See linux/COPYING for more information.
++ */
++
++#ifndef __STM_COPROCESSOR_H__
++#define __STM_COPROCESSOR_H__
++
++#include <linux/ioctl.h>
++
++#ifdef __KERNEL__
++#include <linux/platform_device.h>
++#include <asm/addrspace.h>
++
++/* ---------------------------------------------------------------------------
++ *     Generic macros
++ * ------------------------------------------------------------------------ */
++
++#define xstring(x)              string(x)
++#define string(x)		#x
++#define plname(x)		x
++#define make_pname(x,y)		x ## y
++
++#define	MEGA			(1024 * 1024)
++#define COPROCESSOR_MAJOR	63
++#define FILE_2_COP(c,f)	  	(&(c)[MINOR((f)->f_dentry->d_inode->i_rdev)])
++
++#define OUT_PORT		2	/* Mailbox host --> cop. port */
++#define IN_PORT			3	/* Mailbox cop. --> host port */
++#define poke_l(v,a)		*((u_int *)(a)) = (v)
++#define peek_l(a)		*((u_int *)(a))
++
++
++#define COPR_ADDR(cop, off)     ( (cop)->ram_offset  + (off))
++#define HOST_ADDR(cop, off)	( (cop)->vma_address + (off))
++
++#ifdef CONFIG_COPROCESSOR_DEBUG
++#define DPRINTK(args...)   printk(args)
++#else
++#define DPRINTK(args...)
++#endif
++#define __debug(a, b)	   _debug(a, b)
++
++/* ---------------------------------------------------------------------------
++ *     Local types
++ * ------------------------------------------------------------------------ */
++
++#define COPROC_SPACE_ALLOCATE	 0x0001	/* coprocessor RAM has been defined */
++#define COPROC_IN_USE    	 0x0002	/* copr. device has been opened     */
++#define COPROC_RUNNING   	 0x0004	/* coproc. is running (ioctl GRANT) */
++
++typedef struct {
++	u_int	    control;		/* see flags above (driver control) */
++	/*
++	 * The base address of coprocessor region, both sides: host (ST40)
++	 * and slave (ST231, LX,...) are build based on offset and start addr.
++	 */
++	u_long	    ram_offset;		/* Coprocessor RAM offset (in bytes)*/
++	u_int	    ram_size;		/* Coprocessor RAM size (in bytes)  */
++	u_long      vma_address;	/* The remap phisycal memory */
++#ifdef CONFIG_COPROCESSOR_DEBUG
++	u_int	    h2c_port;		/* comm. port: host --> coproc.     */
++	u_int	    c2h_port;		/* comm. port: host <-- coproc.     */
++#endif
++	u_int	    irq;		/* interrup used... if any          */
++	u_long	    mbox_wait;		/* CPU signature (waiting for boot) */
++	u_long	    mbox_entryp;	/* where to put the entry point...  */
++	u_long	    mbox_enable;	/* ... to trigger the CPU start     */
++	struct platform_device pdev;
++	struct device *dev;
++} coproc_t;
++
++struct coproc_board_info {
++	char *name;
++	int max_coprs;
++};
++
++extern int coproc_cpu_open(coproc_t *);
++extern int coproc_cpu_init(coproc_t *);
++extern int coproc_cpu_grant(coproc_t *, unsigned long);
++extern int coproc_cpu_release(coproc_t *);
++extern int coproc_cpu_reset(coproc_t *);
++extern int coproc_check_area(u_long, u_long, int, coproc_t *);
++extern void coproc_proc_other_info(coproc_t *, struct seq_file *);
++#endif /* __KERNEL__ */
++
++/* IOCTL parameters */
++typedef unsigned long kaddr_t;
++typedef struct {
++	char	    name[16];		/* coprocessor name		    */
++	u_int	    flags;		/* control flags 		    */
++					/* Coprocessor region:              */
++	kaddr_t	    ram_start;		/*   Host effective address         */
++	u_int	    ram_size;		/*   region size (in bytes)         */
++	kaddr_t	    cp_ram_start;	/*   coprocessor effective address  */
++
++} cop_properties_t;
++
++#define	MEGA			(1024 * 1024)
++
++#define ST_IOCTL_BASE		'l'
++#define STCOP_GRANT		_IOR(ST_IOCTL_BASE, 0, u_int)
++#define STCOP_RESET		_IOR(ST_IOCTL_BASE, 1, u_int)
++#define STCOP_START             STCOP_GRANT
++#define STCOP_PEEK		_IOR(ST_IOCTL_BASE, 2, void*)
++#define STCOP_POKE		_IOW(ST_IOCTL_BASE, 3, void*)
++#define STCOP_GET_PROPERTIES	_IOR(ST_IOCTL_BASE, 4, cop_properties_t*)
++#define STCOP_SET_PROPERTIES	_IOW(ST_IOCTL_BASE, 5, cop_properties_t*)
++
++#define NO_DATA		0xdeadbeef
++#define UNDEFINED_DATA	NO_DATA
++
++#endif /* __STM_COPROCESSOR_H__ */
++
+--- arch/sh/kernel/cpu/sh4/probe.c
++++ arch/sh/kernel/cpu/sh4/probe.c
+@@ -204,6 +204,16 @@
+ 		boot_cpu_data.icache.ways = 2;
+ 		boot_cpu_data.dcache.ways = 2;
+ 		break;
++	case 0x610 ... 0x611:
++		/* 0x0610 cut 1.x */
++		/* 0x0611 cut 2.x */
++		boot_cpu_data.type = CPU_STX7100;
++		boot_cpu_data.variant = CPU_VARIANT_SH4_202;
++		boot_cpu_data.icache.ways = 2;
++		boot_cpu_data.dcache.ways = 2;
++		boot_cpu_data.flags |= CPU_HAS_FPU;
++		boot_cpu_data.flags &= ~CPU_HAS_PTEA;
++		break;
+ 	case 0x500 ... 0x501:
+ 		switch (prr) {
+ 		case 0x10:
+--- arch/sh/kernel/cpu/proc.c
++++ arch/sh/kernel/cpu/proc.c
+@@ -18,6 +18,8 @@
+ 	[CPU_SH7751R]	= "SH7751R",	[CPU_SH7760]	= "SH7760",
+ 	[CPU_SH4_202]	= "SH4-202",	[CPU_SH4_501]	= "SH4-501",
+ 
++	[CPU_STX7100]	= "STx7100",
++	[CPU_STX7109]   = "STx7109",
+ 	[CPU_STX7108]   = "STx7108",
+ 	[CPU_STXH205]	= "STxH205",
+ 	[CPU_STIH415]   = "STiH415",
+--- arch/sh/include/asm/processor.h
++++ arch/sh/include/asm/processor.h
+@@ -34,6 +34,8 @@
+ 	CPU_STIH415,
+ 	CPU_STXH205,
+ 	CPU_STX7108,
++	CPU_STX7109,
++	CPU_STX7100,
+ 
+ 	/* SH-4A types */
+ 	CPU_SH7763, CPU_SH7770, CPU_SH7780, CPU_SH7781, CPU_SH7785, CPU_SH7786,
