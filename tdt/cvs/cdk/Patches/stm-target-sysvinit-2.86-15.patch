@@ -1,0 +1,12 @@
+--- a/src/bootlogd.c
++++ b/src/bootlogd.c
+@@ -229,6 +229,9 @@
+ 	}
+ 
+ #ifdef TIOCGDEV
++# ifndef  ENOIOCTLCMD
++#  define ENOIOCTLCMD	515
++# endif
+ 	if (ioctl(0, TIOCGDEV, &kdev) == 0)
+ 		return findtty(res, rlen, (dev_t)kdev);
+ 	if (errno != ENOIOCTLCMD) return -1;
