@@ -2091,7 +2091,7 @@ diff --git a/drivers/stm/stx7100_comms.c b/drivers/stm/stx7100_comms.c
 new file mode 100644
 --- /dev/null
 +++ drivers/stm/stx7100_comms.c
-@@ -0,0 +1,530 @@
+@@ -0,0 +1,532 @@
 +/*
 + * (c) 2010 STMicroelectronics Limited
 + *
@@ -2295,7 +2295,7 @@ new file mode 100644
 +	plat_data->hw_flow_control = config->hw_flow_control;
 +
 +	if (config->is_console)
-+		stm_asc_console_device = pdev->id;
++		stm_asc_console_device = pdev;
 +
 +	stm_asc_configured_devices[stm_asc_configured_devices_num++] = pdev;
 +}
@@ -2474,8 +2474,8 @@ new file mode 100644
 +	stx7100_ssc_devices[ssc].id = spi_busnum;
 +
 +	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
-+	if (config)
-+		plat_data->spi_chipselect = config->chipselect;
++	/*if (config)
++		plat_data->spi_chipselect = config->chipselect;*/
 +	plat_data->pad_config = &stx7100_ssc_spi_pad_configs[ssc];
 +
 +	platform_device_register(&stx7100_ssc_devices[ssc]);
@@ -2531,6 +2531,8 @@ new file mode 100644
 +	plat_data->dev_config = kzalloc(sizeof(struct stm_device_config),
 +					GFP_KERNEL);
 +//	plat_data->pads = pad_config;
++	plat_data->dev_config = kzalloc(sizeof(struct stm_device_config),
++					 GFP_KERNEL);
 +	plat_data->dev_config->pad_config = pad_config;
 +
 +	switch (config->rx_mode) {
