@@ -1199,7 +1199,11 @@ static unsigned int PROTONdev_poll(struct file *filp, poll_table *wait)
 static struct file_operations vfd_fops =
 {
 	.owner = THIS_MODULE,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	.unlocked_ioctl = PROTONdev_ioctl,
+#else
 	.ioctl = PROTONdev_ioctl,
+#endif
 	.write = PROTONdev_write,
 	.read  = PROTONdev_read,
 	.poll  = (void*) PROTONdev_poll,
