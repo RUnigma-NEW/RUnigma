@@ -49,7 +49,9 @@
 #include <linux/stpio.h>
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
 #include <asm/system.h>
+#endif
 #include <asm/io.h>
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
 #include <asm/semaphore.h>
