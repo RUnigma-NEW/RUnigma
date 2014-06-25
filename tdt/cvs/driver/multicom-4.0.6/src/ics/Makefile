@@ -41,6 +41,8 @@ CCFLAGSY    += -O2
 
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
 else
 CFLAGS += $(CCFLAGSY)
 endif
@@ -61,53 +63,7 @@ BSP_SRCDIR ?= ../bsp
 # Assume defualt cpu as st40 .. then change it based in SOC type.
 defualt-cpu	:=st40
 
-ifdef CONFIG_CPU_SUBTYPE_STX7105
-bsp-prefix := $(BSP_SRCDIR)/stx7105
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX7108
-bsp-prefix := $(BSP_SRCDIR)/stx7108
-bsp-core   := host
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX7111
-bsp-prefix := $(BSP_SRCDIR)/stx7111
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX7141
-bsp-prefix := $(BSP_SRCDIR)/stx7141
-bsp-core   := estb
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX7200
-bsp-prefix := $(BSP_SRCDIR)/stx7200
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX5206
-bsp-prefix := $(BSP_SRCDIR)/stx5289
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STX5289
-bsp-prefix := $(BSP_SRCDIR)/stx5289
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_FLI7510
-bsp-prefix := $(BSP_SRCDIR)/fli7510
-endif
-
-ifdef CONFIG_CPU_SUBTYPE_STXH205
-bsp-prefix := $(BSP_SRCDIR)/stxh205
-endif
-
-ifdef CONFIG_MACH_STM_STIH415
-bsp-prefix := $(BSP_SRCDIR)/stxh415
-defualt-cpu	:=cortexa9
-endif
-
-ifdef CONFIG_MACH_STM_FLI7610
-bsp-prefix := $(BSP_SRCDIR)/fli7610
-defualt-cpu	:=cortexa9
-endif
+bsp-prefix := $(BSP_SRCDIR)/stx7109
 
 ics-objs := \
 	admin/admin.o \
