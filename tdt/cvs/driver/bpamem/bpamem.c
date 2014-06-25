@@ -233,7 +233,11 @@ static struct file_operations bpamem_devops =
 	.owner	= THIS_MODULE,
 	.open		= bpamem_open,
 	.release	= bpamem_release,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	.unlocked_ioctl = bpamem_ioctl,
+#else
 	.ioctl	= bpamem_ioctl,
+#endif
 	.mmap		= bpamem_mmap,
 };
 
