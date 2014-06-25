@@ -4,7 +4,7 @@
  Patch6		: sysvinit-2.86-environ.patch
  Patch7		: sysvinit-mountvirtfs.patch
  Patch8		: sysvinit-mountvirtfs-debugfs.patch
-+Patch101		: sysvinit.patch
++Patch101		: stm-target-sysvinit-2.86-15.patch
  License 	: GPL
  Group	  	: System Environment/Base
  Buildroot 	: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-%{_stm_target_arch}-XXXXXX)
