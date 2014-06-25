@@ -31,7 +31,8 @@ COMMONPATCHES_24 = \
 		$(if $(P0211)$(P0215),linux-sh4-permit_gcc_command_line_sections_stm24.patch) \
 		$(if $(P0308),linux-sh4-permit_gcc_command_line_sections_stm24$(PATCH_STR).patch) \
 		$(if $(P0211)$(P0215),linux-sh4-remove_pcm_reader_stm24.patch) \
-		$(if $(P0308),linux-sh4-remove_pcm_reader_stm24$(PATCH_STR).patch)
+		$(if $(P0308),linux-sh4-remove_pcm_reader_stm24$(PATCH_STR).patch) \
+		$(if $(P0211)$(P0215),patch_swap_notify_core_support.diff)
 
 HL101_PATCHES_24 = $(COMMONPATCHES_24) \
 		linux-sh4-hl101_setup_stm24$(PATCH_STR).patch \
