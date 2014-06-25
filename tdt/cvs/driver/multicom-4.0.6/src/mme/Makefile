@@ -26,7 +26,24 @@
 #
 #
 
-ifneq ($(KERNELRELEASE),)
+CCFLAGSY    += -D__LINUX__ -D__SH4__ -D__KERNEL__ -DMODULE -DEXPORT_SYMTAB -DMULTICOM_GPL
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/include/multicom 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/mme/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/embx/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/ics/include
+CCFLAGSY    += -fno-common -ffreestanding -fno-omit-frame-pointer -fno-optimize-sibling-calls
+CCFLAGSY    += -fno-strict-aliasing -fno-stack-protector
+CCFLAGSY    += -Wall
+CCFLAGSY    += -Wundef -Wstrict-prototypes -Wno-trigraphs 
+CCFLAGSY    += -Wdeclaration-after-statement -Wno-pointer-sign
+CCFLAGSY    += -O2
+
+ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
+else
+CFLAGS += $(CCFLAGSY)
+endif
 
 #
 # Inside Linux kernel tree
@@ -74,25 +91,4 @@ mme_user-objs := \
 	linux/mme_user_transformer.o \
 	linux/mme_user_wait.o \
 	linux/mme_user_init.o \
-	linux/mme_user_tuneable.o \
-
-else
-
-#
-# Outside Linux kernel tree
-#
-PWD	     := $(shell pwd)
-
-V            ?= 0
-
-ARCH         ?= sh
-
-CROSS_COMPILE ?= sh4-linux-
-
-default:
-	$(MAKE) V=$(V) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KERNELDIR) O=$(O) SUBDIRS=$(PWD) modules
-
-clean:
-	$(MAKE) V=$(V) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KERNELDIR) O=$(O) SUBDIRS=$(PWD) clean
-
-endif
+	linux/mme_user_tuneable.o

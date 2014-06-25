@@ -25,31 +25,27 @@
 # Linux specific Makefile
 #
 #
+CCFLAGSY    += -D__LINUX__ -D__SH4__ -D__KERNEL__ -DMODULE -DEXPORT_SYMTAB -DMULTICOM_GPL
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/include/multicom 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/mme/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/embx/include 
+EXTRA_CFLAGS += -I$(DRIVER_TOPDIR)/multicom/src/ics/include
+CCFLAGSY    += -fno-common -ffreestanding -fno-omit-frame-pointer -fno-optimize-sibling-calls
+CCFLAGSY    += -fno-strict-aliasing -fno-stack-protector
+CCFLAGSY    += -Wall
+CCFLAGSY    += -Wundef -Wstrict-prototypes -Wno-trigraphs 
+CCFLAGSY    += -Wdeclaration-after-statement -Wno-pointer-sign
+CCFLAGSY    += -O2
 
-ifneq ($(KERNELRELEASE),)
-
+ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
+else
+CFLAGS += $(CCFLAGSY)
+endif
 #
 # Inside Linux kernel tree
 #
 
 obj-m  += src/ics/ src/mme/ src/embx/ src/embxmailbox/
 
-else
-
-#
-# Outside Linux kernel tree
-#
-PWD	     := $(shell pwd)
-
-V            ?= 0
-
-ARCH         ?= sh
-
-CROSS_COMPILE ?= sh4-linux-
-
-all:	modules
-
-modules modules_install clean:
-	$(MAKE) V=$(V) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) INSTALL_MOD_PATH=$(INSTALL_MOD_PATH) -C $(KERNELDIR) O=$(O) M=$(PWD) $@
-
-endif

@@ -34,7 +34,7 @@ OS  = linux
 OPT=-O3
 else
 ifeq ($(findstring sh4, $(CROSS_COMPILE)),sh4)
-CPU = st40/$(CROSS_COMPILE)
+CPU = st231/$(CROSS_COMPILE)
 OS  = linux
 OPT=-O3 -fno-strict-aliasing
 else
