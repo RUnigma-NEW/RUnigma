@@ -106,7 +106,9 @@ static unsigned short normal_i2c[] = {
 #endif
 	I2C_CLIENT_END
 };
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
 I2C_CLIENT_INSMOD;
+#endif
 
 static struct i2c_driver avs_i2c_driver;
 static struct i2c_client *avs_client = NULL;
@@ -277,7 +279,11 @@ static int avs_ioctl(struct inode *inode, struct file *file, unsigned int cmd, u
 
 static struct file_operations avs_fops = {
 	owner:		THIS_MODULE,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	.unlocked_ioctl = avs_ioctl
+#else
 	ioctl:		avs_ioctl
+#endif
 };
 
 
@@ -381,7 +387,11 @@ static struct i2c_driver avs_i2c_driver = {
 	.detect = avs_detect,
 	.remove = avs_remove,
 	.id_table = avs_id,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	.address_list	= normal_i2c,
+#else
 	.address_data = &addr_data,
+#endif
 #endif
 	.command = avs_command_ioctl
 };

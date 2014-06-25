@@ -11,6 +11,8 @@ avs-objs	+= tools.o ak4705.o avs_core.o stv6412.o cxa2161.o \
 CCFLAGSY	+= -DDEBUG
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
 else
 CFLAGS += $(CCFLAGSY)
 endif
