@@ -1,0 +1,58 @@
+--- linux/bitops.h	2013-10-16 15:28:49.715148498 +0200
++++ linux/bitops.h	2013-10-16 15:42:25.494155465 +0200
+@@ -172,14 +172,10 @@
+  * The result is not defined if no bits are set, so check that @word
+  * is non-zero before calling this.
+  */
+-static inline unsigned long __ffs64(u64 word)
++static inline unsigned long __ffs64(__u64 word)
+ {
+-#if BITS_PER_LONG == 32
+-	if (((u32)word) == 0UL)
+-		return __ffs((u32)(word >> 32)) + 32;
+-#elif BITS_PER_LONG != 64
+-#error BITS_PER_LONG not 32 or 64
+-#endif
++	if (((__u32)word) == 0UL)
++		return __ffs((__u32)(word >> 32)) + 32;
+ 	return __ffs((unsigned long)word);
+ }
+ 
+--- linux/thread_info.h	2013-10-15 10:54:09.373317259 +0200
++++ linux/thread_info.h	2013-10-15 10:56:59.058998525 +0200
+@@ -8,6 +8,7 @@
+ #define _LINUX_THREAD_INFO_H
+ 
+ #include <linux/types.h>
++#include <linux/compiler.h>
+ 
+ struct timespec;
+ struct compat_timespec;
+@@ -20,12 +21,12 @@ struct restart_block {
+ 	union {
+ 		/* For futex_wait and futex_wait_requeue_pi */
+ 		struct {
+-			u32 __user *uaddr;
+-			u32 val;
+-			u32 flags;
+-			u32 bitset;
+-			u64 time;
+-			u32 __user *uaddr2;
++			__u32 __user *uaddr;
++			__u32 val;
++			__u32 flags;
++			__u32 bitset;
++			__u64 time;
++			__u32 __user *uaddr2;
+ 		} futex;
+ 		/* For nanosleep */
+ 		struct {
+@@ -34,7 +35,7 @@ struct restart_block {
+ #ifdef CONFIG_COMPAT
+ 			struct compat_timespec __user *compat_rmtp;
+ #endif
+-			u64 expires;
++			__u64 expires;
+ 		} nanosleep;
+ 		/* For poll */
+ 		struct {

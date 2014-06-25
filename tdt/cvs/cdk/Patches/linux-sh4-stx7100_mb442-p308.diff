@@ -1,0 +1,383 @@
+--- include/linux/cpu.h	2013-10-03 14:35:44.914531795 +0200
++++ include/linux/cpu.h	2013-10-12 20:33:57.804064128 +0200
+@@ -172,6 +172,8 @@ static inline void cpu_maps_update_done(
+ #endif /* CONFIG_SMP */
+ extern struct bus_type cpu_subsys;
+ 
++extern struct sysdev_class cpu_sysdev_class;
++
+ #ifdef CONFIG_HOTPLUG_CPU
+ /* Stop CPUs going up and down. */
+ 
+--- arch/sh/kernel/cpu/irq/ilc3_stx7100.c	2013-10-03 14:35:17.994558628 +0200
++++ arch/sh/kernel/cpu/irq/ilc3_stx7100.c	2013-10-12 20:10:46.824262286 +0200
+@@ -20,8 +20,9 @@
+ #include <linux/cpu.h>
+ #include <linux/pm.h>
+ #include <linux/io.h>
++#include <linux/sysdev.h>
+ 
+-#include <asm/system.h>
++//#include <asm/system.h>
+ 
+ #include "ilc3.h"
+ 
+--- include/linux/usb.h	2013-10-03 14:35:45.034531671 +0200
++++ include/linux/usb.h	2013-10-11 14:19:36.181739104 +0200
+@@ -1444,6 +1444,18 @@ void *usb_alloc_coherent(struct usb_devi
+ void usb_free_coherent(struct usb_device *dev, size_t size,
+ 	void *addr, dma_addr_t dma);
+ 
++/* Compatible macros while we switch over */
++static inline void *usb_buffer_alloc(struct usb_device *dev, size_t size,
++                                     gfp_t mem_flags, dma_addr_t *dma)
++{
++        return usb_alloc_coherent(dev, size, mem_flags, dma);
++}
++static inline void usb_buffer_free(struct usb_device *dev, size_t size,
++                                   void *addr, dma_addr_t dma)
++{
++        return usb_free_coherent(dev, size, addr, dma);
++}
++
+ #if 0
+ struct urb *usb_buffer_map(struct urb *urb);
+ void usb_buffer_dmasync(struct urb *urb);
+--- include/linux/time.h	2013-10-03 14:35:45.058531656 +0200
++++ include/linux/time.h	2013-10-11 11:00:21.995228007 +0200
+@@ -138,6 +138,10 @@ static inline bool timespec_valid_strict
+ 	return true;
+ }
+ 
++extern struct timespec xtime;
++extern struct timespec wall_to_monotonic;
++extern seqlock_t xtime_lock;
++
+ extern void read_persistent_clock(struct timespec *ts);
+ extern void read_boot_clock(struct timespec *ts);
+ extern int update_persistent_clock(struct timespec now);
+--- include/linux/mm.h	2013-10-03 14:35:44.922531792 +0200
++++ include/linux/mm.h	2013-10-10 23:49:40.925090938 +0200
+@@ -1100,6 +1100,36 @@ static inline unsigned long get_mm_rss(s
+ 
+ static inline unsigned long get_mm_hiwater_rss(struct mm_struct *mm)
+ {
++#define min(x, y) ({                            \
++        typeof(x) _min1 = (x);                  \
++        typeof(y) _min2 = (y);                  \
++        (void) (&_min1 == &_min2);              \
++        _min1 < _min2 ? _min1 : _min2; })
++
++#define max(x, y) ({                            \
++        typeof(x) _max1 = (x);                  \
++        typeof(y) _max2 = (y);                  \
++        (void) (&_max1 == &_max2);              \
++        _max1 > _max2 ? _max1 : _max2; })
++
++#define min3(x, y, z) ({                        \
++        typeof(x) _min1 = (x);                  \
++        typeof(y) _min2 = (y);                  \
++        typeof(z) _min3 = (z);                  \
++        (void) (&_min1 == &_min2);              \
++        (void) (&_min1 == &_min3);              \
++        _min1 < _min2 ? (_min1 < _min3 ? _min1 : _min3) : \
++                (_min2 < _min3 ? _min2 : _min3); })
++
++#define max3(x, y, z) ({                        \
++        typeof(x) _max1 = (x);                  \
++        typeof(y) _max2 = (y);                  \
++        typeof(z) _max3 = (z);                  \
++        (void) (&_max1 == &_max2);              \
++        (void) (&_max1 == &_max3);              \
++        _max1 > _max2 ? (_max1 > _max3 ? _max1 : _max3) : \
++                (_max2 > _max3 ? _max2 : _max3); })
++
+ 	return max(mm->hiwater_rss, get_mm_rss(mm));
+ }
+ 
+--- include/linux/semaphore.h	2013-10-03 14:35:44.866531961 +0200
++++ include/linux/semaphore.h	2013-10-08 22:27:20.922296439 +0200
+@@ -36,6 +36,9 @@ static inline void sema_init(struct sema
+ 	lockdep_init_map(&sem->lock.dep_map, "semaphore->lock", &__key, 0);
+ }
+ 
++#define init_MUTEX(sem)         sema_init(sem, 1)
++#define init_MUTEX_LOCKED(sem)  sema_init(sem, 0)
++
+ extern void down(struct semaphore *sem);
+ extern int __must_check down_interruptible(struct semaphore *sem);
+ extern int __must_check down_killable(struct semaphore *sem);
+--- arch/sh/include/asm/io.h	2013-10-03 14:35:18.018558605 +0200
++++ arch/sh/include/asm/io.h	2013-10-08 22:08:45.047358361 +0200
+@@ -35,6 +35,16 @@
+ #define __raw_readl(a)		(__chk_io_ptr(a), *(volatile u32 __force *)(a))
+ #define __raw_readq(a)		(__chk_io_ptr(a), *(volatile u64 __force *)(a))
+ 
++ /* SuperH on-chip I/O functions */
++#define ctrl_inb                __raw_readb
++#define ctrl_inw                __raw_readw
++#define ctrl_inl                __raw_readl
++#define ctrl_inq                __raw_readq
++#define ctrl_outb               __raw_writeb
++#define ctrl_outw               __raw_writew
++#define ctrl_outl               __raw_writel
++#define ctrl_outq               __raw_writeq
++
+ #define readb_relaxed(c)	({ u8  __v = ioswabb(__raw_readb(c)); __v; })
+ #define readw_relaxed(c)	({ u16 __v = ioswabw(__raw_readw(c)); __v; })
+ #define readl_relaxed(c)	({ u32 __v = ioswabl(__raw_readl(c)); __v; })
+--- include/linux/i2c.h
++++ include/linux/i2c.h
+@@ -432,6 +432,8 @@
+ #define I2C_CLASS_HWMON		(1<<0)	/* lm_sensors, ... */
+ #define I2C_CLASS_DDC		(1<<3)	/* DDC bus on graphics adapters */
+ #define I2C_CLASS_SPD		(1<<7)	/* Memory modules */
++#define I2C_CLASS_TV_DIGITAL	(1<<2)	/* dvb cards */
++#define I2C_CLASS_TV_ANALOG     (1<<1)  /* bttv + friends */
+ 
+ /* Internal numbers to terminate lists */
+ #define I2C_CLIENT_END		0xfffeU
+diff -upr arch/sh/boards/Kconfig arch/sh/boards/Kconfig
+--- arch/sh/boards/Kconfig
++++ arch/sh/boards/Kconfig
+@@ -444,6 +444,15 @@
+ 	  STMicroelectronics STxH207-HVK processor module board
+ 	  for a STxH207xKx (FPBGA).
+ 
++config SH_ST_MB442
++	bool "mb442: STb7100 Reference board"
++	depends on CPU_SUBTYPE_STX7100
++	default n
++	help
++	  Select STb7100 Reference if configuring for an
++	  STMicroelectronics STb7100 Reference Board (product code:
++	  STb7100-REF). This is sometimes referred to as the CoCo board.
++
+ config SH_ST_HDK7108
+ 	bool "HDK7108: STx7108 Reference board"
+ 	depends on CPU_SUBTYPE_STX7108
+diff -upr arch/sh/Kconfig arch/sh/Kconfig
+--- arch/sh/Kconfig
++++ arch/sh/Kconfig
+@@ -425,6 +425,14 @@
+ 	help
+ 	  Select STIH415 if you have an STiH415 (Orly) CPU.
+ 
++config CPU_SUBTYPE_STX7100
++	bool "Support STx7100/7109 processors"
++	select CPU_SUBTYPE_ST40
++	select SUPPORTS_32BIT
++	select STM_MIPHY
++	help
++	  Select STX7100 if you have an STx7100 or STx7109 (or derivative).
++
+ config CPU_SUBTYPE_STX7108
+ 	bool "Support STx7108 processors"
+ 	select CPU_ST40_300
+@@ -608,6 +616,20 @@
+ 	help
+ 	  This enables build of the MTU2 timer driver.
+ 
++config SH_EXTERNAL_CLOCK
++	int "External clock"
++	depends on CPU_SUBTYPE_STX7100 || CPU_SUBTYPE_STX7200
++	default "30000000" if SH_ST_MB442
++	default "27000000" if SH_ST_HMP7100
++	default "27000000"
++	help
++	  The kernel needs to know what the frequency of chip's external
++	  clock is, so that it can calculate what frequency the internal
++	  clocks are running at.
++
++	  The usual symptoms of getting this wrong are the serial port
++	  output being corrupted.
++
+ config GENERIC_CALIBRATE_DELAY
+ 	bool "Auto calibration of the BogoMIPS value"
+ 	default n
+diff -upr arch/sh/kernel/cpu/irq/Makefile arch/sh/kernel/cpu/irq/Makefile
+--- arch/sh/kernel/cpu/irq/Makefile	2013-10-03 14:35:17.994558628 +0200
++++ arch/sh/kernel/cpu/irq/Makefile	2013-10-03 15:02:16.989126326 +0200
+@@ -6,4 +6,5 @@ obj-$(CONFIG_CPU_SH5)			+= intc-sh5.o
+ obj-$(CONFIG_CPU_HAS_IPR_IRQ)		+= ipr.o
+ obj-$(CONFIG_CPU_SUBTYPE_STIH415)	+= ilc3.o
+ obj-$(CONFIG_CPU_SUBTYPE_STXH205)	+= ilc3.o
++obj-$(CONFIG_CPU_SUBTYPE_STX7100)       += ilc3_stx7100.o
+ obj-$(CONFIG_CPU_SUBTYPE_STX7108)	+= ilc3.o
+diff -upr arch/sh/kernel/cpu/sh4/Makefile arch/sh/kernel/cpu/sh4/Makefile
+--- arch/sh/kernel/cpu/sh4/Makefile	2013-10-03 14:35:17.986558636 +0200
++++ arch/sh/kernel/cpu/sh4/Makefile	2013-10-03 15:01:16.153155178 +0200
+@@ -28,6 +28,7 @@
+ obj-$(CONFIG_CPU_SUBTYPE_SH4_202)	+= setup-sh4-202.o
+ obj-$(CONFIG_CPU_SUBTYPE_STXH205)	+= setup-stxh205.o
+ obj-$(CONFIG_CPU_SUBTYPE_STIH415)	+= setup-stih415.o
++obj-$(CONFIG_CPU_SUBTYPE_STX7100)	+= setup-stx7100.o
+ obj-$(CONFIG_CPU_SUBTYPE_STX7108)	+= setup-stx7108.o
+ 
+ # Primary on-chip clocks (common)
+@@ -35,6 +36,7 @@
+ clock-$(CONFIG_CPU_SH4)			:= clock-sh4.o
+ clock-$(CONFIG_CPU_SUBTYPE_STXH205)	:= clock-stxh205.o
+ clock-$(CONFIG_CPU_SUBTYPE_STIH415)	:= clock-stih415.o
++clock-$(CONFIG_CPU_SUBTYPE_STX7100)	:= clock-stx7100.o
+ clock-$(CONFIG_CPU_SUBTYPE_STX7108)	:= clock-stx7108.o
+ endif
+ 
+@@ -53,10 +55,12 @@
+ 
+ suspend-y				:= stm_suspend.o stm_suspend-core.o
+ suspend-$(CONFIG_CPU_SUBTYPE_STXH205)	+= suspend-stxh205.o
++suspend-$(CONFIG_CPU_SUBTYPE_STX7100)	+= suspend-stx7100.o
+ suspend-$(CONFIG_CPU_SUBTYPE_STX7108)	+= suspend-stx7108.o
+ obj-$(CONFIG_SUSPEND)			+= $(suspend-y)
+ 
+ hom-y					:= stm_hom.o stm_hom-core.o
+ hom-$(CONFIG_CPU_SUBTYPE_STXH205)	+= hom-stxh205.o
++hom-$(CONFIG_CPU_SUBTYPE_STX7100)	+= hom-stx7100.o
+ hom-$(CONFIG_CPU_SUBTYPE_STX7108)	+= hom-stx7108.o
+ obj-$(CONFIG_HIBERNATION_ON_MEMORY)	+= $(hom-y)
+diff -upr drivers/stm/clocks/Makefile drivers/stm/clocks/Makefile
+--- drivers/stm/clocks/Makefile	2013-10-03 14:35:51.582525021 +0200
++++ drivers/stm/clocks/Makefile	2013-10-04 21:39:16.877111938 +0200
+@@ -3,6 +3,7 @@
+ #
+ 
+ clock-y					:= clk-common.o
++clock-$(CONFIG_CPU_SUBTYPE_STX7100)	:= clock-common.o clock-stx7100.o
+ clock-$(CONFIG_CPU_SUBTYPE_STX7108)	:= clock-common.o clock-stx7108.o
+ clock-$(CONFIG_CPU_SUBTYPE_STXH205)	:= clock-common.o clock-stxh205.o
+ clock-$(CONFIG_MACH_STM_STIH407)	+= clock-stih407.o clock-stih410.o clk-flexgen.o
+diff -upr drivers/stm/gpio.c drivers/stm/gpio.c
+--- drivers/stm/gpio.c	2013-10-03 14:35:51.566525037 +0200
++++ drivers/stm/gpio.c	2013-10-06 10:39:34.001109596 +0200
+@@ -559,7 +559,7 @@
+ 	result = request_irq(irq, stpio_irq_wrapper, 0, owner, pin);
+ 	BUG_ON(result);
+ 
+-	if (flags & STPIO_IRQ_DISABLED) {
++	if (flags & IRQD_IRQ_DISABLED) {
+ 		/* This is a race condition waiting to happen... */
+ 		disable_irq(irq);
+ 	}
+@@ -625,6 +625,7 @@
+ 	int pin_no = stm_gpio_pin(gpio);
+ 	struct stm_gpio_port *port = &stm_gpio_ports[port_no];
+ 	const char *direction;
++	int __WARN(void);
+ 
+ 	switch (get__PIO_PCx(port->base, pin_no)) {
+ 	case value__PIO_PCx__INPUT_WEAK_PULL_UP():
+diff -upr drivers/stm/Kconfig drivers/stm/Kconfig
+--- drivers/stm/Kconfig	2013-10-03 14:35:51.554525053 +0200
++++ drivers/stm/Kconfig	2013-10-03 15:11:53.421004509 +0200
+@@ -41,6 +41,7 @@
+ config STM_MIPHY_PCIE_MP
+ 	bool
+ 	depends on STM_MIPHY
++	default y if CPU_SUBTYPE_STX7100
+ 	default y if CPU_SUBTYPE_STX7108
+ 	default y if MACH_STM_STID127
+ 	default y if CPU_SUBTYPE_STXH205
+@@ -57,6 +58,7 @@
+ config STM_MIPHY365X
+ 	bool
+ 	depends on STM_MIPHY
++	default y if CPU_SUBTYPE_STX7100
+ 	default y if CPU_SUBTYPE_STX7108
+ 	default y if CPU_SUBTYPE_STIH415
+ 	default y if MACH_STM_STIH416
+diff -upr drivers/stm/Makefile drivers/stm/Makefile
+--- drivers/stm/Makefile	2013-10-03 14:35:51.554525053 +0200
++++ drivers/stm/Makefile	2013-10-03 15:15:46.716932270 +0200
+@@ -42,6 +42,7 @@
+ obj-$(CONFIG_CPU_SUBTYPE_STXH205)	+= stxh205_lpm.o
+ obj-$(CONFIG_STM_LPM)			+= lpm_com.o lpm_mb.o
+ 
++obj-$(CONFIG_CPU_SUBTYPE_STX7100)	+= stx7100.o stx7100_clock.o stx7100_audio.o stx7100_comms.o stx7100_hispeed.o
+ obj-$(CONFIG_CPU_SUBTYPE_STX7108)	+= stx7108.o stx7108_clock.o stx7108_audio.o stx7108_comms.o stx7108_hispeed.o stx7108_pci.o pio-control.o
+ obj-$(CONFIG_CPU_SUBTYPE_STXH205)	+= stxh205.o stxh205_clock.o stxh205_audio.o stxh205_comms.o stxh205_hispeed.o stxh205_pci.o pio-control.o
+ obj-$(CONFIG_MACH_STM_STIH407)		+= pio-control.o stih407/
+diff -upr drivers/stm/soc.c drivers/stm/soc.c
+--- drivers/stm/soc.c
++++ drivers/stm/soc.c
+@@ -48,6 +48,8 @@ const char *stm_soc(void)
+ 		return "STxH205";
+ 	if (stm_soc_is_stih415())
+ 		return "STiH415";
++	if (stm_soc_is_stx7100())
++		return "STx7100";
+ 	if (stm_soc_is_stx7108())
+ 		return "STx7108";
+ 	if (stm_soc_is_stih416())
+diff -upr drivers/usb/Kconfig drivers/usb/Kconfig
+--- drivers/usb/Kconfig	2013-10-03 14:35:50.394526234 +0200
++++ drivers/usb/Kconfig	2013-10-03 14:54:59.561222009 +0200
+@@ -32,6 +32,7 @@ config USB_ARCH_HAS_OHCI
+ 	default y if CPU_SUBTYPE_SH7763
+ 	default y if CPU_SUBTYPE_SH7786
+ 	default y if CPU_SUBTYPE_FLI7610
++	default y if CPU_SUBTYPE_STX7100
+ 	default y if CPU_SUBTYPE_STX7108
+ 	default y if MACH_STM_STIG125
+ 	default y if CPU_SUBTYPE_STXH205
+@@ -58,6 +59,7 @@ config USB_ARCH_HAS_EHCI
+ 	default y if MICROBLAZE
+ 	default y if SPARC_LEON
+ 	default y if CPU_SUBTYPE_FLI7610
++	default y if CPU_SUBTYPE_STX7100
+ 	default y if CPU_SUBTYPE_STX7108
+ 	default y if MACH_STM_STIG125
+ 	default y if CPU_SUBTYPE_STXH205
+diff -upr include/linux/stm/soc.h include/linux/stm/soc.h
+--- include/linux/stm/soc.h	2013-10-03 14:35:45.046531677 +0200
++++ include/linux/stm/soc.h	2013-10-04 22:46:28.781303252 +0200
+@@ -54,6 +54,12 @@ static inline long stm_soc_version_minor
+ #define stm_soc_is_stih415()	(0)
+ #endif
+ 
++#ifdef CONFIG_CPU_SUBTYPE_STX7100
++#define stm_soc_is_stx7100()    (1)
++#else
++#define stm_soc_is_stx7100()    (0)
++#endif
++
+ #ifdef CONFIG_CPU_SUBTYPE_STX7108
+ #define stm_soc_is_stx7108()	(1)
+ #else
+diff -upr sound/stm/Kconfig sound/stm/Kconfig
+--- sound/stm/Kconfig	2013-10-03 14:35:18.938557702 +0200
++++ sound/stm/Kconfig	2013-10-03 15:24:30.792678362 +0200
+@@ -108,6 +108,20 @@ config SND_STM_FLI7610
+ 		If you compile this driver as a module, it will be
+ 		called snd-stm-stih415.ko
+ 
++config SND_STM_STX7100
++	tristate "STx7100 and STx7109 support"
++	depends on SND_STM
++	default y if CPU_SUBTYPE_STX7100
++	select SND_STM_PCM_PLAYER
++	select SND_STM_SPDIF_PLAYER
++	select SND_STM_CONV_DAC_MEMORY_MAPPED
++	select SND_STM_CONV_I2S_TO_SPDIF
++	help
++		Select this to get ALSA driver for STx7100 and STx7109 chips.
++
++		If you compile this driver as a module, it will be
++		called snd-stm-stx7100.ko
++
+ config SND_STM_STX7108
+ 	tristate "STx7108 support"
+ 	depends on SND_STM
+diff -upr sound/stm/Makefile sound/stm/Makefile
+--- sound/stm/Makefile	2013-10-03 14:35:18.934557707 +0200
++++ sound/stm/Makefile	2013-10-03 15:22:11.368718343 +0200
+@@ -40,6 +40,9 @@ snd-stm-conv-dac-sc-y := conv_dac_sc.o
+ obj-$(CONFIG_SND_STM_FLI7610) += snd-stm-fli7610.o
+ snd-stm-fli7610-y := fli7610.o
+ 
++obj-$(CONFIG_SND_STM_STX7100) += snd-stm-stx7100.o
++snd-stm-stx7100-y := stx7100.o
++
+ obj-$(CONFIG_SND_STM_STX7108) += snd-stm-stx7108.o
+ snd-stm-stx7108-y := stx7108.o
+ 
