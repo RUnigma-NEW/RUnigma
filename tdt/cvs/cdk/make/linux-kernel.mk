@@ -76,7 +76,7 @@ $(DEPDIR)/kernel-headers: linux-kernel.do_prepare
 		cp -a include/linux $(targetprefix)/usr/include; \
 		cp -a include/asm-sh $(targetprefix)/usr/include/asm; \
 		cp -a include/asm-generic $(targetprefix)/usr/include; \
-		cp -a include/mtd $(targetprefix)/usr/include; \
+		cp -a include/mtd $(targetprefix)/usr/include
 	touch $@
 
 endif
@@ -126,11 +126,13 @@ ifdef ENABLE_P0308
 $(DEPDIR)/$(KERNELHEADERS): $(KERNELHEADERS_RPM)
 	echo no extra Kernel-Header-File
 	touch $@
+
 else
 $(DEPDIR)/$(KERNELHEADERS): $(KERNELHEADERS_RPM)
 	rpm $(DRPM) --ignorearch --nodeps -Uhv \
 		--badreloc --relocate $(targetprefix)=$(prefix)/$*cdkroot $(lastword $^)
 	touch $@
+
 endif
 
 #
@@ -216,14 +218,14 @@ $(DEPDIR)/linux-kernel.do_prepare: \
 	rm -rf linux{,-sh4}
 	rpm $(DRPM) --ignorearch --nodeps -Uhv $(lastword $^)
 	$(if $(HOST_KERNEL_PATCHES),cd $(KERNEL_DIR); cat $(HOST_KERNEL_PATCHES:%=$(buildprefix)/Patches/%) | patch -p1)
-	$(INSTALL) -m644 ../Patches/$(HOST_KERNEL_CONFIG) ../$(KERNEL_DIR)/.config
-	rm ../$(KERNEL_DIR)/localversion*
-	echo "$(KERNELSTMLABEL)" > ../$(KERNEL_DIR)/localversion-stm
-	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" ../$(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> ../$(KERNEL_DIR)/.config; fi
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh oldconfig
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/asm
-	$(MAKE) -C ../$(KERNEL_DIR) ARCH=sh include/linux/version.h
-	rm ../$(KERNEL_DIR)/.config
+	$(INSTALL) -m644 Patches/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
+	rm $(KERNEL_DIR)/localversion*
+	echo "$(KERNELSTMLABEL)" > $(KERNEL_DIR)/localversion-stm
+	if [ `grep -c "CONFIG_BPA2_DIRECTFBOPTIMIZED" $(KERNEL_DIR)/.config` -eq 0 ]; then echo "# CONFIG_BPA2_DIRECTFBOPTIMIZED is not set" >> $(KERNEL_DIR)/.config; fi
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h
+	rm $(KERNEL_DIR)/.config
 	touch $@
 
 endif
