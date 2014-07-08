@@ -539,7 +539,7 @@ static int stb6100_set_params(struct dvb_frontend *fe, struct dvb_frontend_param
 		srate = c->symbol_rate;
 
 	}
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)	
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	 else {
 		frequency = params->frequency;
 		srate = params->u.qpsk.symbol_rate;
@@ -576,7 +576,7 @@ static struct dvb_tuner_ops stb6100_ops = {
 	.set_bandwidth	= stb6100_set_bandwidth,
 	.get_frequency	= stb6100_get_frequency,
 	.get_bandwidth	= stb6100_get_bandwidth,
-#if 0
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	.set_params	= stb6100_set_params,
 #endif
 	.release	= stb6100_release

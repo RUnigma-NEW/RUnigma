@@ -143,7 +143,11 @@ static struct file_operations mme_ops = {
 	.owner =   THIS_MODULE,
 	.open  =   mme_open,
 	.release = mme_release,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	.ioctl =   mme_ioctl,
+#else
+	.unlocked_ioctl =   mme_ioctl,
+#endif
 	.mmap =    mme_mmap
 };
 

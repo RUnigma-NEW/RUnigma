@@ -11,6 +11,8 @@ embxshell-objs  += embx_buffer.o embx_connect.o embx_deinit.o embx_init.o \
 
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
 else
 CFLAGS += $(CCFLAGSY)
 endif

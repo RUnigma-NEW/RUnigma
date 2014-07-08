@@ -11,6 +11,7 @@
 #include "embx_osheaders.h"
 #include "embx_osinterface.h"
 #include "debug_ctrl.h"
+#include <linux/version.h>
 
 #if defined(__KERNEL__)
 #ifndef ioremap_cache
@@ -23,7 +24,15 @@
 /*
  * This header is needed to collect the prototype for memalign.
  */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58) 
 #include <malloc.h>
+#else
+#include <linux/slab.h>
+#endif
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+/* Returns the physical address of a PnSEG (n=1,2) address   */
+#define PHYSADDR(a)     (((unsigned long)(a)) & 0x1fffffff)
 #endif
 
 EMBX_VOID *EMBX_OS_ContigMemAlloc(EMBX_UINT size, EMBX_UINT align)
@@ -296,6 +305,10 @@ EMBX_ERROR EMBX_OS_VirtToPhys(EMBX_VOID *vaddr, EMBX_UINT *paddrp)
     {
 	unsigned long addr = (unsigned long) vaddr;
 	
+#include <linux/interrupt.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
+#include <linux/export.h>
+#endif
 	/* Assume 29-bit SH4 Linux */
 	*(paddrp)= PHYSADDR(addr);
 	

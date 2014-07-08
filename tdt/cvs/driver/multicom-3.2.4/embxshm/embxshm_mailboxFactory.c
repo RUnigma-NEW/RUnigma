@@ -16,6 +16,11 @@
 #include "embxshm.h"
 #include "embxmailbox.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+/* Returns the physical address of a PnSEG (n=1,2) address   */
+#define PHYSADDR(a)     (((unsigned long)(a)) & 0x1fffffff)
+#endif
+
 /* Enable/Disable the SHM Cached Heap */
 #ifdef EMBXSHM_CACHED_HEAP
 #define CACHED_HEAP	1

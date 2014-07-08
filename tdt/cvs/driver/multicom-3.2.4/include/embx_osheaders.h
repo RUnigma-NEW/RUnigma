@@ -62,9 +62,6 @@ typedef unsigned int uintptr_t;
 #include <linux/sched.h>
 #include <linux/module.h>
 #include <linux/version.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 23)
-#include <linux/config.h>
-#endif
 #include <linux/stddef.h>
 #include <linux/ptrace.h>
 #include <linux/string.h>
@@ -74,12 +71,10 @@ typedef unsigned int uintptr_t;
 #include <linux/kthread.h>
 
 #include <asm/cacheflush.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
 #include <asm/system.h>   /* cli(), *_flags */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
-#include <asm/semaphore.h>
-#else
-#include <linux/semaphore.h>
 #endif
+#include <linux/semaphore.h>
 #include <asm/io.h>
 
 #include <asm/pgtable.h> /* VMALLOC_START */
