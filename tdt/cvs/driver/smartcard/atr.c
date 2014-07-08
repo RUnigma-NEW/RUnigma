@@ -27,7 +27,10 @@
 #include <linux/stddef.h>
 #include <linux/types.h>
 #include <linux/fs.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #include <asm/system.h>
+#endif
 
 #include "atr.h"
 #include "sci.h"

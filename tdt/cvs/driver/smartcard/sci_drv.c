@@ -34,7 +34,9 @@
 #include <linux/proc_fs.h>
 #include <linux/kallsyms.h>
 #endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #include <asm/system.h>
+#endif
 #include <linux/cdev.h>
 
 #include <linux/ioctl.h>
@@ -2525,7 +2527,11 @@ static struct file_operations Fops =
     .release = sci_close,
     .read    = sci_read,
     .write   = sci_write,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     .ioctl   = sci_ioctl,
+#else
+    .unlocked_ioctl   = sci_ioctl,
+#endif
     .poll    = sci_poll,
     .llseek  = NULL
 };
