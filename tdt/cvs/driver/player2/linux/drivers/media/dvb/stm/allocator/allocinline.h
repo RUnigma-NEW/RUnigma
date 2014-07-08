@@ -41,6 +41,7 @@ Date        Modification                                    Name
 #include <osinline.h>
 #include <osdev_user.h>
 #include "allocatorio.h"
+#include <linux/version.h>
 
 /* --- */
 
@@ -62,7 +63,11 @@ struct allocator_device_s
 };
 
 typedef struct allocator_device_s       *allocator_device_t;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #define ALLOCATOR_INVALID_DEVICE         NULL
+#else
+#define ALLOCATOR_INVALID_DEVICE         0
+#endif
 
 #define DEVICE_NAME                     "/dev/allocator"
 #if defined(UFS910)
@@ -206,7 +211,11 @@ static inline   unsigned char *AllocatorKernelAddress( allocator_device_t Device
     if( Device != ALLOCATOR_INVALID_DEVICE )
 	return Device->PhysicalAddress;
     else
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	return NULL;
+	#else
+	return 0;
+	#endif
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -217,7 +226,11 @@ static inline   unsigned char *AllocatorUserAddress( allocator_device_t Device )
     if( Device != ALLOCATOR_INVALID_DEVICE )
 	return Device->CachedAddress;
     else
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	return NULL;
+	#else
+	return 0;
+	#endif
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -228,7 +241,11 @@ static inline   unsigned char *AllocatorUncachedUserAddress( allocator_device_t 
     if( Device != ALLOCATOR_INVALID_DEVICE )
 	return Device->UnCachedAddress;
     else
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	return NULL;
+	#else
+	return 0;
+	#endif
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -239,7 +256,11 @@ static inline   unsigned char *AllocatorPhysicalAddress( allocator_device_t Devi
     if( Device != ALLOCATOR_INVALID_DEVICE )
 	return Device->PhysicalAddress;
     else
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	return NULL;
+	#else
+	return 0;
+	#endif
 }
 
 #endif

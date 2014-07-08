@@ -36,6 +36,7 @@ Date        Modification                                    Name
 #define H_BUFFER_INDIVIDUAL
 
 #include "osinline.h"
+#include <linux/version.h>
 
 // ---------------------------------------------------------------------
 //
@@ -52,8 +53,13 @@ public:
 
     virtual BufferStatus_t	 AttachMetaData(	MetaDataType_t	  Type,
 							unsigned int	  Size				= UNSPECIFIED_SIZE,
+							#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 							void		 *MemoryBlock			= NULL,
 							char		 *DeviceMemoryPartitionName	= NULL ) = 0;
+							#else
+							void		 *MemoryBlock			= 0,
+							char		 *DeviceMemoryPartitionName	= '\0' ) = 0;
+							#endif
 
     virtual BufferStatus_t	 DetachMetaData(	MetaDataType_t	  Type ) = 0;
 

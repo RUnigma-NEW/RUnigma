@@ -38,7 +38,11 @@ int BackendInit (void)
 
     PLAYER_DEBUG("\n");
     HavanaPlayer        = new HavanaPlayer_c;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayer == NULL)
+#else
+    if (HavanaPlayer == NULL || HavanaPlayer == 0)
+#endif
     {
         PLAYER_ERROR("Unable to create player\n");
         return -ENOMEM;
@@ -47,7 +51,11 @@ int BackendInit (void)
     if (Status != HavanaNoError)
     {
         delete HavanaPlayer;
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
         HavanaPlayer    = NULL;
+	#else
+        HavanaPlayer    = 0;
+	#endif
         return -ENOMEM;
     }
 
@@ -59,9 +67,17 @@ int BackendInit (void)
 //{{{  BackendDelete
 int BackendDelete (void)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayer != NULL)
+#else
+    if (HavanaPlayer != NULL && HavanaPlayer != 0)
+#endif
         delete HavanaPlayer;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     HavanaPlayer        = NULL;
+#else
+    HavanaPlayer        = 0;
+#endif
 
     return 0;
 }
@@ -84,7 +100,11 @@ int DemuxInjectData    (demux_handle_t          Demux,
 int PlaybackCreate     (playback_handle_t*      Playback)
 {
     HavanaStatus_t              Status;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     class HavanaPlayback_c*     HavanaPlayback = NULL;
+#else
+    class HavanaPlayback_c*     HavanaPlayback = 0;
+#endif
 
     PLAYER_DEBUG("\n");
     Status      = HavanaPlayer->CreatePlayback (&HavanaPlayback);
@@ -100,7 +120,11 @@ int PlaybackDelete     (playback_handle_t       Playback)
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     HavanaPlayer->DeletePlayback (HavanaPlayback);
@@ -114,11 +138,19 @@ int PlaybackAddDemux           (playback_handle_t       Playback,
                                 demux_handle_t*         Demux)
 {
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     class HavanaDemux_c*        HavanaDemux     = NULL;
+#else
+    class HavanaDemux_c*        HavanaDemux     = 0;
+#endif
     HavanaStatus_t              Status;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     Status      = HavanaPlayback->AddDemux (DemuxId, &HavanaDemux);
@@ -136,7 +168,11 @@ int PlaybackRemoveDemux        (playback_handle_t       Playback,
     class HavanaDemux_c*        HavanaDemux     = (class HavanaDemux_c*)Demux;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->RemoveDemux (HavanaDemux) != HavanaNoError)
@@ -154,11 +190,19 @@ int PlaybackAddStream           (playback_handle_t      Playback,
                                  stream_handle_t*       Stream)
 {
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     class HavanaStream_c*       HavanaStream    = NULL;
+#else
+    class HavanaStream_c*       HavanaStream    = 0;
+#endif
     HavanaStatus_t              Status          = HavanaNoError;
 
     PLAYER_DEBUG("%s\n", Media);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     Status      = HavanaPlayback->AddStream (Media, Format, Encoding, SurfaceId, &HavanaStream);
@@ -179,7 +223,11 @@ int PlaybackRemoveStream       (playback_handle_t       Playback,
     class HavanaStream_c*       HavanaStream    = (class HavanaStream_c*)Stream;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->RemoveStream (HavanaStream) != HavanaNoError)
@@ -195,7 +243,11 @@ int PlaybackSetSpeed            (playback_handle_t       Playback,
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->SetSpeed (Speed) != HavanaNoError)
@@ -211,7 +263,11 @@ int PlaybackGetSpeed            (playback_handle_t       Playback,
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->GetSpeed (PlaySpeed) != HavanaNoError)
@@ -229,7 +285,11 @@ int PlaybackSetNativePlaybackTime (playback_handle_t    Playback,
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->SetNativePlaybackTime (NativeTime, SystemTime) != HavanaNoError)
@@ -249,7 +309,11 @@ int PlaybackSetOption          (playback_handle_t       Playback,
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->SetOption (Option, Value) != HavanaNoError)
@@ -262,11 +326,19 @@ int PlaybackSetOption          (playback_handle_t       Playback,
 int PlaybackGetPlayerEnvironment (playback_handle_t               Playback,
                                   playback_handle_t*              playerplayback)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     PlayerPlayback_t            player_playback = NULL;
+#else
+    PlayerPlayback_t            player_playback = 0;
+#endif
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->GetPlayerEnvironment (&player_playback) != HavanaNoError)
@@ -284,7 +356,11 @@ int PlaybackSetClockDataPoint     (playback_handle_t    Playback,
     class HavanaPlayback_c*     HavanaPlayback  = (class HavanaPlayback_c*)Playback;
 
     PLAYER_DEBUG("\n");
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     if (HavanaPlayback == NULL)
+#else
+    if (HavanaPlayback == NULL || HavanaPlayback == 0 )
+#endif
         return -EINVAL;
 
     if (HavanaPlayback->SetClockDataPoint (DataPoint) != HavanaNoError)
@@ -666,8 +742,13 @@ int StreamGetPlayerEnvironment (stream_handle_t                 Stream,
                                 playback_handle_t*              playerplayback,
                                 stream_handle_t*                playerstream)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     PlayerPlayback_t            player_playback = NULL;
     PlayerStream_t              player_stream   = NULL;
+#else
+    PlayerPlayback_t            player_playback = 0;
+    PlayerStream_t              player_stream   = 0;
+#endif
     class HavanaStream_c*       HavanaStream    = (class HavanaStream_c*)Stream;
 
     PLAYER_DEBUG("\n");

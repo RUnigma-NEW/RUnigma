@@ -39,6 +39,11 @@ Date        Modification                                    Name
 #include "player_interface.h"
 #include "player_interface_ops.h"
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/slab.h>
+#endif
+
 /* The player interface context provides access to the STM streaming engine (Player2) */
 struct PlayerInterfaceContext_s
 {

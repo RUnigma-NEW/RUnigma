@@ -76,7 +76,11 @@ public:
 								unsigned int		  DataLength,
 								void			 *Data,
 								bool			  NonBlocking = false,
+								#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 								unsigned int		 *DataLengthRemaining = NULL ) = 0;
+								#else
+								unsigned int		 *DataLengthRemaining = 0 ) = 0;
+								#endif
 
     virtual CollatorStatus_t   FrameFlush(			void ) = 0;
 

@@ -3,6 +3,8 @@ CCFLAGSY+=-I$(TREE_ROOT)/linux/drivers/sound/pseudocard/
 # workaround for stlinux24
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
 endif
 
 manifestor-objs:=       manifestor_base.o \

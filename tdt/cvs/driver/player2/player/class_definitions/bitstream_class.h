@@ -39,6 +39,12 @@ Date        Modification                                    Name
 //
 
 #include "osinline.h"
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+// Dont't like to change every NULL to 0 in the Files.
+// So we try this in this way
+#define NULL 0
+#endif
 
 //
 

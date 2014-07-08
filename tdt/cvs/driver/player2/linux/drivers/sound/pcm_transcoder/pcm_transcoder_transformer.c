@@ -21,6 +21,11 @@
 #include "pcm_transcoder.h"
 #include "Pcm_TranscoderTypes.h"
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/slab.h>
+#endif
+
 #define PCM_INPUT_BUFFER                0
 #define PCM_OUTPUT_BUFFER               1
 #define PCM_OUTPUT_BITS_PER_SAMPLE      32

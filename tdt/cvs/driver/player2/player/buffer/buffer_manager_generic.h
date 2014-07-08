@@ -34,6 +34,8 @@ Date        Modification                                    Name
 #ifndef H_BUFFER_MANAGER_GENERIC
 #define H_BUFFER_MANAGER_GENERIC
 
+#include <linux/version.h>
+
 //
 
 class BufferManager_Generic_c : public BufferManager_c
@@ -81,9 +83,15 @@ public:
 						BufferType_t	  Type,
 					    	unsigned int	  NumberOfBuffers		= UNRESTRICTED_NUMBER_OF_BUFFERS,
 						unsigned int	  Size				= UNSPECIFIED_SIZE,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 					    	void		 *MemoryPool[3]			= NULL,
 					    	void		 *ArrayOfMemoryBlocks[][3]	= NULL,
 						char		 *DeviceMemoryPartitionName	= NULL );
+						#else
+					    	void		 *MemoryPool[3]                 = 0,
+					    	void		 *ArrayOfMemoryBlocks[][3]      = 0,
+						char		 *DeviceMemoryPartitionName     = '\0' );
+						#endif
 
     BufferStatus_t	 DestroyPool(		BufferPool_t		  Pool );
 

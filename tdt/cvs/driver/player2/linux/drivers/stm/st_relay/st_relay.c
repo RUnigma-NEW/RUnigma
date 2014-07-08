@@ -15,6 +15,11 @@
 
 #include "st_relay.h"
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/module.h>
+#endif
+
 MODULE_LICENSE("GPL");
 
 //EXPORT_SYMBOL(st_relayfs_open);

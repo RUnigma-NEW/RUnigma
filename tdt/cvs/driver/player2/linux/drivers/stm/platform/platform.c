@@ -49,6 +49,10 @@
 #include "platform_7108.h"
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/module.h>
+#endif
+
 MODULE_DESCRIPTION("Player2 Platform Driver");
 MODULE_AUTHOR("STMicroelectronics Limited");
 MODULE_VERSION("0.9");

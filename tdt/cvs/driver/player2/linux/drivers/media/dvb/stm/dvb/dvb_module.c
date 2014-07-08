@@ -108,7 +108,11 @@ struct DvbContext_s*     DvbContext;
 
 long DvbGenericUnlockedIoctl(struct file *file, unsigned int foo, unsigned long bar)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     return dvb_generic_ioctl(NULL, file, foo, bar);
+#else
+    return dvb_generic_ioctl(file, foo, bar);
+#endif
 }
 
 /*static*/ int __init StmLoadModule (void)

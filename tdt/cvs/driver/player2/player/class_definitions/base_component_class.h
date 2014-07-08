@@ -37,6 +37,7 @@ Date        Modification                                    Name
 #define H_BASE_COMPONENT_CLASS
 
 #include "player_types.h"
+#include <linux/version.h>
 
 //
 
@@ -111,17 +112,29 @@ public:
 
     virtual PlayerStatus_t      Reset( void )
     {
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	Player          = NULL;
+	#else
+	Player          = 0;
+	#endif;
 	Playback        = PlayerAllPlaybacks;
 	Stream          = PlayerAllStreams;
 	EventMask       = 0;
 	EventUserData   = NULL;
 
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	Collator        = NULL;
 	FrameParser     = NULL;
 	Codec           = NULL;
 	OutputTimer     = NULL;
 	Manifestor      = NULL;
+	#else
+	Collator        = 0;
+	FrameParser     = 0;
+	Codec           = 0;
+	OutputTimer     = 0;
+	Manifestor      = 0;
+	#endif
 
 	SetComponentState( ComponentReset );
 	return  PlayerNoError;
@@ -133,11 +146,19 @@ public:
 					Player_t                 Player,
 					PlayerPlayback_t         Playback,
 					PlayerStream_t           Stream,
+					#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 					Collator_t		 Collator	= NULL,
 					FrameParser_t		 FrameParser	= NULL,
 					Codec_t			 Codec		= NULL,
 					OutputTimer_t		 OutputTimer	= NULL,
-					Manifestor_t		 Manifestor	= NULL )
+					Manifestor_t		 Manifestor	= NULL)
+					#else
+					Collator_t               Collator       = 0,
+					FrameParser_t            FrameParser    = 0,
+					Codec_t                  Codec          = 0,
+					OutputTimer_t            OutputTimer    = 0,
+					Manifestor_t             Manifestor     = 0)
+					#endif
     {
 	//
 	// In order to provide this data for early use, there is an assumption 

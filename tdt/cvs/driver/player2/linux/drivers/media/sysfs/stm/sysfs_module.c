@@ -43,6 +43,11 @@ Date        Modification                                    Name
 #include "sysfs_module.h"
 #include "player_interface.h"
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/slab.h>
+#endif
+
 static int  __init      SysfsLoadModule (void);
 static void __exit      SysfsUnloadModule (void);
 

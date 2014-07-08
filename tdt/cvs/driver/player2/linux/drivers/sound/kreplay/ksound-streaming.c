@@ -29,7 +29,10 @@
 
 #include "ksound-streaming.h"
 
-
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/slab.h>
+#endif
 
 EXPORT_SYMBOL(ksnd_pcm_streaming_start);
 EXPORT_SYMBOL(ksnd_pcm_streaming_stop);

@@ -22,6 +22,11 @@
 #include "report.h"
 #include "st_relay.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/mutex.h>
+struct mutex cmd_mutex;
+#endif
+
 MODULE_LICENSE("GPL");
 
 DECLARE_MUTEX(cmd_mutex);

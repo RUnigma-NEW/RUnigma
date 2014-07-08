@@ -4,6 +4,8 @@ CCFLAGSY  += -I$(DRIVER_TOPDIR)/include/player2
 # workaround for stlinux24
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
 endif
 
 mpeg2hw-objs:= mpeg2_hard_host_transformer.o mpeg2hard.o

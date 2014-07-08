@@ -35,6 +35,8 @@ Date        Modification                                    Name
 #ifndef H_BUFFER_INDIVIDUAL_GENERIC
 #define H_BUFFER_INDIVIDUAL_GENERIC
 
+#include <linux/version.h>
+
 //
 
 class Buffer_Generic_c : public Buffer_c
@@ -82,7 +84,11 @@ public:
     BufferStatus_t	 AttachMetaData(	MetaDataType_t	  Type,
 						unsigned int	  Size				= UNSPECIFIED_SIZE,
 						void		 *MemoryBlock			= NULL,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						char		 *DeviceMemoryPartitionName	= NULL );
+						#else
+						char		 *DeviceMemoryPartitionName	= '\0' );
+						#endif
 
     BufferStatus_t	 DetachMetaData(	MetaDataType_t	  Type );
 

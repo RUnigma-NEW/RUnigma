@@ -40,6 +40,7 @@ Date        Modification                                    Name
 
 #include "player.h"
 #include "allocinline.h"
+#include <linux/version.h>
 
 // /////////////////////////////////////////////////////////////////////////
 //
@@ -737,7 +738,11 @@ public:
 						FrameParser_t		  FrameParser,
 						Codec_t			  Codec,
 						OutputTimer_t		  OutputTimer,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						Manifestor_t		  Manifestor		= NULL,
+						#else
+						Manifestor_t              Manifestor            = 0,
+						#endif
 						bool			  SignalEvent		= false,
 						void			 *EventUserData		= NULL );
 
@@ -746,10 +751,17 @@ public:
 						void			 *EventUserData		= NULL );
 
     PlayerStatus_t   SwitchStream(              PlayerStream_t            Stream,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						Collator_t                Collator		= NULL,
 						FrameParser_t             FrameParser		= NULL,
 						Codec_t                   Codec			= NULL,
 						OutputTimer_t             OutputTimer		= NULL,
+						#else
+						Collator_t                Collator              = 0,
+						FrameParser_t             FrameParser           = 0,
+						Codec_t                   Codec                 = 0,
+						OutputTimer_t             OutputTimer           = 0,
+						#endif
 						bool                      NonBlocking           = false,
 						bool                      SignalEvent           = false,
 						void                     *EventUserData         = NULL );
@@ -806,7 +818,11 @@ public:
 
     PlayerStatus_t   ClockRecoveryEstimate(	PlayerPlayback_t	  Playback,
 						unsigned long long	 *SourceTime,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						unsigned long long	 *LocalTime	= NULL );
+						#else
+						unsigned long long       *LocalTime     = 0 );
+						#endif
 
     //
     // Mechanisms for data insertion
@@ -862,8 +878,13 @@ public:
 						Manifestor_t		 *Manifestor );
 
     PlayerStatus_t   GetCodedFrameBufferPool(	PlayerStream_t	 	  Stream,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						BufferPool_t		 *Pool			= NULL,
 						unsigned int		 *MaximumCodedFrameSize = NULL );
+						#else
+						BufferPool_t             *Pool                  = 0,
+						unsigned int             *MaximumCodedFrameSize = 0 );
+						#endif
 
     PlayerStatus_t   GetDecodeBufferPool(	PlayerStream_t	 	  Stream,
 						BufferPool_t		 *Pool );

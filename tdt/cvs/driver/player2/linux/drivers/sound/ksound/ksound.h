@@ -21,8 +21,12 @@
 #ifndef _SOUND_KSOUND_H_
 #define _SOUND_KSOUND_H_
 
-#if defined(__TDT__)
 #include <linux/version.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+// Dont't like to change every NULL to 0 in the Files.
+// So we try this in this way
+#define NULL 0
 #endif
 
 #ifdef __cplusplus
@@ -135,9 +139,11 @@ struct snd_kcontrol_volatile {
 	pid_t owner_pid;
 	unsigned int access;	/* access rights */
 };
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 struct list_head {
 	struct list_head *next, *prev;
 };
+#endif
 struct snd_kcontrol {
 	struct list_head list;		/* list of controls */
 	struct snd_ctl_elem_id id;

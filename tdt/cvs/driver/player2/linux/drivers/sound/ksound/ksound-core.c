@@ -20,7 +20,9 @@
 
 #include <linux/version.h>
 #include <linux/init.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #include <linux/smp_lock.h>
+#endif
 #include <linux/slab.h>
 #include <linux/time.h>
 #include <linux/vmalloc.h>
@@ -35,11 +37,16 @@
 #include <sound/asoundef.h>
 #include <sound/control.h>
 #include <linux/mutex.h>
-#include <linux/slab.h>
 
 #include <asm/io.h>
 
 #include "ksound.h"
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/module.h>
+#define snd_assert(expr, args...)       (void)(expr)
+int snd_get_minor(int type, int card, int dev);
+#endif
 
 #if defined(__TDT__) && (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
 /*#warning Need to remove these typedefs and externs */

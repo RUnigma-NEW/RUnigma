@@ -49,6 +49,14 @@
 #include "alsa_backend_ops.h"
 #include "pseudo_mixer.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/export.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#define snd_assert(expr, args...)       (void)(expr)
+int snd_get_minor(int type, int card, int dev);
+#endif
+
 MODULE_AUTHOR("Daniel Thompson <daniel.thompson@st.com>");
 MODULE_DESCRIPTION("Pseudo soundcard");
 MODULE_LICENSE("GPL");

@@ -8,7 +8,10 @@
 #include <linux/dvb/video.h>	/* Video Format etc */
 #include <linux/dvb/audio.h>
 #include <linux/dvb/version.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #include <linux/smp_lock.h>
+#endif
 #include <linux/string.h>
 
 #include "../backend.h"

@@ -34,9 +34,7 @@ Date        Modification                                    Name
 #ifndef H_MIXER_MME_CLASS
 #define H_MIXER_MME_CLASS
 
-#if defined(__TDT__)
 #include <linux/version.h>
-#endif
 
 #include "player_types.h"
 #include "manifestor_audio_ksound.h"
@@ -374,8 +372,13 @@ private:
     PlayerStatus_t FillOutOutputBuffer( MME_DataBuffer_t *DataBuffer );
     void FillOutInputBuffer( unsigned int ManifestorId );
     void FillOutInteractiveBuffer( unsigned int InteractiveId );
+    #if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
     void FillOutSilentBuffer( MME_DataBuffer_t *DataBuffer,
                               tMixerFrameParams *MixerFrameParams = NULL );
+    #else
+    void FillOutSilentBuffer( MME_DataBuffer_t *DataBuffer,
+                              tMixerFrameParams *MixerFrameParams = 0 );
+    #endif
     
     PlayerStatus_t UpdateOutputBuffer( MME_DataBuffer_t *DataBuffer );
     void UpdateInputBuffer( unsigned int ManifestorId );

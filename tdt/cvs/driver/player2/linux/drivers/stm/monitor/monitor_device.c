@@ -99,7 +99,11 @@ static unsigned int MonitorPoll        (struct file*            File,
 static struct file_operations MonitorFops =
 {
         owner:          THIS_MODULE,
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
         ioctl:          MonitorIoctl,
+	#else
+        unlocked_ioctl:          MonitorIoctl,
+	#endif
         open:           MonitorOpen,
         release:        MonitorRelease,
         read:           MonitorRead,

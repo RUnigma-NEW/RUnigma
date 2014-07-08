@@ -60,7 +60,11 @@ static int CaIoctl                   (struct inode           *Inode,
 static struct file_operations CaFops =
 {
 	owner:          THIS_MODULE,
+#if LINUX_VERSION_CODE > KERNEL_VERSION(3,4,58)
 	ioctl:          dvb_generic_ioctl,
+#else
+	unlocked_ioctl: dvb_generic_ioctl,
+#endif
 	open:           CaOpen,
 	release:        CaRelease,
 };

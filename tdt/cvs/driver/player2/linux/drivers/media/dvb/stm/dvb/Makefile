@@ -16,6 +16,10 @@ CCFLAGSY += -DDEBUG_DVB
 # workaround for stlinux24
 ifneq (,$(findstring 2.6.3,$(KERNELVERSION)))
 ccflags-y += $(CCFLAGSY)
+else ifneq (,$(findstring 3.4.5,$(KERNELVERSION)))
+ccflags-y += $(CCFLAGSY)
+else
+CFLAGS += $(CCFLAGSY)
 endif
 
 stmdvb-objs:=   backend.o \
@@ -45,7 +49,7 @@ stmdvb-objs:=   backend.o \
 		st-common.o
 ##              stmdvp.o
 
-ifeq (,$(findstring 2.6.3,$(KERNELVERSION)))
+ifeq (,$(filter , $(findstring 2.6.3,$(KERNELVERSION))) $(findstring 3.4,$(KERNELVERSION)))
 # these object files are required for stm22/stm23 according to BPanther 
 	stmdvb-objs +=  dvb_cap.o \
 			dvb_cap_video.o \

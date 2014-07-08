@@ -34,6 +34,8 @@ Date        Modification                                    Name
 #ifndef H_BUFFER_POOL_GENERIC
 #define H_BUFFER_POOL_GENERIC
 
+#include <linux/version.h>
+
 //
 
 struct BlockDescriptor_s
@@ -104,7 +106,11 @@ private:
 						void			 *ArrayOfMemoryBlocks,
 						char			 *MemoryPartitionName,
 						const char		 *Caller,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						unsigned int		 *ItemSize	= NULL );
+						#else
+						unsigned int		 *ItemSize	= 0 );
+						#endif
 
     BufferStatus_t	AllocateMemoryBlock(	BlockDescriptor_t	  Block,
 						bool			  ArrayAllocate,
@@ -145,8 +151,13 @@ public:
     BufferStatus_t	 AttachMetaData(	MetaDataType_t	  Type,
 						unsigned int	  Size				= UNSPECIFIED_SIZE,
 						void		 *MemoryPool			= NULL,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						void		 *ArrayOfMemoryBlocks[]		= NULL,
 						char		 *DeviceMemoryPartitionName	= NULL );
+						#else
+						void		 *ArrayOfMemoryBlocks[]		= 0,
+						char		 *DeviceMemoryPartitionName	= '\0' );
+						#endif
 
     BufferStatus_t	 DetachMetaData(	MetaDataType_t	  Type );
 
@@ -171,11 +182,19 @@ public:
     BufferStatus_t	 GetType(		BufferType_t	 *Type );
 
     BufferStatus_t	 GetPoolUsage(		unsigned int	 *BuffersInPool,
+						#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 						unsigned int     *BuffersWithNonZeroReferenceCount	= NULL,
 						unsigned int	 *MemoryInPool				= NULL,
 						unsigned int	 *MemoryAllocated			= NULL,
 						unsigned int	 *MemoryInUse				= NULL,
 						unsigned int	 *LargestFreeMemoryBlock		= NULL );
+						#else
+						unsigned int     *BuffersWithNonZeroReferenceCount      = 0,
+						unsigned int     *MemoryInPool                          = 0,
+						unsigned int     *MemoryAllocated                       = 0,
+						unsigned int     *MemoryInUse                           = 0,
+						unsigned int     *LargestFreeMemoryBlock                = 0 );
+						#endif
 
     BufferStatus_t	 CountBuffersReferencedBy( 
 						unsigned int	  OwnerIdentifier,

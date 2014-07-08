@@ -50,6 +50,11 @@ Date        Modification                                    Name
 
 #include "monitor_module.h"
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/slab.h>
+#endif
+
 static int  __init              StmMonitorInit (void);
 static void __exit              StmMonitorExit (void);
 

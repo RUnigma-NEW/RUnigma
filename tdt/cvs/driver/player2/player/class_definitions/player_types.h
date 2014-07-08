@@ -45,6 +45,7 @@ Date        Modification                                    Name
 #include "ring.h"
 #include "stack.h"
 #include "rational.h"
+#include <linux/version.h>
 
 // /////////////////////////////////////////////////////////////////////////
 //
@@ -601,8 +602,13 @@ typedef class Player_c                  *Player_t;
 typedef struct PlayerPlayback_s         *PlayerPlayback_t;
 typedef struct PlayerStream_s           *PlayerStream_t;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #define PlayerAllPlaybacks              NULL
 #define PlayerAllStreams                NULL
+#else
+#define PlayerAllPlaybacks              0
+#define PlayerAllStreams                0
+#endif
 
 // /////////////////////////////////////////////////////////////////////////
 //

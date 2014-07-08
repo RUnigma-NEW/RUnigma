@@ -36,7 +36,6 @@ Date        Modification                                    Name
 #include <linux/bpa2.h>
 #include <linux/dvb/audio.h>
 #include <linux/dvb/video.h>
-#include <linux/smp_lock.h>
 #include <asm/uaccess.h>
 
 #include "dvb_module.h"
@@ -51,6 +50,10 @@ Date        Modification                                    Name
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,17)
 #include <linux/mm.h>
 #endif
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
+#include <linux/smp_lock.h>
 #endif
 
 /*{{{  prototypes*/

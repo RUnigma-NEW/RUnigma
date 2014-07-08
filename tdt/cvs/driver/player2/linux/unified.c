@@ -33,6 +33,11 @@ Date        Modification                                    Name
 #include <linux/platform_device.h>
 #include <linux/autoconf.h>
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/module.h>
+#endif
+
 extern initcall_t  __initcall_stm_start6[], __initcall_stm_end6[];
 extern exitcall_t  __exitcall_stm_start[], __exitcall_stm_end[];
 

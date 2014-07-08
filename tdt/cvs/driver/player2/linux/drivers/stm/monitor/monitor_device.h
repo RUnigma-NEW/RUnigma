@@ -32,7 +32,10 @@ Date        Modification                                    Name
 #define H_MONITOR_DEVICE
 
 #include <linux/spinlock.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 #include <linux/smp_lock.h>
+#endif
 
 #include "monitor_ioctls.h"
 #include "monitor_mme.h"
