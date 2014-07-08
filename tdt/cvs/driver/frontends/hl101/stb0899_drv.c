@@ -1875,15 +1875,24 @@ static int stb0899_track(struct dvb_frontend *fe, struct dvb_frontend_parameters
 	return 0;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
+static int stb0899_get_frontend(struct dvb_frontend *fe, struct dvb_frontend_parameters *p)
+#else
 static int stb0899_get_frontend(struct dvb_frontend *fe)
+#endif
 {
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+	#endif
 	struct stb0899_state *state		= fe->demodulator_priv;
 	struct stb0899_internal *internal	= &state->internal;
 
 	dprintk(state->verbose, FE_DEBUG, 1, "Get params");
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
+	p->u.qpsk.symbol_rate = internal->srate;
+	#else
 	p->symbol_rate = internal->srate;
-	p->frequency = internal->freq;
+	#endif
 
 	return 0;
 }
@@ -1921,7 +1930,9 @@ static struct dvb_frontend_ops stb0899_ops = {
 	.get_property			= stb0899_get_property,
 	.get_frontend_algo		= stb0899_frontend_algo,
 	.search					= stb0899_search,
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,38)
 	.track					= stb0899_track,
+#endif
 	.get_frontend			= stb0899_get_frontend,
 
 	.read_status			= stb0899_read_status,

@@ -12,7 +12,10 @@
 #include "ix7306.h"
 
 #include <linux/platform_device.h>
+#include <linux/version.h>
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38))
 #include <asm/system.h>
+#endif
 #include <asm/io.h>
 #include <linux/dvb/dmx.h>
 #include <linux/proc_fs.h>

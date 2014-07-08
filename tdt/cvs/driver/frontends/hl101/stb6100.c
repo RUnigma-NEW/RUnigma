@@ -27,6 +27,10 @@
 
 #include "dvb_frontend.h"
 #include "stb6100.h"
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+#include <linux/dvb/frontend.h>
+#endif
 
 static unsigned int verbose = 0;
 
@@ -519,6 +523,8 @@ static int stb6100_set_state(struct dvb_frontend *fe,
 	return 0;
 }
 #endif
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,38)
 static int stb6100_set_params(struct dvb_frontend *fe, struct dvb_frontend_parameters *params)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
@@ -532,11 +538,14 @@ static int stb6100_set_params(struct dvb_frontend *fe, struct dvb_frontend_param
 		frequency = c->frequency;
 		srate = c->symbol_rate;
 
-	} else {
+	}
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)	
+	 else {
 		frequency = params->frequency;
 		srate = params->u.qpsk.symbol_rate;
 
 	}
+	#endif
 
 	stb6100_set_frequency(fe, frequency);
 	stb6100_set_bandwidth(fe, srate);/* or srate * 2 ? */
@@ -546,6 +555,7 @@ static int stb6100_set_params(struct dvb_frontend *fe, struct dvb_frontend_param
 
 	return 0;
 }
+#endif
 
 static struct dvb_tuner_ops stb6100_ops = {
 	.info = {
@@ -566,7 +576,9 @@ static struct dvb_tuner_ops stb6100_ops = {
 	.set_bandwidth	= stb6100_set_bandwidth,
 	.get_frequency	= stb6100_get_frequency,
 	.get_bandwidth	= stb6100_get_bandwidth,
+#if 0
 	.set_params	= stb6100_set_params,
+#endif
 	.release	= stb6100_release
 };
 

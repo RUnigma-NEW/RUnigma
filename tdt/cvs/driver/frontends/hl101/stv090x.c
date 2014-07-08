@@ -19,6 +19,11 @@
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+#include <linux/version.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
+#include <linux/export.h>
+#endif
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/string.h>
@@ -4275,12 +4280,21 @@ static enum dvbfe_search stv090x_search(struct dvb_frontend *fe, struct dvb_fron
 	struct stv090x_state *state = fe->demodulator_priv;
 	struct dtv_frontend_properties *props = &fe->dtv_property_cache;
 
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)
 	if (p->frequency == 0)
+	#else
+	if (props->frequency == 0)
+	#endif
 		return DVBFE_ALGO_SEARCH_INVALID;
 
 	state->delsys = props->delivery_system;
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,58)	
 	state->frequency = p->frequency;
 	state->srate = p->u.qpsk.symbol_rate;
+	#else
+	state->frequency = props->frequency;
+	state->srate = props->symbol_rate;
+	#endif
 	state->search_mode = STV090x_SEARCH_AUTO;
 	state->algo = STV090x_COLD_SEARCH;
 	state->fec = STV090x_PRERR;

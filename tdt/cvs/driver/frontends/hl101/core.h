@@ -28,6 +28,11 @@
 #include "compat.h"
 #endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38))
+#include <linux/interrupt.h>
+#include <linux/export.h>
+#endif
+
 #define MAX_DVB_ADAPTERS 4
 #define MAX_TUNERS_PER_ADAPTER 4
 
