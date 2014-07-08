@@ -160,7 +160,8 @@ $(DEPDIR)/driver-ptinp:
 	$(start_build)
 	mkdir -p $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/pti
 	$(if $(P0211),cp -dp $(archivedir)/ptinp/pti_211.ko $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/pti/pti.ko) \
-	$(if $(P0213),cp -dp $(archivedir)/ptinp/pti_213.ko $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/pti/pti.ko)
+	$(if $(P0215),cp -dp $(archivedir)/ptinp/pti_215.ko $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/pti/pti.ko) \
+	$(if $(P0308),cp -dp $(archivedir)/ptinp/pti_308.ko $(PKDIR)/lib/modules/$(KERNELVERSION)/extra/pti/pti.ko)
 	$(toflash_build)
 	touch $@
 
