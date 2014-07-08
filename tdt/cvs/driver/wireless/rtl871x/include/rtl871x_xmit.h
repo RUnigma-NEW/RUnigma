@@ -24,6 +24,10 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <xmit_osdep.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/interrupt.h>
+#endif
 
 #ifdef CONFIG_SDIO_HCI
 #define MAX_XMITBUF_SZ (30720)//	(2048)

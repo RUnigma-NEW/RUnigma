@@ -23,6 +23,10 @@
 #include <drv_conf.h>
 #include <wlan_bssdef.h>
 #include <rtl871x_rf.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/interrupt.h>
+#endif
 #define C2H_MEM_SZ (16*1024)
 
 #ifndef CONFIG_RTL8711FW

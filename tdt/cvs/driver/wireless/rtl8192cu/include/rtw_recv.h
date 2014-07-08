@@ -5,6 +5,11 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/interrupt.h>
+#endif
+
 #ifdef PLATFORM_OS_XP
 #define NR_RECVFRAME 256
 #else
