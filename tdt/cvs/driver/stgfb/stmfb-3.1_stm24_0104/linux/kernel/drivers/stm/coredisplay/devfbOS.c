@@ -50,6 +50,10 @@
 #include <linux/stm/st_bios.h>
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <linux/semaphore.h>
+#endif
+
 static const int dmaarea_debug =0;
 
 static const ULONG botguard0  = 0x12345678;

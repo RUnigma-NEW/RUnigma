@@ -34,6 +34,10 @@
 #define I2C_EDID_ADDR             0x50
 #define I2C_EDDC_SEGMENT_REG_ADDR 0x30
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+/* The numbers to use to set I2C bus address */
+#define ANY_I2C_BUS             0xffff
+#endif
 
 /*
  * We have to force the detection of the I2C devices, because the SMBUS QUICK

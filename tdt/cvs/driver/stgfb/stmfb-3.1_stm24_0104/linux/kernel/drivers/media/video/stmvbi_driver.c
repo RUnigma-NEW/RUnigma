@@ -826,7 +826,6 @@ static int stmvbi_configure_device (stvbi_device_t *pDev, int pipelinenr)
 static struct stm_v4l2_driver stmvbi_stm_v4l2_driver = {
   .name  = "stmvbi",
   .type  = STM_V4L2_SLICED_VBI_OUTPUT,
-
   .ioctl = stmvbi_ioctl,
   .close = stmvbi_close,
   .poll  = stmvbi_poll
