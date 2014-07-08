@@ -46,6 +46,9 @@ struct StreamContext_s;
 #include <linux/dvb/dmx.h>
 
 #include "pti.h"
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,58)
+#include <asm/cacheflush.h>
+#endif
 
 #if defined(PLAYER_179) || defined(PLAYER_191)
 #if (defined(HL101) || defined(VIP1_V2) || defined(VIP2_V1) || defined(SPARK) || defined(SPARK7162))
